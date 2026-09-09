@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HI × 정권 이사 PASS v7</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#EFF2F1; --surface:#FFFFFF; --ink:#182029; --ink-soft:#647080; --line:#E1E6E3;
+  --navy:#1B2A4A; --navy-soft:#eef1f6; --teal:#177F77; --teal-soft:#e9f5f3;
+  --amber:#C98A2E; --danger:#B0473B; --radius:16px; --radius-sm:10px;
+  --shadow:0 1px 2px rgba(20,30,45,.04), 0 8px 24px -12px rgba(20,30,45,.12);
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:'Noto Sans KR',sans-serif; -webkit-font-smoothing:antialiased;}
+h1,h2,h3{font-family:'Noto Serif KR',serif; margin:0 0 6px; letter-spacing:-0.01em;}
+p{line-height:1.65; color:var(--ink-soft); margin:0 0 4px;}
+.app{max-width:640px; margin:0 auto; padding:22px 16px 70px;}
+
+/* 로고바 (클릭하면 메인으로) */
+.brandbar{display:flex; align-items:center; gap:10px; padding:6px 4px 22px; cursor:pointer; user-select:none;}
+.brandbar:hover{opacity:.85;}
+.brandbar img{height:28px; display:block;}
+.mark{font-family:'Noto Serif KR',serif; font-weight:700; font-size:19px; color:var(--navy);}
+
+/* 탭 */
+.tabs{display:flex; gap:4px; background:var(--surface); border-radius:999px; padding:4px; margin-bottom:22px; box-shadow:var(--shadow);}
+.tab{flex:1; text-align:center; padding:10px 12px; cursor:pointer; font-size:13.5px; font-weight:600; color:var(--ink-soft); border-radius:999px; transition:.15s;}
+.tab.active{color:#fff; background:var(--navy);}
+.panel{display:none;} .panel.active{display:block; animation:fade .25s ease;}
+@keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+.card{background:var(--surface); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow);}
+.card + .card{margin-top:14px;}
+
+/* 히어로 */
+.hero{background:linear-gradient(135deg, var(--navy) 0%, #24365c 55%, var(--teal) 130%); border-radius:var(--radius); padding:34px 26px; color:#fff; box-shadow:var(--shadow);}
+.hero h1{color:#fff; font-size:25px; margin-bottom:8px;}
+.hero p{color:#DCE3E9; font-size:14.5px;}
+.hero .tagline{font-size:12.5px; color:#F3CD8D; font-weight:600; margin-top:14px; letter-spacing:.01em;}
+
+.split{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;}
+@media(max-width:520px){.split{grid-template-columns:1fr;}}
+.passcard{border-radius:var(--radius); padding:20px; background:var(--surface); box-shadow:var(--shadow); display:flex; flex-direction:column;}
+.passcard .who{font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px; display:inline-block; margin-bottom:10px; width:fit-content;}
+.passcard.a .who{background:var(--navy-soft); color:var(--navy);}
+.passcard.b .who{background:var(--teal-soft); color:var(--teal);}
+.passcard h3{font-size:18px; margin-bottom:2px;}
+.passcard ul{margin:10px 0 0; padding-left:18px; color:var(--ink-soft); font-size:13.5px; line-height:1.85;}
+.videoWrap{margin-top:14px; border-radius:var(--radius-sm); overflow:hidden; background:#000; position:relative; padding-top:125%;} /* 숏폼 세로 비율 */
+.videoWrap iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+.cta{display:block; margin-top:16px; font-size:14px; font-weight:700; padding:12px 14px; border-radius:10px; color:#fff; cursor:pointer; border:none; text-align:center;}
+.passcard.a .cta{background:var(--navy);} .passcard.b .cta{background:var(--teal);}
+
+.banner{border-radius:var(--radius-sm); overflow:hidden; box-shadow:var(--shadow); background:var(--surface); margin-top:12px;}
+.banner img{width:100%; display:block; max-height:260px; object-fit:cover;}
+.banner .cap{padding:10px 14px; font-size:13px; color:var(--ink-soft);}
+
+/* 폼 */
+label{display:block; font-size:13px; font-weight:600; margin:16px 0 7px; color:var(--ink);}
+.hint{font-size:11.5px; color:var(--ink-soft); font-weight:400; margin-left:4px;}
+input[type=text], input[type=tel], input[type=date]{width:100%; padding:12px 13px; border:1px solid var(--line); border-radius:var(--radius-sm); font-size:15px; font-family:inherit; background:#FBFCFB; color:var(--ink);}
+input:focus{outline:2px solid var(--navy); outline-offset:1px; background:#fff;}
+.chipgroup{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{padding:9px 14px; border:1px solid var(--line); border-radius:999px; font-size:13px; cursor:pointer; background:#FBFCFB; color:var(--ink-soft); user-select:none; transition:.12s;}
+.chip.sel.a{background:var(--navy); border-color:var(--navy); color:#fff;}
+.chip.sel.b{background:var(--teal); border-color:var(--teal); color:#fff;}
+.chip input{display:none;}
+.radiogroup{display:flex; gap:8px; flex-wrap:wrap;}
+.radiogroup label{margin:0; font-weight:500; font-size:13px; padding:9px 14px; border:1px solid var(--line); border-radius:999px; cursor:pointer; background:#FBFCFB; color:var(--ink-soft);}
+.radiogroup input{display:none;}
+.radiogroup input:checked + span{color:inherit;}
+.radiogroup label:has(input:checked).a{background:var(--navy); border-color:var(--navy); color:#fff;}
+.radiogroup label:has(input:checked).b{background:var(--teal); border-color:var(--teal); color:#fff;}
+
+.consent{display:flex; gap:9px; align-items:flex-start; margin-top:20px; font-size:12px; color:var(--ink-soft); background:#F6F8F6; padding:13px; border-radius:var(--radius-sm); border:1px solid var(--line);}
+.consent input{margin-top:2px; width:16px; height:16px; flex-shrink:0;}
+.consent .req{color:var(--danger); font-weight:700;}
+.submitbtn{margin-top:18px; width:100%; padding:15px; border:none; border-radius:12px; color:#fff; font-weight:700; font-size:16px; cursor:pointer;}
+.submitbtn.a{background:var(--navy);} .submitbtn.b{background:var(--teal);}
+.submitbtn:disabled{opacity:.6;}
+.msg{margin-top:12px; font-size:13px; padding:11px 13px; border-radius:var(--radius-sm); display:none;}
+.msg.ok{background:#E7F3EF; color:#1F6E52; display:block;}
+.msg.err{background:#FBEAE8; color:var(--danger); display:block;}
+
+/* 개인정보 필수동의 */
+.consent-hidden{display:none!important;}
+.consent-trigger{width:100%; margin-top:20px; display:grid; grid-template-columns:28px 1fr 18px; gap:10px; align-items:center; text-align:left; background:#F6F8F6; border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 13px; cursor:pointer; font-family:inherit; color:var(--ink);}
+.consent-trigger:hover{background:#F1F4F2;}
+.consent-trigger.done{background:#EAF6F1; border-color:#9CCDB9;}
+.consent-check{font-size:21px; line-height:1; color:var(--ink-soft);}
+.consent-trigger.done .consent-check{color:#1F6E52;}
+.consent-copy strong{display:block; font-size:12.5px; margin-bottom:3px;}
+.consent-copy small{display:block; font-size:11.5px; color:var(--ink-soft); font-weight:400; line-height:1.45;}
+.consent-trigger.done .consent-copy small{color:#1F6E52; font-weight:600;}
+.consent-arrow{font-size:20px; color:var(--ink-soft);}
+.consent-revoke{display:none; margin:7px 2px 0 auto; border:none; background:transparent; color:var(--danger); font-size:12px; font-weight:700; text-decoration:underline; cursor:pointer; font-family:inherit;}
+.consent-revoke.show{display:block;}
+.staff-locked{background:#F0F3F1!important; color:#52605A!important; font-weight:600;}
+
+/* 개인정보 상세 팝업 */
+.overlay{position:fixed; inset:0; background:rgba(20,25,35,.58); display:none; align-items:center; justify-content:center; z-index:50; padding:16px;}
+.overlay.show{display:flex;}
+.privacy-popup{background:#fff; border-radius:16px; width:min(520px,100%); max-height:88vh; display:flex; flex-direction:column; box-shadow:0 20px 50px rgba(0,0,0,.28); overflow:hidden;}
+.privacy-head{padding:20px 20px 14px; border-bottom:1px solid var(--line); display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
+.privacy-head h4{font-size:17px; margin:0 0 4px;}
+.privacy-head p{font-size:12.5px; margin:0;}
+.close-x{border:none; background:transparent; font-size:24px; line-height:1; cursor:pointer; color:var(--ink-soft); padding:0 2px;}
+.privacy-scroll{margin:14px 20px 0; padding:16px; border:1px solid var(--line); background:#FAFBFA; border-radius:10px; overflow:auto; min-height:220px; max-height:42vh; font-size:12.5px; line-height:1.65; color:#3E4955; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;}
+.privacy-scroll h5{font-size:13px; color:var(--ink); margin:14px 0 5px;}
+.privacy-scroll h5:first-child{margin-top:0;}
+.privacy-scroll ul{margin:5px 0 8px; padding-left:18px;}
+.privacy-scroll .notice{margin-top:14px; padding:10px; background:#FFF6E8; border-radius:8px; color:#7A5522;}
+.privacy-end-marker{margin-top:18px; padding:10px; border-radius:8px; text-align:center; background:#EAF6F1; color:#1F6E52; font-weight:700;}
+.scroll-hint{font-size:11.5px; color:var(--danger); padding:8px 20px 0; min-height:25px;}
+.privacy-checkrow{margin:8px 20px 0; display:flex; gap:9px; align-items:flex-start; padding:12px; border:1px solid var(--line); border-radius:10px; background:#F7F9F7; font-size:12.5px; font-weight:600;}
+.privacy-checkrow input{width:17px; height:17px; margin-top:1px; flex-shrink:0;}
+.privacy-actions{padding:14px 20px 20px; display:grid; grid-template-columns:1fr 1.7fr; gap:8px;}
+.privacy-actions button{padding:12px; border-radius:10px; font-weight:700; cursor:pointer; font-family:inherit;}
+.privacy-actions .cancel{background:#fff; border:1px solid var(--line); color:var(--ink-soft);}
+.privacy-actions .confirm{border:none; background:var(--navy); color:#fff;}
+.privacy-actions .confirm:disabled{opacity:.4; cursor:not-allowed;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brandbar" id="brandbar" onclick="goTab('brand')">
+    <img id="logoImg" style="display:none;">
+    <span class="mark" id="logoText">HI × 정권</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="brand">이사 PASS 안내</div>
+    <div class="tab" data-tab="passA">하이부동산 고객</div>
+    <div class="tab" data-tab="passB">정권통신 고객</div>
+  </div>
+
+  <!-- 브랜드 -->
+  <div class="panel active" id="panel-brand">
+    <div class="hero" id="heroBlock">
+      <h1 id="heroTitle">HI × 정권통신 이사 PASS</h1>
+      <p id="heroSubtitle">집부터 통신까지, 이사할 때 필요한 혜택을 한 번에.</p>
+      <div class="tagline" id="heroTagline">하이부동산 계약 고객 · 정권통신 방문 고객을 위한 제휴 혜택 프로그램</div>
+    </div>
+    <div class="split">
+      <div class="passcard a">
+        <div class="who" id="cardA_who">🏠 하이부동산 고객 전용</div>
+        <h3 id="cardA_title">신청하기</h3>
+        <ul id="cardA_benefits"><li>휴대폰 · 인터넷 · TV · 결합상품</li><li>통신비 무료 진단</li></ul>
+        <div class="videoWrap" id="videoA_wrap" style="display:none;"><iframe id="videoA" allowfullscreen></iframe></div>
+        <button class="cta a" onclick="goTab('passA')">신청하기</button>
+      </div>
+      <div class="passcard b">
+        <div class="who" id="cardB_who">📱 정권통신 고객 전용</div>
+        <h3 id="cardB_title">신청하기</h3>
+        <ul id="cardB_benefits"><li>원룸 · 투룸 · 오피스텔</li><li>전월세 · 매매 상담</li></ul>
+        <div class="videoWrap" id="videoB_wrap" style="display:none;"><iframe id="videoB" allowfullscreen></iframe></div>
+        <button class="cta b" onclick="goTab('passB')">신청하기</button>
+      </div>
+    </div>
+    <div id="bannerSection" style="display:none; margin-top:14px;"></div>
+  </div>
+
+  <!-- PASS A -->
+  <div class="panel" id="panel-passA">
+    <div class="card">
+      <h2 style="font-size:18px;">하이부동산 고객 신청</h2>
+      <p style="font-size:13px;">이사하시면서 인터넷·TV·휴대폰이 필요하신가요? 정권통신에서 무료로 비교 상담해드립니다.</p>
+      <label>이름 *</label><input type="text" id="a_name" placeholder="홍길동">
+      <label>전화번호 *</label><input type="tel" id="a_phone" placeholder="010-0000-0000">
+      <label>필요 서비스 * <span class="hint">(중복 선택 가능)</span></label>
+      <div class="chipgroup" id="a_service_group"></div>
+      <label>이사 예정일</label><input type="date" id="a_movedate">
+      <label>상담 희망 방식</label>
+      <div class="radiogroup" id="a_contact_group">
+        <label class="a"><input type="radio" name="a_contact" value="전화" checked><span>전화</span></label>
+        <label class="a"><input type="radio" name="a_contact" value="방문"><span>방문</span></label>
+        <label class="a"><input type="radio" name="a_contact" value="카카오톡"><span>카카오톡</span></label>
+      </div>
+      <label>추천인 코드 <span class="hint">(안내받은 직원 코드가 있으면 입력, 없으면 비워두세요)</span></label>
+      <input type="text" id="a_staff" placeholder="예: HI01">
+      <input type="checkbox" id="a_consent" class="consent-hidden" tabindex="-1" aria-hidden="true">
+      <button type="button" class="consent-trigger" id="a_consent_trigger" onclick="openPrivacyModal('A')">
+        <span class="consent-check" id="a_consent_icon">☐</span>
+        <span class="consent-copy"><strong><span class="req">[필수]</span> 개인정보 수집·이용 및 제휴 상담 제공 동의</strong><small id="a_consent_status">내용을 확인하고 동의해주세요.</small></span>
+        <span class="consent-arrow">›</span>
+      </button>
+      <button type="button" class="consent-revoke" id="a_consent_revoke" onclick="revokePrivacy('A')">동의 취소</button>
+      <button class="submitbtn a" id="a_btn" onclick="submitLead('A')">PASS A 신청하기</button>
+      <div class="msg" id="msg_a"></div>
+    </div>
+  </div>
+
+  <!-- PASS B -->
+  <div class="panel" id="panel-passB">
+    <div class="card">
+      <h2 style="font-size:18px;">정권통신 고객 신청</h2>
+      <p style="font-size:13px;">이사 예정이거나 방을 구하고 계신가요? 하이부동산에서 제휴 혜택으로 상담해드립니다.</p>
+      <label>이름 *</label><input type="text" id="b_name" placeholder="홍길동">
+      <label>전화번호 *</label><input type="tel" id="b_phone" placeholder="010-0000-0000">
+      <label>필요 서비스 * <span class="hint">(중복 선택 가능)</span></label>
+      <div class="chipgroup" id="b_service_group"></div>
+      <label>이사 예정일</label><input type="date" id="b_movedate">
+      <label>현재 거주지역</label><input type="text" id="b_area" placeholder="예: 흑석동">
+      <label>상담 희망 방식</label>
+      <div class="radiogroup" id="b_contact_group">
+        <label class="b"><input type="radio" name="b_contact" value="전화" checked><span>전화</span></label>
+        <label class="b"><input type="radio" name="b_contact" value="방문"><span>방문</span></label>
+        <label class="b"><input type="radio" name="b_contact" value="카카오톡"><span>카카오톡</span></label>
+      </div>
+      <label>추천인 코드 <span class="hint">(안내받은 직원 코드가 있으면 입력, 없으면 비워두세요)</span></label>
+      <input type="text" id="b_staff" placeholder="예: 김송훈">
+      <input type="checkbox" id="b_consent" class="consent-hidden" tabindex="-1" aria-hidden="true">
+      <button type="button" class="consent-trigger" id="b_consent_trigger" onclick="openPrivacyModal('B')">
+        <span class="consent-check" id="b_consent_icon">☐</span>
+        <span class="consent-copy"><strong><span class="req">[필수]</span> 개인정보 수집·이용 및 제휴 상담 제공 동의</strong><small id="b_consent_status">내용을 확인하고 동의해주세요.</small></span>
+        <span class="consent-arrow">›</span>
+      </button>
+      <button type="button" class="consent-revoke" id="b_consent_revoke" onclick="revokePrivacy('B')">동의 취소</button>
+      <button class="submitbtn b" id="b_btn" onclick="submitLead('B')">PASS B 신청하기</button>
+      <div class="msg" id="msg_b"></div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="privacyOverlay" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+  <div class="privacy-popup">
+    <div class="privacy-head">
+      <div><h4 id="privacyTitle">개인정보 필수동의</h4><p>아래 내용을 끝까지 확인한 뒤 동의해주세요.</p></div>
+      <button type="button" class="close-x" onclick="closePrivacyModal()" aria-label="닫기">×</button>
+    </div>
+    <div class="privacy-scroll" id="privacyScroll" tabindex="0"></div>
+    <div class="scroll-hint" id="privacyScrollHint">↓ 내용을 끝까지 내려야 확인 체크가 활성화됩니다.</div>
+    <label class="privacy-checkrow">
+      <input type="checkbox" id="privacyReadCheck" disabled>
+      <span>위 내용을 <strong>필독했고 확인했습니다.</strong></span>
+    </label>
+    <div class="privacy-actions">
+      <button type="button" class="cancel" onclick="closePrivacyModal()">취소</button>
+      <button type="button" class="confirm" id="privacyConfirmBtn" onclick="confirmPrivacy()" disabled>동의하고 닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CONFIG = { WEBAPP_URL: "https://script.google.com/macros/s/AKfycbynYvXKdsCxhdDzEoruAUdUUTWWXvBehJmI5_D6rc1iouEH5HF0sOV2zMJm1Z56HVa6dQ/exec" };
+const PRIVACY_VERSION = '2026-09-v1';
+
+function escapeHtml(v){
+  return String(v ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+}
+function safeHttpUrl(url){
+  try{ const u=new URL(String(url||''), location.href); return /^https?:$/.test(u.protocol) ? u.href : ''; }catch(e){ return ''; }
+}
+function localDateStr(d=new Date()){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function normalizePhone(v){ return String(v||'').replace(/\D/g,'').slice(0,11); }
+function formatPhone(v){
+  const n=normalizePhone(v);
+  if(n.length===11) return n.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
+  if(n.length===10) return n.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3');
+  return n;
+}
+['a_phone','b_phone'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{ e.target.value=formatPhone(e.target.value); }));
+
+function goTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>goTab(t.dataset.tab)));
+
+const params = new URLSearchParams(location.search);
+const rawStaff = (params.get('staff') || '').trim();
+const urlStaff = /^[A-Za-z0-9_-]{1,30}$/.test(rawStaff) ? rawStaff.toUpperCase() : '';
+if(urlStaff){
+  ['a_staff','b_staff'].forEach(id=>{
+    const el=document.getElementById(id); el.value=urlStaff; el.readOnly=true; el.classList.add('staff-locked');
+    el.title='직원 전용 링크로 자동 지정된 추천인 코드입니다.';
+  });
+}
+if(params.get('pass')==='A') goTab('passA');
+if(params.get('pass')==='B') goTab('passB');
+
+// 한국 현지 날짜 기준으로 과거 날짜 선택 금지
+const todayStr = localDateStr();
+document.getElementById('a_movedate').min = todayStr;
+document.getElementById('b_movedate').min = todayStr;
+
+// ---------- 서비스 다중선택 칩 ----------
+let selectedA = new Set(), selectedB = new Set();
+function fillServiceChips(groupId, items, side, selSet){
+  const group = document.getElementById(groupId);
+  group.innerHTML = ''; selSet.clear();
+  items.forEach(label=>{
+    const chip = document.createElement('label');
+    chip.className = 'chip ' + side;
+    const input=document.createElement('input'); input.type='checkbox'; input.value=String(label);
+    const span=document.createElement('span'); span.textContent=String(label);
+    chip.append(input,span);
+    input.addEventListener('change', ()=>{
+      chip.classList.toggle('sel', input.checked);
+      if(input.checked) selSet.add(String(label)); else selSet.delete(String(label));
+    });
+    group.appendChild(chip);
+  });
+}
+fillServiceChips('a_service_group', ['휴대폰','인터넷','TV','결합상품','통신비 무료진단'], 'a', selectedA);
+fillServiceChips('b_service_group', ['원룸','투룸','오피스텔','전월세','매매상담'], 'b', selectedB);
+
+async function loadServiceOptions(){
+  try{
+    const res = await fetch(CONFIG.WEBAPP_URL + '?action=services');
+    const data = await res.json();
+    if(Array.isArray(data.A) && data.A.length) fillServiceChips('a_service_group', data.A, 'a', selectedA);
+    if(Array.isArray(data.B) && data.B.length) fillServiceChips('b_service_group', data.B, 'b', selectedB);
+  }catch(e){ console.warn('서비스 목록을 불러오지 못해 기본값을 사용합니다.', e); }
+}
+loadServiceOptions();
+
+// ---------- 영상 URL -> 임베드 URL 변환 ----------
+function toEmbedUrl(url){
+  if(!url) return null;
+  url = url.trim();
+  const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:shorts\/|watch\?v=|embed\/))([\w-]{6,})/);
+  if(yt) return 'https://www.youtube.com/embed/' + yt[1];
+  const ig = url.match(/instagram\.com\/(reel|p)\/([\w-]+)/);
+  if(ig) return 'https://www.instagram.com/' + ig[1] + '/' + ig[2] + '/embed';
+  return safeHttpUrl(url) || null;
+}
+function setVideo(wrapId, iframeId, url){
+  const embed = toEmbedUrl(url);
+  if(!embed) return;
+  document.getElementById(iframeId).src = embed;
+  document.getElementById(wrapId).style.display = 'block';
+}
+
+// ---------- 메인 콘텐츠 ----------
+async function loadMainContent(){
+  try{
+    const res = await fetch(CONFIG.WEBAPP_URL + '?action=content');
+    const data = await res.json();
+    if(data.logo){
+      const logoUrl=safeHttpUrl(data.logo.logoImageUrl);
+      if(logoUrl){ document.getElementById('logoImg').src=logoUrl; document.getElementById('logoImg').style.display='block'; document.getElementById('logoText').style.display='none'; }
+      else if(data.logo.logoText){ document.getElementById('logoText').textContent=data.logo.logoText; }
+    }
+    if(data.hero){
+      if(data.hero.title) document.getElementById('heroTitle').textContent=data.hero.title;
+      if(data.hero.subtitle) document.getElementById('heroSubtitle').textContent=data.hero.subtitle;
+      if(data.hero.tagline) document.getElementById('heroTagline').textContent=data.hero.tagline;
+    }
+    if(data.cards){
+      if(data.cards.A){ if(data.cards.A.title) document.getElementById('cardA_title').textContent=data.cards.A.title; if(data.cards.A.who) document.getElementById('cardA_who').textContent=data.cards.A.who; }
+      if(data.cards.B){ if(data.cards.B.title) document.getElementById('cardB_title').textContent=data.cards.B.title; if(data.cards.B.who) document.getElementById('cardB_who').textContent=data.cards.B.who; }
+    }
+    if(data.benefits){
+      [['A','cardA_benefits'],['B','cardB_benefits']].forEach(([side,id])=>{
+        const arr=data.benefits[side]; if(Array.isArray(arr)&&arr.length){ const ul=document.getElementById(id); ul.innerHTML=''; arr.forEach(t=>{const li=document.createElement('li');li.textContent=String(t);ul.appendChild(li);}); }
+      });
+    }
+    if(Array.isArray(data.banners) && data.banners.length){
+      const wrap=document.getElementById('bannerSection'); wrap.innerHTML='';
+      data.banners.forEach(b=>{ const url=safeHttpUrl(b.imageUrl); if(!url)return; const box=document.createElement('div');box.className='banner';const img=document.createElement('img');img.src=url;img.alt=String(b.caption||'');box.appendChild(img);if(b.caption){const cap=document.createElement('div');cap.className='cap';cap.textContent=String(b.caption);box.appendChild(cap);}wrap.appendChild(box); });
+      if(wrap.children.length) wrap.style.display='block';
+    }
+    if(data.logo){ if(data.logo.videoA) setVideo('videoA_wrap','videoA',data.logo.videoA); if(data.logo.videoB) setVideo('videoB_wrap','videoB',data.logo.videoB); }
+  }catch(e){ console.warn('메인페이지 콘텐츠를 불러오지 못해 기본 문구를 사용합니다.', e); }
+}
+loadMainContent();
+
+// ---------- 개인정보 필수동의 ----------
+let activePrivacyType = null;
+let privacyObserver = null;
+const privacyText = {
+  A: `
+    <h5>1. 수집·이용하는 개인정보</h5>
+    <ul><li>이름, 휴대전화번호</li><li>필요 서비스, 이사 예정일, 상담 희망 방식</li><li>추천인 코드(입력 또는 직원 전용 링크 사용 시)</li></ul>
+    <h5>2. 이용 목적</h5>
+    <ul><li>HI × 정권통신 이사 PASS 신청 접수</li><li>휴대폰·인터넷·TV·결합상품 및 통신비 관련 상담 연락</li><li>제휴 유입 확인 및 상담 진행 관리</li></ul>
+    <h5>3. 제휴 상담을 위해 제공되는 곳</h5>
+    <ul><li><strong>정권통신</strong> — 신청한 통신 관련 상담 및 후속 연락</li></ul>
+    <h5>4. 보유·이용 기간</h5>
+    <p>상담 목적 달성 후 3개월 이내 파기를 원칙으로 합니다. 다만 관련 법령에 따라 보관 의무가 있는 정보는 해당 법정 기간 동안 보관할 수 있습니다.</p>
+    <h5>5. 동의 거부 권리</h5>
+    <p>개인정보 수집·이용 및 제휴 상담 제공에 동의하지 않을 수 있습니다. 다만 필수정보 동의를 거부하면 PASS 상담 신청이 제한됩니다.</p>
+    <div class="notice">이 필수동의는 신청한 상담 처리를 위한 동의입니다. 별도의 광고성 정보 수신 동의는 포함하지 않습니다.</div>`,
+  B: `
+    <h5>1. 수집·이용하는 개인정보</h5>
+    <ul><li>이름, 휴대전화번호</li><li>필요 서비스, 이사 예정일, 현재 거주지역, 상담 희망 방식</li><li>추천인 코드(입력 또는 직원 전용 링크 사용 시)</li></ul>
+    <h5>2. 이용 목적</h5>
+    <ul><li>HI × 정권통신 이사 PASS 신청 접수</li><li>원룸·투룸·오피스텔·전월세·매매 관련 부동산 상담 연락</li><li>제휴 유입 확인 및 상담 진행 관리</li></ul>
+    <h5>3. 제휴 상담을 위해 제공되는 곳</h5>
+    <ul><li><strong>하이부동산</strong> — 신청한 부동산 관련 상담 및 후속 연락</li></ul>
+    <h5>4. 보유·이용 기간</h5>
+    <p>상담 목적 달성 후 3개월 이내 파기를 원칙으로 합니다. 다만 관련 법령에 따라 보관 의무가 있는 정보는 해당 법정 기간 동안 보관할 수 있습니다.</p>
+    <h5>5. 동의 거부 권리</h5>
+    <p>개인정보 수집·이용 및 제휴 상담 제공에 동의하지 않을 수 있습니다. 다만 필수정보 동의를 거부하면 PASS 상담 신청이 제한됩니다.</p>
+    <div class="notice">이 필수동의는 신청한 상담 처리를 위한 동의입니다. 별도의 광고성 정보 수신 동의는 포함하지 않습니다.</div>`
+};
+
+function setConsentState(type, agreed){
+  const p=type==='A'?'a':'b';
+  document.getElementById(p+'_consent').checked=!!agreed;
+  document.getElementById(p+'_consent_trigger').classList.toggle('done', !!agreed);
+  document.getElementById(p+'_consent_icon').textContent=agreed?'✓':'☐';
+  document.getElementById(p+'_consent_status').textContent=agreed?'필독 및 동의 확인 완료 · 눌러서 다시 보기':'내용을 확인하고 동의해주세요.';
+  document.getElementById(p+'_consent_revoke').classList.toggle('show', !!agreed);
+}
+
+function revokePrivacy(type){
+  setConsentState(type, false);
+  const p=type==='A'?'a':'b';
+  const msg=document.getElementById('msg_'+p);
+  if(msg){ msg.className='msg'; msg.style.display='none'; msg.textContent=''; }
+}
+
+function unlockPrivacyCheck(){
+  const read=document.getElementById('privacyReadCheck');
+  if(!read.disabled) return;
+  read.disabled=false;
+  document.getElementById('privacyScrollHint').textContent='내용을 끝까지 확인했습니다. 아래 확인란을 체크해주세요.';
+}
+
+function checkPrivacyScroll(){
+  const el=document.getElementById('privacyScroll');
+  if(!el) return;
+  const remaining=el.scrollHeight-el.clientHeight-el.scrollTop;
+  if(remaining <= 24) unlockPrivacyCheck();
+}
+
+function setupPrivacyEndObserver(){
+  if(privacyObserver){ privacyObserver.disconnect(); privacyObserver=null; }
+  const scroll=document.getElementById('privacyScroll');
+  const marker=document.getElementById('privacyEndMarker');
+  if(!scroll || !marker || !('IntersectionObserver' in window)) return;
+  privacyObserver=new IntersectionObserver(entries=>{
+    if(entries.some(entry=>entry.isIntersecting)) unlockPrivacyCheck();
+  }, {root:scroll, threshold:0.6});
+  privacyObserver.observe(marker);
+}
+
+function openPrivacyModal(type){
+  activePrivacyType=type;
+  const scroll=document.getElementById('privacyScroll');
+  scroll.innerHTML=privacyText[type] + '<div class="privacy-end-marker" id="privacyEndMarker">✓ 개인정보 안내 끝</div>';
+
+  const read=document.getElementById('privacyReadCheck');
+  read.checked=false;
+  read.disabled=true;
+  document.getElementById('privacyConfirmBtn').disabled=true;
+  document.getElementById('privacyScrollHint').textContent='↓ 내용을 끝까지 내려야 확인 체크가 활성화됩니다.';
+  document.getElementById('privacyOverlay').classList.add('show');
+
+  // 브라우저가 이전 스크롤 위치를 기억하지 못하도록 열린 뒤에도 두 번 초기화
+  scroll.scrollTop=0;
+  requestAnimationFrame(()=>{
+    scroll.scrollTop=0;
+    setupPrivacyEndObserver();
+    checkPrivacyScroll();
+    scroll.focus();
+  });
+  setTimeout(()=>{
+    scroll.scrollTop=0;
+    checkPrivacyScroll();
+  },120);
+}
+
+function closePrivacyModal(){
+  document.getElementById('privacyOverlay').classList.remove('show');
+  activePrivacyType=null;
+  if(privacyObserver){ privacyObserver.disconnect(); privacyObserver=null; }
+}
+
+['scroll','touchend','wheel','keyup'].forEach(evt=>{
+  document.getElementById('privacyScroll').addEventListener(evt, checkPrivacyScroll, {passive:true});
+});
+window.addEventListener('resize', checkPrivacyScroll);
+
+document.getElementById('privacyReadCheck').addEventListener('change',e=>{
+  document.getElementById('privacyConfirmBtn').disabled=!e.target.checked;
+});
+
+function confirmPrivacy(){
+  const read=document.getElementById('privacyReadCheck');
+  if(!activePrivacyType || read.disabled || !read.checked) return;
+  const type=activePrivacyType;
+  setConsentState(type, true);
+  closePrivacyModal();
+}
+
+document.getElementById('privacyOverlay').addEventListener('click',e=>{
+  if(e.target.id==='privacyOverlay') closePrivacyModal();
+});
+
+// ---------- 제출 ----------
+async function submitLead(type){
+  const p = type==='A' ? 'a' : 'b';
+  const name = document.getElementById(p+'_name').value.trim();
+  const rawPhone = document.getElementById(p+'_phone').value.trim();
+  const phone = normalizePhone(rawPhone);
+  const services = Array.from(type==='A' ? selectedA : selectedB).join(', ');
+  const moveDate = document.getElementById(p+'_movedate').value;
+  const contactRadio = document.querySelector(`input[name="${p}_contact"]:checked`);
+  const contact = contactRadio ? contactRadio.value : '';
+  const consent = document.getElementById(p+'_consent').checked;
+  const area = type==='B' ? document.getElementById('b_area').value.trim() : '';
+  const staff = document.getElementById(p+'_staff').value.trim();
+  const msgEl = document.getElementById('msg_'+p);
+  const btn = document.getElementById(p+'_btn');
+
+  if(!consent){ openPrivacyModal(type); return; }
+  if(!name || !phone || !services){ msgEl.className='msg err'; msgEl.textContent='이름, 전화번호, 필요서비스는 필수입니다.'; return; }
+  if(!/^01\d{8,9}$/.test(phone)){ msgEl.className='msg err'; msgEl.textContent='휴대전화번호를 정확히 입력해주세요.'; return; }
+
+  const record = {
+    id: 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+    type, source: type==='A' ? 'HI' : 'JK', staff: staff || '',
+    name, phone, service: services, moveDate, contact, area,
+    consentConfirmed: true, consentVersion: PRIVACY_VERSION, consentAt: new Date().toISOString()
+  };
+
+  btn.disabled = true; btn.textContent = '전송 중...'; msgEl.style.display='none';
+  try{
+    const res = await fetch(CONFIG.WEBAPP_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(record) });
+    const result = await res.json();
+    if(result.result === 'duplicate'){
+      msgEl.className='msg err'; msgEl.textContent=result.message || '이미 접수된 연락처입니다.';
+    }else if(result.result === 'success'){
+      msgEl.className='msg ok'; msgEl.textContent='접수 완료! 담당자가 곧 연락드립니다.';
+      document.getElementById(p+'_name').value=''; document.getElementById(p+'_phone').value=''; document.getElementById(p+'_movedate').value='';
+      document.querySelectorAll(`#${p}_service_group input:checked`).forEach(i=>{i.checked=false;i.closest('.chip').classList.remove('sel');});
+      (type==='A'?selectedA:selectedB).clear();
+      setConsentState(type, false);
+      if(type==='B') document.getElementById('b_area').value='';
+    }else{
+      msgEl.className='msg err'; msgEl.textContent=result.message || '전송 중 문제가 발생했습니다. 다시 시도해주세요.';
+    }
+  }catch(e){ msgEl.className='msg err'; msgEl.textContent='전송 중 오류가 발생했습니다. 다시 시도해주세요.'; console.error(e); }
+  finally{ btn.disabled=false; btn.textContent=type==='A'?'PASS A 신청하기':'PASS B 신청하기'; }
+}
+</script>
+</body>
+</html>

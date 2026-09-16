@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하이부동산 고객 전용 상담 신청</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap');
+:root{--bg:#f6f6f3;--surface:#fff;--ink:#191a18;--ink-soft:#696b63;--line:#dedfd7;--navy:#20211d;--amber:#f5d33d;--danger:#b83227;--radius:20px;--radius-sm:10px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard",Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.03em}
+button,input,select,textarea{font:inherit}
+button,a{touch-action:manipulation}
+button{cursor:pointer}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #546fe5;outline-offset:4px}
+button{transition:background .18s,transform .18s}
+button:hover{filter:brightness(.97)}
+h1,h2,h3,h4,p{margin:0}
+h1,h2,h3{letter-spacing:-.06em;word-break:keep-all}
+p{line-height:1.7;color:var(--ink-soft)}
+a{color:inherit;text-decoration:none}
+.app{max-width:1264px;margin:auto;padding:0 40px}
+.topline{display:flex;align-items:center;justify-content:space-between;min-height:94px;gap:20px}
+.brandbar{display:flex;align-items:center;gap:13px;border:0;background:none;padding:0;text-align:left;min-width:0}.brandbar img{display:block}
+.brand-stamp{display:grid;place-items:center;background:var(--amber);color:#191a18;width:41px;height:41px;border-radius:11px;font-size:18px;font-weight:900;letter-spacing:-.1em;flex-shrink:0}
+.mark{font-weight:850;font-size:23px;letter-spacing:-.07em}
+.header-note{font-size:12px;color:#686b60}
+.header-note span{display:inline-block;width:6px;height:6px;background:#909974;border-radius:50%;margin-right:6px}
+.form-layout{display:grid;grid-template-columns:minmax(250px,.8fr) minmax(0,1.4fr);gap:70px;padding:14px 0 20px}
+.form-sidebar{align-self:start;position:sticky;top:30px}
+.form-home{display:inline-block;border:0;background:none;color:#767b6c;padding:0;font-size:12px;margin:0 0 37px}
+.form-kicker{font-size:11px;letter-spacing:.1em;color:#7f826f;font-weight:800}
+.form-sidebar h1{font-size:44px;line-height:1.2;margin:17px 0}
+.form-sidebar>p{font-size:14px;line-height:1.8;word-break:keep-all}
+.form-route{border-top:1px solid var(--line);margin-top:30px;padding-top:22px;display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700}
+.form-route span{color:#919884}
+.form-checks{list-style:none;padding:0;font-size:12px;color:#7a826e;line-height:2;margin-top:22px}
+.form-checks li:before{content:'✓';margin-right:8px}
+.card{padding:32px;background:#fff;border:1px solid var(--line);border-radius:20px}
+.card>h2{font-size:22px!important;margin-bottom:8px}
+.card>p{font-size:13px!important;margin-bottom:24px}
+.form-fields{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
+.field.full{grid-column:1/-1}
+label{display:block;font-size:13px;font-weight:700;margin:21px 0 9px;line-height:1.6}
+.hint{font-size:11px;color:#8b8f80;font-weight:450;margin-left:5px}
+input[type=text],input[type=tel],input[type=date],select,textarea{width:100%;background:#fafbf7;border:1px solid #dfe3d6;min-height:49px;padding:13px 14px;border-radius:9px;color:var(--ink);font-size:15px;min-width:0}
+textarea{min-height:110px;resize:vertical}
+input::placeholder,textarea::placeholder{color:#a2a793}
+input:focus,select:focus,textarea:focus{outline:2px solid #868f63;outline-offset:1px;background:white}
+.staff-locked{background:#f0f2e9!important;color:#626b50;font-weight:700}
+.chipgroup,.radiogroup{display:flex;flex-wrap:wrap;gap:8px}
+.chip,.radiogroup label{position:relative;border:1px solid #dfe3d6;padding:11px 14px;margin:0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:#717964;min-height:43px;display:flex;align-items:center}
+.chip input,.radiogroup input{position:absolute;opacity:0;width:1px;height:1px}
+.chip:has(input:focus-visible),.radiogroup label:has(input:focus-visible){outline:3px solid #546fe5;outline-offset:3px}
+.chip.sel,.radiogroup label:has(input:checked){background:#f7efc9;border-color:#ccb961;color:#554d24}
+.consent-hidden{display:none!important}
+.consent-trigger{display:grid;grid-template-columns:24px 1fr 15px;gap:9px;align-items:center;text-align:left;width:100%;padding:16px 13px;margin-top:26px;background:#f6f7f1;border:1px solid #e2e5d7;border-radius:10px;color:#3c4531}
+.consent-copy strong{display:block;font-size:12px;line-height:1.55;font-weight:700}
+.consent-copy small{display:block;font-size:11px;color:#8b937a;line-height:1.7;margin-top:3px}
+.consent-check{font-size:20px;color:#929a82}
+.consent-arrow{font-size:23px;color:#859170}
+.consent-trigger.done{background:#f0f5e7;border-color:#b8c5a1}
+.consent-trigger.done .consent-check{color:#54832f}
+.consent-revoke{display:none;margin:8px 0 0 auto;border:0;background:none;color:var(--danger);text-decoration:underline;font-size:11px;padding:4px}
+.consent-revoke.show{display:block}
+.req{color:var(--danger)}
+.submitbtn{width:100%;margin-top:18px;border:0;background:var(--amber);color:#282d1c;padding:17px;min-height:55px;border-radius:10px;font-weight:800;font-size:16px}
+.submitbtn.alt{background:#292e20;color:white}
+.submitbtn:disabled{opacity:.5;cursor:wait}
+.msg{display:none;margin-top:14px;padding:14px;border-radius:9px;font-size:13px;line-height:1.6}
+.msg.ok{display:block;background:#eef5e7;color:#47762b}
+.msg.err{display:block;background:#fff0e9;color:#b83227}
+.form-note{text-align:center;font-size:11px;color:#929b80;margin-top:13px}
+.site-footer{display:flex;align-items:center;justify-content:space-between;gap:30px;border-top:1px solid var(--line);margin-top:43px;padding:26px 0 35px;color:#85877c;font-size:11px;line-height:1.7}
+.site-footer strong{font-size:13px;color:#53584a}
+.site-footer p{font-size:11px;margin-top:4px}
+.site-footer>span{text-align:right}
+.overlay{position:fixed; inset:0; background:rgba(20,25,35,.58); display:none; align-items:center; justify-content:center; z-index:50; padding:16px;}
+.overlay.show{display:flex;}
+.privacy-popup{background:#fff; border-radius:16px; width:min(520px,100%); max-height:88vh; display:flex; flex-direction:column; box-shadow:0 20px 50px rgba(0,0,0,.28); overflow:hidden;}
+.privacy-head{padding:20px 20px 14px; border-bottom:1px solid var(--line); display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
+.privacy-head h4{font-size:17px; margin:0 0 4px;}
+.privacy-head p{font-size:12.5px; margin:0;}
+.close-x{border:none; background:transparent; font-size:24px; line-height:1; cursor:pointer; color:var(--ink-soft); padding:0 2px;}
+.privacy-scroll{margin:14px 20px 0; padding:16px; border:1px solid var(--line); background:#FAFBFA; border-radius:10px; overflow:auto; min-height:220px; max-height:42vh; font-size:12.5px; line-height:1.65; color:#3E4955; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;}
+.privacy-scroll h5{font-size:13px; color:var(--ink); margin:14px 0 5px;}
+.privacy-scroll h5:first-child{margin-top:0;}
+.privacy-scroll ul{margin:5px 0 8px; padding-left:18px;}
+.privacy-scroll .notice{margin-top:14px; padding:10px; background:#FFF6E8; border-radius:8px; color:#7A5522;}
+.privacy-end-marker{margin-top:18px; padding:10px; border-radius:8px; background:#EEF5E7; color:#3A6B2B; font-size:12px; text-align:center;}
+.scroll-hint{padding:10px 20px 0; font-size:11px; color:#8A917C;}
+.privacy-checkrow{display:flex; align-items:flex-start; gap:9px; margin:12px 20px 0; font-size:12.5px; color:var(--ink);}
+.privacy-checkrow input{margin-top:2px; width:16px; height:16px; flex:none;}
+.privacy-actions{display:flex; gap:10px; justify-content:flex-end; padding:16px 20px 20px;}
+.privacy-actions button{border:none; border-radius:10px; padding:12px 16px; font-size:13px; font-weight:700;}
+.privacy-actions .cancel{background:#EFEFEA; color:#4A5143;}
+.privacy-actions .confirm{background:var(--amber); color:#23251f;}
+.privacy-actions .confirm:disabled{opacity:.45; cursor:not-allowed;}
+@media(max-width:900px){.app{padding:0 26px}.form-layout{gap:30px;grid-template-columns:.8fr 1.2fr}.form-sidebar h1{font-size:34px}.form-fields{grid-template-columns:1fr}.field{grid-column:1/-1}.card{padding:24px}}
+@media(max-width:640px){.app{padding:0 18px}.topline{min-height:78px}.brand-stamp{width:34px;height:34px;font-size:16px;border-radius:9px}.brandbar{gap:9px}.mark{font-size:20px}.header-note{display:none}.form-layout{grid-template-columns:1fr;gap:20px;padding-top:4px}.form-sidebar{position:static}.form-home{margin-bottom:20px}.form-sidebar h1{font-size:32px}.card{padding:22px}.site-footer{display:block}.site-footer>span{text-align:left;display:block;margin-top:10px}}
+
+.form-section{grid-column:1/-1;margin-top:23px;padding-top:4px;border-top:1px solid #eceee5}
+.form-section:first-of-type{margin-top:0;border-top:0;padding-top:0}
+.section-title{display:flex;align-items:center;gap:8px;margin:18px 0 4px;font-size:14px;font-weight:800}
+.section-title .num{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#f5d33d;color:#25271f;font-size:11px}
+.section-help{font-size:11px;color:#8b8f80;margin:0 0 4px}
+.choicegroup{display:flex;flex-wrap:wrap;gap:8px}
+.choicegroup label{position:relative;border:1px solid #dfe3d6;padding:11px 14px;margin:0;border-radius:8px;font-size:12px;font-weight:650;cursor:pointer;background:#fff;color:#717964;min-height:43px;display:flex;align-items:center}
+.choicegroup input{position:absolute;opacity:0;width:1px;height:1px}
+.choicegroup label:has(input:checked){background:#f7efc9;border-color:#ccb961;color:#554d24}
+.choicegroup label:has(input:focus-visible){outline:3px solid #546fe5;outline-offset:3px}
+.priority-note{font-size:10.5px;color:#9a9d91;margin-top:8px}
+.notice-under-submit{text-align:center;font-size:12px;color:#767b6c;line-height:1.65;margin-top:14px;word-break:keep-all}
+.notice-under-submit strong{color:#4b5145}
+@media(max-width:640px){
+  .form-layout{gap:12px}
+  .form-sidebar{padding:4px 0 2px}
+  .form-sidebar h1{font-size:29px;margin:8px 0 7px}
+  .form-sidebar>p{font-size:12.5px;line-height:1.6}
+  .form-kicker{font-size:9px}
+  .form-route,.form-checks{display:none}
+  .card>p{margin-bottom:10px!important}
+  .form-section{margin-top:18px}
+  label{margin-top:15px}
+}
+
+.page-switch{display:flex;gap:8px;margin:8px 0 18px}
+.page-switch button{flex:1;border:1px solid #dfe3d6;background:#fff;color:#6e7566;border-radius:10px;padding:13px 14px;font-weight:800;font-size:14px}
+.page-switch button.active{background:#20211d;color:#fff;border-color:#20211d}
+.mode-panel{display:none}
+.mode-panel.active{display:block}
+.inline2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choicegroup{display:flex;flex-wrap:wrap;gap:8px}
+.choicegroup label{position:relative;border:1px solid #dfe3d6;padding:11px 14px;margin:0;border-radius:8px;font-size:12px;font-weight:650;cursor:pointer;background:#fff;color:#717964;min-height:43px;display:flex;align-items:center}
+.choicegroup input{position:absolute;opacity:0;width:1px;height:1px}
+.choicegroup label:has(input:checked){background:#f7efc9;border-color:#ccb961;color:#554d24}
+.choicegroup label:has(input:focus-visible){outline:3px solid #546fe5;outline-offset:3px}
+.section-title-line{grid-column:1/-1;margin-top:22px;padding-top:18px;border-top:1px solid #eceee5;font-size:14px;font-weight:800}
+.section-title-line:first-child{border-top:0;margin-top:0;padding-top:0}
+.mini-note{font-size:11px;color:#8b8f80;margin-top:6px;line-height:1.6}
+.photo-note{margin-top:12px;padding:12px 14px;border:1px dashed #d6dac9;border-radius:10px;background:#fafaf5;font-size:11.5px;color:#68705d;line-height:1.65}
+@media(max-width:640px){.inline2{grid-template-columns:1fr}.page-switch{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0;margin-top:0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topline">
+    <div class="brandbar">
+      <div class="brand-stamp" id="brandStamp">HI</div>
+      <img id="brandLogo" alt="하이부동산 로고" style="display:none;max-height:48px;max-width:210px;object-fit:contain">
+      <div class="mark" id="brandText">하이부동산</div>
+    </div>
+    <div class="header-note"><span></span>고객 전용 상담 접수</div>
+  </header>
+
+  <div class="page-switch">
+    <button type="button" class="active" data-mode="seek" onclick="switchMode('seek')">집 구해요</button>
+    <button type="button" data-mode="offer" onclick="switchMode('offer')">집 내놔요</button>
+  </div>
+
+  <!-- 집 구해요 -->
+  <main class="mode-panel active" id="panel-seek">
+    <div class="form-layout">
+      <aside class="form-sidebar">
+        <span class="form-kicker">HI REAL ESTATE · FIND A HOME</span>
+        <h1>원하는 집 조건,<br>간단히 알려주세요.</h1>
+        <p>필요한 정보만 입력해주시면 담당자가 조건을 확인하고 연락드릴게요.</p>
+        <div class="form-route">조건 입력 <span>→</span> 담당자 배정 <span>→</span> 상담 연락</div>
+      </aside>
+
+      <section class="card">
+        <h2>집 구해요</h2>
+        <p>필수정보부터 빠르게 입력해주세요.</p>
+        <div class="form-fields">
+
+          <div class="field"><label for="s_name">이름 *</label><input type="text" id="s_name" placeholder="홍길동"></div>
+          <div class="field"><label for="s_phone">연락처 *</label><input type="tel" id="s_phone" placeholder="010-0000-0000"></div>
+
+          <div class="field full">
+            <label>거래 조건 * <span class="hint">(중복 선택 가능)</span></label>
+            <div class="chipgroup" id="s_trade_group">
+              <label class="chip"><input type="checkbox" value="매매"><span>매매</span></label>
+              <label class="chip"><input type="checkbox" value="전세"><span>전세</span></label>
+              <label class="chip"><input type="checkbox" value="월세"><span>월세</span></label>
+            </div>
+          </div>
+
+          <div class="field"><label for="s_budget">예산 *</label><input type="text" id="s_budget" placeholder="예: 전세 2억 / 월세 3,000·80"></div>
+          <div class="field"><label for="s_area">희망 위치 *</label><input type="text" id="s_area" placeholder="예: 신대방 ~ 서울대입구"></div>
+
+          <div class="field full">
+            <label>입주 시기 *</label>
+            <div class="radiogroup">
+              <label><input type="radio" name="s_date_mode" value="단일" checked onchange="toggleSeekDate()"><span>날짜 지정</span></label>
+              <label><input type="radio" name="s_date_mode" value="기간" onchange="toggleSeekDate()"><span>기간 선택</span></label>
+              <label><input type="radio" name="s_date_mode" value="협의가능" onchange="toggleSeekDate()"><span>협의 가능</span></label>
+            </div>
+          </div>
+
+          <div class="field" id="s_date_single">
+            <label for="s_movedate">입주 희망일 *</label>
+            <input type="date" id="s_movedate">
+          </div>
+
+          <div class="field full inline2" id="s_date_range" style="display:none">
+            <div><label for="s_date_from">입주 가능 시작일</label><input type="date" id="s_date_from"></div>
+            <div><label for="s_date_to">입주 가능 종료일</label><input type="date" id="s_date_to"></div>
+          </div>
+
+          <div class="field full">
+            <label>이사 상황 *</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="s_reason" value="계약 만기"><span>계약 만기</span></label>
+              <label><input type="radio" name="s_reason" value="중도 퇴실"><span>중도 퇴실</span></label>
+              <label><input type="radio" name="s_reason" value="신규 입주"><span>신규 입주</span></label>
+              <label><input type="radio" name="s_reason" value="기타"><span>기타</span></label>
+            </div>
+          </div>
+
+          <div class="section-title-line">추가 조건</div>
+
+          <div class="field full">
+            <label>중요하게 보는 조건 <span class="hint">(중복 선택)</span></label>
+            <div class="chipgroup" id="s_priority_group">
+              <label class="chip"><input type="checkbox" value="컨디션"><span>컨디션</span></label>
+              <label class="chip"><input type="checkbox" value="크기"><span>크기</span></label>
+              <label class="chip"><input type="checkbox" value="거리"><span>거리</span></label>
+              <label class="chip"><input type="checkbox" value="채광"><span>채광</span></label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>대출 계획</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="s_loan" value="중기청"><span>중기청</span></label>
+              <label><input type="radio" name="s_loan" value="버팀목"><span>버팀목</span></label>
+              <label><input type="radio" name="s_loan" value="신혼부부"><span>신혼부부</span></label>
+              <label><input type="radio" name="s_loan" value="기타"><span>기타</span></label>
+              <label><input type="radio" name="s_loan" value="없음"><span>대출 없음</span></label>
+            </div>
+          </div>
+
+          <div class="field"><label>반려동물</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="s_pet" value="있음"><span>있음</span></label>
+              <label><input type="radio" name="s_pet" value="없음"><span>없음</span></label>
+            </div>
+          </div>
+
+          <div class="field"><label>주차</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="s_parking" value="필요"><span>필요</span></label>
+              <label><input type="radio" name="s_parking" value="불필요"><span>불필요</span></label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>학교 <span class="hint">(해당 시 하나만 선택)</span></label>
+            <div class="choicegroup">
+              <label><input type="radio" name="s_school" value="중앙대"><span>중앙대</span></label>
+              <label><input type="radio" name="s_school" value="숭실대"><span>숭실대</span></label>
+              <label><input type="radio" name="s_school" value="서울대"><span>서울대</span></label>
+            </div>
+          </div>
+
+          <div class="field full"><label for="s_memo">추가 요청사항</label><textarea id="s_memo" placeholder="층수, 엘리베이터, 신축 여부 등 원하는 조건이 있으면 적어주세요."></textarea></div>
+        </div>
+
+        <input type="checkbox" id="s_consent" class="consent-hidden">
+        <button type="button" class="consent-trigger" id="s_consent_trigger" onclick="openPrivacyModal('s')">
+          <span class="consent-check" id="s_consent_icon">☐</span>
+          <span class="consent-copy"><strong><span class="req">[필수]</span> 개인정보 수집·이용 동의</strong><small id="s_consent_status">내용을 확인하고 동의해주세요.</small></span>
+          <span class="consent-arrow">›</span>
+        </button>
+        <button type="button" class="consent-revoke" id="s_consent_revoke" onclick="revokePrivacy('s')">동의 취소</button>
+        <button class="submitbtn" id="s_btn" onclick="submitSeek()">상담 신청하기</button>
+        <p class="notice-under-submit"><strong>신청 후 담당자를 배정해 연락드릴 예정입니다.</strong><br>부재 시 문자를 드릴 예정이니 확인 부탁드립니다.</p>
+        <div class="msg" id="msg_s"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 집 내놔요 -->
+  <main class="mode-panel" id="panel-offer">
+    <div class="form-layout">
+      <aside class="form-sidebar">
+        <span class="form-kicker">HI REAL ESTATE · LIST A HOME</span>
+        <h1>집 내놓기,<br>필요한 정보만 알려주세요.</h1>
+        <p>임대인·세입자 모두 접수할 수 있습니다. 매물 정보를 확인한 뒤 광고 노출과 중개 진행을 도와드립니다.</p>
+        <div class="form-route">매물 접수 <span>→</span> 조건 확인 <span>→</span> 광고·중개 진행</div>
+      </aside>
+
+      <section class="card">
+        <h2>집 내놔요</h2>
+        <p>매물 접수에 필요한 핵심정보를 입력해주세요.</p>
+
+        <div class="form-fields">
+          <div class="field"><label for="o_name">이름 *</label><input type="text" id="o_name" placeholder="홍길동"></div>
+          <div class="field"><label for="o_phone">연락처 *</label><input type="tel" id="o_phone" placeholder="010-0000-0000"></div>
+
+          <div class="field full">
+            <label>현재 관계 *</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="o_role" value="임대인" onchange="toggleLandlordContact()"><span>임대인</span></label>
+              <label><input type="radio" name="o_role" value="세입자" onchange="toggleLandlordContact()"><span>세입자</span></label>
+              <label><input type="radio" name="o_role" value="대리인" onchange="toggleLandlordContact()"><span>대리인</span></label>
+            </div>
+          </div>
+
+          <div class="field full"><label for="o_address">매물 주소 *</label><input type="text" id="o_address" placeholder="예: 서울시 관악구 봉천동 000-00, 00호"></div>
+
+          <div class="field full" id="o_landlord_wrap" style="display:none">
+            <label for="o_landlord_phone">임대인 연락처 <span class="hint">(선택 입력)</span></label>
+            <input type="tel" id="o_landlord_phone" maxlength="13" placeholder="010-0000-0000">
+            <div class="photo-note">
+              현재 임대차계약과 금액 변동이 있을 수 있어 임대인분 연락처가 필요합니다.<br>
+              직접 확인해주셔도 가능하시고, 연락처를 전달해주시면 저희가 확인도 가능합니다.
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>내놓는 형태 * <span class="hint">(중복 선택 가능)</span></label>
+            <div class="chipgroup" id="o_trade_group">
+              <label class="chip"><input type="checkbox" value="매매"><span>매매</span></label>
+              <label class="chip"><input type="checkbox" value="전세"><span>전세</span></label>
+              <label class="chip"><input type="checkbox" value="월세"><span>월세</span></label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>매물 종류 *</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="o_property" value="원룸"><span>원룸</span></label>
+              <label><input type="radio" name="o_property" value="투룸"><span>투룸</span></label>
+              <label><input type="radio" name="o_property" value="오피스텔"><span>오피스텔</span></label>
+              <label><input type="radio" name="o_property" value="아파트"><span>아파트</span></label>
+              <label><input type="radio" name="o_property" value="다가구/다세대"><span>다가구·다세대</span></label>
+              <label><input type="radio" name="o_property" value="상가"><span>상가</span></label>
+              <label><input type="radio" name="o_property" value="기타"><span>기타</span></label>
+            </div>
+          </div>
+
+          <div class="section-title-line">금액 및 계약정보</div>
+
+          <div class="field full"><label for="o_current_price">현재 계약 금액</label><input type="text" id="o_current_price" placeholder="예: 전세 2억 / 월세 3,000·80"></div>
+
+          <div class="field"><label for="o_expiry">계약 만기일</label><input type="date" id="o_expiry"></div>
+          <div class="field"><label for="o_moveout">희망 퇴실일 *</label><input type="date" id="o_moveout"></div>
+
+          <div class="field full">
+            <label>퇴실 일정</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="o_move_mode" value="날짜 확정"><span>날짜 확정</span></label>
+              <label><input type="radio" name="o_move_mode" value="협의 가능"><span>협의 가능</span></label>
+              <label><input type="radio" name="o_move_mode" value="즉시 가능"><span>즉시 가능</span></label>
+            </div>
+          </div>
+
+          <div class="section-title-line">매물 상태</div>
+
+          <div class="field full">
+            <label>현재 상태</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="o_occupancy" value="거주중"><span>거주중</span></label>
+              <label><input type="radio" name="o_occupancy" value="공실"><span>공실</span></label>
+              <label><input type="radio" name="o_occupancy" value="퇴실예정"><span>퇴실 예정</span></label>
+            </div>
+          </div>
+
+          <div class="field full">
+            <label>매물 사진</label>
+            <div class="choicegroup">
+              <label><input type="radio" name="o_photo" value="사진 보유"><span>사진 있음</span></label>
+              <label><input type="radio" name="o_photo" value="사진 없음"><span>사진 없음</span></label>
+            </div>
+            <div class="photo-note">사진이 있으시면 접수 후 담당자가 연락드릴 때 문자 또는 카카오톡으로 보내주시면 됩니다.</div>
+          </div>
+
+          <div class="field full">
+            <label>학교 <span class="hint">(해당 시 하나만 선택)</span></label>
+            <div class="choicegroup">
+              <label><input type="radio" name="o_school" value="중앙대"><span>중앙대</span></label>
+              <label><input type="radio" name="o_school" value="숭실대"><span>숭실대</span></label>
+              <label><input type="radio" name="o_school" value="서울대"><span>서울대</span></label>
+            </div>
+          </div>
+          <div class="field full"><label for="o_memo">추가 정보</label><textarea id="o_memo" placeholder="층수, 엘리베이터, 관리비, 주차, 집 보여주기 가능한 시간 등 추가 내용을 적어주세요."></textarea></div>
+        </div>
+
+        <input type="checkbox" id="o_consent" class="consent-hidden">
+        <button type="button" class="consent-trigger" id="o_consent_trigger" onclick="openPrivacyModal('o')">
+          <span class="consent-check" id="o_consent_icon">☐</span>
+          <span class="consent-copy"><strong><span class="req">[필수]</span> 개인정보 수집·이용 동의</strong><small id="o_consent_status">내용을 확인하고 동의해주세요.</small></span>
+          <span class="consent-arrow">›</span>
+        </button>
+        <button type="button" class="consent-revoke" id="o_consent_revoke" onclick="revokePrivacy('o')">동의 취소</button>
+        <button class="submitbtn b" id="o_btn" onclick="submitOffer()">집 내놓기 신청하기</button>
+        <p class="notice-under-submit"><strong>접수된 매물은 내용 확인 후 광고·중개를 진행합니다.</strong><br>추가 확인이 필요한 경우 전화 또는 문자로 안내드릴 수 있습니다.</p>
+        <div class="msg" id="msg_o"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div><strong>하이부동산 공인중개사사무소</strong><p>고객 상담 접수 채널</p></div>
+    <span>입력하신 내용은 담당자 배정 및 상담을 위해 사용됩니다.</span>
+  </footer>
+</div>
+
+<div class="overlay" id="privacyOverlay" role="dialog" aria-modal="true">
+  <div class="privacy-popup">
+    <div class="privacy-head">
+      <div><h4>개인정보 필수동의</h4><p>아래 내용을 끝까지 확인한 뒤 동의해주세요.</p></div>
+      <button type="button" class="close-x" onclick="closePrivacyModal()">×</button>
+    </div>
+    <div class="privacy-scroll" id="privacyScroll" tabindex="0"></div>
+    <div class="scroll-hint" id="privacyScrollHint">↓ 내용을 끝까지 내려야 확인 체크가 활성화됩니다.</div>
+    <label class="privacy-checkrow"><input type="checkbox" id="privacyReadCheck" disabled><span>위 내용을 <strong>필독했고 확인했습니다.</strong></span></label>
+    <div class="privacy-actions">
+      <button type="button" class="cancel" onclick="closePrivacyModal()">취소</button>
+      <button type="button" class="confirm" id="privacyConfirmBtn" onclick="confirmPrivacy()" disabled>동의하고 닫기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CONFIG={WEBAPP_URL:'https://script.google.com/macros/s/AKfycbynYvXKdsCxhdDzEoruAUdUUTWWXvBehJmI5_D6rc1iouEH5HF0sOV2zMJm1Z56HVa6dQ/exec'};
+const PRIVACY_VERSION='2026-09-v1';
+async function loadAdminLogo(){
+  try{
+    const res=await fetch(CONFIG.WEBAPP_URL+'?action=content');
+    const data=await res.json();
+    const logo=String(data.logo||'').trim();
+    if(logo){
+      const img=document.getElementById('brandLogo');
+      img.onload=()=>{
+        img.style.display='block';
+        document.getElementById('brandStamp').style.display='none';
+        document.getElementById('brandText').style.display='none';
+      };
+      img.onerror=()=>{ img.style.display='none'; };
+      img.src=logo;
+    }
+  }catch(e){}
+}
+loadAdminLogo();
+
+const PRIVACY_SEEK_HTML=`
+<h5>1. 수집하는 개인정보 항목</h5>
+<ul>
+  <li>이름, 연락처</li>
+  <li>거래 조건(매매·전세·월세), 예산, 희망 위치</li>
+  <li>입주 희망일 또는 입주 가능 기간, 이사 상황</li>
+  <li>중요하게 보는 조건, 대출 계획, 반려동물, 주차 여부</li>
+  <li>학교 선택, 추가 요청사항 등 고객이 직접 입력한 정보</li>
+</ul>
+
+<h5>2. 이용 목적</h5>
+<ul>
+  <li>부동산 상담 신청 접수 및 고객 연락</li>
+  <li>희망 조건에 맞는 매물 검토 및 안내</li>
+  <li>입주 일정, 예산, 대출 등 상담 조건 확인</li>
+  <li>문의사항 응대 및 후속 상담 진행</li>
+</ul>
+
+<h5>3. 보유 및 이용 기간</h5>
+<ul>
+  <li>상담 목적 달성 후 관련 법령 및 내부 운영 기준에 따라 보관 후 파기</li>
+</ul>
+
+<h5>4. 동의 거부 권리</h5>
+<ul>
+  <li>개인정보 수집·이용에 동의하지 않을 권리가 있습니다.</li>
+  <li>다만 필수항목 동의가 없으면 상담 신청이 제한될 수 있습니다.</li>
+</ul>
+
+<div class="notice">입력하신 정보는 집 구하기 상담과 조건 확인을 위해 사용됩니다.</div>
+<div class="privacy-end-marker">여기까지 읽으셨다면 확인 체크가 활성화됩니다.</div>
+`;
+
+const PRIVACY_OFFER_HTML=`
+<h5>1. 수집하는 개인정보 항목</h5>
+<ul>
+  <li>이름, 연락처</li>
+  <li>임대인·세입자·대리인 여부</li>
+  <li>세입자 접수 시 임대인 연락처(선택 입력)</li>
+  <li>매물 주소, 거래 형태, 매물 종류</li>
+  <li>현재 계약 금액, 계약 만기일, 희망 퇴실일 및 퇴실 일정</li>
+  <li>현재 거주 상태, 매물 사진 보유 여부</li>
+  <li>학교 선택, 추가 매물정보 등 고객이 직접 입력한 정보</li>
+</ul>
+
+<h5>2. 이용 목적</h5>
+<ul>
+  <li>매물 접수 및 고객 연락</li>
+  <li>현재 임대차계약 및 거래 조건 확인</li>
+  <li>매물 정보 검토 및 광고·중개 진행</li>
+  <li>필요 시 임대인 또는 관계자에게 계약 조건 확인</li>
+  <li>문의사항 응대 및 후속 중개 상담</li>
+</ul>
+
+<h5>3. 보유 및 이용 기간</h5>
+<ul>
+  <li>매물 접수 및 중개 목적 달성 후 관련 법령 및 내부 운영 기준에 따라 보관 후 파기</li>
+</ul>
+
+<h5>4. 동의 거부 권리</h5>
+<ul>
+  <li>개인정보 수집·이용에 동의하지 않을 권리가 있습니다.</li>
+  <li>다만 필수항목 동의가 없으면 매물 접수 및 상담 진행이 제한될 수 있습니다.</li>
+</ul>
+
+<div class="notice">입력하신 정보는 매물 확인, 광고 및 중개 진행을 위해 사용됩니다.</div>
+<div class="privacy-end-marker">여기까지 읽으셨다면 확인 체크가 활성화됩니다.</div>
+`;
+let activeConsent='';
+
+function normalizePhone(v){return String(v||'').replace(/\D/g,'').slice(0,11)}
+function formatPhone(v){
+ const n=normalizePhone(v);
+ if(n.length===11)return n.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3');
+ if(n.length===10)return n.replace(/(\d{3})(\d{3})(\d{4})/,'$1-$2-$3');
+ return n;
+}
+function val(id){return (document.getElementById(id)?.value||'').trim()}
+function radio(name){const e=document.querySelector(`input[name="${name}"]:checked`);return e?e.value:''}
+function checked(id){return [...document.querySelectorAll(`#${id} input[type=checkbox]:checked`)].map(x=>x.value)}
+function msg(id,t,ok){const e=document.getElementById(id);e.className='msg '+(ok?'ok':'err');e.textContent=t}
+
+['s_phone','o_phone','o_landlord_phone'].forEach(id=>document.getElementById(id).addEventListener('input',e=>e.target.value=formatPhone(e.target.value)));
+['s_trade_group','s_priority_group','o_trade_group'].forEach(id=>document.querySelectorAll(`#${id} input[type=checkbox]`).forEach(i=>i.addEventListener('change',()=>i.closest('.chip').classList.toggle('sel',i.checked))));
+
+const today=new Date();
+const todayStr=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+['s_movedate','s_date_from','s_date_to','o_expiry','o_moveout'].forEach(id=>{const e=document.getElementById(id);if(e)e.min=todayStr});
+
+function switchMode(mode){
+ document.querySelectorAll('.page-switch button').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+ document.getElementById('panel-seek').classList.toggle('active',mode==='seek');
+ document.getElementById('panel-offer').classList.toggle('active',mode==='offer');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleSeekDate(){
+ const m=radio('s_date_mode');
+ document.getElementById('s_date_single').style.display=m==='단일'?'block':'none';
+ document.getElementById('s_date_range').style.display=m==='기간'?'grid':'none';
+}
+toggleSeekDate();
+
+function toggleLandlordContact(){
+ const role=radio('o_role');
+ const wrap=document.getElementById('o_landlord_wrap');
+ const input=document.getElementById('o_landlord_phone');
+ wrap.style.display=role==='세입자'?'block':'none';
+ if(role!=='세입자') input.value='';
+}
+toggleLandlordContact();
+
+
+function openPrivacyModal(t){
+ activeConsent=t;
+ const ov=document.getElementById('privacyOverlay'), box=document.getElementById('privacyScroll'), chk=document.getElementById('privacyReadCheck'), btn=document.getElementById('privacyConfirmBtn'), hint=document.getElementById('privacyScrollHint');
+ box.innerHTML=(t==='o'?PRIVACY_OFFER_HTML:PRIVACY_SEEK_HTML);box.scrollTop=0;chk.checked=false;chk.disabled=true;btn.disabled=true;hint.textContent='↓ 내용을 끝까지 내려야 확인 체크가 활성화됩니다.';ov.classList.add('show');
+ box.onscroll=()=>{if(box.scrollTop+box.clientHeight>=box.scrollHeight-8){chk.disabled=false;hint.textContent='확인 체크가 활성화되었습니다.'}};
+ if(box.scrollHeight<=box.clientHeight+8)chk.disabled=false;
+ chk.onchange=()=>btn.disabled=!chk.checked;
+}
+function closePrivacyModal(){document.getElementById('privacyOverlay').classList.remove('show')}
+function confirmPrivacy(){
+ const t=activeConsent;document.getElementById(t+'_consent').checked=true;document.getElementById(t+'_consent_trigger').classList.add('done');document.getElementById(t+'_consent_icon').textContent='☑';document.getElementById(t+'_consent_status').textContent='동의가 완료되었습니다.';document.getElementById(t+'_consent_revoke').classList.add('show');closePrivacyModal();
+}
+function revokePrivacy(t){
+ document.getElementById(t+'_consent').checked=false;document.getElementById(t+'_consent_trigger').classList.remove('done');document.getElementById(t+'_consent_icon').textContent='☐';document.getElementById(t+'_consent_status').textContent='내용을 확인하고 동의해주세요.';document.getElementById(t+'_consent_revoke').classList.remove('show');
+}
+async function post(payload,btnId,msgId,okText){
+ const b=document.getElementById(btnId),orig=b.textContent;b.disabled=true;b.textContent='접수 중...';
+ try{const r=await fetch(CONFIG.WEBAPP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});const d=await r.json();
+  if(d.result==='success'){msg(msgId,okText,true);return true}
+  msg(msgId,d.message||'접수 중 문제가 발생했습니다.',false);return false;
+ }catch(e){msg(msgId,'접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',false);return false}
+ finally{b.disabled=false;b.textContent=orig}
+}
+
+async function submitSeek(){
+ const name=val('s_name'),phone=normalizePhone(val('s_phone')),trades=checked('s_trade_group'),budget=val('s_budget'),area=val('s_area'),mode=radio('s_date_mode'),reason=radio('s_reason'),school=radio('s_school'),cons=document.getElementById('s_consent').checked;
+ const single=val('s_movedate'),from=val('s_date_from'),to=val('s_date_to');
+ if(!name)return msg('msg_s','이름을 입력해주세요.',false);
+ if(!/^01\d{8,9}$/.test(phone))return msg('msg_s','연락처를 정확히 입력해주세요.',false);
+ if(!trades.length)return msg('msg_s','거래 조건을 선택해주세요.',false);
+ if(!budget)return msg('msg_s','예산을 입력해주세요.',false);
+ if(!area)return msg('msg_s','희망 위치를 입력해주세요.',false);
+ if(mode==='단일'&&!single)return msg('msg_s','입주 희망일을 선택해주세요.',false);
+ if(mode==='기간'&&(!from||!to))return msg('msg_s','입주 가능 기간을 모두 선택해주세요.',false);
+ if(!reason)return msg('msg_s','이사 상황을 선택해주세요.',false);
+ if(!cons)return msg('msg_s','개인정보 필수동의를 완료해주세요.',false);
+ const when=mode==='단일'?single:(mode==='기간'?from+'~'+to:'협의가능');
+ const parts=['[직접문의][집구해요]','거래:'+trades.join('/'),'예산:'+budget,'입주:'+when,'이사:'+reason,school?'학교:'+school:'',checked('s_priority_group').length?'중요:'+checked('s_priority_group').join('/'):'',radio('s_loan')?'대출:'+radio('s_loan'):'',radio('s_pet')?'반려:'+radio('s_pet'):'',radio('s_parking')?'주차:'+radio('s_parking'):'',val('s_memo')?'기타:'+val('s_memo'):''].filter(Boolean);
+ const ok=await post({type:'A',name,phone,service:parts.join(' | ').slice(0,295),moveDate:mode==='단일'?single:(mode==='기간'?from:''),area,contact:'전화',staff:'',consentConfirmed:true,consentVersion:PRIVACY_VERSION,consentAt:new Date().toISOString()},'s_btn','msg_s','접수완료! 담당자 배정 후 연락드릴게요.');
+ if(ok){document.querySelectorAll('#panel-seek input:not([type=checkbox]):not([type=radio]),#panel-seek textarea').forEach(e=>{if(!e.classList.contains('staff-locked'))e.value=''});document.querySelectorAll('#panel-seek input[type=checkbox],#panel-seek input[type=radio]').forEach(e=>e.checked=false);document.querySelectorAll('#panel-seek .chip').forEach(e=>e.classList.remove('sel'));document.querySelector('input[name=s_date_mode][value=단일]').checked=true;toggleSeekDate();revokePrivacy('s')}
+}
+
+async function submitOffer(){
+ const name=val('o_name'),phone=normalizePhone(val('o_phone')),role=radio('o_role'),addr=val('o_address'),trades=checked('o_trade_group'),prop=radio('o_property'),moveout=val('o_moveout'),landlordPhone=normalizePhone(val('o_landlord_phone')),school=radio('o_school'),cons=document.getElementById('o_consent').checked;
+ if(!name)return msg('msg_o','이름을 입력해주세요.',false);
+ if(!/^01\d{8,9}$/.test(phone))return msg('msg_o','연락처를 정확히 입력해주세요.',false);
+ if(!role)return msg('msg_o','임대인/세입자 여부를 선택해주세요.',false);
+ if(role==='세입자' && landlordPhone && !/^01\d{8,9}$/.test(landlordPhone))return msg('msg_o','임대인 연락처를 정확히 입력해주세요.',false);
+ if(!addr)return msg('msg_o','매물 주소를 입력해주세요.',false);
+ if(!trades.length)return msg('msg_o','내놓는 형태를 선택해주세요.',false);
+ if(!prop)return msg('msg_o','매물 종류를 선택해주세요.',false);
+ if(!moveout)return msg('msg_o','희망 퇴실일을 입력해주세요.',false);
+ if(!cons)return msg('msg_o','개인정보 필수동의를 완료해주세요.',false);
+ const parts=['[직접문의][집내놔요]','관계:'+role,landlordPhone?'임대인연락:'+landlordPhone:'','형태:'+trades.join('/'),'종류:'+prop,'현재금액:'+val('o_current_price'),'만기:'+val('o_expiry'),'퇴실:'+moveout,'퇴실일정:'+radio('o_move_mode'),school?'학교:'+school:'','상태:'+radio('o_occupancy'),'사진:'+radio('o_photo'),val('o_memo')?'기타:'+val('o_memo'):''].filter(Boolean);
+ const ok=await post({type:'A',name,phone,service:parts.join(' | ').slice(0,295),moveDate:moveout,area:addr,contact:'전화',staff:'',consentConfirmed:true,consentVersion:PRIVACY_VERSION,consentAt:new Date().toISOString()},'o_btn','msg_o','매물 접수가 완료되었습니다. 내용 확인 후 광고·중개를 진행할게요.');
+ if(ok){document.querySelectorAll('#panel-offer input:not([type=checkbox]):not([type=radio]),#panel-offer textarea').forEach(e=>{if(!e.classList.contains('staff-locked'))e.value=''});document.querySelectorAll('#panel-offer input[type=checkbox],#panel-offer input[type=radio]').forEach(e=>e.checked=false);document.querySelectorAll('#panel-offer .chip').forEach(e=>e.classList.remove('sel'));toggleLandlordContact();revokePrivacy('o')}
+}
+</script>
+</body>
+</html>

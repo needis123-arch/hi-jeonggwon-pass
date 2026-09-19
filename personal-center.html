@@ -19,7 +19,8 @@
 .formcard{padding:18px;margin-bottom:16px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:9px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111}.field.full{grid-column:1/-1}.formactions{display:flex;gap:7px;align-items:end}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800}.tabs button.active{background:#15191f;color:#fff;border-color:#15191f}
 .meter{margin-top:10px}.meterline{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:5px}.bar{height:9px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar i{height:100%;display:block;background:#9bdc2e;border-radius:99px}
-.calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.task{background:#f1fbe3}.calitem.money{background:#fff0e5}.calitem.must{background:#ffe9ed;color:#a72738}
+.calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.eventbtn{width:100%;border:0;text-align:left;color:inherit;cursor:pointer}.calitem.eventbtn:hover{outline:1px solid #a9c76c;background:#f3f9e8}
+.event-dialog{width:min(620px,calc(100% - 28px));border:1px solid var(--line);border-radius:20px;padding:0;box-shadow:0 28px 90px rgba(10,20,30,.25);color:var(--text)}.event-dialog::backdrop{background:rgba(17,24,32,.45)}.event-dialog-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.event-dialog-head h3{margin:0;font-size:17px}.event-dialog-body{padding:20px;display:grid;gap:12px}.event-dialog-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.event-dialog .field textarea{min-height:150px;resize:vertical;line-height:1.6}.calitem.task{background:#f1fbe3}.calitem.money{background:#fff0e5}.calitem.must{background:#ffe9ed;color:#a72738}
 .callout{border:1px solid #dfe5ea;background:#fafcfd;border-radius:13px;padding:13px;margin-bottom:12px}.callout b{font-size:12px}.callout p{font-size:10px;color:var(--muted);line-height:1.6;margin:5px 0 0}
 .loginbg{position:fixed;inset:0;background:#f4f6f8;z-index:300;display:none;align-items:center;justify-content:center;padding:20px}.loginbg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 25px 80px rgba(10,20,30,.14)}.loginmark{width:52px;height:52px;border-radius:15px;background:#15191f;color:#b8ff35;display:grid;place-items:center;font-size:19px;font-weight:1000;margin-bottom:14px}.login h2{margin:0}.login p{font-size:11px;color:var(--muted);line-height:1.6}.login input{width:100%;border:1px solid #d6dde5;border-radius:11px;padding:11px;margin-top:8px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:var(--warn);margin-top:10px}.toast{position:fixed;right:22px;bottom:22px;background:#15191f;color:#fff;padding:11px 14px;border-radius:11px;display:none;z-index:500;font-size:11px}.toast.show{display:block}
 .mobile{display:none}
@@ -182,9 +183,10 @@
   <div class="formcard card">
    <h3>일정 / 메모 추가</h3><div class="formgrid" style="grid-template-columns:150px 1fr 150px auto">
     <div class="field"><label>날짜</label><input id="eventDate" type="date"></div>
-    <div class="field"><label>내용</label><input id="eventTitle" placeholder="미팅 / 메모 / 입금 예정"></div>
+    <div class="field"><label>제목</label><input id="eventTitle" placeholder="캘린더에 보일 제목"></div>
     <div class="field"><label>종류</label><select id="eventType"><option value="schedule">일정</option><option value="memo">메모</option><option value="money_in">돈 들어옴</option><option value="money_out">돈 나감</option><option value="goal">목표</option></select></div>
     <div class="formactions"><button class="btn primary" onclick="addEvent()">저장</button></div>
+    <div class="field full"><label>상세 메모</label><textarea id="eventMemo" rows="4" placeholder="준비물, 해야 할 내용, 사람/장소, 생각난 내용 등을 자유롭게 적으세요. 캘린더의 제목을 누르면 다시 열어볼 수 있습니다."></textarea></div>
    </div>
   </div>
  </div>
@@ -228,6 +230,19 @@
  <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="business">사업</button>
 </nav>
 
+<dialog class="event-dialog" id="eventDialog">
+ <div class="event-dialog-head"><div><h3>일정 상세</h3><div class="autosave-note">캘린더 제목을 눌러 열었습니다.</div></div><button class="btn mini" type="button" onclick="closeEventDetail()">닫기</button></div>
+ <div class="event-dialog-body">
+  <input id="detailEventId" type="hidden">
+  <div class="formgrid" style="grid-template-columns:160px 1fr 150px">
+   <div class="field"><label>날짜</label><input id="detailEventDate" type="date"></div>
+   <div class="field"><label>제목</label><input id="detailEventTitle"></div>
+   <div class="field"><label>종류</label><select id="detailEventType"><option value="schedule">일정</option><option value="memo">메모</option><option value="money_in">돈 들어옴</option><option value="money_out">돈 나감</option><option value="goal">목표</option></select></div>
+  </div>
+  <div class="field"><label>상세 메모</label><textarea id="detailEventMemo" placeholder="상세 메모"></textarea></div>
+ </div>
+ <div class="event-dialog-foot"><button class="btn danger" type="button" onclick="deleteEventDetail()">이 일정 삭제</button><div><button class="btn" type="button" onclick="closeEventDetail()">취소</button> <button class="btn primary" type="button" onclick="saveEventDetail()">수정 저장</button></div></div>
+</dialog>
 <div class="loginbg" id="loginBg"><div class="login"><div class="loginmark">P</div><h2>PERSONAL CENTER</h2><p>개인 금융정보가 들어가므로 Supabase 계정으로 로그인해야 합니다. 다른 사용자는 내 데이터를 볼 수 없도록 행 단위 보안을 적용했습니다.</p><input id="loginEmail" type="email" placeholder="이메일"><input id="loginPassword" type="password" placeholder="비밀번호"><button class="btn primary" id="loginBtn">로그인</button><button class="btn" id="signupBtn">처음이면 계정 만들기</button><div class="msg" id="loginMsg"></div></div></div>
 <div class="toast" id="toast"></div>
 
@@ -419,7 +434,31 @@ async function addFlow(){const row={flow_date:$('flowDate').value||today,busines
 
 function renderTasks(){renderTodayTasks()}
 async function addTask(){const row={title:$('taskTitle').value.trim(),due_date:$('taskDate').value||today,priority:$('taskPriority').value,auto_rollover:true};if(!row.title)return;const {error}=await sb.from('pc_tasks').insert(row);if(error)return alert(error.message);$('taskTitle').value='';await loadAll();toast('할 일 저장')}
-async function addEvent(){const row={event_date:$('eventDate').value||today,title:$('eventTitle').value.trim(),event_type:$('eventType').value};if(!row.title)return;const {error}=await sb.from('pc_calendar_events').insert(row);if(error)return alert(error.message);$('eventTitle').value='';await loadAll();toast('일정 저장')}
+async function addEvent(){
+ const row={event_date:$('eventDate').value||today,title:$('eventTitle').value.trim(),event_type:$('eventType').value,memo:$('eventMemo').value.trim()};
+ if(!row.title){toast('일정 제목을 입력하세요.');return}
+ const {error}=await sb.from('pc_calendar_events').insert(row);
+ if(error)return alert(error.message);
+ $('eventTitle').value='';$('eventMemo').value='';
+ await loadAll();toast('일정 저장 · 제목을 누르면 메모를 볼 수 있습니다.')
+}
+function openEventDetail(id){
+ const e=state.events.find(x=>x.id===id);if(!e)return;
+ $('detailEventId').value=e.id;$('detailEventDate').value=e.event_date;$('detailEventTitle').value=e.title||'';$('detailEventType').value=e.event_type||'schedule';$('detailEventMemo').value=e.memo||'';
+ const dlg=$('eventDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
+}
+function closeEventDetail(){const dlg=$('eventDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
+async function saveEventDetail(){
+ const id=$('detailEventId').value,title=$('detailEventTitle').value.trim();if(!id||!title){toast('제목을 입력하세요.');return}
+ const patch={event_date:$('detailEventDate').value||today,title,event_type:$('detailEventType').value,memo:$('detailEventMemo').value.trim()};
+ const {error}=await sb.from('pc_calendar_events').update(patch).eq('id',id);if(error)return alert(error.message);
+ closeEventDetail();await loadAll();toast('일정 수정 저장')
+}
+async function deleteEventDetail(){
+ const id=$('detailEventId').value;if(!id||!confirm('이 일정과 메모를 삭제할까요?'))return;
+ const {error}=await sb.from('pc_calendar_events').delete().eq('id',id);if(error)return alert(error.message);
+ closeEventDetail();await loadAll();toast('일정 삭제')
+}
 function moveCal(n){calDate=new Date(calDate.getFullYear(),calDate.getMonth()+n,1);renderCalendar()}
 function renderCalendar(){
  if(!$('calendarGrid'))return;const y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate();$('calTitle').textContent=y+'년 '+(m+1)+'월';
@@ -427,12 +466,13 @@ function renderCalendar(){
  for(let i=0;i<first;i++)h+='<div class="day off"></div>';
  for(let d=1;d<=last;d++){const date=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');let items=[];
  state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'">'+(t.status==='done'?'✓ ':'')+esc(t.title)+'</span>'));
- state.events.filter(e=>e.event_date===date).forEach(e=>items.push('<span class="calitem">'+esc(e.title)+'</span>'));
+ state.events.filter(e=>e.event_date===date).forEach(e=>items.push('<button type="button" class="calitem eventbtn" title="'+esc(e.memo||e.title)+'" onclick="openEventDetail(\''+e.id+'\')">'+esc(e.title)+(e.memo?' · 📝':'')+'</button>'));
  state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d).forEach(r=>items.push('<span class="calitem money">-'+esc(r.name)+' '+won(r.amount)+'</span>'));
  personalDebts().filter(x=>+x.payment_day===d).forEach(x=>items.push('<span class="calitem money">대출 '+esc(x.name)+' '+won(x.min_payment)+'</span>'));
  h+='<div class="day '+(date===today?'today':'')+'"><div class="daynum">'+d+'</div>'+items.slice(0,5).join('')+(items.length>5?'<span class="calitem">+'+(items.length-5)+'개</span>':'')+'</div>'}
  $('calendarGrid').innerHTML=h
 }
+
 function renderGoals(){
  $('goalCards').innerHTML=state.goals.length?state.goals.map(g=>{const p=+g.target_value?Math.min(100,+g.current_value/+g.target_value*100):0;return '<div class="panel card"><h3>'+esc(g.title)+'</h3><p>'+(g.target_date?'목표일 '+g.target_date:'목표일 미정')+'</p><div style="font-size:24px;font-weight:1000">'+won(g.current_value)+'</div><small style="color:var(--muted)">/ '+won(g.target_value)+'</small><div class="meter"><div class="meterline"><span>진행률</span><b>'+p.toFixed(1)+'%</b></div><div class="bar"><i style="width:'+p+'%"></i></div></div><div style="margin-top:12px"><button class="btn mini" onclick="updateGoal(\''+g.id+'\','+Number(g.current_value||0)+')">현재값 수정</button> <button class="btn mini danger" onclick="disableGoal(\''+g.id+'\')">삭제</button></div></div>'}).join(''):'<div class="panel card"><div class="empty">첫 5년 목표를 추가하세요.</div></div>'
 }

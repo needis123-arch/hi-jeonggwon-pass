@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.28</title>
+<title>정권통신 Business Center V3.29</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -129,7 +129,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.28</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.29</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -462,7 +462,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <div class="setting-card card" style="grid-column:1/-1">
    <h3>담당자별 급여율</h3>
    <p>판매자별 W 최종마진 합계 × 급여율로 월 급여를 자동 계산합니다. 월별로 저장되어 이후 비율을 바꿔도 과거 손익은 유지됩니다.</p>
-   <div class="addrow" style="grid-template-columns:180px auto 1fr;margin-bottom:10px"><input id="payRateMonth" type="month" onchange="loadPayrollSettings()"><span class="tag">해당 월부터 적용</span></div>
+   <div class="addrow" style="grid-template-columns:180px auto 1fr;margin-bottom:10px"><input id="payRateMonth" type="month" onchange="loadPayrollSettings()"><button class="btn primary" type="button" onclick="saveAllStaffPayRates()">선택한 월부터 전체 적용</button><small style="color:#6c7788">현재 입력된 담당자 급여율을 한 번에 저장합니다.</small></div>
    <div id="staffPayRateSettings"></div>
   </div>
   <div class="setting-card card"><h3>계정</h3><p>대표 계정과 로그인 상태를 확인합니다.</p><div class="setting-list"><span class="tag">needis123@gmail.com</span><span class="tag" id="authStatus">로그인 필요</span></div><div class="addrow"><button class="btn" onclick="showLogin()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정</button></div></div>
@@ -1682,6 +1682,30 @@ async function saveStaffPayRate(staffId){
  if(info)info.textContent='현재 적용 시작 '+month;
  if(input)input.dataset.savedValue=String(rate);
  toast('급여율 저장 완료');
+ await loadDashboard();
+}
+
+async function saveAllStaffPayRates(){
+ const month=($('payRateMonth')?.value||mk(now))+'-01';
+ const rows=state.staff.filter(x=>x.active).map(staff=>({
+   staff,
+   input:$('payrate_'+staff.id)
+ })).filter(x=>x.input);
+ if(!rows.length){alert('저장할 담당자가 없습니다.');return}
+ for(const x of rows){
+   const rate=Number(x.input.value||0);
+   if(rate<0||rate>100){alert(x.staff.name+' 급여율은 0~100% 사이로 입력하세요.');x.input.focus();return}
+ }
+ if(!confirm(month.slice(0,7).replace('-','년 ')+'월부터 현재 입력된 담당자 급여율을 모두 적용할까요?'))return;
+ for(const x of rows){
+   const rate=Number(x.input.value||0);
+   const {error}=await sb.rpc('jk_set_staff_pay_rate',{p_staff_id:x.staff.id,p_effective_month:month,p_rate_pct:rate});
+   if(error){alert(x.staff.name+' 저장 실패: '+error.message);return}
+   x.input.dataset.savedValue=String(rate);
+   const info=x.input.closest('.addrow')?.querySelector('small');
+   if(info)info.textContent='현재 적용 시작 '+month;
+ }
+ toast('담당자 급여율 전체 적용 완료');
  await loadDashboard();
 }
 

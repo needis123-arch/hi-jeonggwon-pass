@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.15</title>
+<title>정권통신 Business Center V3.16</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -76,12 +76,43 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 @media(max-width:700px){.ledger-month-nav{grid-template-columns:repeat(2,minmax(105px,1fr))}}
 
 .moneyI{font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:.15px}
+
+.mobile-home-btn,.mobile-more-btn,.mobile-bottom-nav,.mobile-menu-backdrop,.mobile-menu-sheet{display:none}
+@media(max-width:900px){
+  body{padding-bottom:78px}
+  .content{padding:15px 15px 94px}
+  .topbar{height:68px;padding:0 12px;gap:8px}
+  .topbar>div:first-child{min-width:0;flex:1}
+  .topbar h1{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar .actions .btn{padding:8px 10px;font-size:11px}
+  .mobile-home-btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-weight:900;margin-right:8px}
+  .mobile-bottom-nav{position:fixed;left:0;right:0;bottom:0;height:72px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:90;padding:6px 8px calc(6px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(18,31,45,.08);backdrop-filter:blur(14px)}
+  .mobile-bottom-nav button{border:0;background:transparent;border-radius:11px;padding:6px 2px;color:#697586;font-size:10px;font-weight:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0}
+  .mobile-bottom-nav button .mi{font-size:17px;line-height:1}
+  .mobile-bottom-nav button.active{background:#f1f4f7;color:#111318}
+  .mobile-bottom-nav button[data-page="dashboard"].active{background:#f5ffe8;box-shadow:inset 0 0 0 1px #b8ff35}
+  .mobile-more-btn{display:flex!important}
+  .mobile-menu-backdrop{position:fixed;inset:0;background:rgba(17,19,24,.38);z-index:94}
+  .mobile-menu-backdrop.show{display:block}
+  .mobile-menu-sheet{position:fixed;left:10px;right:10px;bottom:82px;background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 70px rgba(18,31,45,.22);z-index:95;padding:14px;max-height:70vh;overflow:auto}
+  .mobile-menu-sheet.show{display:block}
+  .mobile-menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .mobile-menu-head b{font-size:15px}.mobile-menu-head button{border:0;background:#f1f4f7;border-radius:9px;padding:7px 10px;font-weight:900}
+  .mobile-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mobile-menu-grid button{border:1px solid var(--line);background:#fff;border-radius:13px;padding:13px 12px;text-align:left;font-weight:900;color:#27303b}
+  .mobile-menu-grid button.active{border-color:#9ee22f;background:#f5ffe8}
+  .toast{bottom:88px}
+}
+@media(max-width:520px){
+  .topbar .actions{gap:5px}.topbar .actions .btn{padding:8px 9px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.15</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.16</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -100,6 +131,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 </aside>
 <main class="main">
  <header class="topbar">
+  <button class="mobile-home-btn" onclick="go('dashboard')" aria-label="종합 대시보드로 이동">홈</button>
   <div><h1 id="pageTitle">종합 대시보드</h1><p id="todayText"></p></div>
   <div class="actions"><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
  </header>
@@ -294,6 +326,33 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 </main>
 </div>
 
+<nav class="mobile-bottom-nav" aria-label="모바일 빠른 메뉴">
+ <button data-page="dashboard"><span class="mi">⌂</span><span>홈</span></button>
+ <button data-page="ledger"><span class="mi">▤</span><span>장부</span></button>
+ <button data-page="alerts"><span class="mi">!</span><span>알림</span></button>
+ <button data-page="payback"><span class="mi">₩</span><span>페이백</span></button>
+ <button class="mobile-more-btn" type="button" onclick="toggleMobileMenu()"><span class="mi">☰</span><span>더보기</span></button>
+</nav>
+
+<div class="mobile-menu-backdrop" id="mobileMenuBackdrop" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu-sheet" id="mobileMenuSheet" role="dialog" aria-modal="true" aria-label="전체 메뉴">
+ <div class="mobile-menu-head"><b>전체 메뉴</b><button type="button" onclick="closeMobileMenu()">닫기</button></div>
+ <div class="mobile-menu-grid">
+  <button data-page="dashboard">종합 대시보드</button>
+  <button data-page="alerts">알림센터</button>
+  <button data-page="ledger">장부 관리</button>
+  <button data-page="report">자동 매출보고</button>
+  <button data-page="used">중고 반납</button>
+  <button data-page="payback">페이백</button>
+  <button data-page="affiliate">제휴카드 등록</button>
+  <button data-page="ads">광고비</button>
+  <button data-page="expenses">비용원장</button>
+  <button data-page="targets">목표 관리</button>
+  <button data-page="sources">유입 분석</button>
+  <button data-page="settings">환경 설정</button>
+ </div>
+</div>
+
 <div class="modal-bg" id="modalBg"><div class="modal"><div class="modal-head"><h3 id="modalTitle">입력</h3><button class="close" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="btn" onclick="closeModal()">취소</button><button class="btn primary" id="modalSave" onclick="saveModal()">저장</button></div></div></div>
 <div class="login-bg" id="loginBg"><div class="login"><h2>정권통신 대표 로그인</h2><p>장부와 고객정보는 로그인 후에만 조회됩니다.</p><input id="loginEmail" type="email" value="needis123@gmail.com"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()"><button class="btn primary" onclick="login()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정 메일</button><button class="btn" onclick="hideLogin()">닫기</button><div class="msg" id="loginMsg"></div></div></div>
 <div class="toast" id="toast"></div>
@@ -323,7 +382,18 @@ $('reportDate').value=ymd(now);
 
 const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
-function go(p){localStorage.setItem('jk-active-page',p);document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='alerts')loadAlertCenter();if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='affiliate')loadAffiliate();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
+function toggleMobileMenu(){
+ const sheet=$('mobileMenuSheet'),backdrop=$('mobileMenuBackdrop');
+ if(!sheet||!backdrop)return;
+ const open=!sheet.classList.contains('show');
+ sheet.classList.toggle('show',open);backdrop.classList.toggle('show',open);
+}
+function closeMobileMenu(){
+ $('mobileMenuSheet')?.classList.remove('show');
+ $('mobileMenuBackdrop')?.classList.remove('show');
+}
+
+function go(p){closeMobileMenu();localStorage.setItem('jk-active-page',p);document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='alerts')loadAlertCenter();if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='affiliate')loadAffiliate();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function showLogin(){$('loginBg').classList.add('show')}
@@ -914,6 +984,7 @@ function showModal(){$('modalBg').classList.add('show');setTimeout(()=>$('modalB
 function closeModal(){if(modalMode==='ledger'){sessionStorage.removeItem('jk-ledger-modal-open');sessionStorage.removeItem('jk-ledger-edit-id')}editingLedgerId=null;if($('modalSave'))$('modalSave').textContent='저장';$('modalBg').classList.remove('show')}
 async function saveModal(){if(modalMode==='ledger')return saveLedger();if(modalMode==='ad')return saveAd();if(modalMode==='expense')return saveExpense();if(modalMode==='target')return saveTarget()}
 $('modalBg').onclick=e=>{if(e.target.id==='modalBg'&&modalMode!=='ledger')closeModal()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()})
 
 window.addEventListener('resize',()=>{drawGoal(state.ledger,0,new Date(now.getFullYear(),now.getMonth()+1,0).getDate());drawAnnual();drawTargetAnnual();drawGrowth()});
 sessionChanged();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.9</title>
+<title>정권통신 Business Center V3.10</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -60,6 +60,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .status-chip.pending,.status-chip.sending{background:#fff5e8;color:#9a5e00}
 .status-chip.failed{background:#ffecee;color:#b92e3d}
 .status-chip.none,.status-chip.cancelled{background:#eef1f4;color:#687281}
+.status-chip.external_sent{background:#eaf3ff;color:#245da8}
 .alert-type{font-weight:900;font-size:10px}
 .alert-critical{color:#d93849}.alert-warning{color:#b87300}
 </style>
@@ -67,7 +68,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.9</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.10</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -148,8 +149,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
    <div class="table-wrap"><table><thead><tr><th>처리일시</th><th>고객</th><th>항목</th><th>처리</th><th>기준일</th><th>내역</th></tr></thead><tbody id="alertHistoryBody"></tbody></table></div>
   </div>
   <div class="table-card card">
-   <div class="table-top"><b>알림톡 발송내역</b><div class="toolbar"><input id="notifyHistoryMonth" type="month" onchange="loadNotificationHistory()"><select id="notifyStatusFilter" onchange="renderNotificationHistory()"><option value="all">전체</option><option value="sent">발송완료</option><option value="pending">대기</option><option value="failed">실패</option><option value="cancelled">취소</option></select></div></div>
-   <div class="table-wrap"><table><thead><tr><th>발송예정일</th><th>고객</th><th>항목</th><th>기준일</th><th>상태</th><th>실제발송</th><th>시도</th><th>오류</th></tr></thead><tbody id="notifyHistoryBody"></tbody></table></div>
+   <div class="table-top"><b>알림톡 발송내역</b><div class="toolbar"><input id="notifyHistoryMonth" type="month" onchange="loadNotificationHistory()"><select id="notifyStatusFilter" onchange="renderNotificationHistory()"><option value="all">전체</option><option value="sent">알림톡 발송완료</option><option value="external_sent">외부발송 완료</option><option value="pending">대기</option><option value="failed">실패</option><option value="cancelled">취소</option></select></div></div>
+   <div class="table-wrap"><table><thead><tr><th>발송예정일</th><th>고객</th><th>항목</th><th>기준일</th><th>채널</th><th>상태</th><th>실제발송</th><th>시도</th><th>오류</th></tr></thead><tbody id="notifyHistoryBody"></tbody></table></div>
   </div>
  </div>
 </section>
@@ -291,7 +292,7 @@ async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!s
 
 
 function alertTypeLabel(t){return ({PAYBACK_MONTHEND:'페이백',USED_DEVICE_RETURN:'중고반납',AFFILIATE_CARD:'제휴카드',PLAN_CHANGE:'요금제 변경',INSURANCE_CANCEL:'보험 해지',ADDON_CANCEL:'부가서비스 해지'})[t]||t}
-function notificationLabel(s){return ({sent:'발송완료',pending:'대기',sending:'발송중',failed:'실패',cancelled:'취소',none:'없음'})[s]||s||'없음'}
+function notificationLabel(s){return ({sent:'알림톡 발송완료',external_sent:'외부발송 완료',pending:'대기',sending:'발송중',failed:'실패',cancelled:'취소',none:'없음'})[s]||s||'없음'}
 async function loadAlertCenter(){
   if(!$('alertCenterBody'))return;
   const q=await sb.from('jk_v_alert_center').select('*').order('due_date',{ascending:true});
@@ -305,7 +306,7 @@ function updateAlertCenterSummary(){
   const warning=state.alerts.filter(x=>x.severity==='warning').length;
   const today=ymd(new Date());
   const done=state.alertHistory.filter(x=>x.action==='completed'&&ymd(new Date(x.acted_at))===today).length;
-  const sent=state.notificationHistory.filter(x=>x.status==='sent').length;
+  const sent=state.notificationHistory.filter(x=>x.status==='sent'||x.status==='external_sent').length;
   const issue=state.notificationHistory.filter(x=>x.status==='failed'||(x.status==='pending'&&x.scheduled_for<=today)).length;
   if($('acCritical'))$('acCritical').textContent=critical+'건';
   if($('acWarning'))$('acWarning').textContent=warning+'건';
@@ -325,13 +326,34 @@ function renderAlertCenter(){
     const dr=Number(r.days_remaining),dday=dr<0?'D+'+Math.abs(dr):dr===0?'D-DAY':'D-'+dr;
     const ns='<span class="status-chip '+esc(r.notification_status||'none')+'">'+notificationLabel(r.notification_status)+'</span>';
     let act='';
-    if(r.alert_type==='PAYBACK_MONTHEND') act='<button class="btn" data-center-action="payback">지급목록</button>';
-    else act='<button class="btn primary" data-center-action="complete" data-ledger="'+esc(r.ledger_id||'')+'" data-type="'+esc(r.alert_type)+'">처리완료</button>';
+    if(r.alert_type==='PAYBACK_MONTHEND'){
+      act='<button class="btn" data-center-action="payback">지급목록</button>';
+    }else{
+      const alreadySent=r.notification_status==='external_sent'||r.notification_status==='sent';
+      const sendBtn=alreadySent
+        ? '<button class="btn" disabled>'+notificationLabel(r.notification_status)+'</button>'
+        : '<button class="btn" data-center-action="external" data-ledger="'+esc(r.ledger_id||'')+'" data-type="'+esc(r.alert_type)+'" data-due="'+esc(r.due_date)+'">외부발송 완료</button>';
+      act='<div style="display:flex;gap:6px;flex-wrap:wrap">'+sendBtn+'<button class="btn primary" data-center-action="complete" data-ledger="'+esc(r.ledger_id||'')+'" data-type="'+esc(r.alert_type)+'">처리완료</button></div>';
+    }
     return '<tr><td>'+sev+'</td><td><span class="alert-type">'+esc(alertTypeLabel(r.alert_type))+'</span></td><td><b>'+esc(r.customer_name||'-')+'</b></td><td>'+esc(r.customer_phone||'-')+'</td><td>'+esc(r.due_date)+'</td><td class="'+(r.severity==='critical'?'alert-critical':'alert-warning')+'"><b>'+dday+'</b></td><td>'+esc(r.detail||r.title)+'</td><td>'+ns+(Number(r.notification_failed_count||0)>0?'<br><small style="color:#b92e3d">실패 '+r.notification_failed_count+'건</small>':'')+'</td><td>'+act+'</td></tr>';
   }).join('')||'<tr><td colspan="9" class="empty">현재 처리할 알림이 없습니다.</td></tr>';
   body.querySelectorAll('[data-center-action="payback"]').forEach(function(b){b.onclick=function(){go('payback')}});
   body.querySelectorAll('[data-center-action="complete"]').forEach(function(b){b.onclick=function(){completeCenterAlert(b.dataset.ledger,b.dataset.type)}});
+  body.querySelectorAll('[data-center-action="external"]').forEach(function(b){b.onclick=function(){markExternalNotificationSent(b.dataset.ledger,b.dataset.type,b.dataset.due)}});
 }
+async function markExternalNotificationSent(ledgerId,type,dueDate){
+  if(!confirm('제로노트 등 외부에서 이 안내를 발송완료로 기록할까요?'))return;
+  const {error}=await sb.rpc('jk_mark_external_notification_sent',{
+    p_ledger_id:ledgerId,
+    p_event_type:type,
+    p_due_date:dueDate,
+    p_provider:'zeronote'
+  });
+  if(error){alert(error.message);return}
+  toast('외부발송 완료 기록');
+  await Promise.all([loadAlertCenter(),loadAlerts()]);
+}
+
 async function completeCenterAlert(ledgerId,type){
   if(!confirm(alertTypeLabel(type)+' 항목을 처리완료로 체크할까요?'))return;
   let error=null;
@@ -355,14 +377,14 @@ async function loadAlertHistory(silent){
 async function loadNotificationHistory(silent){
   if(!$('notifyHistoryBody'))return {data:[]};
   const k=$('notifyHistoryMonth')?.value||mk(new Date()),b=bounds(k);
-  const q=await sb.from('jk_notification_queue').select('*').gte('scheduled_for',b[0]).lt('scheduled_for',b[1]).order('scheduled_for',{ascending:false}).order('created_at',{ascending:false});
+  const q=await sb.from('jk_v_notification_history').select('*').gte('scheduled_for',b[0]).lt('scheduled_for',b[1]).order('scheduled_for',{ascending:false}).order('created_at',{ascending:false});
   if(q.error){if(!silent)console.warn(q.error);return q}
   state.notificationHistory=q.data||[];renderNotificationHistory();updateAlertCenterSummary();return q;
 }
 function renderNotificationHistory(){
   if(!$('notifyHistoryBody'))return;
   const f=$('notifyStatusFilter')?.value||'all',rows=state.notificationHistory.filter(r=>f==='all'||r.status===f);
-  $('notifyHistoryBody').innerHTML=rows.map(function(r){return '<tr><td>'+esc(r.scheduled_for)+'</td><td><b>'+esc(r.customer_name)+'</b><br><small>'+esc(r.recipient_phone)+'</small></td><td>'+esc(alertTypeLabel(r.event_type))+'</td><td>'+esc(r.due_date)+'</td><td><span class="status-chip '+esc(r.status)+'">'+notificationLabel(r.status)+'</span></td><td>'+esc(r.sent_at?new Date(r.sent_at).toLocaleString('ko-KR'):'-')+'</td><td>'+Number(r.attempts||0)+'회</td><td style="max-width:320px;white-space:normal">'+esc(r.last_error||'-')+'</td></tr>'}).join('')||'<tr><td colspan="8" class="empty">해당 월 알림톡 내역이 없습니다.</td></tr>';
+  $('notifyHistoryBody').innerHTML=rows.map(function(r){const channel=r.provider==='zeronote'?'제로노트':r.provider==='solapi'?'SOLAPI':(r.provider||'-');return '<tr><td>'+esc(r.scheduled_for)+'</td><td><b>'+esc(r.customer_name)+'</b><br><small>'+esc(r.recipient_phone)+'</small></td><td>'+esc(alertTypeLabel(r.event_type))+'</td><td>'+esc(r.due_date)+'</td><td>'+esc(channel)+'</td><td><span class="status-chip '+esc(r.status)+'">'+notificationLabel(r.status)+'</span></td><td>'+esc(r.sent_at?new Date(r.sent_at).toLocaleString('ko-KR'):'-')+'</td><td>'+Number(r.attempts||0)+'회</td><td style="max-width:320px;white-space:normal">'+esc(r.last_error||'-')+'</td></tr>'}).join('')||'<tr><td colspan="9" class="empty">해당 월 발송내역이 없습니다.</td></tr>';
 }
 
 async function loadAlerts(){

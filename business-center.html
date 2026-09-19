@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.14</title>
+<title>정권통신 Business Center V3.15</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -81,7 +81,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.14</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.15</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -776,7 +776,7 @@ async function populateLedgerEdit(id){
   $('modalBody').scrollTop=0;
 }
 
-function previewCalc(){const n=id=>moneyNumber($(id)?.value),m=n('fK')-n('fL'),p=Math.round(m*.1),w=m-p-n('fQ')-n('fR')+n('fS')-n('fT')+n('fU');if($('pvM'))$('pvM').textContent=won(m);if($('pvP'))$('pvP').textContent=won(p);if($('pvW'))$('pvW').textContent=won(w)}
+function previewCalc(){const n=id=>moneyNumber($(id)?.value),m=n('fK')-n('fL'),p=m>0?Math.round(m*.1):0,w=m-p-n('fQ')-n('fR')+n('fS')-n('fT')+n('fU');if($('pvM'))$('pvM').textContent=won(m);if($('pvP'))$('pvP').textContent=won(p);if($('pvW'))$('pvW').textContent=won(w)}
 async function saveLedger(){
   const editId=editingLedgerId;
   const name=$('fName').value.trim(),phone=$('fPhone').value.replace(/\D/g,''),birth=$('fBirth').value||null;

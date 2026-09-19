@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.18</title>
+<title>정권통신 Business Center V3.19</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.18</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.19</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -1046,7 +1046,7 @@ async function loadAds(){
   if(q.error){console.warn(q.error);return}
   state.ads=q.data||[];
   const body=state.ads.map(function(r){
-    const dur=r.duration_months&&r.billing_type!=='one_time'?'<br><small>'+r.duration_months+'개월</small>':'';
+    const dur=r.duration_months&&r.billing_type!=='one_time'?'<br><small>'+r.duration_months+'개월 · '+(r.duration_months*30)+'일</small>':'';
     return '<tr>'+
       '<td>'+esc(adPeriodLabel(r))+'</td>'+
       '<td>'+esc(r.channel)+'</td>'+
@@ -1074,15 +1074,16 @@ function adCalcEndDate(){
   if(!start)return '';
   if(type==='one_time')return start;
   if(!dur)return '';
-  const p=start.split('-').map(Number);
-  return ymd(new Date(p[0],p[1]-1+dur,0,12,0,0));
+  const d=new Date(start+'T12:00:00');
+  d.setDate(d.getDate()+(dur*30)-1);
+  return ymd(d);
 }
 function adPreviewAmount(){
   const type=$('adBillingF')?.value,amount=moneyNumber($('adAmountF')?.value),dur=Number($('adDurationF')?.value||0),start=$('adStartF')?.value;
   if(!type||!start)return '';
   if(type==='one_time')return '일회성 '+won(amount);
-  if(type==='monthly')return '매월 '+won(amount)+(dur?' · '+dur+'개월':' · 종료일 없음');
-  if(type==='contract_total')return dur?'총 '+won(amount)+' ÷ '+dur+'개월 ≈ 월 '+won(Math.floor(amount/dur)):'기간 개월수를 입력하세요.';
+  if(type==='monthly')return '매월 '+won(amount)+(dur?' · '+dur+'개월('+dur*30+'일)':' · 종료일 없음');
+  if(type==='contract_total')return dur?'총 '+won(amount)+' · '+dur+'개월 = '+(dur*30)+'일 · 월별 실제 집행일수만큼 자동 배분':'기간 개월수를 입력하세요.';
   if(type==='daily'){
     const p=start.split('-').map(Number),last=new Date(p[0],p[1],0).getDate(),days=Math.max(last-p[2]+1,0);
     return '일 '+won(amount)+' · 시작월 '+days+'일 반영 시 '+won(amount*days);
@@ -1124,7 +1125,7 @@ async function openAd(id=null){
   h+='<div class="field"><label>계산방식</label><select id="adBillingF" onchange="adBillingUI()"><option value="one_time">일회성</option><option value="contract_total">기간총액 분할</option><option value="monthly">월정액</option><option value="daily">일예산</option></select></div>';
   h+='<div class="field"><label>시작일</label><input id="adStartF" type="date" value="'+esc(r?.start_date||r?.spend_date||ymd(now))+'" onchange="adBillingUI()"></div>';
   h+='<div class="field" id="adDurationWrap"><label>기간(개월)</label><input id="adDurationF" type="number" min="1" max="120" placeholder="비우면 계속" oninput="adBillingUI()"></div>';
-  h+='<div class="field"><label>종료일</label><input id="adEndF" type="date" readonly><small style="color:#6c7788">기간 입력 시 자동계산 · 비우면 계속</small></div>';
+  h+='<div class="field"><label>종료일</label><input id="adEndF" type="date" readonly><small style="color:#6c7788">1개월=30일 기준 자동계산 · 3개월=90일 · 6개월=180일</small></div>';
   h+='<div class="field"><label>채널</label><select id="adChannelF">'+optHtml('ad_channel')+'</select></div>';
   h+='<div class="field"><label id="adAmountLabel">광고비</label><input class="moneyI" id="adAmountF" type="text" inputmode="numeric" value="'+Number(r?.amount||0)+'" oninput="formatMoneyInput(this);adBillingUI()"><small id="adPreview" style="color:#6c7788"></small></div>';
   h+='<div class="field"><label>캠페인명</label><input id="adCampaignF" value="'+esc(r?.campaign||'')+'"></div>';

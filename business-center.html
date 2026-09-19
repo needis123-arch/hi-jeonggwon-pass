@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.29</title>
+<title>정권통신 Business Center V3.30</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -129,7 +129,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.29</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.30</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -533,6 +533,7 @@ let modalMode="";
 let editingLedgerId=null;
 let editingAdId=null;
 let editingExpenseId=null;
+const payRateSaveTimers={};
 
 const $=id=>document.getElementById(id);
 const won=n=>Math.round(Number(n||0)).toLocaleString('ko-KR')+'원';
@@ -1670,19 +1671,32 @@ async function loadPayrollSettings(){
  const {data,error}=await sb.rpc('jk_staff_pay_rate_settings',{p_month:month});
  if(error){console.warn(error);return}
  const rows=data||[];
- $('staffPayRateSettings').innerHTML=rows.map(r=>`<div class="addrow" style="grid-template-columns:180px 160px 110px 1fr;align-items:center;margin-bottom:8px"><b>${esc(r.staff_name)}</b><div style="display:flex;align-items:center;gap:6px"><input id="payrate_${r.staff_id}" type="number" min="0" max="100" step="0.1" value="${Number(r.rate_pct||0)}"><span>%</span></div><button class="btn primary" onclick="saveStaffPayRate('${r.staff_id}')">저장</button><small style="color:#6c7788">${r.effective_month?'현재 적용 시작 '+r.effective_month:'미설정 · 0%'}</small></div>`).join('')||'<div class="empty">활성 판매자가 없습니다.</div>';
+ $('staffPayRateSettings').innerHTML=rows.map(r=>`<div class="addrow" style="grid-template-columns:180px 160px 110px 1fr;align-items:center;margin-bottom:8px"><b>${esc(r.staff_name)}</b><div style="display:flex;align-items:center;gap:6px"><input id="payrate_${r.staff_id}" type="number" min="0" max="100" step="0.1" value="${Number(r.rate_pct||0)}" oninput="queueStaffPayRateSave('${r.staff_id}')"><span>%</span></div><button class="btn primary" onclick="saveStaffPayRate('${r.staff_id}')">저장</button><small style="color:#6c7788">${r.effective_month?'현재 적용 시작 '+r.effective_month:'미설정 · 0%'}</small></div>`).join('')||'<div class="empty">활성 판매자가 없습니다.</div>';
 }
-async function saveStaffPayRate(staffId){
+function queueStaffPayRateSave(staffId){
+ clearTimeout(payRateSaveTimers[staffId]);
+ const input=$('payrate_'+staffId);
+ const row=input?.closest('.addrow'),info=row?.querySelector('small');
+ if(info)info.textContent='입력 중 · 자동저장 대기';
+ payRateSaveTimers[staffId]=setTimeout(()=>saveStaffPayRate(staffId,true),650);
+}
+async function refreshPayrollDependentViews(){
+ await loadDashboard();
+ if($('cashAvailable'))await loadCashflow();
+}
+async function saveStaffPayRate(staffId,auto=false){
+ clearTimeout(payRateSaveTimers[staffId]);
  const input=$('payrate_'+staffId),rate=Number(input?.value||0),month=($('payRateMonth')?.value||mk(now))+'-01';
- if(rate<0||rate>100){alert('급여율은 0~100% 사이로 입력하세요.');return}
- const {error}=await sb.rpc('jk_set_staff_pay_rate',{p_staff_id:staffId,p_effective_month:month,p_rate_pct:rate});
- if(error){alert(error.message);return}
+ if(rate<0||rate>100){if(!auto)alert('급여율은 0~100% 사이로 입력하세요.');return}
  const row=input?.closest('.addrow');
  const info=row?.querySelector('small');
- if(info)info.textContent='현재 적용 시작 '+month;
+ if(info)info.textContent='저장 중...';
+ const {error}=await sb.rpc('jk_set_staff_pay_rate',{p_staff_id:staffId,p_effective_month:month,p_rate_pct:rate});
+ if(error){if(info)info.textContent='저장 실패';alert(error.message);return}
+ if(info)info.textContent='자동 저장됨 · 적용 시작 '+month;
  if(input)input.dataset.savedValue=String(rate);
- toast('급여율 저장 완료');
- await loadDashboard();
+ if(!auto)toast('급여율 저장 완료');
+ await refreshPayrollDependentViews();
 }
 
 async function saveAllStaffPayRates(){
@@ -1706,7 +1720,7 @@ async function saveAllStaffPayRates(){
    if(info)info.textContent='현재 적용 시작 '+month;
  }
  toast('담당자 급여율 전체 적용 완료');
- await loadDashboard();
+ await refreshPayrollDependentViews();
 }
 
 async function loadSettings(){

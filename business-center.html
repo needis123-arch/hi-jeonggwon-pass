@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.7</title>
+<title>정권통신 Business Center V3.8</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -54,14 +54,23 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .alert-actions{display:flex;gap:6px}.alert-empty{padding:16px;text-align:center;color:var(--muted);font-size:10px}
 @media(max-width:900px){.alert-summary{grid-template-columns:1fr 1fr}.alert-item{grid-template-columns:auto 1fr}.alert-actions{grid-column:2}}
 
+.alert-tabs{display:grid;gap:16px}
+.status-chip{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:900}
+.status-chip.sent{background:#e9f7ef;color:#137346}
+.status-chip.pending,.status-chip.sending{background:#fff5e8;color:#9a5e00}
+.status-chip.failed{background:#ffecee;color:#b92e3d}
+.status-chip.none,.status-chip.cancelled{background:#eef1f4;color:#687281}
+.alert-type{font-weight:900;font-size:10px}
+.alert-critical{color:#d93849}.alert-warning{color:#b87300}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.7</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.8</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
+  <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
   <button data-page="ledger">장부 관리</button>
   <button data-page="report">자동 매출보고</button>
   <button data-page="used">중고 반납</button>
@@ -117,6 +126,31 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  <div class="grid2">
   <div class="card"><div class="table-top"><b>이번 달 유입경로 분석</b><button class="btn" onclick="go('sources')">상세보기</button></div><div id="dashboardSources" class="source-list"></div></div>
   <div class="table-card card"><div class="table-top"><b>최근 일별 매출 증감</b><span style="font-size:9px;color:#6c7788">장부 자동집계</span></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>판매대수</th><th>일매출</th><th>전일대비</th><th>누적</th><th>목표율</th></tr></thead><tbody id="dailyDeltaBody"></tbody></table></div></div>
+ </div>
+</section>
+
+<section class="page" id="page-alerts">
+ <div class="section-head"><div><h2>알림센터</h2><p>처리임박·긴급 업무, 완료 이력, 카카오 알림톡 발송상태를 한 곳에서 관리합니다.</p></div><button class="btn" onclick="loadAlertCenter()">새로고침</button></div>
+ <div class="summary">
+  <div class="box"><span>긴급</span><strong id="acCritical" style="color:#dc3f50">0건</strong></div>
+  <div class="box"><span>처리임박</span><strong id="acWarning" style="color:#c77b00">0건</strong></div>
+  <div class="box"><span>오늘 처리완료</span><strong id="acDoneToday">0건</strong></div>
+  <div class="box"><span>알림톡 발송완료</span><strong id="acSent">0건</strong></div>
+  <div class="box"><span>알림톡 미발송/실패</span><strong id="acNotifyIssue">0건</strong></div>
+ </div>
+ <div class="alert-tabs">
+  <div class="table-card card">
+   <div class="table-top"><b>현재 처리할 업무</b><div class="toolbar"><select id="alertTypeFilter" onchange="renderAlertCenter()"><option value="all">전체</option><option value="PAYBACK_MONTHEND">페이백</option><option value="USED_DEVICE_RETURN">중고반납</option><option value="AFFILIATE_CARD">제휴카드</option><option value="PLAN_CHANGE">요금제</option><option value="INSURANCE_CANCEL">보험</option><option value="ADDON_CANCEL">부가서비스</option></select><select id="alertSeverityFilter" onchange="renderAlertCenter()"><option value="all">긴급+임박</option><option value="critical">긴급</option><option value="warning">처리임박</option></select></div></div>
+   <div class="table-wrap"><table><thead><tr><th>상태</th><th>항목</th><th>고객</th><th>연락처</th><th>기한</th><th>D-day</th><th>내용</th><th>알림톡</th><th>처리</th></tr></thead><tbody id="alertCenterBody"></tbody></table></div>
+  </div>
+  <div class="table-card card">
+   <div class="table-top"><b>일자별 처리내역</b><input id="alertHistoryMonth" type="month" onchange="loadAlertHistory()"></div>
+   <div class="table-wrap"><table><thead><tr><th>처리일시</th><th>고객</th><th>항목</th><th>처리</th><th>기준일</th><th>내역</th></tr></thead><tbody id="alertHistoryBody"></tbody></table></div>
+  </div>
+  <div class="table-card card">
+   <div class="table-top"><b>알림톡 발송내역</b><div class="toolbar"><input id="notifyHistoryMonth" type="month" onchange="loadNotificationHistory()"><select id="notifyStatusFilter" onchange="renderNotificationHistory()"><option value="all">전체</option><option value="sent">발송완료</option><option value="pending">대기</option><option value="failed">실패</option><option value="cancelled">취소</option></select></div></div>
+   <div class="table-wrap"><table><thead><tr><th>발송예정일</th><th>고객</th><th>항목</th><th>기준일</th><th>상태</th><th>실제발송</th><th>시도</th><th>오류</th></tr></thead><tbody id="notifyHistoryBody"></tbody></table></div>
+  </div>
  </div>
 </section>
 
@@ -199,7 +233,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-const state={staff:[],options:[],ledger:[],used:[],payback:[],affiliate:[],alerts:[],expenses:[],ads:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
+const state={staff:[],options:[],ledger:[],used:[],payback:[],affiliate:[],alerts:[],alertHistory:[],notificationHistory:[],expenses:[],ads:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
 let modalMode="";
 let editingLedgerId=null;
 
@@ -214,12 +248,12 @@ const fmtDate=s=>s?`${Number(s.slice(5,7))}월 ${Number(s.slice(8,10))}일`:'-';
 const now=new Date();
 
 $('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'}).format(now);
-['ledgerMonth','reportMonth','usedMonth','paybackMonth','affiliateMonth','adMonth','expenseMonth','sourceMonth'].forEach(id=>{if($(id))$(id).value=mk(now)});
+['ledgerMonth','reportMonth','usedMonth','paybackMonth','affiliateMonth','adMonth','expenseMonth','sourceMonth','alertHistoryMonth','notifyHistoryMonth'].forEach(id=>{if($(id))$(id).value=mk(now)});
 $('reportDate').value=ymd(now);
 
-const titles={dashboard:'종합 대시보드',ledger:'장부 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
+const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
-function go(p){localStorage.setItem('jk-active-page',p);document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='affiliate')loadAffiliate();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
+function go(p){localStorage.setItem('jk-active-page',p);document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='alerts')loadAlertCenter();if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='affiliate')loadAffiliate();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function showLogin(){$('loginBg').classList.add('show')}
@@ -236,8 +270,83 @@ function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">
 function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
 async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
-async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
+async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
 
+
+function alertTypeLabel(t){return ({PAYBACK_MONTHEND:'페이백',USED_DEVICE_RETURN:'중고반납',AFFILIATE_CARD:'제휴카드',PLAN_CHANGE:'요금제 변경',INSURANCE_CANCEL:'보험 해지',ADDON_CANCEL:'부가서비스 해지'})[t]||t}
+function notificationLabel(s){return ({sent:'발송완료',pending:'대기',sending:'발송중',failed:'실패',cancelled:'취소',none:'없음'})[s]||s||'없음'}
+async function loadAlertCenter(){
+  if(!$('alertCenterBody'))return;
+  const q=await sb.from('jk_v_alert_center').select('*').order('due_date',{ascending:true});
+  if(q.error){console.warn(q.error);return}
+  state.alerts=q.data||[];
+  await Promise.all([loadAlertHistory(true),loadNotificationHistory(true)]);
+  renderAlertCenter();updateAlertCenterSummary();
+}
+function updateAlertCenterSummary(){
+  const critical=state.alerts.filter(x=>x.severity==='critical').length;
+  const warning=state.alerts.filter(x=>x.severity==='warning').length;
+  const today=ymd(new Date());
+  const done=state.alertHistory.filter(x=>x.action==='completed'&&ymd(new Date(x.acted_at))===today).length;
+  const sent=state.notificationHistory.filter(x=>x.status==='sent').length;
+  const issue=state.notificationHistory.filter(x=>x.status==='failed'||(x.status==='pending'&&x.scheduled_for<=today)).length;
+  if($('acCritical'))$('acCritical').textContent=critical+'건';
+  if($('acWarning'))$('acWarning').textContent=warning+'건';
+  if($('acDoneToday'))$('acDoneToday').textContent=done+'건';
+  if($('acSent'))$('acSent').textContent=sent+'건';
+  if($('acNotifyIssue'))$('acNotifyIssue').textContent=issue+'건';
+  const badge=$('alertCenterBadge'),cnt=critical+warning;
+  if(badge){badge.textContent=cnt;badge.style.display=cnt?'inline-flex':'none'}
+}
+function renderAlertCenter(){
+  if(!$('alertCenterBody'))return;
+  const tf=$('alertTypeFilter')?.value||'all',sf=$('alertSeverityFilter')?.value||'all';
+  const rows=state.alerts.filter(r=>(tf==='all'||r.alert_type===tf)&&(sf==='all'||r.severity===sf));
+  const body=$('alertCenterBody');
+  body.innerHTML=rows.map(function(r){
+    const sev=r.severity==='critical'?'<span class="pill" style="background:#ffecee;color:#b92e3d">긴급</span>':'<span class="pill orange">임박</span>';
+    const dr=Number(r.days_remaining),dday=dr<0?'D+'+Math.abs(dr):dr===0?'D-DAY':'D-'+dr;
+    const ns='<span class="status-chip '+esc(r.notification_status||'none')+'">'+notificationLabel(r.notification_status)+'</span>';
+    let act='';
+    if(r.alert_type==='PAYBACK_MONTHEND') act='<button class="btn" data-center-action="payback">지급목록</button>';
+    else act='<button class="btn primary" data-center-action="complete" data-ledger="'+esc(r.ledger_id||'')+'" data-type="'+esc(r.alert_type)+'">처리완료</button>';
+    return '<tr><td>'+sev+'</td><td><span class="alert-type">'+esc(alertTypeLabel(r.alert_type))+'</span></td><td><b>'+esc(r.customer_name||'-')+'</b></td><td>'+esc(r.customer_phone||'-')+'</td><td>'+esc(r.due_date)+'</td><td class="'+(r.severity==='critical'?'alert-critical':'alert-warning')+'"><b>'+dday+'</b></td><td>'+esc(r.detail||r.title)+'</td><td>'+ns+(Number(r.notification_failed_count||0)>0?'<br><small style="color:#b92e3d">실패 '+r.notification_failed_count+'건</small>':'')+'</td><td>'+act+'</td></tr>';
+  }).join('')||'<tr><td colspan="9" class="empty">현재 처리할 알림이 없습니다.</td></tr>';
+  body.querySelectorAll('[data-center-action="payback"]').forEach(function(b){b.onclick=function(){go('payback')}});
+  body.querySelectorAll('[data-center-action="complete"]').forEach(function(b){b.onclick=function(){completeCenterAlert(b.dataset.ledger,b.dataset.type)}});
+}
+async function completeCenterAlert(ledgerId,type){
+  if(!confirm(alertTypeLabel(type)+' 항목을 처리완료로 체크할까요?'))return;
+  let error=null;
+  if(type==='USED_DEVICE_RETURN'){const r=await sb.from('jk_used_device_returns').update({response_status:'반납완료',received_at:new Date().toISOString(),settled_at:new Date().toISOString(),updated_at:new Date().toISOString()}).eq('ledger_id',ledgerId);error=r.error}
+  else if(type==='AFFILIATE_CARD'){const r=await sb.from('jk_sales_ledger').update({affiliate_card_status:'완료'}).eq('id',ledgerId);error=r.error}
+  else if(['PLAN_CHANGE','INSURANCE_CANCEL','ADDON_CANCEL'].includes(type)){const r=await sb.rpc('jk_mark_maintenance_done',{p_ledger_id:ledgerId,p_event_type:type});error=r.error}
+  if(error){alert(error.message);return}
+  toast('처리완료 기록');
+  await Promise.all([loadAlertCenter(),loadAlerts(),loadUsed(),loadAffiliate(),loadLedger()]);
+}
+async function loadAlertHistory(silent){
+  if(!$('alertHistoryBody'))return {data:[]};
+  const k=$('alertHistoryMonth')?.value||mk(new Date()),b=bounds(k);
+  const start=new Date(b[0]+'T00:00:00+09:00').toISOString(),end=new Date(b[1]+'T00:00:00+09:00').toISOString();
+  const q=await sb.from('jk_alert_action_log').select('*').gte('acted_at',start).lt('acted_at',end).order('acted_at',{ascending:false});
+  if(q.error){if(!silent)console.warn(q.error);return q}
+  state.alertHistory=q.data||[];
+  $('alertHistoryBody').innerHTML=state.alertHistory.map(function(r){return '<tr><td>'+new Date(r.acted_at).toLocaleString('ko-KR')+'</td><td><b>'+esc(r.customer_name||'-')+'</b></td><td>'+esc(alertTypeLabel(r.alert_type))+'</td><td>'+(r.action==='completed'?'<span class="pill green">처리완료</span>':r.action==='reopened'?'<span class="pill orange">재오픈</span>':'<span class="pill">메모</span>')+'</td><td>'+esc(r.due_date||'-')+'</td><td>'+esc(r.detail||'-')+'</td></tr>'}).join('')||'<tr><td colspan="6" class="empty">해당 월 처리내역이 없습니다.</td></tr>';
+  updateAlertCenterSummary();return q;
+}
+async function loadNotificationHistory(silent){
+  if(!$('notifyHistoryBody'))return {data:[]};
+  const k=$('notifyHistoryMonth')?.value||mk(new Date()),b=bounds(k);
+  const q=await sb.from('jk_notification_queue').select('*').gte('scheduled_for',b[0]).lt('scheduled_for',b[1]).order('scheduled_for',{ascending:false}).order('created_at',{ascending:false});
+  if(q.error){if(!silent)console.warn(q.error);return q}
+  state.notificationHistory=q.data||[];renderNotificationHistory();updateAlertCenterSummary();return q;
+}
+function renderNotificationHistory(){
+  if(!$('notifyHistoryBody'))return;
+  const f=$('notifyStatusFilter')?.value||'all',rows=state.notificationHistory.filter(r=>f==='all'||r.status===f);
+  $('notifyHistoryBody').innerHTML=rows.map(function(r){return '<tr><td>'+esc(r.scheduled_for)+'</td><td><b>'+esc(r.customer_name)+'</b><br><small>'+esc(r.recipient_phone)+'</small></td><td>'+esc(alertTypeLabel(r.event_type))+'</td><td>'+esc(r.due_date)+'</td><td><span class="status-chip '+esc(r.status)+'">'+notificationLabel(r.status)+'</span></td><td>'+esc(r.sent_at?new Date(r.sent_at).toLocaleString('ko-KR'):'-')+'</td><td>'+Number(r.attempts||0)+'회</td><td style="max-width:320px;white-space:normal">'+esc(r.last_error||'-')+'</td></tr>'}).join('')||'<tr><td colspan="8" class="empty">해당 월 알림톡 내역이 없습니다.</td></tr>';
+}
 
 async function loadAlerts(){
   if(!$('opsAlertList'))return;
@@ -254,7 +363,7 @@ async function loadAlerts(){
   $('alertMaintenance').textContent=maint.length+'건';
   const order={critical:0,warning:1,info:2};
   state.alerts.sort((a,b)=>(order[a.severity]??9)-(order[b.severity]??9)||String(a.due_date).localeCompare(String(b.due_date)));
-  $('opsAlertList').innerHTML=state.alerts.length?state.alerts.map(renderAlertRow).join(''):'<div class="alert-empty">현재 도래한 알림이 없습니다.</div>';
+  $('opsAlertList').innerHTML=state.alerts.length?state.alerts.map(renderAlertRow).join(''):'<div class="alert-empty">현재 도래한 알림이 없습니다.</div>';const acb=$('alertCenterBadge'),acc=state.alerts.filter(x=>x.severity==='critical'||x.severity==='warning').length;if(acb){acb.textContent=acc;acb.style.display=acc?'inline-flex':'none'};
 }
 function renderAlertRow(a){
   let action='';
@@ -533,11 +642,11 @@ async function usedEdit(id){const r=state.used.find(x=>x.id===id);const due=prom
 
 async function loadPayback(){if(!$('paybackMonth'))return;const [a,b]=bounds($('paybackMonth').value||mk(now));const {data,error}=await sb.from('jk_v_payback_checklist').select('*').gte('due_date',a).lt('due_date',b).order('due_date');if(error)return;state.payback=data||[];$('paybackBody').innerHTML=state.payback.map(r=>`<tr><td><b>${esc(r.customer_name)}</b><br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.salesperson||'-')}</td><td>${won(r.promised_amount)}</td><td>${won(r.paid_amount)}</td><td><b>${won(r.outstanding_amount)}</b></td><td>${esc(r.due_date)}</td><td>${esc(r.bank_name||'-')}</td><td>${esc(r.account_holder||'-')}</td><td>${esc(r.account_number||'-')}</td><td>${r.verification_status==='verified'?'<span class="pill green">확인완료</span>':`<button class="btn" onclick="verifyAccount('${r.ledger_id}')">계좌확인</button>`}</td><td>${Number(r.outstanding_amount)>0?`<button class="btn primary" onclick="payNow('${r.ledger_id}',${Number(r.outstanding_amount)})">지급완료</button>`:'완료'}</td></tr>`).join('')||'<tr><td colspan="11" class="empty">해당 월 페이백 대상이 없습니다.</td></tr>';const pr=state.payback.reduce((a,r)=>a+Number(r.promised_amount||0),0),pd=state.payback.reduce((a,r)=>a+Number(r.paid_amount||0),0),out=state.payback.reduce((a,r)=>a+Number(r.outstanding_amount||0),0);$('pPromised').textContent=won(pr);$('pPaid').textContent=won(pd);$('pOut').textContent=won(out);$('pUnverified').textContent=state.payback.filter(r=>r.verification_status!=='verified').length+'명';$('pCount').textContent=state.payback.filter(r=>Number(r.outstanding_amount)>0).length+'명'}
 async function verifyAccount(id){const r=state.payback.find(x=>x.ledger_id===id),bank=prompt('은행',r?.bank_name||'');if(bank===null)return;const holder=prompt('예금주',r?.account_holder||r?.customer_name||'');if(holder===null)return;const account=prompt('계좌번호',r?.account_number||'');if(!account)return;const{error}=await sb.from('jk_payback_accounts').upsert({ledger_id:id,bank_name:bank||'미입력',account_holder:holder||'미입력',account_number:account,verification_status:'verified',verified_at:new Date().toISOString()},{onConflict:'ledger_id'});if(error)alert(error.message);else loadPayback()}
-async function payNow(id,amount){const raw=prompt('실제 지급액',String(amount));if(raw===null)return;const n=Number(raw);if(n<=0)return;const{error}=await sb.from('jk_payback_payments').insert({ledger_id:id,paid_amount:n});if(error)alert(error.message);else{toast('지급완료 기록');loadPayback();loadDashboard();loadAlerts()}}
+async function payNow(id,amount){const raw=prompt('실제 지급액',String(amount));if(raw===null)return;const n=Number(raw);if(n<=0)return;const{error}=await sb.from('jk_payback_payments').insert({ledger_id:id,paid_amount:n});if(error)alert(error.message);else{toast('지급완료 기록');loadPayback();loadDashboard();loadAlerts();loadAlertCenter()}}
 
 
 async function loadAffiliate(){if(!$('affiliateMonth'))return;const [a,b]=bounds($('affiliateMonth').value||mk(now));const {data,error}=await sb.from('jk_v_affiliate_card_status').select('*').gte('due_date',a).lt('due_date',b).order('due_date');if(error){console.warn(error);return}state.affiliate=data||[];$('affiliateBody').innerHTML=state.affiliate.map(r=>`<tr><td><b>${esc(r.customer_name)}</b></td><td>${esc(r.customer_phone)}</td><td>${esc(r.activation_date)}</td><td>${esc(r.carrier||'-')}</td><td style="color:${r.alert_status==='due'?'#dc3f50':r.alert_status==='soon'?'#c77b00':'inherit'}"><b>${esc(r.due_date||'-')}</b>${r.days_remaining!==null?`<br><small>${r.days_remaining<0?Math.abs(r.days_remaining)+'일 초과':r.days_remaining===0?'오늘 마감':r.days_remaining+'일 남음'}</small>`:''}</td><td>${esc(r.card_company||'-')}</td><td>${won(r.card_amount)}</td><td>${esc(r.salesperson||'-')}</td><td>${r.status==='완료'?'<span class="pill green">완료</span>':'<span class="pill orange">미완료</span>'}</td><td>${r.status==='완료'?`<button class="btn" onclick="setAffiliateStatus('${r.ledger_id}','미완료')">미완료로</button>`:`<button class="btn primary" onclick="setAffiliateStatus('${r.ledger_id}','완료')">완료 체크</button>`}</td></tr>`).join('')||'<tr><td colspan="10" class="empty">해당 월 제휴카드 대상이 없습니다.</td></tr>';const open=state.affiliate.filter(r=>r.status!=='완료'),due=open.filter(r=>r.alert_status==='due');$('cTotal').textContent=state.affiliate.length+'건';$('cOpen').textContent=open.length+'건';$('cDue').textContent=due.length+'건';$('cDone').textContent=state.affiliate.filter(r=>r.status==='완료').length+'건';$('cAmount').textContent=won(state.affiliate.reduce((s,r)=>s+Number(r.card_amount||0),0))}
-async function setAffiliateStatus(ledgerId,status){const {error}=await sb.from('jk_sales_ledger').update({affiliate_card_status:status}).eq('id',ledgerId);if(error){alert(error.message);return}toast(status==='완료'?'제휴카드 등록 완료 처리':'미완료로 변경');await loadAffiliate();await loadAlerts();await checkAffiliateAlerts()}
+async function setAffiliateStatus(ledgerId,status){const {error}=await sb.from('jk_sales_ledger').update({affiliate_card_status:status}).eq('id',ledgerId);if(error){alert(error.message);return}toast(status==='완료'?'제휴카드 등록 완료 처리':'미완료로 변경');await loadAffiliate();await loadAlerts();await loadAlertCenter();await checkAffiliateAlerts()}
 async function checkAffiliateAlerts(){const today=ymd(new Date());const {data,error}=await sb.from('jk_v_affiliate_card_status').select('*').eq('status','미완료').lte('due_date',today).order('due_date');if(error)return;const rows=data||[],badge=$('affiliateBadge');if(rows.length){badge.textContent=rows.length;badge.style.display='inline-flex';const sig=rows.map(r=>r.ledger_id+':'+r.due_date).join('|'),last=sessionStorage.getItem('jk-card-alert-sig');if(sig!==last){sessionStorage.setItem('jk-card-alert-sig',sig);setTimeout(()=>alert('제휴카드 등록 기한 도래/초과 '+rows.length+'건이 있습니다.\n\n'+rows.slice(0,8).map(r=>r.customer_name+' · '+r.carrier+' · '+r.due_date).join('\n')+(rows.length>8?'\n외 '+(rows.length-8)+'건':'')),300)}}else{badge.style.display='none';sessionStorage.removeItem('jk-card-alert-sig')}}
 
 async function loadAds(){if(!$('adMonth'))return;const [a,b]=bounds($('adMonth').value||mk(now));const {data,error}=await sb.from('jk_ad_spend').select('*').gte('spend_date',a).lt('spend_date',b).order('spend_date',{ascending:false});if(error)return;state.ads=data||[];$('adBody').innerHTML=state.ads.map(r=>`<tr><td>${r.spend_date}</td><td>${esc(r.channel)}</td><td>${esc(r.campaign||'-')}</td><td>${won(r.amount)}</td><td>${r.inquiries}</td><td>${r.visits}</td><td>${r.activations}</td><td>${won(r.attributed_margin)}</td><td><button class="btn danger" onclick="deleteAd('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">광고비 데이터 없음</td></tr>';const spend=state.ads.reduce((a,r)=>a+Number(r.amount||0),0),inq=state.ads.reduce((a,r)=>a+Number(r.inquiries||0),0),vis=state.ads.reduce((a,r)=>a+Number(r.visits||0),0),act=state.ads.reduce((a,r)=>a+Number(r.activations||0),0),mar=state.ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);$('aSpend').textContent=won(spend);$('aInquiry').textContent=inq+'건';$('aVisit').textContent=vis+'건';$('aAct').textContent=act+'건';$('aRoas').textContent=spend?pct(mar/spend*100):'-'}

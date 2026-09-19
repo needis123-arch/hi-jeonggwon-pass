@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V0.1</title>
+<title>PERSONAL CENTER V0.3</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -32,7 +32,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.1</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.3</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -279,7 +279,7 @@ async function loadAll(){
  const qs=await Promise.all([
   sb.from('pc_profiles').select('*').maybeSingle(),
   sb.from('pc_businesses').select('*').order('created_at'),
-  sb.from('pc_accounts').select('*').order('created_at'),
+  sb.from('pc_accounts').select('*').order('updated_at',{ascending:false}),
   sb.from('pc_debts').select('*').order('apr',{ascending:false}),
   sb.from('pc_recurring_items').select('*').eq('active',true).order('due_day'),
   sb.from('pc_transactions').select('*').order('tx_date',{ascending:false}).limit(300),

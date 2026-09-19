@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.21</title>
+<title>정권통신 Business Center V3.22</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -33,7 +33,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .pill{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:900;background:#eef2f5;color:#5f6978}.pill.green{background:#eaf7ef;color:#137346}.pill.orange{background:#fff5e8;color:#9f6000}.pill.blue{background:#eef5ff;color:#3566a6}
 .source-list{display:grid;gap:9px;padding:14px}.source-row{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:10px}.source-row span{font-size:11px}.source-bar{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden}.source-bar i{display:block;height:100%;background:#9bdc2e;border-radius:99px}.source-row b{font-size:11px}
 .report-box{padding:20px}.report-text{white-space:pre-wrap;background:#f7f9fb;border:1px solid var(--line);border-radius:14px;padding:17px;line-height:1.75;font-size:12px;min-height:260px}
-.settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.setting-card{padding:17px}.setting-card h3{margin:0 0 5px;font-size:14px}.setting-card p{font-size:10px;color:var(--muted);margin:0 0 12px}.setting-list{display:flex;flex-wrap:wrap;gap:7px}.tag{border:1px solid #dce2e8;background:#f8fafc;border-radius:999px;padding:6px 9px;font-size:10px}.addrow{display:flex;gap:7px;margin-top:12px}.addrow input{flex:1;border:1px solid #d8dee6;border-radius:9px;padding:9px}
+.settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.setting-card{padding:17px}.setting-card h3{margin:0 0 5px;font-size:14px}.setting-card p{font-size:10px;color:var(--muted);margin:0 0 12px}.setting-list{display:flex;flex-wrap:wrap;gap:7px}.tag{border:1px solid #dce2e8;background:#f8fafc;border-radius:999px;padding:6px 9px;font-size:10px}.tag.manage{display:inline-flex;align-items:center;gap:6px;padding-right:5px}.tag-del{border:0;background:#fff;color:#c83345;width:20px;height:20px;border-radius:999px;font-size:12px;font-weight:900;line-height:1;padding:0}.tag-del:hover{background:#ffecef}.addrow{display:flex;gap:7px;margin-top:12px}.addrow input{flex:1;border:1px solid #d8dee6;border-radius:9px;padding:9px}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 .modal-bg{position:fixed;inset:0;background:rgba(17,24,32,.45);z-index:100;display:none;overflow:auto;padding:20px;align-items:flex-start;justify-content:center}.modal-bg.show{display:flex}.modal{width:min(760px,100%);background:#fff;border:1px solid #dce2e8;border-radius:20px;box-shadow:0 30px 90px rgba(20,30,40,.2);max-height:calc(100vh - 40px);display:flex;flex-direction:column;margin:auto}.modal-head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:16px}.close{border:0;background:#f0f3f6;border-radius:9px;width:34px;height:34px}.modal-body{padding:20px;overflow:auto}.modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:10px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111318}.calc-preview{grid-column:1/-1;border:1px solid #dce4ce;background:#f8ffec;border-radius:12px;padding:13px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.calc-preview div span{display:block;color:#738066;font-size:9px}.calc-preview div b{font-size:14px;display:block;margin-top:3px}
 .login-bg{position:fixed;inset:0;background:rgba(20,27,34,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}.login-bg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid #dce2e8;border-radius:20px;padding:23px;box-shadow:0 30px 90px rgba(20,30,40,.22)}.login h2{margin:0 0 7px}.login p{font-size:11px;color:var(--muted);line-height:1.5}.login input{width:100%;border:1px solid #d7dde5;border-radius:11px;padding:11px;margin-top:9px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:#b65f00;margin-top:9px}
@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.21</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.22</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -878,7 +878,7 @@ if($('fUsedModel'))$('fUsedModel').addEventListener('input',()=>{refreshOperatio
 if($('fDate'))$('fDate').addEventListener('change',()=>{affiliateCardUI();refreshMaintenanceDates();refreshOperationalDates()});
 affiliateCardUI();refreshMaintenanceDates();formatAllMoneyInputs();refreshOperationalDates();previewCalc();showModal();if(editingLedgerId)populateLedgerEdit(editingLedgerId);else if(restored){formatAllMoneyInputs();refreshOperationalDates();previewCalc();toast('작성 중이던 판매건을 복원했습니다.')}}
 
-function setField(id,value){const e=$(id);if(e){e.value=value??'';if(e.classList.contains('moneyI'))formatMoneyInput(e)}}
+function setField(id,value){const e=$(id);if(!e)return;const v=value??'';if(e.tagName==='SELECT'&&v!==''&&![...e.options].some(o=>o.value===String(v))){const o=document.createElement('option');o.value=String(v);o.textContent=String(v)+' (종료됨)';e.appendChild(o)}e.value=v;if(e.classList.contains('moneyI'))formatMoneyInput(e)}
 function setMaintenanceFromStored(prefix,rule,date){
   const sel=$(prefix+'Rule');if(!sel)return;
   rule=rule||'NONE';
@@ -1361,9 +1361,64 @@ async function saveStaffPayRate(staffId){
  await Promise.all([loadPayrollSettings(),loadDashboard()]);
 }
 
-async function loadSettings(){if(!$('setLead'))return;await loadBase();const render=(id,type)=>{if($(id))$(id).innerHTML=opt(type).map(x=>`<span class="tag">${esc(x.label)}</span>`).join('')};render('setLead','lead_source');render('setVendor','vendor');render('setCarrier','carrier');render('setFixed','expense_fixed');render('setVariable','expense_variable');render('setAds','ad_channel');$('setStaff').innerHTML=state.staff.filter(x=>x.active).map(x=>`<span class="tag">${esc(x.name)}</span>`).join('');await Promise.all([loadNotificationStatus(),loadPayrollSettings()])}
-async function addOption(type,inputId){const label=$(inputId).value.trim();if(!label)return;const{error}=await sb.from('jk_lookup_options').insert({option_type:type,label,sort_order:100});if(error)alert(error.message);else{$(inputId).value='';await loadSettings();if(type==='vendor'&&$('ledgerVendorFilter'))renderLedgerFilters();toast('설정 추가 완료')}}
-async function addStaff(){const name=$('newStaff').value.trim();if(!name)return;const{error}=await sb.from('jk_staff').insert({name});if(error)alert(error.message);else{$('newStaff').value='';await loadSettings();toast('판매자 추가 완료')}}
+async function loadSettings(){
+ if(!$('setLead'))return;
+ await loadBase();
+ const render=(id,type)=>{
+   if(!$(id))return;
+   $(id).innerHTML=opt(type).map(x=>'<span class="tag manage">'+esc(x.label)+'<button class="tag-del" type="button" title="삭제" onclick="deactivateOption(\''+x.id+'\',\''+type+'\',\''+String(x.label).replace(/'/g,"\\'")+'\')">×</button></span>').join('');
+ };
+ render('setLead','lead_source');render('setVendor','vendor');render('setCarrier','carrier');render('setFixed','expense_fixed');render('setVariable','expense_variable');render('setAds','ad_channel');
+ $('setStaff').innerHTML=state.staff.filter(x=>x.active).map(x=>'<span class="tag manage">'+esc(x.name)+'<button class="tag-del" type="button" title="삭제" onclick="deactivateStaff(\''+x.id+'\',\''+String(x.name).replace(/'/g,"\\'")+'\')">×</button></span>').join('');
+ await Promise.all([loadNotificationStatus(),loadPayrollSettings()]);
+}
+async function addOption(type,inputId){
+ const label=$(inputId).value.trim();if(!label)return;
+ const existing=state.options.find(x=>x.option_type===type&&String(x.label).trim().toLowerCase()===label.toLowerCase());
+ let error=null;
+ if(existing){
+   if(existing.active){alert('이미 등록된 항목입니다.');return}
+   ({error}=await sb.from('jk_lookup_options').update({active:true,updated_at:new Date().toISOString()}).eq('id',existing.id));
+ }else{
+   ({error}=await sb.from('jk_lookup_options').insert({option_type:type,label,sort_order:100}));
+ }
+ if(error){alert(error.message);return}
+ $(inputId).value='';
+ await loadSettings();
+ if(type==='vendor'&&$('ledgerVendorFilter'))renderLedgerFilters();
+ toast(existing?'항목 재활성화 완료':'설정 추가 완료');
+}
+async function deactivateOption(id,type,label){
+ if(!confirm(label+' 항목을 삭제할까요?\n과거 장부 기록은 유지되고 신규 선택지에서만 사라집니다.'))return;
+ const {error}=await sb.from('jk_lookup_options').update({active:false,updated_at:new Date().toISOString()}).eq('id',id);
+ if(error){alert(error.message);return}
+ await loadSettings();
+ if(type==='vendor'&&$('ledgerVendorFilter'))renderLedgerFilters();
+ toast(label+' 삭제 완료');
+}
+async function addStaff(){
+ const name=$('newStaff').value.trim();if(!name)return;
+ const existing=state.staff.find(x=>String(x.name).trim().toLowerCase()===name.toLowerCase());
+ let error=null;
+ if(existing){
+   if(existing.active){alert('이미 등록된 담당자입니다.');return}
+   ({error}=await sb.from('jk_staff').update({active:true,updated_at:new Date().toISOString()}).eq('id',existing.id));
+ }else{
+   ({error}=await sb.from('jk_staff').insert({name}));
+ }
+ if(error){alert(error.message);return}
+ $('newStaff').value='';
+ await loadSettings();
+ toast(existing?'담당자 재활성화 완료':'판매자 추가 완료');
+}
+async function deactivateStaff(id,name){
+ if(!confirm(name+' 담당자를 삭제할까요?\n과거 장부·급여 기록은 유지되고 신규 판매건 선택지에서만 사라집니다.'))return;
+ const {error}=await sb.from('jk_staff').update({active:false,updated_at:new Date().toISOString()}).eq('id',id);
+ if(error){alert(error.message);return}
+ await loadSettings();
+ renderLedgerFilters();
+ toast(name+' 담당자 삭제 완료');
+}
 
 function showModal(){$('modalBg').classList.add('show');setTimeout(()=>$('modalBody').scrollTop=0,0)}
 function closeModal(){if(modalMode==='ledger'){sessionStorage.removeItem('jk-ledger-modal-open');sessionStorage.removeItem('jk-ledger-edit-id')}editingLedgerId=null;editingAdId=null;editingExpenseId=null;if($('modalSave'))$('modalSave').textContent='저장';$('modalBg').classList.remove('show')}

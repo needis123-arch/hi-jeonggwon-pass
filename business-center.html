@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.17</title>
+<title>정권통신 Business Center V3.18</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.17</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.18</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -123,6 +123,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <button data-page="affiliate">제휴카드 등록 <span id="affiliateBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
   <button data-page="ads">광고비</button>
   <button data-page="expenses">비용원장</button>
+  <button data-page="cash">자금 / 시재</button>
   <button data-page="targets">목표 관리</button>
   <button data-page="sources">유입 분석</button>
   <button data-page="settings">환경 설정</button>
@@ -149,7 +150,17 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   </div>
   <div class="alert-list" id="opsAlertList"><div class="alert-empty">도래한 알림이 없습니다.</div></div>
  </div>
- <div class="goal card">
+ 
+ <div class="card" style="padding:16px;margin-bottom:16px">
+  <div class="table-top"><div><b>자금 방어 현황</b><div style="font-size:9px;color:#6c7788;margin-top:3px">장부상 이익과 실제 현금잔고를 분리해서 봅니다.</div></div><button class="btn" onclick="go('cash')">자금관리 열기</button></div>
+  <div class="summary" style="margin:0">
+   <div class="box"><span>현재 가용자금</span><strong id="dCashAvailable">0원</strong></div>
+   <div class="box"><span>이번달 말 정산입금</span><strong id="dCashSettlement">0원</strong></div>
+   <div class="box"><span>월말 예상잔고</span><strong id="dCashProjected">0원</strong></div>
+   <div class="box"><span>추가 확보 필요</span><strong id="dCashGap">0원</strong></div>
+  </div>
+ </div>
+<div class="goal card">
   <div class="goal-top"><div><h3>이번 달 목표 달성률</h3><div class="goal-big" id="dGoalPct">0.0%</div><div style="font-size:10px;color:#6c7788;margin-top:5px">현재 <b id="dCurrent">0원</b> / 목표 <b id="dTarget">미설정</b></div></div><div style="text-align:right"><span style="font-size:10px;color:#6c7788">현재 페이스 예상</span><b id="dForecast" style="display:block;font-size:23px;margin-top:5px">0원</b><small id="dForecastGap" style="color:#6c7788">목표 설정 후 계산</small></div></div>
   <div class="progress"><span id="dGoalBar"></span></div>
   <div class="goal-meta"><span>목표까지 <b id="dRemain">-</b></span><span>남은 기간 필요 일평균 <b id="dNeedDaily">-</b></span></div>
@@ -274,6 +285,58 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  <div class="table-card card"><div class="table-top"><b>월별 비용 원장</b><div class="toolbar"><input id="expenseMonth" type="month" onchange="loadExpenses()"><select id="expenseFilter" onchange="renderExpenses()"><option value="all">전체</option><option value="fixed">고정비</option><option value="variable">유동비</option></select></div></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>구분</th><th>카테고리</th><th>내용</th><th>금액</th><th>결제수단</th><th>사용처</th><th></th></tr></thead><tbody id="expenseBody"></tbody></table></div></div>
 </section>
 
+
+<section class="page" id="page-cash">
+ <div class="section-head"><div><h2>자금 / 시재</h2><p>판매월 다음달 말 정산 구조를 반영해 실제 버틸 수 있는 현금을 관리합니다.</p></div><button class="btn" onclick="loadCashflow()">새로고침</button></div>
+ <div class="summary">
+  <div class="box"><span>현재 가용자금</span><strong id="cashAvailable">0원</strong></div>
+  <div class="box"><span>이번달 말 정산입금</span><strong id="cashSettlementThis">0원</strong></div>
+  <div class="box"><span>다음달 말 정산입금</span><strong id="cashSettlementNext">0원</strong></div>
+  <div class="box"><span>이번달 페이백</span><strong id="cashPayback">0원</strong></div>
+  <div class="box"><span>이번달 자동급여</span><strong id="cashPayroll">0원</strong></div>
+  <div class="box"><span>월 광고비 계획</span><strong id="cashAdBudget">0원</strong></div>
+  <div class="box"><span>월말 예상잔고</span><strong id="cashProjected">0원</strong></div>
+  <div class="box"><span>추가 확보 필요</span><strong id="cashGap">0원</strong></div>
+ </div>
+
+ <div class="grid2">
+  <div class="card" style="padding:18px">
+   <div class="table-top"><div><b>현재 잔고 / 시재 입력</b><div style="font-size:9px;color:#6c7788;margin-top:3px">매일 바뀌면 그날 잔고를 다시 저장하면 이력이 남습니다.</div></div></div>
+   <div class="form">
+    <div class="field"><label>기준일</label><input id="cashSnapshotDate" type="date"></div>
+    <div class="field"><label>통장 잔고</label><input class="moneyI" id="cashBank" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this)"></div>
+    <div class="field"><label>현금 시재</label><input class="moneyI" id="cashOnHand" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this)"></div>
+    <div class="field"><label>기타 가용자금</label><input class="moneyI" id="cashOther" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this)"></div>
+    <div class="field"><label>최소 유지 시재</label><input class="moneyI" id="cashBuffer" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this)"><small style="color:#6c7788">이 금액 아래로 내려가면 위험으로 표시</small></div>
+    <div class="field"><label>이번 정산 전 기타 예정지출</label><input class="moneyI" id="cashUpcoming" type="text" inputmode="numeric" value="0" oninput="formatMoneyInput(this)"><small style="color:#6c7788">월세·세금 등 아직 안 빠진 돈</small></div>
+    <div class="field full"><label>메모</label><input id="cashNote" placeholder="예: 9/20 영업종료 기준"></div>
+   </div>
+   <button class="btn primary" onclick="saveCashSnapshot()">현재 잔고 저장</button>
+  </div>
+
+  <div class="card" style="padding:18px">
+   <div class="table-top"><b>현금 방어 계산</b></div>
+   <div style="display:grid;gap:10px;font-size:11px;line-height:1.65">
+    <div>① 현재 가용자금 = <b>통장 + 현금시재 + 기타 가용자금</b></div>
+    <div>② 이번달 말 들어올 돈 = <b>전월 판매건 W 최종마진 합계</b></div>
+    <div>③ 이번달 말까지 확정 차감 = <b>미지급 페이백 + 자동급여 + 직접 입력한 예정지출</b></div>
+    <div>④ 월말 예상잔고가 최소 유지 시재보다 부족하면 그 차액을 <b>추가 확보 필요</b>로 표시합니다.</div>
+    <div style="padding:10px 12px;background:#f5f7f9;border-radius:12px;color:#6c7788">광고비는 월 계획액을 별도로 보여주되 현재잔고에 이미 빠진 광고비를 중복 차감하지 않습니다.</div>
+   </div>
+  </div>
+ </div>
+
+ <div class="table-card card" style="margin-top:16px">
+  <div class="table-top"><b>월별 정산 입금 캘린더</b><span class="tag">판매월 → 다음달 말일 입금</span></div>
+  <div class="table-wrap"><table><thead><tr><th>판매월</th><th>판매건수</th><th>장부 W 합계</th><th>입금예정일</th></tr></thead><tbody id="cashSettlementBody"></tbody></table></div>
+ </div>
+
+ <div class="table-card card" style="margin-top:16px">
+  <div class="table-top"><b>잔고 / 시재 저장 이력</b></div>
+  <div class="table-wrap"><table><thead><tr><th>기준일</th><th>통장</th><th>현금시재</th><th>기타자금</th><th>가용합계</th><th>최소시재</th><th>기타 예정지출</th><th>메모</th></tr></thead><tbody id="cashSnapshotBody"></tbody></table></div>
+ </div>
+</section>
+
 <section class="page" id="page-targets">
  <div class="section-head"><div><h2>목표 관리</h2><p>월·연 목표를 서버에 저장하고 실적과 비교합니다.</p></div><button class="btn primary" onclick="openTarget()">목표 설정</button></div>
  <div class="summary"><div class="box"><span>월 목표</span><strong id="tMonthGoal">미설정</strong></div><div class="box"><span>월 실적</span><strong id="tMonthActual">0원</strong></div><div class="box"><span>월 예상</span><strong id="tForecast">0원</strong></div><div class="box"><span>월 달성률</span><strong id="tMonthPct">0.0%</strong></div><div class="box"><span>연 달성률</span><strong id="tYearPct">0.0%</strong></div></div>
@@ -349,6 +412,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <button data-page="affiliate">제휴카드 등록</button>
   <button data-page="ads">광고비</button>
   <button data-page="expenses">비용원장</button>
+  <button data-page="cash">자금 / 시재</button>
   <button data-page="targets">목표 관리</button>
   <button data-page="sources">유입 분석</button>
   <button data-page="settings">환경 설정</button>
@@ -364,7 +428,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-const state={staff:[],options:[],ledger:[],ledgerYear:[],used:[],payback:[],affiliate:[],alerts:[],alertHistory:[],notificationHistory:[],expenses:[],ads:[],payroll:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
+const state={staff:[],options:[],ledger:[],ledgerYear:[],used:[],payback:[],affiliate:[],alerts:[],alertHistory:[],notificationHistory:[],expenses:[],ads:[],payroll:[],cashStatus:null,cashSnapshots:[],settlements:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
 let modalMode="";
 let editingLedgerId=null;
 let editingAdId=null;
@@ -384,7 +448,7 @@ $('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month
 ['ledgerMonth','reportMonth','usedMonth','paybackMonth','affiliateMonth','adMonth','expenseMonth','sourceMonth','alertHistoryMonth','notifyHistoryMonth','payRateMonth'].forEach(id=>{if($(id))$(id).value=mk(now)});
 $('reportDate').value=ymd(now);
 
-const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
+const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',cash:'자금 / 시재',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
 function toggleMobileMenu(){
  const sheet=$('mobileMenuSheet'),backdrop=$('mobileMenuBackdrop');
@@ -397,7 +461,7 @@ function closeMobileMenu(){
  $('mobileMenuBackdrop')?.classList.remove('show');
 }
 
-function go(p){closeMobileMenu();localStorage.setItem('jk-active-page',p);document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='alerts')loadAlertCenter();if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='affiliate')loadAffiliate();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
+function go(p){closeMobileMenu();localStorage.setItem('jk-active-page',p);document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='alerts')loadAlertCenter();if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='affiliate')loadAffiliate();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='cash')loadCashflow();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function showLogin(){$('loginBg').classList.add('show')}
@@ -414,7 +478,7 @@ function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">
 function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
 async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
-async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
+async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
 
 
 function alertTypeLabel(t){return ({PAYBACK_MONTHEND:'페이백',USED_DEVICE_RETURN:'중고반납',AFFILIATE_CARD:'제휴카드',PLAN_CHANGE:'요금제 변경',INSURANCE_CANCEL:'보험 해지',ADDON_CANCEL:'부가서비스 해지'})[t]||t}
@@ -1097,12 +1161,126 @@ async function deleteAd(id){
   await Promise.all([loadAds(),loadDashboard()]);
 }
 
-async function loadExpenses(){if(!$('expenseMonth'))return;const [a,b]=bounds($('expenseMonth').value||mk(now));const {data,error}=await sb.from('jk_expenses').select('*').gte('expense_date',a).lt('expense_date',b).order('expense_date',{ascending:false});if(error)return;state.expenses=data||[];renderExpenses()}
-function renderExpenses(){const f=$('expenseFilter')?.value||'all',rows=state.expenses.filter(r=>f==='all'||(f==='fixed'?r.is_fixed:!r.is_fixed));$('expenseBody').innerHTML=rows.map(r=>`<tr><td>${r.expense_date}</td><td><span class="pill ${r.is_fixed?'blue':'orange'}">${r.is_fixed?'고정비':'유동비'}</span></td><td>${esc(r.category)}</td><td>${esc(r.description||'-')}</td><td><b>${won(r.amount)}</b></td><td>${esc(r.payment_method||'-')}</td><td>${esc(r.vendor||'-')}</td><td><button class="btn danger" onclick="deleteExpense('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="8" class="empty">비용 데이터 없음</td></tr>';const fix=state.expenses.filter(r=>r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0),vari=state.expenses.filter(r=>!r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0),total=fix+vari;$('eTotal').textContent=won(total);$('eFixed').textContent=won(fix);$('eVariable').textContent=won(vari);$('eFixedPct').textContent=total?pct(fix/total*100):'0.0%';$('eCount').textContent=state.expenses.length+'건'}
-function openExpense(){modalMode='expense';$('modalTitle').textContent='비용원장 지출 추가';$('modalBody').innerHTML=`<div class="form"><div class="field"><label>지출일</label><input id="eDateF" type="date" value="${ymd(now)}"></div><div class="field"><label>구분</label><select id="eTypeF" onchange="expenseCats()"><option value="fixed">고정비</option><option value="variable">유동비</option></select></div><div class="field"><label>카테고리</label><select id="eCatF"></select></div><div class="field"><label>금액</label><input id="eAmountF" type="number"></div><div class="field"><label>결제수단</label><select id="ePayF"><option>사업자카드</option><option>계좌이체</option><option>현금</option><option>개인카드</option></select></div><div class="field"><label>사용처</label><input id="eVendorF"></div><div class="field full"><label>내용</label><input id="eDescF"></div><div class="field full"><label>메모</label><textarea id="eNoteF"></textarea></div></div>`;expenseCats();showModal()}
-function expenseCats(){if(!$('eCatF'))return;const type=$('eTypeF').value==='fixed'?'expense_fixed':'expense_variable';$('eCatF').innerHTML=opt(type).filter(x=>String(x.label||'').trim()!=='급여').map(x=>`<option value="${esc(x.label)}">${esc(x.label)}</option>`).join('')}
-async function saveExpense(){const amount=Number($('eAmountF').value||0);if(amount<=0){alert('금액을 입력하세요.');return}const{error}=await sb.from('jk_expenses').insert({expense_date:$('eDateF').value,is_fixed:$('eTypeF').value==='fixed',category:$('eCatF').value,amount,payment_method:$('ePayF').value,vendor:$('eVendorF').value||null,description:$('eDescF').value||null,note:$('eNoteF').value||null});if(error)alert(error.message);else{closeModal();loadExpenses();loadDashboard()}}
-async function deleteExpense(id){if(!confirm('삭제할까요?'))return;await sb.from('jk_expenses').delete().eq('id',id);loadExpenses();loadDashboard()}
+
+async function loadExpenses(){
+  if(!$('expenseMonth'))return;
+  const [a,b]=bounds($('expenseMonth').value||mk(now));
+  const q=await sb.from('jk_expenses').select('*').gte('expense_date',a).lt('expense_date',b).order('expense_date',{ascending:false});
+  if(q.error)return;
+  state.expenses=q.data||[];
+  renderExpenses();
+}
+function renderExpenses(){
+  const f=$('expenseFilter')?.value||'all';
+  const rows=state.expenses.filter(r=>f==='all'||(f==='fixed'?r.is_fixed:!r.is_fixed));
+  $('expenseBody').innerHTML=rows.map(function(r){
+    return '<tr><td>'+r.expense_date+'</td><td><span class="pill '+(r.is_fixed?'blue':'orange')+'">'+(r.is_fixed?'고정비':'유동비')+'</span></td><td>'+esc(r.category)+'</td><td>'+esc(r.description||'-')+'</td><td><b>'+won(r.amount)+'</b></td><td>'+esc(r.payment_method||'-')+'</td><td>'+esc(r.vendor||'-')+'</td><td><div style="display:flex;gap:6px"><button class="btn" onclick="openExpense(\''+r.id+'\')">수정</button><button class="btn danger" onclick="deleteExpense(\''+r.id+'\')">삭제</button></div></td></tr>';
+  }).join('')||'<tr><td colspan="8" class="empty">비용 데이터 없음</td></tr>';
+  const fix=state.expenses.filter(r=>r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0);
+  const vari=state.expenses.filter(r=>!r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0);
+  const total=fix+vari;
+  $('eTotal').textContent=won(total);$('eFixed').textContent=won(fix);$('eVariable').textContent=won(vari);$('eFixedPct').textContent=total?pct(fix/total*100):'0.0%';$('eCount').textContent=state.expenses.length+'건';
+}
+function openExpense(id=null){
+  editingExpenseId=id||null;modalMode='expense';
+  const r=editingExpenseId?state.expenses.find(x=>x.id===editingExpenseId):null;
+  if(editingExpenseId&&!r){alert('수정할 비용 내역을 찾지 못했습니다.');editingExpenseId=null;return}
+  $('modalTitle').textContent=editingExpenseId?'비용원장 수정':'비용원장 지출 추가';
+  $('modalSave').textContent=editingExpenseId?'수정 저장':'저장';
+  let h='<div class="form">';
+  h+='<div class="field"><label>지출일</label><input id="eDateF" type="date" value="'+esc(r?.expense_date||ymd(now))+'"></div>';
+  h+='<div class="field"><label>구분</label><select id="eTypeF" onchange="expenseCats()"><option value="fixed">고정비</option><option value="variable">유동비</option></select></div>';
+  h+='<div class="field"><label>카테고리</label><select id="eCatF"></select></div>';
+  h+='<div class="field"><label>금액</label><input class="moneyI" id="eAmountF" type="text" inputmode="numeric" value="'+Number(r?.amount||0)+'" oninput="formatMoneyInput(this)"></div>';
+  h+='<div class="field"><label>결제수단</label><select id="ePayF"><option>사업자카드</option><option>계좌이체</option><option>현금</option><option>개인카드</option></select></div>';
+  h+='<div class="field"><label>사용처</label><input id="eVendorF" value="'+esc(r?.vendor||'')+'"></div>';
+  h+='<div class="field full"><label>내용</label><input id="eDescF" value="'+esc(r?.description||'')+'"></div>';
+  h+='<div class="field full"><label>메모</label><textarea id="eNoteF">'+esc(r?.note||'')+'</textarea></div></div>';
+  $('modalBody').innerHTML=h;
+  $('eTypeF').value=r?(r.is_fixed?'fixed':'variable'):'fixed';
+  expenseCats();
+  if(r){
+    if(![...$('eCatF').options].some(o=>o.value===r.category)){const o=document.createElement('option');o.value=r.category;o.textContent=r.category;$('eCatF').appendChild(o)}
+    $('eCatF').value=r.category;
+    if(r.payment_method)$('ePayF').value=r.payment_method;
+  }
+  formatMoneyInput($('eAmountF'));
+  showModal();
+}
+function expenseCats(){
+  if(!$('eCatF'))return;
+  const old=$('eCatF').value;
+  const type=$('eTypeF').value==='fixed'?'expense_fixed':'expense_variable';
+  $('eCatF').innerHTML=opt(type).filter(x=>String(x.label||'').trim()!=='급여').map(x=>'<option value="'+esc(x.label)+'">'+esc(x.label)+'</option>').join('');
+  if(old&&[...$('eCatF').options].some(o=>o.value===old))$('eCatF').value=old;
+}
+async function saveExpense(){
+  const amount=moneyNumber($('eAmountF').value);
+  if(amount<=0){alert('금액을 입력하세요.');return}
+  const payload={expense_date:$('eDateF').value,is_fixed:$('eTypeF').value==='fixed',category:$('eCatF').value,amount:amount,payment_method:$('ePayF').value,vendor:$('eVendorF').value||null,description:$('eDescF').value||null,note:$('eNoteF').value||null,updated_at:new Date().toISOString()};
+  const q=editingExpenseId?await sb.from('jk_expenses').update(payload).eq('id',editingExpenseId):await sb.from('jk_expenses').insert(payload);
+  if(q.error){alert(q.error.message);return}
+  const wasEdit=Boolean(editingExpenseId);editingExpenseId=null;closeModal();toast(wasEdit?'비용 내역 수정 완료':'비용 등록 완료');
+  await Promise.all([loadExpenses(),loadDashboard()]);
+}
+async function deleteExpense(id){
+  if(!confirm('삭제할까요?'))return;
+  const q=await sb.from('jk_expenses').delete().eq('id',id);
+  if(q.error){alert(q.error.message);return}
+  await Promise.all([loadExpenses(),loadDashboard()]);
+}
+
+
+async function loadCashflow(){
+  if(!$('cashAvailable')&&!$('dCashAvailable'))return;
+  const today=ymd(now);
+  const [st,ss,se]=await Promise.all([
+    sb.rpc('jk_cashflow_status',{p_as_of:today}),
+    sb.from('jk_cash_snapshots').select('*').order('snapshot_date',{ascending:false}).limit(30),
+    sb.from('jk_v_monthly_settlement_receivables').select('*').order('sales_month',{ascending:false}).limit(12)
+  ]);
+  if(st.error){console.warn(st.error);return}
+  state.cashStatus=st.data||{};
+  if(!ss.error)state.cashSnapshots=ss.data||[];
+  if(!se.error)state.settlements=se.data||[];
+  const d=state.cashStatus;
+  const setText=(id,val)=>{if($(id))$(id).textContent=won(val||0)};
+  setText('cashAvailable',d.available_cash);setText('cashSettlementThis',d.settlement_due_this_month);setText('cashSettlementNext',d.settlement_due_next_month);
+  setText('cashPayback',d.payback_due_this_month);setText('cashPayroll',d.payroll_due_this_month);setText('cashAdBudget',d.ad_budget_this_month);
+  setText('cashProjected',d.projected_after_month_end);setText('cashGap',d.cash_gap_to_buffer);
+  setText('dCashAvailable',d.available_cash);setText('dCashSettlement',d.settlement_due_this_month);setText('dCashProjected',d.projected_after_month_end);setText('dCashGap',d.cash_gap_to_buffer);
+  if($('cashGap'))$('cashGap').style.color=Number(d.cash_gap_to_buffer||0)>0?'#dc3f50':'#138754';
+  if($('dCashGap'))$('dCashGap').style.color=Number(d.cash_gap_to_buffer||0)>0?'#dc3f50':'#138754';
+
+  if($('cashSnapshotDate'))$('cashSnapshotDate').value=today;
+  const vals=[['cashBank',d.bank_balance],['cashOnHand',d.cash_on_hand],['cashOther',d.other_liquid],['cashBuffer',d.minimum_buffer],['cashUpcoming',d.other_upcoming_outflow]];
+  vals.forEach(([id,v])=>{if($(id)){$(id).value=Number(v||0);formatMoneyInput($(id))}});
+  if($('cashNote'))$('cashNote').value=d.note||'';
+
+  if($('cashSettlementBody'))$('cashSettlementBody').innerHTML=state.settlements.map(function(r){
+    return '<tr><td><b>'+esc(String(r.sales_month).slice(0,7))+'</b></td><td>'+Number(r.sales_count||0)+'건</td><td><b>'+won(r.expected_settlement_amount)+'</b></td><td>'+esc(r.settlement_due_date)+'</td></tr>';
+  }).join('')||'<tr><td colspan="4" class="empty">정산 데이터가 없습니다.</td></tr>';
+
+  if($('cashSnapshotBody'))$('cashSnapshotBody').innerHTML=state.cashSnapshots.map(function(r){
+    const avail=Number(r.bank_balance||0)+Number(r.cash_on_hand||0)+Number(r.other_liquid||0);
+    return '<tr><td>'+esc(r.snapshot_date)+'</td><td>'+won(r.bank_balance)+'</td><td>'+won(r.cash_on_hand)+'</td><td>'+won(r.other_liquid)+'</td><td><b>'+won(avail)+'</b></td><td>'+won(r.minimum_buffer)+'</td><td>'+won(r.other_upcoming_outflow)+'</td><td>'+esc(r.note||'-')+'</td></tr>';
+  }).join('')||'<tr><td colspan="8" class="empty">아직 잔고 저장 이력이 없습니다.</td></tr>';
+}
+async function saveCashSnapshot(){
+  const date=$('cashSnapshotDate').value||ymd(now);
+  const q=await sb.rpc('jk_save_cash_snapshot',{
+    p_snapshot_date:date,
+    p_bank_balance:moneyNumber($('cashBank').value),
+    p_cash_on_hand:moneyNumber($('cashOnHand').value),
+    p_other_liquid:moneyNumber($('cashOther').value),
+    p_minimum_buffer:moneyNumber($('cashBuffer').value),
+    p_other_upcoming_outflow:moneyNumber($('cashUpcoming').value),
+    p_note:$('cashNote').value||''
+  });
+  if(q.error){alert(q.error.message);return}
+  toast('현재 잔고 / 시재 저장 완료');
+  await loadCashflow();
+}
 
 function renderTargetPage(){const month=mk(now),t=state.targets.find(x=>String(x.target_month).slice(0,7)===month),a=state.annual.find(x=>String(x.month).slice(0,7)===month),goal=Number(t?.target_margin||0),actual=Number(a?.margin_total||0),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),forecast=Math.round(actual/Math.max(now.getDate(),1)*days),yearActual=state.annual.reduce((s,r)=>s+Number(r.margin_total||0),0),yg=Number(state.yearTarget?.target_margin||0);$('tMonthGoal').textContent=goal?won(goal):'미설정';$('tMonthActual').textContent=won(actual);$('tForecast').textContent=won(forecast);$('tMonthPct').textContent=goal?pct(actual/goal*100):'0.0%';$('tYearPct').textContent=yg?pct(yearActual/yg*100):'0.0%';drawTargetAnnual();drawGrowth()}
 function drawTargetAnnual(){const o=canvas('targetAnnualChart');if(!o)return;const actual={},targets={};state.annual.forEach(r=>actual[Number(String(r.month).slice(5,7))]=Number(r.margin_total||0));state.targets.forEach(r=>targets[Number(String(r.target_month).slice(5,7))]=Number(r.target_margin||0));const av=Array.from({length:12},(_,i)=>actual[i+1]||0),tv=Array.from({length:12},(_,i)=>targets[i+1]||0),max=Math.max(1,...av,...tv),p=axis(o,max),{x,w,h}=o,bw=Math.max(7,(w-p.l-p.r)/12*.34);for(let i=0;i<12;i++){const cx=p.l+(w-p.l-p.r)*(i+.5)/12,ha=(h-p.t-p.b)*av[i]/max,ht=(h-p.t-p.b)*tv[i]/max;x.fillStyle='#9ee22f';x.fillRect(cx-bw-2,h-p.b-ha,bw,ha);x.fillStyle='#c5ccd5';x.fillRect(cx+2,h-p.b-ht,bw,ht);x.fillStyle='#718093';x.font='9px system-ui';x.fillText((i+1)+'월',cx-8,h-10)}}
@@ -1132,7 +1310,7 @@ async function addOption(type,inputId){const label=$(inputId).value.trim();if(!l
 async function addStaff(){const name=$('newStaff').value.trim();if(!name)return;const{error}=await sb.from('jk_staff').insert({name});if(error)alert(error.message);else{$('newStaff').value='';await loadSettings();toast('판매자 추가 완료')}}
 
 function showModal(){$('modalBg').classList.add('show');setTimeout(()=>$('modalBody').scrollTop=0,0)}
-function closeModal(){if(modalMode==='ledger'){sessionStorage.removeItem('jk-ledger-modal-open');sessionStorage.removeItem('jk-ledger-edit-id')}editingLedgerId=null;if($('modalSave'))$('modalSave').textContent='저장';$('modalBg').classList.remove('show')}
+function closeModal(){if(modalMode==='ledger'){sessionStorage.removeItem('jk-ledger-modal-open');sessionStorage.removeItem('jk-ledger-edit-id')}editingLedgerId=null;editingAdId=null;editingExpenseId=null;if($('modalSave'))$('modalSave').textContent='저장';$('modalBg').classList.remove('show')}
 async function saveModal(){if(modalMode==='ledger')return saveLedger();if(modalMode==='ad')return saveAd();if(modalMode==='expense')return saveExpense();if(modalMode==='target')return saveTarget()}
 $('modalBg').onclick=e=>{if(e.target.id==='modalBg'&&modalMode!=='ledger')closeModal()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()})

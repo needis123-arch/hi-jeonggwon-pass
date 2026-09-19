@@ -2,8 +2,17 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.35</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111318">
+<meta name="application-name" content="정권통신 BUSINESS">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="정권통신">
+<link rel="manifest" href="./manifest.webmanifest?v=1">
+<link rel="icon" href="./app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./app-icon.svg">
+<title>정권통신 Business Center V3.36</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -20,6 +29,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .main{min-width:0}.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,255,255,.95);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:15;backdrop-filter:blur(14px)}
 .topbar h1{font-size:17px;margin:0}.topbar p{font-size:11px;color:var(--muted);margin:4px 0 0}.actions{display:flex;gap:8px}
 .btn{border:1px solid #d8dee6;background:#fff;color:#111318;padding:9px 13px;border-radius:11px;font-weight:800}.btn.primary{background:var(--accent);border-color:#a7ec27}.btn.danger{color:#c43846}
+.install-app-btn{display:none;align-items:center;gap:6px}
+.install-app-btn.show{display:inline-flex}
+@media(display-mode:standalone){.install-app-btn{display:none!important}body{overscroll-behavior-y:none}}
+
 .content{padding:24px;max-width:1700px;margin:0 auto}.page{display:none}.page.active{display:block}
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px}.section-head h2{margin:0;font-size:23px}.section-head p{margin:5px 0 0;color:var(--muted);font-size:11px}
 .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
@@ -129,7 +142,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.35</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.36</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -151,7 +164,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  <header class="topbar">
   <button class="mobile-home-btn" onclick="go('dashboard')" aria-label="종합 대시보드로 이동">홈</button>
   <div><h1 id="pageTitle">종합 대시보드</h1><p id="todayText"></p></div>
-  <div class="actions"><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
+  <div class="actions"><button class="btn install-app-btn" id="installAppBtn" onclick="installPWA()">앱 설치</button><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
  </header>
  <div class="content">
 
@@ -586,7 +599,7 @@ window.addEventListener('beforeunload',e=>{
  }
 });
 async function resetPasswordPrompt(){const p1=prompt('새 비밀번호를 입력하세요.');if(!p1)return;const p2=prompt('새 비밀번호를 다시 입력하세요.');if(p1!==p2){alert('비밀번호가 다릅니다.');return}const {error}=await sb.auth.updateUser({password:p1});alert(error?error.message:'비밀번호 변경 완료');if(!error)hideLogin()}
-async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){showLogin();return}await loadAll();const saved=localStorage.getItem('jk-active-page')||'dashboard';if($('page-'+saved))go(saved);if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
+async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){showLogin();return}await loadAll();const requested=new URLSearchParams(location.search).get('page');const saved=(requested&&$('page-'+requested))?requested:(localStorage.getItem('jk-active-page')||'dashboard');if($('page-'+saved))go(saved);if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
 
 function opt(type){return state.options.filter(x=>x.option_type===type&&x.active).sort((a,b)=>a.sort_order-b.sort_order)}
 function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">${esc(x.label)}</option>`).join('')}
@@ -1872,7 +1885,53 @@ async function saveModal(){if(modalMode==='ledger')return saveLedger();if(modalM
 $('modalBg').onclick=e=>{if(e.target.id==='modalBg'&&modalMode!=='ledger')closeModal()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()})
 
+let deferredInstallPrompt=null;
+function isStandaloneApp(){
+ return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+}
+function syncInstallAppButton(){
+ const b=$('installAppBtn');
+ if(!b)return;
+ b.classList.toggle('show',!isStandaloneApp());
+}
+window.addEventListener('beforeinstallprompt',e=>{
+ e.preventDefault();
+ deferredInstallPrompt=e;
+ syncInstallAppButton();
+});
+window.addEventListener('appinstalled',()=>{
+ deferredInstallPrompt=null;
+ syncInstallAppButton();
+ toast('정권통신 BUSINESS 앱 설치 완료');
+});
+async function installPWA(){
+ if(isStandaloneApp()){
+   toast('이미 앱으로 실행 중입니다.');
+   return;
+ }
+ if(deferredInstallPrompt){
+   deferredInstallPrompt.prompt();
+   const choice=await deferredInstallPrompt.userChoice;
+   if(choice.outcome==='accepted'){
+     deferredInstallPrompt=null;
+     syncInstallAppButton();
+   }
+   return;
+ }
+ alert('앱 설치 메뉴가 바로 뜨지 않으면\n\nChrome 오른쪽 위 ⋮ → 앱 설치 또는 홈 화면에 추가\n\n를 눌러주세요. 설치 후에는 홈 화면의 정권통신 아이콘으로 바로 실행됩니다.');
+}
+if('serviceWorker' in navigator){
+ window.addEventListener('load',()=>{
+   navigator.serviceWorker.register('./sw.js?v=1',{scope:'./'})
+     .then(()=>syncInstallAppButton())
+     .catch(err=>console.warn('service worker',err));
+ });
+}else{
+ syncInstallAppButton();
+}
+
 window.addEventListener('resize',()=>{drawGoal(state.ledger,0,new Date(now.getFullYear(),now.getMonth()+1,0).getDate());drawAnnual();drawTargetAnnual();drawGrowth()});
+syncInstallAppButton();
 sessionChanged();
 </script>
 </body>

@@ -14,6 +14,7 @@
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px}.kpi{padding:16px}.kpi span{font-size:9px;color:var(--muted);display:block}.kpi strong{display:block;font-size:20px;margin-top:6px}.kpi small{display:block;font-size:9px;color:#8d97a5;margin-top:5px;line-height:1.4}.bad{color:var(--bad)!important}.good{color:var(--good)!important}.warn{color:var(--warn)!important}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}.panel{padding:18px}.panel h3{font-size:14px;margin:0}.panel>p{font-size:10px;color:var(--muted);margin:5px 0 14px}.list{display:grid;gap:8px}.row{border:1px solid #e7ebef;border-radius:13px;padding:11px 12px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.row b{font-size:11px}.row small{display:block;font-size:9px;color:var(--muted);margin-top:3px}.amt{font-variant-numeric:tabular-nums;font-weight:900;font-size:12px}.tag{display:inline-flex;padding:4px 7px;border-radius:999px;background:#eef2f5;color:#616d7c;font-size:9px;font-weight:900}.tag.red{background:#ffedf0;color:#b82f40}.tag.green{background:#e9f7ef;color:#147548}.tag.orange{background:#fff4e4;color:#9e6100}
 .todo{display:flex;align-items:flex-start;gap:10px}.todo input{width:19px;height:19px;accent-color:#7fbf16}.todo.done b{text-decoration:line-through;color:#929aa5}.empty{padding:25px;text-align:center;color:var(--muted);font-size:10px}
+.inlineedit{width:100%;min-width:86px;border:1px solid transparent;background:transparent;border-radius:8px;padding:7px 8px;color:var(--text);font-weight:700}.inlineedit:hover{border-color:#dce2e8;background:#fafbfc}.inlineedit:focus{outline:0;border-color:#9bdc2e;background:#fff;box-shadow:0 0 0 3px rgba(155,220,46,.13)}select.inlineedit{cursor:pointer}.inlinecheck{width:18px;height:18px;accent-color:#78ba0d;vertical-align:middle}.autosave-note{font-size:9px;color:var(--muted);font-weight:700}.saving{opacity:.55;pointer-events:none}.saved-flash{animation:pcSaved .7s ease}@keyframes pcSaved{0%{background:#f2ffdc}100%{background:transparent}}
 .tablecard{overflow:hidden;margin-bottom:16px}.tabletop{padding:14px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:800px}th,td{padding:11px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:10px;white-space:nowrap}th{background:#f7f9fb;color:#697586;font-size:9px}td b{font-size:11px}
 .formcard{padding:18px;margin-bottom:16px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:9px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111}.field.full{grid-column:1/-1}.formactions{display:flex;gap:7px;align-items:end}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800}.tabs button.active{background:#15191f;color:#fff;border-color:#15191f}
@@ -86,7 +87,7 @@
    <div class="formactions"><button class="btn primary" onclick="addAccount()">저장</button></div>
   </div>
  </div>
- <div class="tablecard card"><div class="tabletop"><b>현재 자산</b><span id="accountSum" class="amt">0원</span></div><div class="tablewrap"><table><thead><tr><th>계좌</th><th>유형</th><th>잔액</th><th>현금성 포함</th><th>관리</th></tr></thead><tbody id="accountRows"></tbody></table></div></div>
+ <div class="tablecard card"><div class="tabletop"><div><b>현재 자산</b><div class="autosave-note">아래 칸을 직접 수정하면 자동 저장됩니다.</div></div><span id="accountSum" class="amt">0원</span></div><div class="tablewrap"><table><thead><tr><th>계좌</th><th>유형</th><th>잔액</th><th>현금성 포함</th><th>관리</th></tr></thead><tbody id="accountRows"></tbody></table></div></div>
  <div class="formcard card">
   <h3>월 반복 수입 / 지출</h3><div class="formgrid">
    <div class="field"><label>항목명</label><input id="recName" placeholder="월세 / 차량할부 / 보험 / 구독"></div>
@@ -99,7 +100,7 @@
    <div class="formactions"><button class="btn primary" onclick="addRecurring()">저장</button></div>
   </div>
  </div>
- <div class="tablecard card"><div class="tabletop"><b>반복 항목</b><span id="recurringSum" class="amt">0원</span></div><div class="tablewrap"><table><thead><tr><th>항목</th><th>구분</th><th>범위</th><th>금액</th><th>매월</th><th>수단</th><th>관리</th></tr></thead><tbody id="recurringRows"></tbody></table></div></div>
+ <div class="tablecard card"><div class="tabletop"><div><b>반복 항목</b><div class="autosave-note">항목·분류·금액·결제일·카드를 표에서 바로 수정하세요.</div></div><span id="recurringSum" class="amt">0원</span></div><div class="tablewrap"><table><thead><tr><th>항목</th><th>구분</th><th>분류</th><th>범위</th><th>금액</th><th>매월</th><th>수단</th><th>관리</th></tr></thead><tbody id="recurringRows"></tbody></table></div></div>
  <div class="formcard card">
   <h3>실제 거래 기록</h3><div class="formgrid">
    <div class="field"><label>날짜</label><input id="txDate" type="date"></div>
@@ -112,7 +113,7 @@
    <div class="formactions"><button class="btn primary" onclick="addTransaction()">저장</button></div>
   </div>
  </div>
- <div class="tablecard card"><div class="tabletop"><b>최근 거래</b><span id="txSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>유형</th><th>분류</th><th>사용처</th><th>수단</th><th>금액</th><th>범위</th><th>관리</th></tr></thead><tbody id="txRows"></tbody></table></div></div>
+ <div class="tablecard card"><div class="tabletop"><div><b>최근 거래</b><div class="autosave-note">잘못 입력한 거래도 여기서 바로 수정할 수 있습니다.</div></div><span id="txSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>유형</th><th>분류</th><th>사용처</th><th>수단</th><th>금액</th><th>범위</th><th>관리</th></tr></thead><tbody id="txRows"></tbody></table></div></div>
 </section>
 
 <section class="page" id="page-debt">
@@ -341,19 +342,64 @@ function renderGoalPulse(){
  const a=state.goals.slice(0,3);$('goalPulse').innerHTML=a.length?a.map(g=>{const p=+g.target_value?Math.min(100,+g.current_value/+g.target_value*100):0;return '<div><div class="meterline"><b>'+esc(g.title)+'</b><span>'+p.toFixed(0)+'%</span></div><div class="bar"><i style="width:'+p+'%"></i></div></div>'}).join(''):'<div class="empty">5년 목표를 추가하세요.</div>'
 }
 
+function inlineSelect(value,options,attrs){
+ const o=options.map(x=>'<option value="'+esc(x[0])+'" '+(String(value)===String(x[0])?'selected':'')+'>'+esc(x[1])+'</option>').join('');
+ return '<select class="inlineedit" '+attrs+'>'+o+'</select>'
+}
+async function inlineUpdate(table,id,field,value,type,el){
+ let v=value;
+ if(type==='number'){v=value===''?0:Number(String(value).replace(/,/g,''));if(!Number.isFinite(v)){toast('숫자를 확인하세요.');return}}
+ if(type==='nullableNumber'){v=value===''?null:Number(String(value).replace(/,/g,''));if(v!==null&&!Number.isFinite(v)){toast('숫자를 확인하세요.');return}}
+ if(type==='bool')v=!!value;
+ if(el){const tr=el.closest('tr');if(tr)tr.classList.add('saving')}
+ const patch={[field]:v};if(table==='pc_accounts')patch.updated_at=new Date().toISOString();
+ const {error}=await sb.from(table).update(patch).eq('id',id);
+ if(error){if(el){const tr=el.closest('tr');if(tr)tr.classList.remove('saving')}alert(error.message);return}
+ if(el){const tr=el.closest('tr');if(tr){tr.classList.remove('saving');tr.classList.add('saved-flash');setTimeout(()=>tr.classList.remove('saved-flash'),750)}}
+ await loadAll();
+ toast('자동 저장 완료')
+}
 function renderMoney(){
- $('accountRows').innerHTML=state.accounts.length?state.accounts.map(a=>'<tr><td><b>'+esc(a.name)+'</b></td><td>'+esc(a.account_type)+'</td><td class="amt">'+won(a.balance)+'</td><td>'+(a.include_in_cash?'포함':'제외')+'</td><td><button class="btn mini" onclick="updateBalance(\''+a.id+'\','+Number(a.balance||0)+')">잔액수정</button> <button class="btn mini danger" onclick="delRow(\'pc_accounts\',\''+a.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="5" class="empty">계좌를 추가하세요.</td></tr>';
+ const accountTypes=[['bank','은행'],['cash','현금'],['cma','CMA'],['savings','저축'],['other','기타']];
+ $('accountRows').innerHTML=state.accounts.length?state.accounts.map(a=>'<tr>'+
+  '<td><input class="inlineedit" value="'+esc(a.name)+'" onchange="inlineUpdate(\'pc_accounts\',\''+a.id+'\',\'name\',this.value,\'text\',this)"></td>'+
+  '<td>'+inlineSelect(a.account_type,accountTypes,'onchange="inlineUpdate(\'pc_accounts\',\''+a.id+'\',\'account_type\',this.value,\'text\',this)"')+'</td>'+
+  '<td><input class="inlineedit amt" type="number" value="'+Number(a.balance||0)+'" onchange="inlineUpdate(\'pc_accounts\',\''+a.id+'\',\'balance\',this.value,\'number\',this)"></td>'+
+  '<td style="text-align:center"><input class="inlinecheck" type="checkbox" '+(a.include_in_cash?'checked':'')+' onchange="inlineUpdate(\'pc_accounts\',\''+a.id+'\',\'include_in_cash\',this.checked,\'bool\',this)"></td>'+
+  '<td><button class="btn mini danger" onclick="delRow(\'pc_accounts\',\''+a.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="5" class="empty">계좌를 추가하면 여기에 표시됩니다.</td></tr>';
  $('accountSum').textContent=won(state.accounts.filter(a=>a.include_in_cash).reduce((s,a)=>s+Number(a.balance||0),0));
- $('recurringRows').innerHTML=state.recurring.length?state.recurring.map(r=>'<tr><td><b>'+esc(r.name)+'</b><br><small>'+esc(r.category)+'</small></td><td>'+r.item_type+'</td><td>'+r.scope+'</td><td class="amt">'+won(r.amount)+'</td><td>'+ (r.due_day?r.due_day+'일':'-')+'</td><td>'+esc(r.payment_method||'-')+'</td><td><button class="btn mini danger" onclick="deactivateRecurring(\''+r.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">반복비용을 등록하세요.</td></tr>';
+
+ const cats=['주거','카드','차량','보험','통신','식비','구독','세금','저축','기타'].map(x=>[x,x]);
+ const types=[['expense','지출'],['income','수입']], scopes=[['personal','개인'],['business','사업체']];
+ $('recurringRows').innerHTML=state.recurring.length?state.recurring.map(r=>'<tr>'+
+  '<td><input class="inlineedit" value="'+esc(r.name)+'" onchange="inlineUpdate(\'pc_recurring_items\',\''+r.id+'\',\'name\',this.value,\'text\',this)"></td>'+
+  '<td>'+inlineSelect(r.item_type,types,'onchange="inlineUpdate(\'pc_recurring_items\',\''+r.id+'\',\'item_type\',this.value,\'text\',this)"')+'</td>'+
+  '<td>'+inlineSelect(r.category,cats,'onchange="inlineUpdate(\'pc_recurring_items\',\''+r.id+'\',\'category\',this.value,\'text\',this)"')+'</td>'+
+  '<td>'+inlineSelect(r.scope,scopes,'onchange="inlineUpdate(\'pc_recurring_items\',\''+r.id+'\',\'scope\',this.value,\'text\',this)"')+'</td>'+
+  '<td><input class="inlineedit amt" type="number" value="'+Number(r.amount||0)+'" onchange="inlineUpdate(\'pc_recurring_items\',\''+r.id+'\',\'amount\',this.value,\'number\',this)"></td>'+
+  '<td><input class="inlineedit" style="width:72px" type="number" min="1" max="31" value="'+(r.due_day||'')+'" onchange="inlineUpdate(\'pc_recurring_items\',\''+r.id+'\',\'due_day\',this.value,\'nullableNumber\',this)"></td>'+
+  '<td><input class="inlineedit" value="'+esc(r.payment_method||'')+'" placeholder="카드/계좌" onchange="inlineUpdate(\'pc_recurring_items\',\''+r.id+'\',\'payment_method\',this.value,\'text\',this)"></td>'+
+  '<td><button class="btn mini danger" onclick="deactivateRecurring(\''+r.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">반복비용을 등록하면 여기에 표시됩니다.</td></tr>';
  $('recurringSum').textContent='개인 월지출 '+won(state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense').reduce((s,r)=>s+Number(r.amount||0),0));
- const tx=state.tx.slice(0,40);$('txRows').innerHTML=tx.length?tx.map(t=>'<tr><td>'+t.tx_date+'</td><td>'+t.tx_type+'</td><td>'+esc(t.category)+'</td><td>'+esc(t.merchant||'-')+'</td><td>'+esc(t.account_name||'-')+'</td><td class="amt '+(t.tx_type==='expense'?'bad':t.tx_type==='income'?'good':'')+'">'+won(t.amount)+'</td><td>'+t.scope+'</td><td><button class="btn mini danger" onclick="delRow(\'pc_transactions\',\''+t.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">실제 거래를 기록하세요.</td></tr>';
+
+ const txTypes=[['expense','지출'],['income','수입'],['transfer','이체']], txScopes=[['personal','개인'],['business','사업 관련']];
+ const tx=state.tx.slice(0,40);
+ $('txRows').innerHTML=tx.length?tx.map(t=>'<tr>'+
+  '<td><input class="inlineedit" type="date" value="'+t.tx_date+'" onchange="inlineUpdate(\'pc_transactions\',\''+t.id+'\',\'tx_date\',this.value,\'text\',this)"></td>'+
+  '<td>'+inlineSelect(t.tx_type,txTypes,'onchange="inlineUpdate(\'pc_transactions\',\''+t.id+'\',\'tx_type\',this.value,\'text\',this)"')+'</td>'+
+  '<td><input class="inlineedit" value="'+esc(t.category)+'" onchange="inlineUpdate(\'pc_transactions\',\''+t.id+'\',\'category\',this.value,\'text\',this)"></td>'+
+  '<td><input class="inlineedit" value="'+esc(t.merchant||'')+'" onchange="inlineUpdate(\'pc_transactions\',\''+t.id+'\',\'merchant\',this.value,\'text\',this)"></td>'+
+  '<td><input class="inlineedit" value="'+esc(t.account_name||'')+'" onchange="inlineUpdate(\'pc_transactions\',\''+t.id+'\',\'account_name\',this.value,\'text\',this)"></td>'+
+  '<td><input class="inlineedit amt" type="number" value="'+Number(t.amount||0)+'" onchange="inlineUpdate(\'pc_transactions\',\''+t.id+'\',\'amount\',this.value,\'number\',this)"></td>'+
+  '<td>'+inlineSelect(t.scope,txScopes,'onchange="inlineUpdate(\'pc_transactions\',\''+t.id+'\',\'scope\',this.value,\'text\',this)"')+'</td>'+
+  '<td><button class="btn mini danger" onclick="delRow(\'pc_transactions\',\''+t.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">실제 거래를 기록하면 여기에 표시됩니다.</td></tr>';
  const mm=metrics();$('txSummary').textContent='이번달 지출 '+won(mm.actualSpend)+' / 수입 '+won(mm.directIncome)
 }
-async function addAccount(){const row={name:$('accName').value.trim(),account_type:$('accType').value,balance:+$('accBalance').value||0};if(!row.name)return;const {error}=await sb.from('pc_accounts').insert(row);if(error)return alert(error.message);$('accName').value='';$('accBalance').value='';await loadAll();toast('계좌 저장')}
+async function addAccount(){const row={name:$('accName').value.trim(),account_type:$('accType').value,balance:+$('accBalance').value||0};if(!row.name){toast('계좌 이름을 입력하세요.');return}const {error}=await sb.from('pc_accounts').insert(row);if(error)return alert(error.message);$('accName').value='';$('accBalance').value='';await loadAll();toast('저장됨 · 아래 현재 자산에서 바로 수정 가능')}
 async function updateBalance(id,current){const v=prompt('현재 잔액을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return alert('숫자로 입력하세요.');const {error}=await sb.from('pc_accounts').update({balance:n,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);await loadAll()}
-async function addRecurring(){const row={name:$('recName').value.trim(),item_type:$('recType').value,category:$('recCat').value,amount:+$('recAmount').value||0,due_day:+$('recDay').value||null,scope:$('recScope').value,payment_method:$('recMethod').value.trim()};if(!row.name)return;const {error}=await sb.from('pc_recurring_items').insert(row);if(error)return alert(error.message);['recName','recAmount','recDay','recMethod'].forEach(id=>$(id).value='');await loadAll();toast('반복항목 저장')}
+async function addRecurring(){const row={name:$('recName').value.trim(),item_type:$('recType').value,category:$('recCat').value,amount:+$('recAmount').value||0,due_day:+$('recDay').value||null,scope:$('recScope').value,payment_method:$('recMethod').value.trim()};if(!row.name){toast('항목명을 입력하세요.');return}const {error}=await sb.from('pc_recurring_items').insert(row);if(error)return alert(error.message);['recName','recAmount','recDay','recMethod'].forEach(id=>$(id).value='');await loadAll();toast('저장됨 · 아래 반복 항목에서 바로 수정 가능')}
 async function deactivateRecurring(id){if(!confirm('이 반복항목을 삭제할까요?'))return;await sb.from('pc_recurring_items').update({active:false}).eq('id',id);await loadAll()}
-async function addTransaction(){const row={tx_date:$('txDate').value||today,tx_type:$('txType').value,amount:+$('txAmount').value||0,category:$('txCategory').value.trim()||'기타',merchant:$('txMerchant').value.trim(),account_name:$('txAccount').value.trim(),scope:$('txScope').value};if(!row.amount)return;const {error}=await sb.from('pc_transactions').insert(row);if(error)return alert(error.message);['txAmount','txCategory','txMerchant','txAccount'].forEach(id=>$(id).value='');await loadAll();toast('거래 저장')}
+async function addTransaction(){const row={tx_date:$('txDate').value||today,tx_type:$('txType').value,amount:+$('txAmount').value||0,category:$('txCategory').value.trim()||'기타',merchant:$('txMerchant').value.trim(),account_name:$('txAccount').value.trim(),scope:$('txScope').value};if(!row.amount){toast('금액을 입력하세요.');return}const {error}=await sb.from('pc_transactions').insert(row);if(error)return alert(error.message);['txAmount','txCategory','txMerchant','txAccount'].forEach(id=>$(id).value='');await loadAll();toast('거래 저장 · 아래 최근 거래에서 바로 수정 가능')}
 
 function renderDebt(){const m=metrics();$('dTotal').textContent=won(m.debt);$('dMin').textContent=won(m.debtMin);$('dExtra').textContent=won(m.extra);$('dDate').textContent=payoffText(0);$('dDate100').textContent=payoffText(1000000);$('debtSummary').textContent='개인 '+won(m.debt)+' / 사업 '+won(state.debts.filter(d=>d.is_business_debt).reduce((s,d)=>s+Number(d.balance||0),0));
  $('debtRows').innerHTML=state.debts.length?state.debts.map(d=>'<tr><td><b>'+esc(d.name)+'</b><br><small>'+esc(d.lender||'-')+'</small></td><td><span class="tag '+(d.is_business_debt?'orange':'green')+'">'+(d.is_business_debt?'사업':'개인')+'</span></td><td class="amt">'+won(d.balance)+'</td><td>'+Number(d.apr||0).toFixed(2)+'%</td><td class="amt">'+won(d.min_payment)+'</td><td>'+(d.payment_day?d.payment_day+'일':'-')+'</td><td>'+(d.maturity_date||'-')+'</td><td><button class="btn mini" onclick="updateDebtBalance(\''+d.id+'\','+Number(d.balance||0)+')">잔액수정</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">대출을 추가하세요.</td></tr>'}

@@ -56,7 +56,7 @@ function mountV3(){
 
   var lp=document.getElementById('loginPanel');
   if(lp)lp.innerHTML=
-    '<div class="login-card"><h2>정권통신 대표 로그인</h2><p>대표 계정으로 로그인하면 장부·고객·페이백·비용 데이터가 서버에서 불러와집니다.</p><input id="loginEmail" type="email" value="needis123@gmail.com" placeholder="이메일"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key===\\'Enter\\')loginSupabase()"><div class="login-actions"><button class="btn primary" onclick="loginSupabase()">로그인</button><button class="btn" onclick="resetPasswordEmail()">비밀번호 재설정 메일 보내기</button><button class="btn ghost" onclick="hideLogin()">닫기</button></div><div id="loginMsg" style="font-size:11px;color:#b05a00;margin-top:10px"></div><div class="login-help">현재 대표 계정에는 비밀번호가 설정되어 있습니다. Invalid login credentials가 나오면 입력한 비밀번호가 현재 비밀번호와 다른 상태입니다. 기억이 안 나면 재설정 메일을 이용하세요.</div></div>';
+    '<div class="login-card"><h2>정권통신 대표 로그인</h2><p>대표 계정으로 로그인하면 장부·고객·페이백·비용 데이터가 서버에서 불러와집니다.</p><input id="loginEmail" type="email" value="needis123@gmail.com" placeholder="이메일"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key===&#39;Enter&#39;)loginSupabase()"><div class="login-actions"><button class="btn primary" onclick="loginSupabase()">로그인</button><button class="btn" onclick="resetPasswordEmail()">비밀번호 재설정 메일 보내기</button><button class="btn ghost" onclick="hideLogin()">닫기</button></div><div id="loginMsg" style="font-size:11px;color:#b05a00;margin-top:10px"></div><div class="login-help">현재 대표 계정에는 비밀번호가 설정되어 있습니다. Invalid login credentials가 나오면 입력한 비밀번호가 현재 비밀번호와 다른 상태입니다. 기억이 안 나면 재설정 메일을 이용하세요.</div></div>';
   initV3Months();
 }
 

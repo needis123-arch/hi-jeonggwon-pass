@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.12</title>
+<title>정권통신 Business Center V3.13</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -75,12 +75,13 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 @media(max-width:1100px){.ledger-month-nav{grid-template-columns:repeat(4,minmax(105px,1fr))}.ledger-control-top{flex-direction:column}.ledger-control-top .toolbar{width:100%}}
 @media(max-width:700px){.ledger-month-nav{grid-template-columns:repeat(2,minmax(105px,1fr))}}
 
+.moneyI{font-variant-numeric:tabular-nums;font-weight:800;letter-spacing:.15px}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.12</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.13</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -609,6 +610,12 @@ function restoreLedgerDraft(){try{const d=JSON.parse(localStorage.getItem(LEDGER
 function clearLedgerDraft(){localStorage.removeItem(LEDGER_DRAFT_KEY)}
 function affiliateDueDate(){const d=$('fDate')?.value;if(!d)return '';const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+14);return ymd(x)}
 function affiliateCardUI(){if(!$('fCardStatus'))return;const active=$('fCardStatus').value!=='안함';['fCardCompany','fCardAmount'].forEach(id=>{if($(id))$(id).disabled=!active});if($('fCardDue')){$('fCardDue').disabled=!active;$('fCardDue').value=active?affiliateDueDate():'';$('fCardDue').readOnly=true}if($('cardDueHelp'))$('cardDueHelp').textContent=active?'자동기한: 개통일 + 14일':'제휴카드 미사용'}
+function moneyNumber(v){const s=String(v??'').replace(/,/g,'').replace(/[^0-9-]/g,'');return Number(s||0)}
+function formatMoneyInput(el){if(!el)return;const raw=String(el.value||'').replace(/,/g,'').replace(/[^0-9-]/g,'');if(raw===''||raw==='-'){el.value=raw;return}const neg=raw.startsWith('-'),digits=raw.replace(/-/g,'').replace(/^0+(?=\\d)/,'');el.value=(neg?'-':'')+Number(digits||0).toLocaleString('ko-KR')}
+function formatAllMoneyInputs(){document.querySelectorAll('#modalBody .moneyI').forEach(formatMoneyInput)}
+function paybackAutoDueDate(){const base=$('fDate')?.value;if(!base)return '';const p=base.split('-').map(Number);return ymd(new Date(p[0],p[1]+1,0,12,0,0))}
+function shouldTrackUsed(){return moneyNumber($('fU')?.value)>0||Boolean(($('fUsedModel')?.value||'').trim())}
+function refreshOperationalDates(){const pay=moneyNumber($('fQ')?.value)>0,used=shouldTrackUsed();if($('fPbDue')){$('fPbDue').value=pay?paybackAutoDueDate():'';$('fPbDue').readOnly=true}if($('pbDueHelp'))$('pbDueHelp').textContent=pay?'자동: 개통월 다음달 말일':'페이백 입력 시 자동계산';if($('fUsedDue')){$('fUsedDue').value=used?addDaysFromActivation(14):'';$('fUsedDue').readOnly=true}if($('fUsedRequired')){$('fUsedRequired').value=used?'true':'false';$('fUsedRequired').disabled=true}if($('usedDueHelp'))$('usedDueHelp').textContent=used?'자동: 개통일 + 14일 · 중고반납 목록 자동등록':'중고기종 또는 중고금액 입력 시 자동등록'}
 
 
 function maintenanceRuleOptions(){
@@ -616,13 +623,13 @@ function maintenanceRuleOptions(){
     '<option value="DIRECT">직접입력</option>'+
     '<option value="D_CUSTOM">D + 직접 일수</option>'+
     '<option value="M_CUSTOM">M + 개월 + 일</option>'+
-    '<option value="MEND+0">당월말(M)</option>'+
-    '<option value="MEND+1">익월말(M + 1개월)</option>'+
-    '<option value="MEND+2">익익월말(M + 2개월)</option>'+
-    '<option value="MEND+3">M + 3개월 월말</option>'+
-    '<option value="MEND+4">M + 4개월 월말</option>'+
-    '<option value="MEND+5">M + 5개월 월말</option>'+
-    '<option value="MEND+6">M + 6개월 월말</option>'+
+    '<option value="MEND+0">M+1 · 당월말 유지 → 익월 1일</option>'+
+    '<option value="MEND+1">M+2 · 익월말 유지 → 다음달 1일</option>'+
+    '<option value="MEND+2">M+3 · 익익월말 유지 → 다음달 1일</option>'+
+    '<option value="MEND+3">M+4 · 3개월 후 월말 유지 → 다음달 1일</option>'+
+    '<option value="MEND+4">M+5 · 4개월 후 월말 유지 → 다음달 1일</option>'+
+    '<option value="MEND+5">M+6 · 5개월 후 월말 유지 → 다음달 1일</option>'+
+    '<option value="MEND+6">M+7 · 6개월 후 월말 유지 → 다음달 1일</option>'+
     '<option value="D+31">31일(D+31일)</option>'+
     '<option value="D+91">91일(D+91일)</option>'+
     '<option value="D+93">93일(D+93일)</option>'+
@@ -646,7 +653,7 @@ function addMonthsClamped(base,months,extraDays){
 function monthEndFromActivation(months){
   const base=$('fDate')?.value;if(!base)return '';
   const p=base.split('-').map(Number);
-  return ymd(new Date(p[0],p[1]+Number(months||0),0,12,0,0));
+  return ymd(new Date(p[0],p[1]+Number(months||0),1,12,0,0));
 }
 function storedMaintenanceRule(prefix){
   const rule=$(prefix+'Rule')?.value||'NONE';
@@ -680,27 +687,35 @@ function openLedger(editId=null){editingLedgerId=editId||null;modalMode='ledger'
 <div class="field"><label>번호</label><input id="fPhone" placeholder="01012345678"></div><div class="field"><label>통신사</label><select id="fCarrier" onchange="affiliateCardUI()"><option value="">선택</option><option>SKT</option><option>KT</option><option>LGU+</option><option>알뜰</option></select></div>
 <div class="field"><label>모델명</label><input id="fModel"></div><div class="field"><label>판매유형</label><select id="fDeal"><option>MNP</option><option>기변</option><option>010신규</option><option>유심단독</option><option>동판</option><option>약갱</option><option>번들</option></select></div>
 <div class="field"><label>유입경로</label><select id="fSource"><option value="">선택</option>${optHtml('lead_source')}</select></div><div class="field"><label>요금제</label><input id="fPlan"></div>
-<div class="field"><label>판매자</label><select id="fStaff">${staffHtml()}</select></div><div class="field"><label>출고가</label><input id="fRetail" type="number" value="0"></div>
-<div class="field"><label>K 기본리베이트</label><input class="calcI" id="fK" type="number" value="0"></div><div class="field"><label>L 현금판매금액</label><input class="calcI" id="fL" type="number" value="0"></div>
-<div class="field"><label>Q 페이백</label><input class="calcI" id="fQ" type="number" value="0"></div><div class="field"><label>R 위약금대납</label><input class="calcI" id="fR" type="number" value="0"></div>
-<div class="field"><label>S 현금판매받은돈</label><input class="calcI" id="fS" type="number" value="0"></div><div class="field"><label>T 유심</label><input class="calcI" id="fT" type="number" value="0"></div>
-<div class="field"><label>U 중고금액</label><input class="calcI" id="fU" type="number" value="0"></div><div class="field"><label>중고기종</label><input id="fUsedModel"></div>
+<div class="field"><label>판매자</label><select id="fStaff">${staffHtml()}</select></div><div class="field"><label>출고가</label><input class="moneyI" id="fRetail" type="text" inputmode="numeric" value="0" placeholder="2,090,000"></div>
+<div class="field"><label>K 기본리베이트</label><input class="calcI moneyI" id="fK" type="text" inputmode="numeric" value="0" placeholder="450,000"></div><div class="field"><label>L 현금판매금액</label><input class="calcI moneyI" id="fL" type="text" inputmode="numeric" value="0" placeholder="300,000"></div>
+<div class="field"><label>Q 페이백</label><input class="calcI moneyI" id="fQ" type="text" inputmode="numeric" value="0" placeholder="0"></div><div class="field"><label>R 위약금대납</label><input class="calcI moneyI" id="fR" type="text" inputmode="numeric" value="0" placeholder="0"></div>
+<div class="field"><label>S 현금판매받은돈</label><input class="calcI moneyI" id="fS" type="text" inputmode="numeric" value="0" placeholder="0"></div><div class="field"><label>T 유심</label><input class="calcI moneyI" id="fT" type="text" inputmode="numeric" value="0" placeholder="0"></div>
+<div class="field"><label>U 중고금액</label><input class="calcI moneyI" id="fU" type="text" inputmode="numeric" value="0" placeholder="0"></div><div class="field"><label>중고기종</label><input id="fUsedModel"></div>
 <div class="calc-preview"><div><span>M 실리베이트</span><b id="pvM">0원</b></div><div><span>P 부가세</span><b id="pvP">0원</b></div><div><span>W 최종마진</span><b id="pvW">0원</b></div></div>
-<div class="field"><label>중고 반납예정일</label><input id="fUsedDue" type="date"></div><div class="field"><label>중고 미반납 체크</label><select id="fUsedRequired"><option value="false">이미 반납/해당없음</option><option value="true">미반납 추적등록</option></select></div>
-<div class="field"><label>페이백 지급예정일</label><input id="fPbDue" type="date"></div><div class="field"><label>은행</label><input id="fBank"></div>
+<div class="field"><label>중고 반납예정일</label><input id="fUsedDue" type="date" readonly><small id="usedDueHelp" style="color:#6c7788">중고기종 또는 중고금액 입력 시 자동등록</small></div><div class="field"><label>중고 반납 추적</label><select id="fUsedRequired" disabled><option value="false">해당없음</option><option value="true">자동 추적등록</option></select></div>
+<div class="field"><label>페이백 지급예정일</label><input id="fPbDue" type="date" readonly><small id="pbDueHelp" style="color:#6c7788">페이백 입력 시 자동계산</small></div><div class="field"><label>은행</label><input id="fBank"></div>
 <div class="field"><label>예금주</label><input id="fHolder"></div><div class="field"><label>계좌번호</label><input id="fAccount"></div>
 <div class="field"><label>제휴카드</label><select id="fCardStatus" onchange="affiliateCardUI()"><option>안함</option><option>미완료</option><option>완료</option></select></div><div class="field"><label>카드사</label><input id="fCardCompany" placeholder="예: 삼성카드"></div>
-<div class="field"><label>제휴카드 금액</label><input id="fCardAmount" type="number" value="0"></div><div class="field"><label>등록기한</label><input id="fCardDue" type="date" readonly><small id="cardDueHelp" style="color:#6c7788">제휴카드 미사용</small></div>
-<div class="field full" style="margin-top:8px"><label style="font-size:12px;color:#111318">유지조건 날짜 자동계산 · 개통일 기준</label><div style="font-size:10px;color:#6c7788;margin-top:3px">장부를 나중에 입력해도 위의 개통일을 기준으로 계산됩니다.</div></div>
+<div class="field"><label>제휴카드 금액</label><input class="moneyI" id="fCardAmount" type="text" inputmode="numeric" value="0" placeholder="0"></div><div class="field"><label>등록기한</label><input id="fCardDue" type="date" readonly><small id="cardDueHelp" style="color:#6c7788">제휴카드 미사용</small></div>
+<div class="field full" style="margin-top:8px"><label style="font-size:12px;color:#111318">유지조건 날짜 자동계산 · 개통일 기준</label><div style="font-size:10px;color:#6c7788;margin-top:3px">장부를 나중에 입력해도 개통일 기준입니다. 월말 유지 규칙은 마지막 유지일 다음날(1일)을 해지·변경 가능일로 계산합니다.</div></div>
 <div class="field"><label>요금제 변경 기준</label><select id="fPlanRule" onchange="maintenanceUI('fPlan')">${maintenanceRuleOptions()}</select><div id="fPlanDWrap" style="display:none;gap:6px;align-items:center"><span style="font-size:10px">D +</span><input id="fPlanCustomDays" type="number" min="0" value="0" oninput="maintenanceUI('fPlan')" style="width:95px"><span style="font-size:10px">일</span></div><div id="fPlanMWrap" style="display:none;gap:6px;align-items:center"><span style="font-size:10px">M +</span><input id="fPlanCustomMonths" type="number" min="0" value="0" oninput="maintenanceUI('fPlan')" style="width:70px"><span style="font-size:10px">개월 +</span><input id="fPlanCustomExtra" type="number" min="0" value="0" oninput="maintenanceUI('fPlan')" style="width:70px"><span style="font-size:10px">일</span></div></div>
 <div class="field"><label>요금제 변경가능일</label><input id="fPlanDate" type="date" readonly></div>
 <div class="field"><label>휴대폰 보험 해지 기준</label><select id="fInsuranceRule" onchange="maintenanceUI('fInsurance')">${maintenanceRuleOptions()}</select><div id="fInsuranceDWrap" style="display:none;gap:6px;align-items:center"><span style="font-size:10px">D +</span><input id="fInsuranceCustomDays" type="number" min="0" value="0" oninput="maintenanceUI('fInsurance')" style="width:95px"><span style="font-size:10px">일</span></div><div id="fInsuranceMWrap" style="display:none;gap:6px;align-items:center"><span style="font-size:10px">M +</span><input id="fInsuranceCustomMonths" type="number" min="0" value="0" oninput="maintenanceUI('fInsurance')" style="width:70px"><span style="font-size:10px">개월 +</span><input id="fInsuranceCustomExtra" type="number" min="0" value="0" oninput="maintenanceUI('fInsurance')" style="width:70px"><span style="font-size:10px">일</span></div></div>
 <div class="field"><label>휴대폰 보험 해지가능일</label><input id="fInsuranceDate" type="date" readonly></div>
 <div class="field"><label>부가서비스 해지 기준</label><select id="fAddonRule" onchange="maintenanceUI('fAddon')">${maintenanceRuleOptions()}</select><div id="fAddonDWrap" style="display:none;gap:6px;align-items:center"><span style="font-size:10px">D +</span><input id="fAddonCustomDays" type="number" min="0" value="0" oninput="maintenanceUI('fAddon')" style="width:95px"><span style="font-size:10px">일</span></div><div id="fAddonMWrap" style="display:none;gap:6px;align-items:center"><span style="font-size:10px">M +</span><input id="fAddonCustomMonths" type="number" min="0" value="0" oninput="maintenanceUI('fAddon')" style="width:70px"><span style="font-size:10px">개월 +</span><input id="fAddonCustomExtra" type="number" min="0" value="0" oninput="maintenanceUI('fAddon')" style="width:70px"><span style="font-size:10px">일</span></div></div>
 <div class="field"><label>부가서비스 해지가능일</label><input id="fAddonDate" type="date" readonly></div>
-<div class="field full"><label>메모</label><textarea id="fMemo" rows="2"></textarea></div></div>`;sessionStorage.setItem('jk-ledger-modal-open','1');const restored=editingLedgerId?false:restoreLedgerDraft();document.querySelectorAll('#modalBody input,#modalBody select,#modalBody textarea').forEach(x=>{x.addEventListener('input',saveLedgerDraft);x.addEventListener('change',saveLedgerDraft)});document.querySelectorAll('.calcI').forEach(x=>x.addEventListener('input',previewCalc));if($('fDate'))$('fDate').addEventListener('change',()=>{affiliateCardUI();refreshMaintenanceDates()});affiliateCardUI();refreshMaintenanceDates();previewCalc();showModal();if(editingLedgerId)populateLedgerEdit(editingLedgerId);else if(restored)toast('작성 중이던 판매건을 복원했습니다.')}
+<div class="field full"><label>메모</label><textarea id="fMemo" rows="2"></textarea></div></div>`;sessionStorage.setItem('jk-ledger-modal-open','1');const restored=editingLedgerId?false:restoreLedgerDraft();
+document.querySelectorAll('#modalBody .moneyI').forEach(x=>{
+  x.addEventListener('input',()=>{formatMoneyInput(x);previewCalc();refreshOperationalDates();saveLedgerDraft()});
+  x.addEventListener('focus',()=>{if(moneyNumber(x.value)===0)x.select()});
+});
+document.querySelectorAll('#modalBody input:not(.moneyI),#modalBody select,#modalBody textarea').forEach(x=>{x.addEventListener('input',saveLedgerDraft);x.addEventListener('change',saveLedgerDraft)});
+if($('fUsedModel'))$('fUsedModel').addEventListener('input',()=>{refreshOperationalDates();saveLedgerDraft()});
+if($('fDate'))$('fDate').addEventListener('change',()=>{affiliateCardUI();refreshMaintenanceDates();refreshOperationalDates()});
+affiliateCardUI();refreshMaintenanceDates();formatAllMoneyInputs();refreshOperationalDates();previewCalc();showModal();if(editingLedgerId)populateLedgerEdit(editingLedgerId);else if(restored){formatAllMoneyInputs();refreshOperationalDates();previewCalc();toast('작성 중이던 판매건을 복원했습니다.')}}
 
-function setField(id,value){const e=$(id);if(e)e.value=value??''}
+function setField(id,value){const e=$(id);if(e){e.value=value??'';if(e.classList.contains('moneyI'))formatMoneyInput(e)}}
 function setMaintenanceFromStored(prefix,rule,date){
   const sel=$(prefix+'Rule');if(!sel)return;
   rule=rule||'NONE';
@@ -749,11 +764,13 @@ async function populateLedgerEdit(id){
   setMaintenanceFromStored('fInsurance',r.insurance_cancel_rule,r.insurance_cancel_date);
   setMaintenanceFromStored('fAddon',r.addon_cancel_rule,r.addon_cancel_date);
   affiliateCardUI();
+  formatAllMoneyInputs();
+  refreshOperationalDates();
   previewCalc();
   $('modalBody').scrollTop=0;
 }
 
-function previewCalc(){const n=id=>Number($(id)?.value||0),m=n('fK')-n('fL'),p=Math.round(m*.1),w=m-p-n('fQ')-n('fR')+n('fS')-n('fT')+n('fU');if($('pvM'))$('pvM').textContent=won(m);if($('pvP'))$('pvP').textContent=won(p);if($('pvW'))$('pvW').textContent=won(w)}
+function previewCalc(){const n=id=>moneyNumber($(id)?.value),m=n('fK')-n('fL'),p=Math.round(m*.1),w=m-p-n('fQ')-n('fR')+n('fS')-n('fT')+n('fU');if($('pvM'))$('pvM').textContent=won(m);if($('pvP'))$('pvP').textContent=won(p);if($('pvW'))$('pvW').textContent=won(w)}
 async function saveLedger(){
   const editId=editingLedgerId;
   const name=$('fName').value.trim(),phone=$('fPhone').value.replace(/\D/g,''),birth=$('fBirth').value||null;
@@ -762,7 +779,7 @@ async function saveLedger(){
   const customerPayload={name,phone,phone_normalized:phone,birth_date:birth};
   const cu=await sb.from('jk_customers').upsert(customerPayload,{onConflict:'phone_normalized'}).select('id').single();
   if(cu.error){alert(cu.error.message);return}
-  const n=id=>Number($(id).value||0),usedReq=$('fUsedRequired').value==='true';
+  const n=id=>moneyNumber($(id)?.value),usedReq=shouldTrackUsed();
   const payload={
     activation_date:$('fDate').value,vendor:$('fVendor').value||null,customer_id:cu.data.id,
     customer_name_snapshot:name,customer_phone_snapshot:phone,customer_birth_date_snapshot:birth,
@@ -800,16 +817,6 @@ async function saveLedger(){
     if(pq.error)console.warn('payback account update',pq.error);
   }else if(editId&&n('fQ')<=0){
     await sb.from('jk_payback_accounts').delete().eq('ledger_id',ledgerId);
-  }
-
-  if(usedReq){
-    const uq=await sb.from('jk_used_device_returns').upsert({
-      ledger_id:ledgerId,expected_model:$('fUsedModel').value||null,expected_amount:n('fU'),
-      assigned_staff_id:$('fStaff').value||null,due_date:$('fUsedDue').value||null,updated_at:new Date().toISOString()
-    },{onConflict:'ledger_id'});
-    if(uq.error)console.warn('used return update',uq.error);
-  }else if(editId){
-    await sb.from('jk_used_device_returns').update({response_status:'취소',updated_at:new Date().toISOString()}).eq('ledger_id',ledgerId);
   }
 
   if(!editId)clearLedgerDraft();

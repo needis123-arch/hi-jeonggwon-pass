@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.6</title>
+<title>정권통신 Business Center V3.6.1</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -59,7 +59,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.6</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.6.1</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="ledger">장부 관리</button>
@@ -257,11 +257,11 @@ async function loadAlerts(){
 }
 function renderAlertRow(a){
   let action='';
-  if(a.alert_type==='PAYBACK_MONTHEND')action='<button class="btn" onclick="go(\\'payback\\')">페이백 보기</button>';
-  else if(a.alert_type==='USED_DEVICE_RETURN')action='<button class="btn" onclick="go(\\'used\\')">반납 확인</button>';
-  else if(a.alert_type==='AFFILIATE_CARD')action='<button class="btn" onclick="go(\\'affiliate\\')">카드 확인</button>';
-  else action='<button class="btn primary" onclick="markMaintenanceDone(\\''+a.ledger_id+'\\',\\''+a.alert_type+'\\')">처리완료</button>';
-  return '<div class="alert-item '+esc(a.severity)+'"><span class="alert-dot"></span><div><div class="alert-title">'+esc(a.title)+'</div><div class="alert-detail">'+esc(a.detail)+' · 기준일 '+esc(a.due_date)+'</div></div><div class="alert-actions">'+action+'</div></div>';
+  if(a.alert_type==='PAYBACK_MONTHEND') action=`<button class="btn" onclick="go('payback')">페이백 보기</button>`;
+  else if(a.alert_type==='USED_DEVICE_RETURN') action=`<button class="btn" onclick="go('used')">반납 확인</button>`;
+  else if(a.alert_type==='AFFILIATE_CARD') action=`<button class="btn" onclick="go('affiliate')">카드 확인</button>`;
+  else action=`<button class="btn primary" onclick="markMaintenanceDone('${a.ledger_id}','${a.alert_type}')">처리완료</button>`;
+  return `<div class="alert-item ${esc(a.severity)}"><span class="alert-dot"></span><div><div class="alert-title">${esc(a.title)}</div><div class="alert-detail">${esc(a.detail)} · 기준일 ${esc(a.due_date)}</div></div><div class="alert-actions">${action}</div></div>`;
 }
 async function markMaintenanceDone(ledgerId,eventType){
   if(!confirm('이 항목을 처리완료로 표시할까요?'))return;

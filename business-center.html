@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.19</title>
+<title>정권통신 Business Center V3.20</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.19</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.20</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -280,9 +280,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 </section>
 
 <section class="page" id="page-expenses">
- <div class="section-head"><div><h2>비용원장</h2><p>고정비와 유동비를 분리해 월별 관리합니다.</p></div><button class="btn primary" onclick="openExpense()">+ 지출 추가</button></div>
+ <div class="section-head"><div><h2>비용원장</h2><p>고정비는 매월 자동반영하고, 유동비는 일회성 또는 기간반복으로 관리합니다.</p></div><button class="btn primary" onclick="openExpense()">+ 지출 추가</button></div>
  <div class="summary"><div class="box"><span>월 총비용</span><strong id="eTotal">0원</strong></div><div class="box"><span>고정비</span><strong id="eFixed">0원</strong></div><div class="box"><span>유동비</span><strong id="eVariable">0원</strong></div><div class="box"><span>고정비 비율</span><strong id="eFixedPct">0.0%</strong></div><div class="box"><span>등록건수</span><strong id="eCount">0건</strong></div></div>
- <div class="table-card card"><div class="table-top"><b>월별 비용 원장</b><div class="toolbar"><input id="expenseMonth" type="month" onchange="loadExpenses()"><select id="expenseFilter" onchange="renderExpenses()"><option value="all">전체</option><option value="fixed">고정비</option><option value="variable">유동비</option></select></div></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>구분</th><th>카테고리</th><th>내용</th><th>금액</th><th>결제수단</th><th>사용처</th><th></th></tr></thead><tbody id="expenseBody"></tbody></table></div></div>
+ <div class="table-card card"><div class="table-top"><div><b>월별 비용 원장</b><div style="font-size:9px;color:#6c7788;margin-top:3px">고정비·반복비용은 한 번 등록하면 해당 월에 자동 반영됩니다.</div></div><div class="toolbar"><input id="expenseMonth" type="month" onchange="loadExpenses()"><select id="expenseFilter" onchange="renderExpenses()"><option value="all">전체</option><option value="fixed">고정비</option><option value="variable">유동비</option></select></div></div><div class="table-wrap"><table><thead><tr><th>시작일</th><th>구분</th><th>카테고리</th><th>내용</th><th>반복</th><th>적용기간</th><th>이번달 금액</th><th>결제수단</th><th>사용처</th><th>관리</th></tr></thead><tbody id="expenseBody"></tbody></table></div></div>
 </section>
 
 
@@ -318,9 +318,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
    <div class="table-top"><b>현금 방어 계산</b></div>
    <div style="display:grid;gap:10px;font-size:11px;line-height:1.65">
     <div>① 현재 가용자금 = <b>통장 + 현금시재 + 기타 가용자금</b></div>
-    <div>② 이번달 말 들어올 돈 = <b>전월 판매건 W 최종마진 합계</b></div>
-    <div>③ 이번달 말까지 확정 차감 = <b>미지급 페이백 + 자동급여 + 직접 입력한 예정지출</b></div>
-    <div>④ 월말 예상잔고가 최소 유지 시재보다 부족하면 그 차액을 <b>추가 확보 필요</b>로 표시합니다.</div>
+    <div>② 이번달 말 들어올 돈 = <b>전월 W 최종마진 - 이미 받은 현금완납(S)</b></div>
+    <div>③ 페이백 Q는 W에 이미 차감되어 있으므로 <b>월말 예상잔고에서 두 번 빼지 않습니다.</b></div>
+    <div>④ 월말 예상잔고 = 현재 가용자금 + 실제 정산예정 - 자동급여 - 직접 입력한 예정지출</div>
+    <div>⑤ 최소 유지 시재보다 부족하면 그 차액을 <b>추가 확보 필요</b>로 표시합니다.</div>
     <div style="padding:10px 12px;background:#f5f7f9;border-radius:12px;color:#6c7788">광고비는 월 계획액을 별도로 보여주되 현재잔고에 이미 빠진 광고비를 중복 차감하지 않습니다.</div>
    </div>
   </div>
@@ -328,7 +329,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
  <div class="table-card card" style="margin-top:16px">
   <div class="table-top"><b>월별 정산 입금 캘린더</b><span class="tag">판매월 → 다음달 말일 입금</span></div>
-  <div class="table-wrap"><table><thead><tr><th>판매월</th><th>판매건수</th><th>장부 W 합계</th><th>입금예정일</th></tr></thead><tbody id="cashSettlementBody"></tbody></table></div>
+  <div class="table-wrap"><table><thead><tr><th>판매월</th><th>판매건수</th><th>W 최종마진 합계</th><th>이미 받은 현금완납(S)</th><th>다음달 실제 정산예정</th><th>입금예정일</th></tr></thead><tbody id="cashSettlementBody"></tbody></table></div>
  </div>
 
  <div class="table-card card" style="margin-top:16px">
@@ -995,7 +996,7 @@ async function deleteLedger(id){if(!confirm('판매건을 삭제할까요?'))ret
 async function loadReport(){const month=$('reportMonth')?.value||mk(now),date=$('reportDate')?.value||ymd(now);const [a,b]=bounds(month);const [mo,dy,st]=await Promise.all([sb.from('jk_v_monthly_sales_summary').select('*').eq('month',a).maybeSingle(),sb.from('jk_v_daily_sales_summary').select('*').eq('activation_date',date).maybeSingle(),sb.from('jk_v_staff_monthly_summary').select('*').eq('month',a).order('staff_name')]);if(mo.error||dy.error||st.error)return;const m=mo.data||{},d=dy.data||{},staff=st.data||[];const marks=r=>`${Number(r.sim_only_count||0)>0?`(+${r.sim_only_count})`:''}${Number(r.dongpan_count||0)>0?`(동판+${r.dongpan_count})`:''}${Number(r.contract_renewal_count||0)>0?`(약갱+${r.contract_renewal_count})`:''}${Number(r.bundle_count||0)>0?`(번들+${r.bundle_count})`:''}`;let txt=`${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일 매출보고\n\n월 총 갯수 ${Number(m.units||0)}개${marks(m)}\n총 매출 : ${won(m.margin_total||0)}\n평균마진 : ${won(m.avg_margin||0)}\n\n일 총 갯수 ${Number(d.units||0)}개${marks(d)}\n총 매출 : ${won(d.margin_total||0)}\n평균마진 : ${won(d.avg_margin||0)}`;staff.forEach(s=>{txt+=`\n\n[${s.staff_name||'미지정'}]\n갯수 ${Number(s.units||0)}개${marks(s)}\n총 매출 : ${won(s.margin_total||0)}\n평균마진 : ${won(s.avg_margin||0)}`});$('reportText').textContent=txt}
 async function copyReport(){await navigator.clipboard.writeText($('reportText').textContent);toast('매출보고 복사 완료')}
 
-async function loadDashboard(){const month=mk(now),[a,b]=bounds(month),prev=new Date(now.getFullYear(),now.getMonth()-1,1),[pa,pb]=bounds(mk(prev)),yearA=`${now.getFullYear()}-01-01`,yearB=`${now.getFullYear()+1}-01-01`;const res=await Promise.all([sb.from('jk_sales_ledger').select('activation_date,final_margin,deal_type,lead_source,salesperson_id').gte('activation_date',a).lt('activation_date',b).order('activation_date'),sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',pa).lt('activation_date',pb),sb.from('jk_expenses').select('amount,is_fixed,category').gte('expense_date',a).lt('expense_date',b),sb.rpc('jk_ad_monthly_rows',{p_month:a}),sb.from('jk_targets').select('*').gte('target_month',yearA).lt('target_month',yearB).order('target_month'),sb.from('jk_year_targets').select('*').eq('target_year',now.getFullYear()).maybeSingle(),sb.from('jk_v_monthly_sales_summary').select('*').gte('month',yearA).lt('month',yearB).order('month'),sb.from('jk_v_staff_monthly_payroll').select('*').eq('month',a).order('staff_name')]);if(res.some(x=>x.error)){console.warn(res.find(x=>x.error)?.error);return}const sales=res[0].data||[],prevSales=res[1].data||[],expenses=res[2].data||[],ads=res[3].data||[],targets=res[4].data||[],yearTarget=res[5].data||null,annual=res[6].data||[],payrollRows=res[7].data||[];state.annual=annual;state.targets=targets;state.yearTarget=yearTarget;state.payroll=payrollRows;const margin=sales.reduce((a,r)=>a+Number(r.final_margin||0),0),units=sales.filter(r=>r.deal_type==='휴대폰').length,manualSalary=expenses.filter(r=>String(r.category||'').trim()==='급여').reduce((a,r)=>a+Number(r.amount||0),0),exp=expenses.filter(r=>String(r.category||'').trim()!=='급여').reduce((a,r)=>a+Number(r.amount||0),0),ad=ads.reduce((a,r)=>a+Number(r.allocated_amount||0),0),payroll=payrollRows.reduce((a,r)=>a+Number(r.payroll_amount||0),0),net=margin-exp-ad-payroll;const tgt=targets.find(t=>String(t.target_month).slice(0,7)===month),goal=Number(tgt?.target_margin||0),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),elapsed=now.getDate(),forecast=Math.round(margin/Math.max(elapsed,1)*days),goalPct=goal?margin/goal*100:0,remain=Math.max(goal-margin,0),need=goal?Math.ceil(remain/Math.max(days-elapsed,1)):0;const sameDay=Math.min(elapsed,new Date(prev.getFullYear(),prev.getMonth()+1,0).getDate()),prevSame=prevSales.filter(r=>Number(String(r.activation_date).slice(8,10))<=sameDay).reduce((a,r)=>a+Number(r.final_margin||0),0),sameDelta=prevSame?(margin-prevSame)/Math.abs(prevSame)*100:null;const yearMargin=annual.reduce((a,r)=>a+Number(r.margin_total||0),0),yearGoal=Number(yearTarget?.target_margin||0),yearPct=yearGoal?yearMargin/yearGoal*100:0;const prevMonthRow=annual.find(r=>String(r.month).slice(0,7)===mk(prev)),prevMonth=Number(prevMonthRow?.margin_total||0),mom=prevMonth?(margin-prevMonth)/Math.abs(prevMonth)*100:null;const attributed=ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);
+async function loadDashboard(){const month=mk(now),[a,b]=bounds(month),prev=new Date(now.getFullYear(),now.getMonth()-1,1),[pa,pb]=bounds(mk(prev)),yearA=`${now.getFullYear()}-01-01`,yearB=`${now.getFullYear()+1}-01-01`;const res=await Promise.all([sb.from('jk_sales_ledger').select('activation_date,final_margin,deal_type,lead_source,salesperson_id').gte('activation_date',a).lt('activation_date',b).order('activation_date'),sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',pa).lt('activation_date',pb),sb.rpc('jk_expense_monthly_rows',{p_month:a}),sb.rpc('jk_ad_monthly_rows',{p_month:a}),sb.from('jk_targets').select('*').gte('target_month',yearA).lt('target_month',yearB).order('target_month'),sb.from('jk_year_targets').select('*').eq('target_year',now.getFullYear()).maybeSingle(),sb.from('jk_v_monthly_sales_summary').select('*').gte('month',yearA).lt('month',yearB).order('month'),sb.from('jk_v_staff_monthly_payroll').select('*').eq('month',a).order('staff_name')]);if(res.some(x=>x.error)){console.warn(res.find(x=>x.error)?.error);return}const sales=res[0].data||[],prevSales=res[1].data||[],expenses=res[2].data||[],ads=res[3].data||[],targets=res[4].data||[],yearTarget=res[5].data||null,annual=res[6].data||[],payrollRows=res[7].data||[];state.annual=annual;state.targets=targets;state.yearTarget=yearTarget;state.payroll=payrollRows;const margin=sales.reduce((a,r)=>a+Number(r.final_margin||0),0),units=sales.filter(r=>r.deal_type==='휴대폰').length,manualSalary=expenses.filter(r=>String(r.category||'').trim()==='급여').reduce((a,r)=>a+Number(r.allocated_amount||r.amount||0),0),exp=expenses.filter(r=>String(r.category||'').trim()!=='급여').reduce((a,r)=>a+Number(r.allocated_amount||r.amount||0),0),ad=ads.reduce((a,r)=>a+Number(r.allocated_amount||0),0),payroll=payrollRows.reduce((a,r)=>a+Number(r.payroll_amount||0),0),net=margin-exp-ad-payroll;const tgt=targets.find(t=>String(t.target_month).slice(0,7)===month),goal=Number(tgt?.target_margin||0),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),elapsed=now.getDate(),forecast=Math.round(margin/Math.max(elapsed,1)*days),goalPct=goal?margin/goal*100:0,remain=Math.max(goal-margin,0),need=goal?Math.ceil(remain/Math.max(days-elapsed,1)):0;const sameDay=Math.min(elapsed,new Date(prev.getFullYear(),prev.getMonth()+1,0).getDate()),prevSame=prevSales.filter(r=>Number(String(r.activation_date).slice(8,10))<=sameDay).reduce((a,r)=>a+Number(r.final_margin||0),0),sameDelta=prevSame?(margin-prevSame)/Math.abs(prevSame)*100:null;const yearMargin=annual.reduce((a,r)=>a+Number(r.margin_total||0),0),yearGoal=Number(yearTarget?.target_margin||0),yearPct=yearGoal?yearMargin/yearGoal*100:0;const prevMonthRow=annual.find(r=>String(r.month).slice(0,7)===mk(prev)),prevMonth=Number(prevMonthRow?.margin_total||0),mom=prevMonth?(margin-prevMonth)/Math.abs(prevMonth)*100:null;const attributed=ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);
  $('dGoalPct').textContent=pct(goalPct);$('dCurrent').textContent=won(margin);$('dTarget').textContent=goal?won(goal):'미설정';$('dGoalBar').style.width=Math.min(goalPct,100)+'%';$('dForecast').textContent=won(forecast);$('dForecastGap').textContent=goal?(forecast>=goal?'목표 예상 초과 '+won(forecast-goal):'목표 예상 부족 '+won(goal-forecast)):'목표 설정 후 계산';$('dRemain').textContent=goal?won(remain):'-';$('dNeedDaily').textContent=goal?won(need):'-';$('dMargin').textContent=won(margin);$('dUnits').textContent=`판매 ${units}대`;$('dSameDelta').textContent=sameDelta===null?'-':(sameDelta>=0?'+':'')+pct(sameDelta);$('dPrevSame').textContent='지난달 동일기간 '+won(prevSame);$('samePeriodCard').className='kpi '+(sameDelta===null?'':sameDelta>=0?'good':'bad');$('dNet').textContent=won(net);$('dExpense').textContent=won(exp+ad+payroll);$('dExpenseDetail').textContent=`광고 ${won(ad)} · 기타비용 ${won(exp)} · 급여 ${won(payroll)}`;$('dPayroll').textContent=won(payroll);$('dPayrollDetail').textContent=payrollRows.length?payrollRows.map(r=>`${r.staff_name} ${Number(r.rate_pct||0).toFixed(1)}%`).join(' · '):'급여율 설정 전';$('dYearMargin').textContent=won(yearMargin);$('dYearGoalText').textContent=yearGoal?`연 목표 ${won(yearGoal)}`:'연간 목표 미설정';$('dYearPct').textContent=pct(yearPct);$('dMoMGrowth').textContent=mom===null?'-':(mom>=0?'+':'')+pct(mom);$('dPrevMonth').textContent='전월 '+won(prevMonth);$('dAds').textContent=won(ad);$('dRoas').textContent=ad?'마진 ROAS '+pct(attributed/ad*100):'광고비 입력 전';renderDashboardSources(sales);renderSellerPerformance(sales,payrollRows);renderDailyDelta(sales,goal,days);drawGoal(sales,goal,days);drawAnnual();renderTargetPage()}
 
 function renderSellerPerformance(rows,payrollRows=[]){
@@ -1163,11 +1164,21 @@ async function deleteAd(id){
 }
 
 
+
+function expenseRepeatLabel(t){
+  return ({one_time:'일회성',monthly:'매월 반복',limited_months:'기간 반복'})[t]||t||'-';
+}
+function expensePeriodLabel(r){
+  const s=r.start_date||r.expense_date;
+  if(r.recurrence_type==='one_time')return s;
+  if(r.recurrence_type==='monthly')return s+' ~ 계속';
+  return s+' ~ '+(r.end_date||'-')+(r.duration_months?' · '+r.duration_months+'개월':'');
+}
 async function loadExpenses(){
   if(!$('expenseMonth'))return;
-  const [a,b]=bounds($('expenseMonth').value||mk(now));
-  const q=await sb.from('jk_expenses').select('*').gte('expense_date',a).lt('expense_date',b).order('expense_date',{ascending:false});
-  if(q.error)return;
+  const month=($('expenseMonth').value||mk(now))+'-01';
+  const q=await sb.rpc('jk_expense_monthly_rows',{p_month:month});
+  if(q.error){console.warn(q.error);return}
   state.expenses=q.data||[];
   renderExpenses();
 }
@@ -1175,12 +1186,32 @@ function renderExpenses(){
   const f=$('expenseFilter')?.value||'all';
   const rows=state.expenses.filter(r=>f==='all'||(f==='fixed'?r.is_fixed:!r.is_fixed));
   $('expenseBody').innerHTML=rows.map(function(r){
-    return '<tr><td>'+r.expense_date+'</td><td><span class="pill '+(r.is_fixed?'blue':'orange')+'">'+(r.is_fixed?'고정비':'유동비')+'</span></td><td>'+esc(r.category)+'</td><td>'+esc(r.description||'-')+'</td><td><b>'+won(r.amount)+'</b></td><td>'+esc(r.payment_method||'-')+'</td><td>'+esc(r.vendor||'-')+'</td><td><div style="display:flex;gap:6px"><button class="btn" onclick="openExpense(\''+r.id+'\')">수정</button><button class="btn danger" onclick="deleteExpense(\''+r.id+'\')">삭제</button></div></td></tr>';
-  }).join('')||'<tr><td colspan="8" class="empty">비용 데이터 없음</td></tr>';
-  const fix=state.expenses.filter(r=>r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0);
-  const vari=state.expenses.filter(r=>!r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0);
+    return '<tr>'+
+      '<td>'+esc(r.start_date||r.expense_date)+'</td>'+
+      '<td><span class="pill '+(r.is_fixed?'blue':'orange')+'">'+(r.is_fixed?'고정비':'유동비')+'</span></td>'+
+      '<td>'+esc(r.category)+'</td>'+
+      '<td>'+esc(r.description||'-')+'</td>'+
+      '<td><b>'+esc(expenseRepeatLabel(r.recurrence_type))+'</b></td>'+
+      '<td>'+esc(expensePeriodLabel(r))+'</td>'+
+      '<td><b>'+won(r.allocated_amount||r.amount)+'</b></td>'+
+      '<td>'+esc(r.payment_method||'-')+'</td>'+
+      '<td>'+esc(r.vendor||'-')+'</td>'+
+      '<td><div style="display:flex;gap:6px"><button class="btn" onclick="openExpense(\''+r.id+'\')">수정</button><button class="btn danger" onclick="deleteExpense(\''+r.id+'\')">삭제</button></div></td>'+
+    '</tr>';
+  }).join('')||'<tr><td colspan="10" class="empty">해당 월에 반영되는 비용이 없습니다.</td></tr>';
+  const fix=rows.filter(r=>r.is_fixed).reduce((a,r)=>a+Number(r.allocated_amount||r.amount||0),0);
+  const vari=rows.filter(r=>!r.is_fixed).reduce((a,r)=>a+Number(r.allocated_amount||r.amount||0),0);
   const total=fix+vari;
-  $('eTotal').textContent=won(total);$('eFixed').textContent=won(fix);$('eVariable').textContent=won(vari);$('eFixedPct').textContent=total?pct(fix/total*100):'0.0%';$('eCount').textContent=state.expenses.length+'건';
+  $('eTotal').textContent=won(total);$('eFixed').textContent=won(fix);$('eVariable').textContent=won(vari);$('eFixedPct').textContent=total?pct(fix/total*100):'0.0%';$('eCount').textContent=rows.length+'건';
+}
+function expenseScheduleUI(typeChanged=false){
+  if(!$('eTypeF'))return;
+  const fixed=$('eTypeF').value==='fixed';
+  if(typeChanged&&$('eRepeatF'))$('eRepeatF').value=fixed?'monthly':'one_time';
+  const repeat=$('eRepeatF')?.value||'one_time';
+  if($('eDurationWrap'))$('eDurationWrap').style.display=repeat==='limited_months'?'block':'none';
+  if($('eRepeatHelp'))$('eRepeatHelp').textContent=fixed&&repeat==='monthly'?'고정비는 한 번 등록하면 매월 자동 반영됩니다.':repeat==='limited_months'?'시작월 포함 입력한 개월수만 반영되고 자동 종료됩니다.':repeat==='one_time'?'선택한 시작월에만 반영됩니다.':'매월 계속 반영됩니다.';
+  expenseCats();
 }
 function openExpense(id=null){
   editingExpenseId=id||null;modalMode='expense';
@@ -1188,18 +1219,25 @@ function openExpense(id=null){
   if(editingExpenseId&&!r){alert('수정할 비용 내역을 찾지 못했습니다.');editingExpenseId=null;return}
   $('modalTitle').textContent=editingExpenseId?'비용원장 수정':'비용원장 지출 추가';
   $('modalSave').textContent=editingExpenseId?'수정 저장':'저장';
+
   let h='<div class="form">';
-  h+='<div class="field"><label>지출일</label><input id="eDateF" type="date" value="'+esc(r?.expense_date||ymd(now))+'"></div>';
-  h+='<div class="field"><label>구분</label><select id="eTypeF" onchange="expenseCats()"><option value="fixed">고정비</option><option value="variable">유동비</option></select></div>';
+  h+='<div class="field"><label>시작일</label><input id="eDateF" type="date" value="'+esc(r?.start_date||r?.expense_date||ymd(now))+'"></div>';
+  h+='<div class="field"><label>구분</label><select id="eTypeF" onchange="expenseScheduleUI(true)"><option value="fixed">고정비</option><option value="variable">유동비</option></select></div>';
+  h+='<div class="field"><label>반복방식</label><select id="eRepeatF" onchange="expenseScheduleUI(false)"><option value="one_time">일회성</option><option value="monthly">매월 반복</option><option value="limited_months">N개월 반복 후 종료</option></select><small id="eRepeatHelp" style="color:#6c7788"></small></div>';
+  h+='<div class="field" id="eDurationWrap"><label>반복 개월수</label><input id="eDurationF" type="number" min="1" max="120" placeholder="예: 3"><small style="color:#6c7788">예: 3개월이면 시작월 포함 3개월 반영</small></div>';
   h+='<div class="field"><label>카테고리</label><select id="eCatF"></select></div>';
-  h+='<div class="field"><label>금액</label><input class="moneyI" id="eAmountF" type="text" inputmode="numeric" value="'+Number(r?.amount||0)+'" oninput="formatMoneyInput(this)"></div>';
+  h+='<div class="field"><label>월 반영금액</label><input class="moneyI" id="eAmountF" type="text" inputmode="numeric" value="'+Number(r?.amount||0)+'" oninput="formatMoneyInput(this)"></div>';
   h+='<div class="field"><label>결제수단</label><select id="ePayF"><option>사업자카드</option><option>계좌이체</option><option>현금</option><option>개인카드</option></select></div>';
   h+='<div class="field"><label>사용처</label><input id="eVendorF" value="'+esc(r?.vendor||'')+'"></div>';
   h+='<div class="field full"><label>내용</label><input id="eDescF" value="'+esc(r?.description||'')+'"></div>';
   h+='<div class="field full"><label>메모</label><textarea id="eNoteF">'+esc(r?.note||'')+'</textarea></div></div>';
   $('modalBody').innerHTML=h;
+
   $('eTypeF').value=r?(r.is_fixed?'fixed':'variable'):'fixed';
-  expenseCats();
+  $('eRepeatF').value=r?.recurrence_type||(r?.is_fixed?'monthly':'one_time');
+  $('eDurationF').value=r?.duration_months&&r.recurrence_type==='limited_months'?r.duration_months:'';
+  expenseScheduleUI(false);
+
   if(r){
     if(![...$('eCatF').options].some(o=>o.value===r.category)){const o=document.createElement('option');o.value=r.category;o.textContent=r.category;$('eCatF').appendChild(o)}
     $('eCatF').value=r.category;
@@ -1216,21 +1254,36 @@ function expenseCats(){
   if(old&&[...$('eCatF').options].some(o=>o.value===old))$('eCatF').value=old;
 }
 async function saveExpense(){
-  const amount=moneyNumber($('eAmountF').value);
+  const amount=moneyNumber($('eAmountF').value),repeat=$('eRepeatF').value,dur=Number($('eDurationF').value||0)||null,start=$('eDateF').value;
   if(amount<=0){alert('금액을 입력하세요.');return}
-  const payload={expense_date:$('eDateF').value,is_fixed:$('eTypeF').value==='fixed',category:$('eCatF').value,amount:amount,payment_method:$('ePayF').value,vendor:$('eVendorF').value||null,description:$('eDescF').value||null,note:$('eNoteF').value||null,updated_at:new Date().toISOString()};
+  if(!start){alert('시작일을 입력하세요.');return}
+  if(repeat==='limited_months'&&!dur){alert('반복 개월수를 입력하세요.');return}
+
+  const payload={
+    expense_date:start,start_date:start,
+    is_fixed:$('eTypeF').value==='fixed',
+    recurrence_type:repeat,
+    duration_months:repeat==='limited_months'?dur:null,
+    end_date:null,
+    category:$('eCatF').value,
+    amount:amount,
+    payment_method:$('ePayF').value,
+    vendor:$('eVendorF').value||null,
+    description:$('eDescF').value||null,
+    note:$('eNoteF').value||null,
+    updated_at:new Date().toISOString()
+  };
   const q=editingExpenseId?await sb.from('jk_expenses').update(payload).eq('id',editingExpenseId):await sb.from('jk_expenses').insert(payload);
   if(q.error){alert(q.error.message);return}
   const wasEdit=Boolean(editingExpenseId);editingExpenseId=null;closeModal();toast(wasEdit?'비용 내역 수정 완료':'비용 등록 완료');
-  await Promise.all([loadExpenses(),loadDashboard()]);
+  await Promise.all([loadExpenses(),loadDashboard(),loadCashflow()]);
 }
 async function deleteExpense(id){
-  if(!confirm('삭제할까요?'))return;
+  if(!confirm('이 반복 비용 규칙을 삭제할까요?'))return;
   const q=await sb.from('jk_expenses').delete().eq('id',id);
   if(q.error){alert(q.error.message);return}
-  await Promise.all([loadExpenses(),loadDashboard()]);
+  await Promise.all([loadExpenses(),loadDashboard(),loadCashflow()]);
 }
-
 
 async function loadCashflow(){
   if(!$('cashAvailable')&&!$('dCashAvailable'))return;
@@ -1259,8 +1312,8 @@ async function loadCashflow(){
   if($('cashNote'))$('cashNote').value=d.note||'';
 
   if($('cashSettlementBody'))$('cashSettlementBody').innerHTML=state.settlements.map(function(r){
-    return '<tr><td><b>'+esc(String(r.sales_month).slice(0,7))+'</b></td><td>'+Number(r.sales_count||0)+'건</td><td><b>'+won(r.expected_settlement_amount)+'</b></td><td>'+esc(r.settlement_due_date)+'</td></tr>';
-  }).join('')||'<tr><td colspan="4" class="empty">정산 데이터가 없습니다.</td></tr>';
+    return '<tr><td><b>'+esc(String(r.sales_month).slice(0,7))+'</b></td><td>'+Number(r.sales_count||0)+'건</td><td>'+won(r.margin_total||0)+'</td><td><b>'+won(r.cash_received_now||0)+'</b></td><td><b>'+won(r.expected_settlement_amount||0)+'</b></td><td>'+esc(r.settlement_due_date)+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" class="empty">정산 데이터가 없습니다.</td></tr>';
 
   if($('cashSnapshotBody'))$('cashSnapshotBody').innerHTML=state.cashSnapshots.map(function(r){
     const avail=Number(r.bank_balance||0)+Number(r.cash_on_hand||0)+Number(r.other_liquid||0);

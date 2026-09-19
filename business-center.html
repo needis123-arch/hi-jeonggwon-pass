@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.11</title>
+<title>정권통신 Business Center V3.12</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -63,12 +63,24 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .status-chip.external_sent{background:#eaf3ff;color:#245da8}
 .alert-type{font-weight:900;font-size:10px}
 .alert-critical{color:#d93849}.alert-warning{color:#b87300}
+
+.ledger-workspace{padding:16px;margin-bottom:16px}
+.ledger-control-top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+.ledger-control-title b{display:block;font-size:15px}.ledger-control-title small{display:block;margin-top:4px;color:var(--muted)}
+.ledger-month-nav{display:grid;grid-template-columns:repeat(6,minmax(110px,1fr));gap:8px}
+.ledger-month-btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;text-align:left;cursor:pointer;font:inherit}
+.ledger-month-btn:hover{border-color:#b6c2cf}.ledger-month-btn.active{border-color:#9ee22f;background:#f5ffe8;box-shadow:inset 0 0 0 1px #9ee22f}
+.ledger-month-btn b{display:block;font-size:11px}.ledger-month-btn span{display:block;font-size:9px;color:var(--muted);margin-top:4px}.ledger-month-btn strong{display:block;font-size:11px;margin-top:4px}
+.vendor-summary-row.active td{background:#f5ffe8}.vendor-summary-row td:first-child b{font-size:11px}
+@media(max-width:1100px){.ledger-month-nav{grid-template-columns:repeat(4,minmax(105px,1fr))}.ledger-control-top{flex-direction:column}.ledger-control-top .toolbar{width:100%}}
+@media(max-width:700px){.ledger-month-nav{grid-template-columns:repeat(2,minmax(105px,1fr))}}
+
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.11</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.12</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -156,10 +168,42 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  </div>
 </section>
 
+
 <section class="page" id="page-ledger">
- <div class="section-head"><div><h2>장부 관리</h2><p>여기에 한 번 입력하면 매출보고·직원실적·유입분석·페이백·중고반납에 자동 반영됩니다.</p></div><button class="btn primary" onclick="openLedger()">+ 판매건 입력</button></div>
- <div class="summary"><div class="box"><span>판매대수</span><strong id="lUnits">0대</strong></div><div class="box"><span>유심단독</span><strong id="lUsim">0건</strong></div><div class="box"><span>동판</span><strong id="lDong">0건</strong></div><div class="box"><span>약갱 / 번들</span><strong id="lRB">0 / 0</strong></div><div class="box"><span>월 매출</span><strong id="lMargin">0원</strong></div></div>
- <div class="table-card card"><div class="table-top"><b>월별 장부</b><div class="toolbar"><input id="ledgerMonth" type="month" onchange="loadLedger()"><input id="ledgerSearch" placeholder="고객명·번호·기종" oninput="renderLedger()"></div></div><div class="table-wrap"><table style="min-width:2240px"><thead><tr><th>개통일</th><th>거래처</th><th>고객명</th><th>생년월일</th><th>번호</th><th>모델</th><th>판매유형</th><th>유입경로</th><th>요금제</th><th>유지조건</th><th>출고가</th><th>K 기본리베이트</th><th>L 현금판매금액</th><th>M 실리베이트</th><th>P 부가세</th><th>Q 페이백</th><th>R 위약금대납</th><th>S 현금판매받은돈</th><th>T 유심</th><th>U 중고금액</th><th>중고기종</th><th>W 최종마진</th><th>판매자</th><th>관리</th></tr></thead><tbody id="ledgerBody"></tbody></table></div></div>
+ <div class="section-head"><div><h2>장부 관리</h2><p>월별로 장부를 나누고, 거래처별 실적과 상세내역까지 한 화면에서 확인합니다.</p></div><button class="btn primary" onclick="openLedger()">+ 판매건 입력</button></div>
+ <div class="summary">
+  <div class="box"><span>판매대수</span><strong id="lUnits">0대</strong></div>
+  <div class="box"><span>유심단독</span><strong id="lUsim">0건</strong></div>
+  <div class="box"><span>동판</span><strong id="lDong">0건</strong></div>
+  <div class="box"><span>약갱 / 번들</span><strong id="lRB">0 / 0</strong></div>
+  <div class="box"><span>선택 매출</span><strong id="lMargin">0원</strong></div>
+ </div>
+
+ <div class="ledger-workspace card">
+  <div class="ledger-control-top">
+   <div class="ledger-control-title"><b id="ledgerMonthTitle">월별 장부</b><small id="ledgerScopeText">전체 거래처 · 전체 판매자</small></div>
+   <div class="toolbar">
+    <input id="ledgerMonth" type="month" onchange="loadLedger()">
+    <select id="ledgerVendorFilter" onchange="renderLedger()"><option value="all">전체 거래처</option></select>
+    <select id="ledgerStaffFilter" onchange="renderLedger()"><option value="all">전체 판매자</option></select>
+    <select id="ledgerDealFilter" onchange="renderLedger()">
+     <option value="all">전체 유형</option><option value="휴대폰">휴대폰 전체</option><option value="MNP">MNP</option><option value="기변">기변</option><option value="010신규">010신규</option><option value="유심단독">유심단독</option><option value="동판">동판</option><option value="약갱">약갱</option><option value="번들">번들</option>
+    </select>
+    <input id="ledgerSearch" placeholder="고객명·번호·기종" oninput="renderLedger()">
+   </div>
+  </div>
+  <div id="ledgerMonthNav" class="ledger-month-nav"></div>
+ </div>
+
+ <div class="table-card card" style="margin-bottom:16px">
+  <div class="table-top"><div><b>거래처별 집계</b><div style="font-size:9px;color:#6c7788;margin-top:3px">보기 버튼을 누르면 아래 장부가 해당 거래처로 바로 필터됩니다.</div></div><button class="btn" onclick="setLedgerVendor('all')">전체 보기</button></div>
+  <div class="table-wrap"><table><thead><tr><th>거래처</th><th>판매대수</th><th>유심단독</th><th>동판</th><th>약갱</th><th>번들</th><th>총매출</th><th>평균마진</th><th>비중</th><th>보기</th></tr></thead><tbody id="ledgerVendorSummaryBody"></tbody></table></div>
+ </div>
+
+ <div class="table-card card">
+  <div class="table-top"><div><b id="ledgerDetailTitle">상세 장부</b><div style="font-size:9px;color:#6c7788;margin-top:3px" id="ledgerResultCount">0건</div></div><button class="btn" onclick="resetLedgerFilters()">필터 초기화</button></div>
+  <div class="table-wrap"><table style="min-width:2240px"><thead><tr><th>개통일</th><th>거래처</th><th>고객명</th><th>생년월일</th><th>번호</th><th>모델</th><th>판매유형</th><th>유입경로</th><th>요금제</th><th>유지조건</th><th>출고가</th><th>K 기본리베이트</th><th>L 현금판매금액</th><th>M 실리베이트</th><th>P 부가세</th><th>Q 페이백</th><th>R 위약금대납</th><th>S 현금판매받은돈</th><th>T 유심</th><th>U 중고금액</th><th>중고기종</th><th>W 최종마진</th><th>판매자</th><th>관리</th></tr></thead><tbody id="ledgerBody"></tbody></table></div>
+ </div>
 </section>
 
 <section class="page" id="page-report">
@@ -258,7 +302,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-const state={staff:[],options:[],ledger:[],used:[],payback:[],affiliate:[],alerts:[],alertHistory:[],notificationHistory:[],expenses:[],ads:[],payroll:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
+const state={staff:[],options:[],ledger:[],ledgerYear:[],used:[],payback:[],affiliate:[],alerts:[],alertHistory:[],notificationHistory:[],expenses:[],ads:[],payroll:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
 let modalMode="";
 let editingLedgerId=null;
 
@@ -470,9 +514,92 @@ async function saveNotificationTemplate(eventType){
 function dealLabel(r){if(r.deal_type==='휴대폰')return r.activation_type||'휴대폰';if(r.deal_type==='번들')return '번들';return r.deal_type||'-'}
 function classify(v){if(v==='MNP'||v==='기변'||v==='010신규')return {deal_type:'휴대폰',activation_type:v};if(v==='유심단독')return {deal_type:'유심단독',activation_type:'유심단독'};if(v==='동판')return {deal_type:'동판',activation_type:'동판'};if(v==='약갱')return {deal_type:'약갱',activation_type:'약갱'};return {deal_type:'번들',activation_type:'번들'}}
 
-async function loadLedger(){if(!$('ledgerMonth'))return;const [a,b]=bounds($('ledgerMonth').value||mk(now));const {data,error}=await sb.from('jk_sales_ledger').select('*').gte('activation_date',a).lt('activation_date',b).order('activation_date',{ascending:false});if(error){console.warn(error);return}state.ledger=data||[];renderLedger()}
-function renderLedger(){const q=($('ledgerSearch')?.value||'').replace(/-/g,'').toLowerCase();const rows=state.ledger.filter(r=>!q||[r.customer_name_snapshot,r.customer_phone_snapshot,r.model_name,r.lead_source].some(v=>String(v||'').replace(/-/g,'').toLowerCase().includes(q)));$('ledgerBody').innerHTML=rows.map(r=>`<tr><td>${esc(r.activation_date)}</td><td>${esc(r.vendor||'-')}</td><td><b>${esc(r.customer_name_snapshot)}</b></td><td>${esc(r.customer_birth_date_snapshot||'-')}</td><td>${esc(r.customer_phone_snapshot)}</td><td>${esc(r.model_name||'-')}</td><td>${esc(dealLabel(r))}</td><td>${esc(r.lead_source||'-')}</td><td>${esc(r.plan_name||'-')}</td><td style="line-height:1.55"><small>요금 ${esc(r.plan_change_date||'-')}<br>보험 ${esc(r.insurance_cancel_date||'-')}<br>부가 ${esc(r.addon_cancel_date||'-')}</small></td><td>${won(r.retail_price)}</td><td>${won(r.base_rebate)}</td><td>${won(r.cash_sale_amount)}</td><td>${won(r.real_rebate)}</td><td>${won(r.vat_amount)}</td><td>${won(r.payback_amount)}</td><td>${won(r.penalty_paid)}</td><td>${won(r.cash_received)}</td><td>${won(r.sim_cost)}</td><td>${won(r.used_device_amount)}</td><td>${esc(r.used_device_model||'-')}</td><td><b>${won(r.final_margin)}</b></td><td>${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}</td><td><div style="display:flex;gap:6px"><button class="btn" onclick="openLedger('${r.id}')">수정</button><button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div></td></tr>`).join('')||'<tr><td colspan="24" class="empty">장부 데이터가 없습니다.</td></tr>';
- const u=state.ledger.filter(r=>r.deal_type==='휴대폰').length,us=state.ledger.filter(r=>r.deal_type==='유심단독').length,d=state.ledger.filter(r=>r.deal_type==='동판').length,re=state.ledger.filter(r=>r.deal_type==='약갱').length,bu=state.ledger.filter(r=>r.deal_type==='번들').length,m=state.ledger.reduce((a,r)=>a+Number(r.final_margin||0),0);$('lUnits').textContent=u+'대';$('lUsim').textContent=us+'건';$('lDong').textContent=d+'건';$('lRB').textContent=re+' / '+bu;$('lMargin').textContent=won(m)
+
+async function loadLedger(){
+ if(!$('ledgerMonth'))return;
+ const monthKey=$('ledgerMonth').value||mk(now),[a,b]=bounds(monthKey),year=Number(monthKey.slice(0,4)),yearA=year+'-01-01',yearB=(year+1)+'-01-01';
+ const [monthRes,yearRes]=await Promise.all([
+  sb.from('jk_sales_ledger').select('*').gte('activation_date',a).lt('activation_date',b).order('activation_date',{ascending:false}),
+  sb.from('jk_sales_ledger').select('activation_date,final_margin,deal_type,vendor').gte('activation_date',yearA).lt('activation_date',yearB).order('activation_date')
+ ]);
+ if(monthRes.error||yearRes.error){console.warn(monthRes.error||yearRes.error);return}
+ state.ledger=monthRes.data||[];state.ledgerYear=yearRes.data||[];
+ renderLedgerFilters();renderLedgerMonthNav();renderLedger();
+}
+function renderLedgerFilters(){
+ const vendorEl=$('ledgerVendorFilter'),staffEl=$('ledgerStaffFilter');
+ if(vendorEl){
+  const old=vendorEl.value||'all',known=['니어','MD','PS','동원','대교'],found=state.ledger.map(r=>String(r.vendor||'').trim()).filter(Boolean);
+  const vendors=[...new Set([...known,...found])];
+  vendorEl.innerHTML='<option value="all">전체 거래처</option>'+vendors.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('');
+  vendorEl.value=vendors.includes(old)?old:'all';
+ }
+ if(staffEl){
+  const old=staffEl.value||'all';
+  staffEl.innerHTML='<option value="all">전체 판매자</option>'+state.staff.filter(s=>s.active).map(s=>'<option value="'+s.id+'">'+esc(s.name)+'</option>').join('');
+  staffEl.value=state.staff.some(s=>s.id===old)?old:'all';
+ }
+}
+function renderLedgerMonthNav(){
+ if(!$('ledgerMonthNav'))return;
+ const selected=$('ledgerMonth').value||mk(now),year=Number(selected.slice(0,4)),map={};
+ state.ledgerYear.forEach(r=>{const m=Number(String(r.activation_date).slice(5,7));map[m]=map[m]||{n:0,u:0,m:0};map[m].n++;if(r.deal_type==='휴대폰')map[m].u++;map[m].m+=Number(r.final_margin||0)});
+ $('ledgerMonthNav').innerHTML=Array.from({length:12},(_,i)=>{
+  const m=i+1,key=year+'-'+String(m).padStart(2,'0'),x=map[m]||{n:0,u:0,m:0};
+  return '<button class="ledger-month-btn '+(selected===key?'active':'')+'" onclick="changeLedgerMonth(\''+key+'\')"><b>'+m+'월</b><span>판매 '+x.u+'대 · 전체 '+x.n+'건</span><strong>'+won(x.m)+'</strong></button>';
+ }).join('');
+}
+function changeLedgerMonth(key){$('ledgerMonth').value=key;loadLedger()}
+function ledgerFilteredRows(ignoreVendor=false){
+ const q=($('ledgerSearch')?.value||'').replace(/-/g,'').toLowerCase(),vendor=$('ledgerVendorFilter')?.value||'all',staff=$('ledgerStaffFilter')?.value||'all',deal=$('ledgerDealFilter')?.value||'all';
+ return state.ledger.filter(r=>{
+  if(!ignoreVendor&&vendor!=='all'&&String(r.vendor||'')!==vendor)return false;
+  if(staff!=='all'&&String(r.salesperson_id||'')!==staff)return false;
+  if(deal!=='all'){
+   if(deal==='휴대폰'){if(r.deal_type!=='휴대폰')return false}
+   else if(['MNP','기변','010신규'].includes(deal)){if(r.activation_type!==deal)return false}
+   else if(r.deal_type!==deal)return false;
+  }
+  if(q){
+   const hay=[r.customer_name_snapshot,r.customer_phone_snapshot,r.model_name,r.lead_source,r.vendor,r.plan_name].map(v=>String(v||'').replace(/-/g,'').toLowerCase());
+   if(!hay.some(v=>v.includes(q)))return false;
+  }
+  return true;
+ });
+}
+function renderLedger(){
+ if(!$('ledgerBody'))return;
+ const rows=ledgerFilteredRows(false),monthKey=$('ledgerMonth')?.value||mk(now),vendor=$('ledgerVendorFilter')?.value||'all',staff=$('ledgerStaffFilter')?.value||'all',deal=$('ledgerDealFilter')?.value||'all';
+ const staffName=staff==='all'?'전체 판매자':(state.staff.find(s=>s.id===staff)?.name||'판매자');
+ if($('ledgerMonthTitle'))$('ledgerMonthTitle').textContent=Number(monthKey.slice(0,4))+'년 '+Number(monthKey.slice(5,7))+'월 장부';
+ if($('ledgerScopeText'))$('ledgerScopeText').textContent=(vendor==='all'?'전체 거래처':vendor)+' · '+staffName+' · '+(deal==='all'?'전체 유형':deal);
+ if($('ledgerDetailTitle'))$('ledgerDetailTitle').textContent=(vendor==='all'?'전체 거래처':vendor)+' 상세 장부';
+ if($('ledgerResultCount'))$('ledgerResultCount').textContent=rows.length+'건 조회';
+
+ $('ledgerBody').innerHTML=rows.map(r=>`<tr><td>${esc(r.activation_date)}</td><td>${esc(r.vendor||'-')}</td><td><b>${esc(r.customer_name_snapshot)}</b></td><td>${esc(r.customer_birth_date_snapshot||'-')}</td><td>${esc(r.customer_phone_snapshot)}</td><td>${esc(r.model_name||'-')}</td><td>${esc(dealLabel(r))}</td><td>${esc(r.lead_source||'-')}</td><td>${esc(r.plan_name||'-')}</td><td style="line-height:1.55"><small>요금 ${esc(r.plan_change_date||'-')}<br>보험 ${esc(r.insurance_cancel_date||'-')}<br>부가 ${esc(r.addon_cancel_date||'-')}</small></td><td>${won(r.retail_price)}</td><td>${won(r.base_rebate)}</td><td>${won(r.cash_sale_amount)}</td><td>${won(r.real_rebate)}</td><td>${won(r.vat_amount)}</td><td>${won(r.payback_amount)}</td><td>${won(r.penalty_paid)}</td><td>${won(r.cash_received)}</td><td>${won(r.sim_cost)}</td><td>${won(r.used_device_amount)}</td><td>${esc(r.used_device_model||'-')}</td><td><b>${won(r.final_margin)}</b></td><td>${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}</td><td><div style="display:flex;gap:6px"><button class="btn" onclick="openLedger('${r.id}')">수정</button><button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div></td></tr>`).join('')||'<tr><td colspan="24" class="empty">조건에 맞는 장부 데이터가 없습니다.</td></tr>';
+
+ const u=rows.filter(r=>r.deal_type==='휴대폰').length,us=rows.filter(r=>r.deal_type==='유심단독').length,d=rows.filter(r=>r.deal_type==='동판').length,re=rows.filter(r=>r.deal_type==='약갱').length,bu=rows.filter(r=>r.deal_type==='번들').length,m=rows.reduce((a,r)=>a+Number(r.final_margin||0),0);
+ $('lUnits').textContent=u+'대';$('lUsim').textContent=us+'건';$('lDong').textContent=d+'건';$('lRB').textContent=re+' / '+bu;$('lMargin').textContent=won(m);
+ renderVendorSummary();
+}
+function renderVendorSummary(){
+ if(!$('ledgerVendorSummaryBody'))return;
+ const rows=ledgerFilteredRows(true),map={};
+ rows.forEach(r=>{const k=String(r.vendor||'').trim()||'미지정';map[k]=map[k]||{vendor:k,u:0,us:0,d:0,re:0,bu:0,m:0};const x=map[k];if(r.deal_type==='휴대폰')x.u++;else if(r.deal_type==='유심단독')x.us++;else if(r.deal_type==='동판')x.d++;else if(r.deal_type==='약갱')x.re++;else if(r.deal_type==='번들')x.bu++;x.m+=Number(r.final_margin||0)});
+ const arr=Object.values(map).sort((a,b)=>b.m-a.m),total=arr.reduce((s,x)=>s+x.m,0),selected=$('ledgerVendorFilter')?.value||'all';
+ $('ledgerVendorSummaryBody').innerHTML=arr.map(x=>'<tr class="vendor-summary-row '+(selected===x.vendor?'active':'')+'"><td><b>'+esc(x.vendor)+'</b></td><td>'+x.u+'대</td><td>'+x.us+'건</td><td>'+x.d+'건</td><td>'+x.re+'건</td><td>'+x.bu+'건</td><td><b>'+won(x.m)+'</b></td><td>'+won(x.u?Math.floor(x.m/x.u):0)+'</td><td>'+(total?pct(x.m/total*100):'0.0%')+'</td><td><button class="btn" onclick="setLedgerVendor(\''+String(x.vendor).replace(/'/g,"\\'")+'\')">보기</button></td></tr>').join('')||'<tr><td colspan="10" class="empty">거래처 집계 데이터가 없습니다.</td></tr>';
+}
+function setLedgerVendor(v){
+ const el=$('ledgerVendorFilter');if(!el)return;
+ if(v!=='all'&&![...el.options].some(o=>o.value===v)){const o=document.createElement('option');o.value=v;o.textContent=v;el.appendChild(o)}
+ el.value=v==='미지정'?'all':v;renderLedger();
+}
+function resetLedgerFilters(){
+ if($('ledgerVendorFilter'))$('ledgerVendorFilter').value='all';
+ if($('ledgerStaffFilter'))$('ledgerStaffFilter').value='all';
+ if($('ledgerDealFilter'))$('ledgerDealFilter').value='all';
+ if($('ledgerSearch'))$('ledgerSearch').value='';
+ renderLedger();
 }
 
 const LEDGER_DRAFT_KEY='jk-ledger-draft-v35';

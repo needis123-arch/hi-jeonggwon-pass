@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.34</title>
+<title>정권통신 Business Center V3.35</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -129,7 +129,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.34</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.35</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -1151,7 +1151,7 @@ async function loadSurvival(){
  $('survivalRequired').textContent=won(d.required_month_close_margin||0);
  $('survivalAdditional').textContent=won(d.additional_margin_needed||0);
  $('survivalSafe').textContent=won(d.safe_required_month_close_margin||0);
- $('survivalRate').textContent='가중 급여율 '+Number(d.weighted_payroll_rate||0).toFixed(1)+'% 반영';
+ $('survivalRate').textContent='평균 급여율 '+Number(d.weighted_payroll_rate||0).toFixed(1)+'% 반영';
  $('survivalSafeRate').textContent='최고 급여율 '+Number(d.safe_payroll_rate||0).toFixed(1)+'% 가정';
 
  const head=Number(d.target_headroom_over_safe||0);
@@ -1195,14 +1195,14 @@ async function loadBreakEven(){
  const nm=survivalMonth?survivalMonth.replace('-','년 ')+'월':'다음달';
 
  $('bepTitle').textContent=nm+'을 버티기 위한 '+sm+' W매출 마지노선';
- $('bepSub').textContent=sm+' 매출이 '+nm+' 비용·광고·급여를 감당하려면 얼마까지 나와야 하는지 보는 구조적 기준 · 미래월은 최근 실제 판매비중으로 급여율 추정';
+ $('bepSub').textContent=sm+' 매출이 '+nm+' 비용·광고·급여를 감당하려면 얼마까지 나와야 하는지 보는 구조적 기준 · 활성 담당자 설정 급여율 평균 적용';
  $('bepBooked').textContent=won(d.booked_margin||0);
  $('bepTarget').textContent=Number(d.target_margin||0)>0?won(d.target_margin):'미설정';
  $('bepTargetNote').textContent=Number(d.target_margin||0)>0?sm+' 설정 목표':'목표 관리에서 '+sm+' 목표 설정';
  if($('bepCost'))$('bepCost').textContent=won(d.survival_cost_total||0);
  if($('bepCostNote'))$('bepCostNote').textContent='비용 '+won(d.survival_expense_total||0)+' · 광고 '+won(d.survival_ad_total||0);
  $('bepExpected').textContent=won(d.required_sales_margin||0);
- $('bepRate').textContent=sm+' 가중 급여율 '+Number(d.weighted_payroll_rate||0).toFixed(1)+'% 반영'+(Number(d.booked_margin||0)<=0&&d.rate_basis_month?' · 최근 실적 '+String(d.rate_basis_month).slice(0,7)+' 판매비중 기준':'');
+ $('bepRate').textContent=sm+' 평균 급여율 '+Number(d.weighted_payroll_rate||0).toFixed(1)+'% 반영'+(Number(d.booked_margin||0)<=0&&d.rate_basis_month?' · 최근 실적 '+String(d.rate_basis_month).slice(0,7)+' 판매비중 기준':'');
  $('bepSafe').textContent=won(d.safe_required_sales_margin||0);
  $('bepSafeRate').textContent='최고 급여율 '+Number(d.safe_payroll_rate||0).toFixed(1)+'% 가정';
  $('bepGap').textContent=won(d.required_gap||0);

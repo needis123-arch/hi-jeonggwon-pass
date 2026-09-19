@@ -49,7 +49,7 @@ button,input,select,textarea{font:inherit}.app{display:grid;grid-template-column
 .ops-check-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.ops-check{background:#101319;border:1px solid var(--line);border-radius:14px;padding:14px}.ops-check span{display:block;color:var(--muted);font-size:10px}.ops-check strong{display:block;font-size:20px;margin-top:6px}.ops-check.warn strong{color:#ffd166}.ops-check.danger strong{color:#ff7777}.ops-check.good strong{color:#7ee7a8}.status-unanswered{color:#ffbd66}.status-done{color:#66e3a4}.status-issue{color:#ff6b6b}.status-verified{color:#66e3a4}.status-unchecked{color:#ffd166}.status-partial{color:#8fc7ff}.inline-select{background:#0b0d10;border:1px solid #2a2f37;color:#fff;border-radius:9px;padding:7px 8px;font-size:11px}.action-stack{display:flex;gap:6px;flex-wrap:wrap}.tiny-btn{border:1px solid #303640;background:#14181e;color:#e9edf3;border-radius:8px;padding:6px 8px;font-size:10px;cursor:pointer}.tiny-btn.primary{background:#c8ff4f;color:#111;border-color:#c8ff4f;font-weight:900}.tiny-btn.danger{border-color:#66333a;color:#ff9da7;background:#231417}
 @media(max-width:900px){.ops-check-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
-<link rel="stylesheet" href="business-center-v3.css?v=3.0.0">
+<link rel="stylesheet" href="business-center-v3.css?v=3.0.1">
 </head>
 <body>
 <div class="app">
@@ -340,6 +340,6 @@ sb.auth.onAuthStateChange(()=>refreshSessionState());setTimeout(refreshSessionSt
 function drawChart(){const c=document.getElementById('salesChart');if(!c)return;const rect=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;c.width=rect.width*dpr;c.height=rect.height*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);const W=rect.width,H=rect.height,p={l:72,r:24,t:24,b:42};x.clearRect(0,0,W,H);const data=[3929190,1575090],labels=['인성','송훈'],max=4500000;const barW=Math.min(110,(W-p.l-p.r)/5);x.font='10px system-ui';x.fillStyle='#7f8794';x.strokeStyle='#232832';for(let i=0;i<=3;i++){const v=max*i/3,y=p.t+(H-p.t-p.b)*(1-v/max);x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.stroke();x.fillText(Math.round(v/10000).toLocaleString('ko-KR')+'만원',8,y+3)}const centers=[p.l+(W-p.l-p.r)*.3,p.l+(W-p.l-p.r)*.72];data.forEach((v,i)=>{const h=(H-p.t-p.b)*(v/max),y=H-p.b-h;const g=x.createLinearGradient(0,y,0,H-p.b);g.addColorStop(0,'#c8ff4f');g.addColorStop(1,'rgba(200,255,79,.35)');x.fillStyle=g;x.fillRect(centers[i]-barW/2,y,barW,h);x.fillStyle='#f6f7f8';x.font='700 12px system-ui';x.fillText(Math.round(v).toLocaleString('ko-KR')+'원',centers[i]-42,y-9);x.fillStyle='#8f96a3';x.font='11px system-ui';x.fillText(labels[i],centers[i]-12,H-14)});}
 window.addEventListener('resize',drawChart);setTimeout(drawChart,80);
 </script>
-<script src="business-center-v3.js?v=3.0.0"></script>
+<script src="business-center-v3.js?v=3.0.1"></script>
 </body>
 </html>

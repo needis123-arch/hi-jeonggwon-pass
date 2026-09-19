@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.32</title>
+<title>정권통신 Business Center V3.33</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -129,7 +129,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.32</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.33</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -200,18 +200,23 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
  <div class="card" style="padding:16px;margin-bottom:16px">
   <div class="table-top">
-   <div><b id="bepTitle">다음달 자체 영업 손익분기</b><div id="bepSub" style="font-size:9px;color:#6c7788;margin-top:3px">다음달 매출 자체가 적자인지 보는 지표 · 위 생존 마감매출과 별도</div></div>
-   <button class="btn" onclick="go('targets')">목표 설정</button>
+   <div><b id="bepTitle">월별 생존 마지노선</b><div id="bepSub" style="font-size:9px;color:#6c7788;margin-top:3px">전월 W매출로 다음달 비용을 버티는 구조적 기준입니다.</div></div>
+   <div class="toolbar"><input id="survivalPlanSalesMonth" type="month" onchange="loadBreakEven()"><button class="btn" onclick="go('targets')">목표 설정</button></div>
   </div>
   <div class="summary" style="margin:0">
-   <div class="box"><span>다음달 예약매출</span><strong id="bepBooked">0원</strong></div>
-   <div class="box"><span>다음달 목표매출</span><strong id="bepTarget">미설정</strong><small id="bepTargetNote" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>예상 손익분기점</span><strong id="bepExpected">0원</strong><small id="bepRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>안전 마지노선</span><strong id="bepSafe">0원</strong><small id="bepSafeRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>손익분기까지 부족</span><strong id="bepGap">0원</strong></div>
+   <div class="box"><span>기준 매출월 W매출</span><strong id="bepBooked">0원</strong></div>
+   <div class="box"><span>기준 매출월 목표</span><strong id="bepTarget">미설정</strong><small id="bepTargetNote" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box"><span>다음달 비용 + 광고</span><strong id="bepCost">0원</strong><small id="bepCostNote" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box"><span>다음달 생존 최소 W매출</span><strong id="bepExpected">0원</strong><small id="bepRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box"><span>보수적 안전선</span><strong id="bepSafe">0원</strong><small id="bepSafeRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box"><span>마지노선까지 부족</span><strong id="bepGap">0원</strong></div>
    <div class="box"><span>목표까지 부족</span><strong id="bepTargetGap">-</strong></div>
   </div>
   <div id="bepMessage" style="margin-top:12px;padding:11px 13px;border-radius:12px;background:#f5f7f9;font-size:10px;line-height:1.55;color:#5d6978"></div>
+  <div class="table-card" style="margin-top:12px;border:1px solid var(--line);box-shadow:none">
+   <div class="table-top"><div><b>월별 생존 마지노선 비교</b><div style="font-size:9px;color:#6c7788;margin-top:3px">예: 10월을 버티기 위한 9월 W매출 · 11월을 버티기 위한 10월 W매출</div></div></div>
+   <div class="table-wrap"><table><thead><tr><th>버틸 월</th><th>기준 매출월</th><th>현재/예약 W</th><th>다음달 비용+광고</th><th>적용 급여율</th><th>최소 W 마지노선</th><th>안전선</th><th>부족액</th></tr></thead><tbody id="bepTimelineBody"></tbody></table></div>
+  </div>
  </div>
 <div class="goal card">
   <div class="goal-top"><div><h3>이번 달 목표 달성률</h3><div class="goal-big" id="dGoalPct">0.0%</div><div style="font-size:10px;color:#6c7788;margin-top:5px">현재 <b id="dCurrent">0원</b> / 목표 <b id="dTarget">미설정</b></div></div><div style="text-align:right"><span style="font-size:10px;color:#6c7788">현재 페이스 예상</span><b id="dForecast" style="display:block;font-size:23px;margin-top:5px">0원</b><small id="dForecastGap" style="color:#6c7788">목표 설정 후 계산</small></div></div>
@@ -1175,35 +1180,78 @@ async function loadSurvival(){
 
 async function loadBreakEven(){
  if(!$('bepExpected'))return;
- const q=await sb.rpc('jk_next_month_break_even',{p_as_of:ymd(now)});
+ const sel=$('survivalPlanSalesMonth');
+ if(sel&&!sel.value)sel.value=mk(now);
+ const salesKey=sel?.value||mk(now);
+ const salesDate=salesKey+'-01';
+
+ const q=await sb.rpc('jk_sales_month_survival_floor',{p_sales_month:salesDate});
  if(q.error){console.warn(q.error);return}
  const d=q.data||{};state.breakEven=d;
- const plan=String(d.plan_month||'').slice(0,7);
- if($('bepTitle'))$('bepTitle').textContent=(plan?plan.replace('-','년 ')+'월 ':'다음달 ')+'자체 영업 손익분기 (해당월 매출 기준)';
- if($('bepSub'))$('bepSub').textContent='해당월 비용 '+won(d.expense_total||0)+' · 광고 '+won(d.ad_total||0)+' · 해당월 영업 자체 손익 계산';
- $('bepBooked').textContent=won(d.booked_margin||0);
- $('bepTarget').textContent=d.display_target_margin?won(d.display_target_margin):'미설정';
- $('bepTargetNote').textContent=d.target_carried_forward?'이번달 목표 이월 참고치 · 다음달 목표는 미설정':(d.target_margin?'다음달 설정 목표':'목표 관리에서 설정');
- $('bepExpected').textContent=won(d.break_even_margin||0);
- $('bepRate').textContent='현재 실적 가중 급여율 '+Number(d.weighted_payroll_rate||0).toFixed(1)+'%';
- $('bepSafe').textContent=won(d.safe_break_even_margin||0);
- $('bepSafeRate').textContent='최고 급여율 '+Number(d.safe_payroll_rate||0).toFixed(1)+'% 가정';
- $('bepGap').textContent=won(d.break_even_gap||0);
- $('bepTargetGap').textContent=d.display_target_margin?won(d.target_gap||0):'-';
 
- const head=Number(d.target_headroom_over_break_even);
- const safeHead=Number(d.safe_target_headroom);
- let msg='예상 손익분기점 = (다음달 비용원장 + 광고비) ÷ (1 - 가중 급여율). ';
- if(d.display_target_margin){
-   if(head>=0)msg+='기준 목표를 달성하면 예상 손익분기점보다 '+won(head)+' 여유가 있습니다.';
-   else msg+='현재 기준 목표가 예상 손익분기점보다 '+won(Math.abs(head))+' 낮습니다. 목표 자체를 올려야 적자를 피할 수 있습니다.';
-   if(safeHead<0)msg+=' 안전 마지노선 기준으로는 추가 '+won(Math.abs(safeHead))+'가 필요합니다.';
- }else{
-   msg+='다음달 목표매출을 설정하면 목표 대비 여유/부족분도 같이 계산됩니다.';
+ const salesMonth=String(d.sales_month||'').slice(0,7);
+ const survivalMonth=String(d.survival_month||'').slice(0,7);
+ const sm=salesMonth?salesMonth.replace('-','년 ')+'월':'기준월';
+ const nm=survivalMonth?survivalMonth.replace('-','년 ')+'월':'다음달';
+
+ $('bepTitle').textContent=nm+'을 버티기 위한 '+sm+' W매출 마지노선';
+ $('bepSub').textContent=sm+' 매출이 '+nm+' 비용·광고·급여를 감당하려면 얼마까지 나와야 하는지 보는 구조적 기준';
+ $('bepBooked').textContent=won(d.booked_margin||0);
+ $('bepTarget').textContent=Number(d.target_margin||0)>0?won(d.target_margin):'미설정';
+ $('bepTargetNote').textContent=Number(d.target_margin||0)>0?sm+' 설정 목표':'목표 관리에서 '+sm+' 목표 설정';
+ if($('bepCost'))$('bepCost').textContent=won(d.survival_cost_total||0);
+ if($('bepCostNote'))$('bepCostNote').textContent='비용 '+won(d.survival_expense_total||0)+' · 광고 '+won(d.survival_ad_total||0);
+ $('bepExpected').textContent=won(d.required_sales_margin||0);
+ $('bepRate').textContent=sm+' 가중 급여율 '+Number(d.weighted_payroll_rate||0).toFixed(1)+'% 반영';
+ $('bepSafe').textContent=won(d.safe_required_sales_margin||0);
+ $('bepSafeRate').textContent='최고 급여율 '+Number(d.safe_payroll_rate||0).toFixed(1)+'% 가정';
+ $('bepGap').textContent=won(d.required_gap||0);
+ $('bepTargetGap').textContent=Number(d.target_margin||0)>0?won(d.target_gap||0):'-';
+
+ const head=Number(d.target_headroom||0);
+ const safeHead=Number(d.safe_target_headroom||0);
+ let msg=sm+' W매출은 다음달인 '+nm+'에 정산되어 들어오는 구조이므로, '+nm+'에 적자가 나지 않으려면 '+sm+' W매출이 최소 '+won(d.required_sales_margin||0)+'은 필요합니다. ';
+ msg+='계산 기준은 '+nm+' 비용원장 '+won(d.survival_expense_total||0)+' + 광고 '+won(d.survival_ad_total||0)+' + '+sm+' 급여율입니다.';
+ if(Number(d.target_margin||0)>0){
+   if(head>=0)msg+=' '+sm+' 목표 '+won(d.target_margin)+'를 달성하면 최소 마지노선보다 '+won(head)+' 여유가 있습니다.';
+   else msg+=' '+sm+' 목표가 최소 마지노선보다 '+won(Math.abs(head))+' 낮습니다.';
+   if(safeHead<0)msg+=' 보수적 안전선까지는 '+won(Math.abs(safeHead))+'가 더 필요합니다.';
  }
  $('bepMessage').textContent=msg;
- $('bepGap').style.color=Number(d.break_even_gap||0)>0?'#dc3f50':'#138754';
- $('bepTargetGap').style.color=d.display_target_margin&&Number(d.target_gap||0)>0?'#dc3f50':'#138754';
+ $('bepGap').style.color=Number(d.required_gap||0)>0?'#dc3f50':'#138754';
+ $('bepTargetGap').style.color=Number(d.target_margin||0)>0&&Number(d.target_gap||0)>0?'#dc3f50':'#138754';
+
+ await loadBreakEvenTimeline();
+}
+
+async function loadBreakEvenTimeline(){
+ if(!$('bepTimelineBody'))return;
+ const months=[];
+ for(let offset=-1;offset<=3;offset++){
+   const d=new Date(now.getFullYear(),now.getMonth()+offset,1,12,0,0);
+   months.push(mk(d));
+ }
+ const selected=$('survivalPlanSalesMonth')?.value;
+ if(selected&&!months.includes(selected))months.push(selected);
+ months.sort();
+
+ const qs=await Promise.all(months.map(m=>sb.rpc('jk_sales_month_survival_floor',{p_sales_month:m+'-01'})));
+ const rows=qs.filter(x=>!x.error&&x.data).map(x=>x.data);
+ $('bepTimelineBody').innerHTML=rows.map(r=>{
+   const sm=String(r.sales_month||'').slice(0,7);
+   const nm=String(r.survival_month||'').slice(0,7);
+   const selectedRow=sm===selected;
+   return '<tr style="'+(selectedRow?'background:#f7fde9':'')+'">'+
+     '<td><b>'+esc(nm.replace('-','년 ')+'월')+'</b></td>'+
+     '<td>'+esc(sm.replace('-','년 ')+'월')+' W</td>'+
+     '<td>'+won(r.booked_margin||0)+'</td>'+
+     '<td>'+won(r.survival_cost_total||0)+'</td>'+
+     '<td>'+Number(r.weighted_payroll_rate||0).toFixed(1)+'%</td>'+
+     '<td><b>'+won(r.required_sales_margin||0)+'</b></td>'+
+     '<td>'+won(r.safe_required_sales_margin||0)+'</td>'+
+     '<td style="color:'+(Number(r.required_gap||0)>0?'#dc3f50':'#138754')+'"><b>'+won(r.required_gap||0)+'</b></td>'+
+   '</tr>';
+ }).join('')||'<tr><td colspan="8" class="empty">월별 마지노선 데이터가 없습니다.</td></tr>';
 }
 
 function renderSellerPerformance(rows,payrollRows=[]){

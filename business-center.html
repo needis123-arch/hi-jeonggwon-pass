@@ -1,774 +1,289 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>정권통신 Business Center V3.1</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>정권통신 Business Center V3.2</title>
 <style>
 :root{
-  --bg:#090a0c;--panel:#101216;--panel2:#15181d;--line:#242831;--text:#f6f7f8;--muted:#8f96a3;
-  --accent:#c8ff4f;--accent2:#9fe628;--danger:#ff6b6b;--warning:#ffd166;--good:#66e3a4;--white:#ffffff;
-  --shadow:0 16px 48px rgba(0,0,0,.28);--radius:20px;
+ --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
+ --accent:#b8ff35;--accent-dark:#74b600;--good:#138754;--bad:#dc3f50;--warn:#c77b00;
+ --shadow:0 8px 28px rgba(18,31,45,.06);--radius:18px
 }
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Pretendard,"Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,select,textarea{font:inherit}.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
-.sidebar{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);padding:24px 18px;background:linear-gradient(180deg,#0c0d10 0%,#090a0c 100%);display:flex;flex-direction:column;z-index:10}
-.brand{display:flex;align-items:center;gap:12px;padding:4px 8px 22px}.brand-mark{width:38px;height:38px;border-radius:11px;background:var(--accent);color:#101214;font-weight:1000;display:grid;place-items:center;letter-spacing:-1px}.brand strong{font-size:18px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.7px;margin-top:3px}
-.nav{display:flex;flex-direction:column;gap:6px}.nav button{border:0;background:transparent;color:#aeb4bf;text-align:left;padding:12px 13px;border-radius:12px;display:flex;gap:10px;align-items:center;cursor:pointer}.nav button:hover,.nav button.active{background:#171a1f;color:#fff}.nav button.active{box-shadow:inset 3px 0 0 var(--accent)}.nav .ico{width:20px;text-align:center;opacity:.9}
-.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding-top:16px}.mini-user{display:flex;align-items:center;gap:10px;padding:10px}.avatar{width:34px;height:34px;border-radius:50%;background:#1d2128;display:grid;place-items:center;font-weight:800}.mini-user small{display:block;color:var(--muted);margin-top:2px}
-.main{min-width:0}.topbar{height:76px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;background:rgba(9,10,12,.88);backdrop-filter:blur(16px);z-index:8}.page-title h1{font-size:18px;margin:0}.page-title p{margin:4px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;gap:10px;align-items:center}.btn{border:1px solid var(--line);background:#121419;color:#fff;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:700}.btn:hover{border-color:#3a3f49}.btn.primary{background:var(--accent);color:#101214;border-color:var(--accent)}.btn.ghost{background:transparent}.content{padding:26px 28px 60px;max-width:1640px;margin:0 auto}.page{display:none}.page.active{display:block}
-.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:18px;margin-bottom:18px}.target-card,.status-card,.card{background:linear-gradient(180deg,var(--panel) 0%,#0f1115 100%);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.target-card{padding:28px;position:relative;overflow:hidden}.target-card:after{content:"";position:absolute;width:260px;height:260px;background:radial-gradient(circle,rgba(200,255,79,.14),transparent 68%);right:-70px;top:-70px}.eyebrow{font-size:11px;color:var(--muted);letter-spacing:1.6px;font-weight:800}.target-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.target-amount{font-size:38px;font-weight:950;letter-spacing:-1.7px;margin:8px 0}.target-sub{color:var(--muted);font-size:13px}.progress{height:12px;background:#20242b;border-radius:999px;overflow:hidden;margin:22px 0 10px}.progress span{display:block;height:100%;width:32%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:999px}.progress-row{display:flex;justify-content:space-between;font-size:13px}.progress-row strong{color:var(--accent)}
-.status-card{padding:24px;display:grid;grid-template-rows:auto 1fr auto}.status-top{display:flex;justify-content:space-between;align-items:start}.badge{font-size:11px;border:1px solid #2b4533;background:#132119;color:#9ef2bb;border-radius:999px;padding:6px 9px;font-weight:800}.big-number{font-size:46px;font-weight:950;letter-spacing:-2px;align-self:center}.status-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric-mini{background:#15181d;border:1px solid #22262d;border-radius:14px;padding:12px}.metric-mini span{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}.metric-mini strong{font-size:16px}
-.grid-kpi{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}.kpi{padding:18px;background:var(--panel);border:1px solid var(--line);border-radius:16px;min-width:0}.kpi .label{font-size:11px;color:var(--muted);margin-bottom:8px}.kpi .value{font-size:22px;font-weight:900;letter-spacing:-.8px;white-space:nowrap}.delta{font-size:11px;margin-top:8px;color:var(--good)}.delta.bad{color:var(--danger)}
-.two-col{display:grid;grid-template-columns:1.35fr .65fr;gap:18px;margin-bottom:18px}.card{padding:20px}.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.card-head h3{font-size:15px;margin:0}.card-head p{font-size:11px;color:var(--muted);margin:4px 0 0}.seg{display:flex;background:#0c0e12;border:1px solid var(--line);padding:3px;border-radius:10px}.seg button{border:0;background:transparent;color:var(--muted);padding:6px 9px;border-radius:7px;font-size:11px;cursor:pointer}.seg button.active{background:#1b1f25;color:#fff}.chart-wrap{height:260px;position:relative}.chart-wrap canvas{width:100%;height:100%}.legend{display:flex;gap:14px;font-size:11px;color:var(--muted)}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--accent)}.dot.goal{background:#5d6470}
-.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.quick{border:1px solid var(--line);background:#14171c;border-radius:14px;padding:16px;text-align:left;cursor:pointer;color:#fff}.quick:hover{transform:translateY(-1px);border-color:#3d434d}.quick b{display:block;font-size:14px}.quick small{display:block;margin-top:5px;color:var(--muted)}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}.list{display:flex;flex-direction:column;gap:10px}.row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #1e2229}.row:last-child{border-bottom:0}.row .left{display:flex;align-items:center;gap:10px}.chip{width:10px;height:10px;border-radius:3px;background:var(--accent)}.row b{font-size:13px}.row small{color:var(--muted);display:block;margin-top:3px}.row .money{font-weight:850;font-size:13px}.bar{height:7px;background:#1f232a;border-radius:999px;overflow:hidden;margin-top:8px}.bar span{display:block;height:100%;background:#e8e9ec;border-radius:999px}.bar.accent span{background:var(--accent)}
-.table-card{margin-top:18px;overflow:hidden;padding:0}.table-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:13px 18px;border-bottom:1px solid #1c2026;text-align:left;font-size:12px}th{color:var(--muted);font-size:10px;letter-spacing:.7px;background:#0f1115;position:sticky;top:0}td strong{font-size:13px}.pill{padding:5px 8px;border-radius:999px;background:#17221b;color:#93eeb2;font-size:10px;font-weight:800}.pill.warn{background:#251f12;color:#f6d675}.pill.gray{background:#1d2026;color:#b5bbc6}
-.section-title{display:flex;justify-content:space-between;align-items:end;margin:4px 0 18px}.section-title h2{margin:0;font-size:24px}.section-title p{margin:6px 0 0;color:var(--muted);font-size:12px}.empty-page{min-height:480px;display:grid;place-items:center;border:1px dashed #2a2f37;border-radius:20px;background:#0d0f12}.empty-page .inner{text-align:center;max-width:440px}.empty-page h2{margin:0 0 10px}.empty-page p{color:var(--muted);line-height:1.6}
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal-backdrop.show{display:flex}.modal{width:min(620px,100%);background:#101216;border:1px solid #2c3139;border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.55);overflow:hidden}.modal-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0}.close{border:0;background:#1a1e24;color:#fff;width:34px;height:34px;border-radius:10px;cursor:pointer}.modal-body{padding:22px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}.field label{font-size:11px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea{background:#0b0d10;border:1px solid #2a2f37;color:#fff;border-radius:12px;padding:12px 13px;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:#5c663e;box-shadow:0 0 0 3px rgba(200,255,79,.08)}.modal-foot{padding:18px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px}.toast{position:fixed;right:24px;bottom:24px;background:#efffd6;color:#1b2410;padding:13px 16px;border-radius:12px;font-weight:850;display:none;z-index:80}.toast.show{display:block;animation:pop .25s ease}@keyframes pop{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
-
-/* V2 운영 화면 */
-.auth-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#11151a;border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:16px}.auth-banner .state{font-size:12px;color:var(--muted)}.auth-banner .state b{color:#fff}.auth-actions{display:flex;gap:8px}.op-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.op-toolbar input,.op-toolbar select{background:#0b0d10;border:1px solid #2a2f37;color:#fff;border-radius:10px;padding:9px 11px}.ledger-table{min-width:1900px}.ledger-table th,.ledger-table td{padding:9px 10px;white-space:nowrap}.ledger-table input,.ledger-table select{width:110px;background:#0b0d10;border:1px solid #242a32;color:#fff;border-radius:8px;padding:7px}.ledger-table input.wide{width:150px}.ledger-table input.name{width:90px}.ledger-table input.money{width:105px;text-align:right}.ledger-table .calc{font-weight:900;color:var(--accent)}.ledger-table .danger{color:var(--danger)}.check-cell{text-align:center}.check-cell input{width:18px;height:18px}.summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:14px 0}.summary-box{background:#111419;border:1px solid var(--line);border-radius:14px;padding:14px}.summary-box span{font-size:10px;color:var(--muted);display:block}.summary-box strong{font-size:18px;display:block;margin-top:5px}.payback-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.status-pending{color:#ffd166}.status-paid{color:#66e3a4}.status-overdue{color:#ff6b6b}.login-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;align-items:center;justify-content:center;padding:20px}.login-panel.show{display:flex}.login-card{width:min(440px,100%);background:#111419;border:1px solid #303640;border-radius:22px;padding:24px;box-shadow:0 30px 90px rgba(0,0,0,.55)}.login-card h2{margin:0 0 8px}.login-card p{font-size:12px;color:var(--muted);line-height:1.6}.login-card input{width:100%;margin-top:10px;background:#0b0d10;border:1px solid #2a2f37;color:#fff;border-radius:12px;padding:12px}.login-card .btn{width:100%;margin-top:10px}.sync-badge{font-size:10px;padding:5px 8px;border-radius:999px;background:#132119;color:#9ef2bb;border:1px solid #294833}.sync-badge.off{background:#241a15;color:#ffbf8b;border-color:#51311f}@media(max-width:900px){.summary-strip{grid-template-columns:repeat(2,1fr)}.payback-grid{grid-template-columns:1fr 1fr}}
-
-.mobile-nav{display:none}
-@media(max-width:1280px){.grid-kpi{grid-template-columns:repeat(3,1fr)}.three-col{grid-template-columns:1fr 1fr}.three-col .card:last-child{grid-column:1/-1}}
-@media(max-width:980px){.app{grid-template-columns:1fr}.sidebar{display:none}.topbar{padding:0 16px;height:66px}.content{padding:18px 14px 90px}.hero,.two-col{grid-template-columns:1fr}.grid-kpi{grid-template-columns:repeat(2,1fr)}.three-col{grid-template-columns:1fr}.three-col .card:last-child{grid-column:auto}.target-amount{font-size:30px}.mobile-nav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;background:rgba(11,12,15,.95);border-top:1px solid var(--line);z-index:30;backdrop-filter:blur(12px)}.mobile-nav button{background:none;border:0;color:#8e95a0;padding:11px 4px;font-size:10px}.mobile-nav button.active{color:var(--accent)}}
-@media(max-width:620px){.grid-kpi{grid-template-columns:1fr 1fr;gap:9px}.kpi{padding:14px}.kpi .value{font-size:18px}.quick-grid{grid-template-columns:1fr}.status-foot{grid-template-columns:1fr 1fr}.top-actions .ghost{display:none}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-title{align-items:flex-start;gap:10px;flex-direction:column}.hero{gap:12px}.target-card,.status-card,.card{border-radius:16px}.big-number{font-size:38px}.target-card{padding:22px}.content{padding-left:10px;padding-right:10px}}
-
-.report-banner{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;border:1px solid #3b3320;background:linear-gradient(90deg,#17140d,#111216);border-radius:14px;margin-bottom:18px}.report-banner strong{font-size:13px}.report-banner small{display:block;color:#c9b77a;margin-top:4px}.warn-badge{font-size:11px;font-weight:900;padding:6px 9px;border-radius:999px;background:#2a2110;color:#ffd166;border:1px solid #4a3a19;white-space:nowrap}.meta-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}.meta-chip{font-size:11px;border:1px solid #2a2f37;background:#14171b;padding:6px 9px;border-radius:999px;color:#c5cad3}.staff-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.staff-card{border:1px solid #242831;background:#12151a;border-radius:16px;padding:16px}.staff-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.staff-name{font-size:18px;font-weight:950}.staff-sales{font-size:24px;font-weight:950;margin:15px 0 8px;letter-spacing:-.8px}.staff-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}.staff-meta div{border-top:1px solid #242831;padding-top:10px}.staff-meta span{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}.staff-meta strong{font-size:13px}.empty-data{border:1px dashed #30353e;border-radius:14px;padding:18px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}.metric-label{font-size:11px;color:var(--muted)}
-@media(max-width:640px){.staff-grid{grid-template-columns:1fr}.report-banner{align-items:flex-start;flex-direction:column}}
-
-
-/* V1.2 MANAGEMENT COMMAND CENTER */
-.command-hero{display:grid;grid-template-columns:1.25fr .75fr;gap:18px;margin-bottom:18px}.command-main{position:relative;overflow:hidden;padding:26px;background:linear-gradient(145deg,#11141a 0%,#0d0f13 65%,#11170d 100%);border:1px solid #2a3038;border-radius:22px;box-shadow:var(--shadow)}.command-main:after{content:"";position:absolute;right:-90px;top:-120px;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle,rgba(200,255,79,.17),transparent 68%);pointer-events:none}.command-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;position:relative;z-index:1}.command-title{font-size:13px;color:#b8bfca;font-weight:800}.command-value{font-size:44px;line-height:1;font-weight:1000;letter-spacing:-2px;margin:9px 0 10px}.command-sub{color:var(--muted);font-size:12px}.goal-progress{height:14px;background:#1f242b;border-radius:999px;overflow:hidden;margin:24px 0 9px;position:relative;z-index:1}.goal-progress span{height:100%;display:block;background:linear-gradient(90deg,#9fe628,#c8ff4f);width:18.3%;border-radius:999px;transition:width .25s}.goal-row{display:flex;justify-content:space-between;gap:12px;color:#aeb5c0;font-size:12px;position:relative;z-index:1}.goal-row b{color:#fff}.command-side{display:grid;grid-template-rows:1fr 1fr;gap:12px}.forecast-card,.profit-card{padding:20px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,#11141a,#0e1014);box-shadow:var(--shadow)}.forecast-number{font-size:30px;font-weight:1000;letter-spacing:-1.3px;margin:10px 0 4px}.forecast-caption{font-size:11px;color:var(--muted)}.profit-card .forecast-number{color:var(--accent)}.kpi-8{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.kpi-rich{position:relative;overflow:hidden;padding:18px;border-radius:16px;border:1px solid var(--line);background:#101318}.kpi-rich .kr-label{font-size:11px;color:var(--muted);margin-bottom:9px}.kpi-rich .kr-value{font-size:22px;font-weight:950;letter-spacing:-.8px}.kpi-rich .kr-sub{font-size:10px;color:#7f8793;margin-top:7px;line-height:1.45}.kpi-rich.positive .kr-value{color:var(--accent)}.kpi-rich.warning .kr-value{color:var(--warning)}.kpi-rich.danger .kr-value{color:var(--danger)}.kpi-rich.dim .kr-value{color:#b4bbc6}.management-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-bottom:18px}.scenario-list{display:grid;gap:9px}.scenario{display:grid;grid-template-columns:110px 1fr 130px;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #20242b}.scenario:last-child{border-bottom:0}.scenario-name{font-size:12px;font-weight:800}.scenario-track{height:8px;background:#1e2229;border-radius:99px;overflow:hidden}.scenario-track span{display:block;height:100%;background:#616977;border-radius:99px}.scenario.current .scenario-track span{background:var(--accent)}.scenario.target .scenario-track span{background:#fff}.scenario-value{text-align:right;font-size:12px;font-weight:850}.waterfall{display:flex;flex-direction:column;gap:0}.wf-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:11px 0;border-bottom:1px solid #20242b}.wf-row:last-child{border-bottom:0}.wf-row span{font-size:12px;color:#a8afba}.wf-row b{font-size:12px}.wf-row.total{border-top:1px solid #3a414c;margin-top:5px;padding-top:14px}.wf-row.total span,.wf-row.total b{font-size:15px;color:#fff}.wf-row.total b{color:var(--accent)}.mini-note{margin-top:13px;padding:10px 12px;border-radius:11px;background:#14171c;border:1px solid #242831;color:#8f96a3;font-size:10px;line-height:1.55}.decision-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}.decision-item{padding:16px;border-radius:15px;border:1px solid #272c34;background:#0f1216}.decision-item span{display:block;color:var(--muted);font-size:10px;margin-bottom:6px}.decision-item strong{font-size:17px}.decision-item small{display:block;color:#808895;font-size:10px;margin-top:5px}.ad-empty{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.ad-mini{padding:13px;border-radius:13px;border:1px solid #242831;background:#12151a}.ad-mini span{display:block;color:var(--muted);font-size:10px}.ad-mini b{display:block;margin-top:6px;font-size:15px}.settings-hint{display:flex;align-items:center;gap:8px;color:#9aa2ae;font-size:10px;margin-top:9px}.settings-hint i{width:7px;height:7px;border-radius:50%;background:var(--warning);display:inline-block}.tag-example{font-size:10px;border:1px solid #4a4021;background:#211d10;color:#f1d877;padding:5px 7px;border-radius:999px;font-weight:800}.calc-banner{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:18px;padding:14px 16px;border-radius:14px;background:#10150d;border:1px solid #334221}.calc-banner div{font-size:11px;color:#b4bdab;line-height:1.5}.calc-banner b{color:#fff}.calc-banner button{white-space:nowrap}.cost-input-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.cost-cell{padding:11px;border-radius:11px;background:#0c0f12;border:1px solid #232831}.cost-cell span{font-size:9px;color:var(--muted);display:block}.cost-cell b{display:block;margin-top:5px;font-size:12px}
-@media(max-width:1280px){.kpi-8{grid-template-columns:repeat(2,1fr)}.decision-strip{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:980px){.command-hero,.management-grid{grid-template-columns:1fr}.command-side{grid-template-columns:1fr 1fr;grid-template-rows:auto}.command-value{font-size:36px}.ad-empty{grid-template-columns:1fr 1fr 1fr}.cost-input-summary{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:620px){.kpi-8,.decision-strip{grid-template-columns:1fr 1fr}.command-side{grid-template-columns:1fr}.scenario{grid-template-columns:85px 1fr}.scenario-value{grid-column:2;text-align:left}.ad-empty{grid-template-columns:1fr}.command-head{flex-direction:column}.command-value{font-size:31px}}
-
-
-.ops-check-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.ops-check{background:#101319;border:1px solid var(--line);border-radius:14px;padding:14px}.ops-check span{display:block;color:var(--muted);font-size:10px}.ops-check strong{display:block;font-size:20px;margin-top:6px}.ops-check.warn strong{color:#ffd166}.ops-check.danger strong{color:#ff7777}.ops-check.good strong{color:#7ee7a8}.status-unanswered{color:#ffbd66}.status-done{color:#66e3a4}.status-issue{color:#ff6b6b}.status-verified{color:#66e3a4}.status-unchecked{color:#ffd166}.status-partial{color:#8fc7ff}.inline-select{background:#0b0d10;border:1px solid #2a2f37;color:#fff;border-radius:9px;padding:7px 8px;font-size:11px}.action-stack{display:flex;gap:6px;flex-wrap:wrap}.tiny-btn{border:1px solid #303640;background:#14181e;color:#e9edf3;border-radius:8px;padding:6px 8px;font-size:10px;cursor:pointer}.tiny-btn.primary{background:#c8ff4f;color:#111;border-color:#c8ff4f;font-weight:900}.tiny-btn.danger{border-color:#66333a;color:#ff9da7;background:#231417}
-@media(max-width:900px){.ops-check-grid{grid-template-columns:repeat(2,1fr)}}
-</style>
-
-<style id="v3-white-theme">
-:root{--bg:#f4f6f8;--panel:#fff;--panel2:#f8fafc;--line:#e3e7ed;--text:#111318;--muted:#697386;--accent:#b8ff35;--accent2:#91da16;--danger:#df3f4c;--warning:#d98b00;--good:#148a55;--white:#111318;--shadow:0 8px 28px rgba(27,39,51,.07)}
-html,body{background:#f4f6f8;color:#111318}
-.sidebar{background:#fff;border-right:1px solid #e3e7ed}
-.nav button{color:#657082}.nav button:hover,.nav button.active{background:#f1f5f9;color:#111318}
-.sidebar-bottom{border-color:#e3e7ed}.avatar{background:#eef2f6;color:#111318}
-.topbar{background:rgba(255,255,255,.93);border-color:#e3e7ed}
-.btn{background:#fff;color:#111318;border-color:#d9dee6}.btn:hover{border-color:#aeb7c3}.btn.primary{background:#b8ff35;color:#111318;border-color:#a7ed27}
-.target-card,.status-card,.card,.command-main,.forecast-card,.profit-card,.kpi-rich,.decision-item,.staff-card,.summary-box,.auth-banner,.ad-mini,.quick,.metric-mini{background:#fff!important;border-color:#e3e7ed!important;color:#111318!important;box-shadow:0 8px 24px rgba(27,39,51,.05)}
-.command-main{background:linear-gradient(145deg,#fff 0%,#fbfff4 100%)!important}
-.kpi .label,.kr-label,.kr-sub,.command-sub,.forecast-caption,.card-head p,.section-title p,.metric-label,.row small,.target-sub,.empty-data,.field label,.login-card p{color:#697386!important}
-.kpi{background:#fff;border-color:#e3e7ed;color:#111318}
-.progress,.goal-progress,.scenario-track,.bar{background:#edf1f5}
-.table-card{background:#fff}.table-head{border-color:#e3e7ed}
-table{background:#fff}th{background:#f7f9fb;color:#697386;border-color:#e8ebf0}td{color:#20252d;border-color:#edf0f3}
-.field input,.field select,.field textarea,.op-toolbar input,.op-toolbar select,.ledger-table input,.ledger-table select,.inline-select,.login-card input{background:#fff!important;color:#111318!important;border-color:#d9dee6!important}
-.modal,.login-card{background:#fff!important;color:#111318!important;border-color:#d9dee6!important;box-shadow:0 24px 70px rgba(20,29,38,.18)}
-.modal-head,.modal-foot{border-color:#e3e7ed}.close{background:#f1f4f7;color:#111318}
-.mobile-nav{background:rgba(255,255,255,.96);border-color:#e3e7ed}.mobile-nav button{color:#697386}
-.empty-page{background:#fff;border-color:#d8dde5}.empty-data{background:#f8fafc;border-color:#dce1e8}
-.sync-badge{background:#edf9f1;color:#157747;border-color:#c9e9d4}.sync-badge.off{background:#fff5eb;color:#a75500;border-color:#f0d5b6}
-.pill{background:#ecf8ef;color:#177447}.pill.warn{background:#fff7e8;color:#9b6500}.pill.gray{background:#f0f2f5;color:#687180}
-.report-banner,.calc-banner{background:#fff;border-color:#e3e7ed;color:#111318}
-.report-banner small{color:#697386}.warn-badge{background:#fff7e8;color:#9b6500;border-color:#efd9aa}
-.meta-chip{background:#f7f9fb;border-color:#dde2e8;color:#596474}
-#page-dashboard > :not(#liveDashboard){display:none!important}
-.v3-wrap{display:flex;flex-direction:column;gap:18px}
-.v3-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px}.v3-head h2{margin:0;font-size:25px}.v3-head p{margin:5px 0 0;color:#697386;font-size:12px}
-.v3-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.v3-kpi{background:#fff;border:1px solid #e3e7ed;border-radius:18px;padding:18px;box-shadow:0 6px 20px rgba(27,39,51,.045)}.v3-kpi span{font-size:11px;color:#697386;display:block;margin-bottom:9px}.v3-kpi strong{font-size:23px;letter-spacing:-.7px;display:block}.v3-kpi small{font-size:10px;color:#8791a0;display:block;margin-top:7px;line-height:1.4}.v3-kpi.good strong{color:#148a55}.v3-kpi.warn strong{color:#bd7600}.v3-kpi.bad strong{color:#d33c49}
-.v3-goal{background:#fff;border:1px solid #e3e7ed;border-radius:20px;padding:22px;box-shadow:0 6px 20px rgba(27,39,51,.045)}.v3-goal-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.v3-goal h3{margin:0 0 6px;font-size:15px}.v3-goal .big{font-size:34px;font-weight:950;letter-spacing:-1.4px}.v3-progress{height:15px;border-radius:999px;background:#edf1f5;overflow:hidden;margin:18px 0 8px}.v3-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#8edb13,#b8ff35);border-radius:999px;transition:.3s}.v3-goal-meta{display:flex;justify-content:space-between;gap:10px;color:#697386;font-size:11px}
-.v3-grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.v3-chart{background:#fff;border:1px solid #e3e7ed;border-radius:20px;padding:18px;min-height:330px;box-shadow:0 6px 20px rgba(27,39,51,.045)}.v3-chart h3{font-size:14px;margin:0}.v3-chart p{font-size:10px;color:#7a8492;margin:5px 0 12px}.v3-chart canvas{width:100%;height:245px;display:block}
-.v3-table-card{background:#fff;border:1px solid #e3e7ed;border-radius:20px;overflow:hidden;box-shadow:0 6px 20px rgba(27,39,51,.045)}.v3-table-title{padding:17px 19px;border-bottom:1px solid #e8ebf0;display:flex;justify-content:space-between;align-items:center}.v3-table-title h3{font-size:14px;margin:0}
-.v3-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.v3-summary .box{background:#fff;border:1px solid #e3e7ed;border-radius:14px;padding:14px}.v3-summary span{font-size:10px;color:#697386;display:block}.v3-summary strong{font-size:18px;display:block;margin-top:5px}
-.type-badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:800}.type-fixed{background:#eef6ff;color:#3264a8}.type-variable{background:#fff5e9;color:#a15e00}
-.login-card .login-actions{display:grid;gap:8px;margin-top:10px}.login-help{margin-top:12px;padding:10px 11px;border-radius:10px;background:#f7f9fb;color:#667181;font-size:10px;line-height:1.55}
-@media(max-width:1180px){.v3-kpis{grid-template-columns:repeat(2,1fr)}.v3-summary{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:760px){.v3-grid2{grid-template-columns:1fr}.v3-kpis{grid-template-columns:1fr 1fr}.v3-head{align-items:flex-start;flex-direction:column}}
-@media(max-width:520px){.v3-kpis,.v3-summary{grid-template-columns:1fr}.v3-goal-top{flex-direction:column}.v3-kpi strong{font-size:20px}}
-</style>
-
-
-<style id="v31-modal-fix">
-.modal-backdrop{align-items:flex-start!important;overflow-y:auto!important;padding:18px!important}
-.modal{margin:0 auto!important;max-height:calc(100vh - 36px)!important;display:flex!important;flex-direction:column!important}
-.modal-head,.modal-foot{flex:0 0 auto}.modal-body{overflow-y:auto!important;min-height:0!important}
-@media(max-width:620px){.modal-backdrop{padding:8px!important}.modal{max-height:calc(100vh - 16px)!important;border-radius:16px!important}}
-.v31-toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.v31-toolbar input,.v31-toolbar select{padding:9px 10px;border:1px solid #d9dee6;border-radius:10px;background:#fff;color:#111318}
-.v31-auto-report{background:#fff;border:1px solid #e3e7ed;border-radius:20px;padding:22px;box-shadow:0 6px 20px rgba(27,39,51,.045)}
-.v31-report-block{border-top:1px solid #e8ebf0;padding-top:16px;margin-top:16px}.v31-report-block:first-child{border-top:0;padding-top:0;margin-top:0}
-.v31-report-title{font-size:13px;font-weight:900;margin-bottom:10px}.v31-report-line{font-size:13px;line-height:1.9}.v31-report-money{font-size:24px;font-weight:950;letter-spacing:-.8px;margin:4px 0}
-.v31-annual-card{background:#fff;border:1px solid #e3e7ed;border-radius:20px;padding:20px;box-shadow:0 6px 20px rgba(27,39,51,.045)}
-.v31-annual-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.v31-annual-head .value{font-size:30px;font-weight:950;letter-spacing:-1px;margin-top:6px}
-.v31-sources{display:grid;grid-template-columns:.85fr 1.15fr;gap:18px}.v31-source-table table{min-width:580px}
-.settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.settings-card{background:#fff;border:1px solid #e3e7ed;border-radius:18px;padding:18px}
-.settings-card h3{margin:0 0 6px;font-size:14px}.settings-card p{margin:0 0 14px;color:#697386;font-size:10px;line-height:1.5}
-.option-list{display:flex;flex-wrap:wrap;gap:7px}.option-chip{display:inline-flex;align-items:center;gap:5px;padding:7px 9px;border:1px solid #dde2e8;border-radius:999px;background:#f8fafc;font-size:11px}
-.option-chip button{border:0;background:transparent;color:#a14444;cursor:pointer;padding:0}
-@media(max-width:900px){.v31-sources,.settings-grid{grid-template-columns:1fr}}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:235px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;z-index:20}
+.brand{display:flex;align-items:center;gap:11px;padding:5px 9px 20px}.brandmark{width:38px;height:38px;border-radius:11px;background:var(--accent);display:grid;place-items:center;font-weight:1000}.brand b{font-size:17px}.brand small{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;text-align:left;color:#657083;padding:11px 12px;border-radius:11px;font-weight:700}.nav button:hover,.nav button.active{background:#f1f4f7;color:#111318}.nav button.active{box-shadow:inset 3px 0 0 var(--accent-dark)}
+.sidefoot{margin-top:auto;border-top:1px solid var(--line);padding:15px 8px 0}.sidefoot small{color:var(--muted);display:block;margin-bottom:7px}.logout{border:1px solid var(--line);background:#fff;padding:8px 10px;border-radius:9px}
+.main{min-width:0}.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,255,255,.95);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:15;backdrop-filter:blur(14px)}
+.topbar h1{font-size:17px;margin:0}.topbar p{font-size:11px;color:var(--muted);margin:4px 0 0}.actions{display:flex;gap:8px}
+.btn{border:1px solid #d8dee6;background:#fff;color:#111318;padding:9px 13px;border-radius:11px;font-weight:800}.btn.primary{background:var(--accent);border-color:#a7ec27}.btn.danger{color:#c43846}
+.content{padding:24px;max-width:1700px;margin:0 auto}.page{display:none}.page.active{display:block}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px}.section-head h2{margin:0;font-size:23px}.section-head p{margin:5px 0 0;color:var(--muted);font-size:11px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.kpi{padding:17px;background:#fff;border:1px solid var(--line);border-radius:16px}.kpi span{font-size:10px;color:var(--muted);display:block}.kpi strong{font-size:22px;display:block;margin-top:7px;letter-spacing:-.5px}.kpi small{font-size:10px;color:#8a94a3;display:block;margin-top:6px;line-height:1.4}.kpi.good strong{color:var(--good)}.kpi.bad strong{color:var(--bad)}.kpi.warn strong{color:var(--warn)}
+.goal{padding:21px;margin-bottom:16px}.goal-top{display:flex;justify-content:space-between;gap:16px;align-items:start}.goal h3{margin:0;font-size:14px}.goal-big{font-size:34px;font-weight:1000;margin-top:7px;letter-spacing:-1px}.progress{height:14px;background:#edf1f5;border-radius:999px;overflow:hidden;margin:17px 0 8px}.progress span{display:block;height:100%;background:linear-gradient(90deg,#82cc11,#b8ff35);width:0;border-radius:999px}.goal-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:10px;gap:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.chart{padding:18px;min-height:330px}.chart h3{font-size:14px;margin:0}.chart p{font-size:10px;color:var(--muted);margin:4px 0 10px}.chart canvas{width:100%;height:250px;display:block}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.table-card{overflow:hidden}.table-top{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}.table-top b{font-size:13px}.table-wrap{overflow:auto;max-width:100%}table{border-collapse:collapse;width:100%;min-width:900px}th,td{padding:11px 13px;border-bottom:1px solid #edf0f3;text-align:left;font-size:11px;white-space:nowrap}th{background:#f7f9fb;color:#6e7888;font-size:9px;position:sticky;top:0;z-index:2}td strong{font-size:12px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select{border:1px solid #d8dee6;background:#fff;border-radius:9px;padding:8px 10px;color:#111318}
+.summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.summary .box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px}.summary span{display:block;font-size:9px;color:var(--muted)}.summary strong{display:block;font-size:17px;margin-top:5px}
+.pill{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:900;background:#eef2f5;color:#5f6978}.pill.green{background:#eaf7ef;color:#137346}.pill.orange{background:#fff5e8;color:#9f6000}.pill.blue{background:#eef5ff;color:#3566a6}
+.source-list{display:grid;gap:9px;padding:14px}.source-row{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:10px}.source-row span{font-size:11px}.source-bar{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden}.source-bar i{display:block;height:100%;background:#9bdc2e;border-radius:99px}.source-row b{font-size:11px}
+.report-box{padding:20px}.report-text{white-space:pre-wrap;background:#f7f9fb;border:1px solid var(--line);border-radius:14px;padding:17px;line-height:1.75;font-size:12px;min-height:260px}
+.settings-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.setting-card{padding:17px}.setting-card h3{margin:0 0 5px;font-size:14px}.setting-card p{font-size:10px;color:var(--muted);margin:0 0 12px}.setting-list{display:flex;flex-wrap:wrap;gap:7px}.tag{border:1px solid #dce2e8;background:#f8fafc;border-radius:999px;padding:6px 9px;font-size:10px}.addrow{display:flex;gap:7px;margin-top:12px}.addrow input{flex:1;border:1px solid #d8dee6;border-radius:9px;padding:9px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+.modal-bg{position:fixed;inset:0;background:rgba(17,24,32,.45);z-index:100;display:none;overflow:auto;padding:20px;align-items:flex-start;justify-content:center}.modal-bg.show{display:flex}.modal{width:min(760px,100%);background:#fff;border:1px solid #dce2e8;border-radius:20px;box-shadow:0 30px 90px rgba(20,30,40,.2);max-height:calc(100vh - 40px);display:flex;flex-direction:column;margin:auto}.modal-head{padding:17px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.modal-head h3{margin:0;font-size:16px}.close{border:0;background:#f0f3f6;border-radius:9px;width:34px;height:34px}.modal-body{padding:20px;overflow:auto}.modal-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:10px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111318}.calc-preview{grid-column:1/-1;border:1px solid #dce4ce;background:#f8ffec;border-radius:12px;padding:13px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.calc-preview div span{display:block;color:#738066;font-size:9px}.calc-preview div b{font-size:14px;display:block;margin-top:3px}
+.login-bg{position:fixed;inset:0;background:rgba(20,27,34,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}.login-bg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid #dce2e8;border-radius:20px;padding:23px;box-shadow:0 30px 90px rgba(20,30,40,.22)}.login h2{margin:0 0 7px}.login p{font-size:11px;color:var(--muted);line-height:1.5}.login input{width:100%;border:1px solid #d7dde5;border-radius:11px;padding:11px;margin-top:9px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:#b65f00;margin-top:9px}
+.toast{position:fixed;right:22px;bottom:22px;background:#111318;color:#fff;padding:11px 14px;border-radius:10px;display:none;z-index:300}.toast.show{display:block}
+@media(max-width:1150px){.kpis{grid-template-columns:repeat(2,1fr)}.summary{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{display:none}.content{padding:15px}.topbar{padding:0 14px}.grid2,.grid3,.settings-grid{grid-template-columns:1fr}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.calc-preview{grid-column:auto;grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.kpis,.summary{grid-template-columns:1fr}.goal-top,.section-head{flex-direction:column;align-items:flex-start}.actions{flex-wrap:wrap}}
 </style>
 </head>
 <body>
 <div class="app">
-  <aside class="sidebar">
-    <div class="brand"><div class="brand-mark">J</div><div><strong>정권통신</strong><small>BUSINESS CENTER</small></div></div>
-    <nav class="nav" id="sideNav">
-      <button class="active" data-page="dashboard"><span class="ico">◫</span> 종합 대시보드</button>
-      <button data-page="daily"><span class="ico">▤</span> 일일 마감</button>
-      <button data-page="ledger"><span class="ico">▦</span> 장부 관리</button>
-      <button data-page="usedreturns"><span class="ico">↺</span> 중고 반납 체크</button>
-      <button data-page="payback"><span class="ico">↗</span> 페이백 체크</button>
-      <button data-page="sales"><span class="ico">₩</span> 매출 관리</button>
-      <button data-page="ads"><span class="ico">◎</span> 광고비 관리</button>
-      <button data-page="expenses"><span class="ico">↘</span> 지출 관리</button>
-      <button data-page="targets"><span class="ico">◉</span> 목표 관리</button>
-      <button data-page="staff"><span class="ico">♙</span> 직원 실적</button>
-      <button data-page="reports"><span class="ico">▥</span> 보고서</button>
-      <button data-page="close"><span class="ico">✓</span> 월마감</button>
-      <button data-page="settings"><span class="ico">⚙</span> 설정</button>
-    </nav>
-    <div class="sidebar-bottom"><div class="mini-user"><div class="avatar">대</div><div><b>대표자</b><small>Owner · 전체 권한</small></div></div></div>
-  </aside>
+<aside class="sidebar">
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.2</small></div></div>
+ <div class="nav">
+  <button class="active" data-page="dashboard">종합 대시보드</button>
+  <button data-page="ledger">장부 관리</button>
+  <button data-page="report">자동 매출보고</button>
+  <button data-page="used">중고 반납</button>
+  <button data-page="payback">페이백</button>
+  <button data-page="ads">광고비</button>
+  <button data-page="expenses">비용원장</button>
+  <button data-page="targets">목표 관리</button>
+  <button data-page="sources">유입 분석</button>
+  <button data-page="settings">환경 설정</button>
+ </div>
+ <div class="sidefoot"><small id="sessionText">로그인 필요</small><button class="logout" onclick="logout()">로그아웃</button></div>
+</aside>
+<main class="main">
+ <header class="topbar">
+  <div><h1 id="pageTitle">종합 대시보드</h1><p id="todayText"></p></div>
+  <div class="actions"><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
+ </header>
+ <div class="content">
 
-  <main class="main">
-    <header class="topbar">
-      <div class="page-title"><h1 id="topTitle">종합 대시보드</h1><p id="todayText"></p></div>
-      <div class="top-actions"><button class="btn ghost" onclick="openModal('expense')">+ 지출</button><button class="btn primary" onclick="openModal('sales')">+ 오늘 매출</button></div>
-    </header>
+<section class="page active" id="page-dashboard">
+ <div class="section-head"><div><h2>정권통신 경영 현황</h2><p>장부 입력만으로 매출·갯수·손익·목표·유입을 자동 계산합니다.</p></div><button class="btn" onclick="loadAll()">새로고침</button></div>
+ <div class="goal card">
+  <div class="goal-top"><div><h3>이번 달 목표 달성률</h3><div class="goal-big" id="dGoalPct">0.0%</div><div style="font-size:10px;color:#6c7788;margin-top:5px">현재 <b id="dCurrent">0원</b> / 목표 <b id="dTarget">미설정</b></div></div><div style="text-align:right"><span style="font-size:10px;color:#6c7788">현재 페이스 예상</span><b id="dForecast" style="display:block;font-size:23px;margin-top:5px">0원</b><small id="dForecastGap" style="color:#6c7788">목표 설정 후 계산</small></div></div>
+  <div class="progress"><span id="dGoalBar"></span></div>
+  <div class="goal-meta"><span>목표까지 <b id="dRemain">-</b></span><span>남은 기간 필요 일평균 <b id="dNeedDaily">-</b></span></div>
+ </div>
+ <div class="kpis">
+  <div class="kpi"><span>월 누적 매출</span><strong id="dMargin">0원</strong><small id="dUnits">판매 0대</small></div>
+  <div class="kpi" id="samePeriodCard"><span>지난달 이맘때 대비</span><strong id="dSameDelta">-</strong><small id="dPrevSame">지난달 동일기간 0원</small></div>
+  <div class="kpi good"><span>월 순손익</span><strong id="dNet">0원</strong><small>매출 - 광고비 - 비용원장</small></div>
+  <div class="kpi"><span>월 총지출</span><strong id="dExpense">0원</strong><small id="dExpenseDetail">광고 0원 · 비용 0원</small></div>
+  <div class="kpi"><span>연간 누적 매출</span><strong id="dYearMargin">0원</strong><small id="dYearGoalText">연간 목표 미설정</small></div>
+  <div class="kpi"><span>연간 목표 달성률</span><strong id="dYearPct">0.0%</strong><small>올해 누적 기준</small></div>
+  <div class="kpi"><span>전월 대비 성장률</span><strong id="dMoMGrowth">-</strong><small id="dPrevMonth">전월 0원</small></div>
+  <div class="kpi"><span>광고비</span><strong id="dAds">0원</strong><small id="dRoas">ROAS 계산 대기</small></div>
+ </div>
+ <div class="grid2">
+  <div class="chart card"><h3>이번 달 누적 실적 vs 목표</h3><p>일별 누적 최종마진과 목표 페이스</p><canvas id="goalChart"></canvas></div>
+  <div class="chart card"><h3>연간 월별 성장 추이</h3><p>월별 매출과 전월 대비 성장 흐름</p><canvas id="annualChart"></canvas></div>
+ </div>
+ <div class="grid2">
+  <div class="card"><div class="table-top"><b>이번 달 유입경로 분석</b><button class="btn" onclick="go('sources')">상세보기</button></div><div id="dashboardSources" class="source-list"></div></div>
+  <div class="table-card card"><div class="table-top"><b>최근 일별 매출 증감</b><span style="font-size:9px;color:#6c7788">장부 자동집계</span></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>판매대수</th><th>일매출</th><th>전일대비</th><th>누적</th><th>목표율</th></tr></thead><tbody id="dailyDeltaBody"></tbody></table></div></div>
+ </div>
+</section>
 
-    <div class="content">
-      <section class="page active" id="page-dashboard">
+<section class="page" id="page-ledger">
+ <div class="section-head"><div><h2>장부 관리</h2><p>여기에 한 번 입력하면 매출보고·직원실적·유입분석·페이백·중고반납에 자동 반영됩니다.</p></div><button class="btn primary" onclick="openLedger()">+ 판매건 입력</button></div>
+ <div class="summary"><div class="box"><span>판매대수</span><strong id="lUnits">0대</strong></div><div class="box"><span>유심단독</span><strong id="lUsim">0건</strong></div><div class="box"><span>동판</span><strong id="lDong">0건</strong></div><div class="box"><span>약갱 / 번들</span><strong id="lRB">0 / 0</strong></div><div class="box"><span>월 매출</span><strong id="lMargin">0원</strong></div></div>
+ <div class="table-card card"><div class="table-top"><b>월별 장부</b><div class="toolbar"><input id="ledgerMonth" type="month" onchange="loadLedger()"><input id="ledgerSearch" placeholder="고객명·번호·기종" oninput="renderLedger()"></div></div><div class="table-wrap"><table style="min-width:1900px"><thead><tr><th>개통일</th><th>거래처</th><th>고객명</th><th>번호</th><th>모델</th><th>판매유형</th><th>유입경로</th><th>요금제</th><th>출고가</th><th>K 기본리베이트</th><th>L 현금판매금액</th><th>M 실리베이트</th><th>P 부가세</th><th>Q 페이백</th><th>R 위약금대납</th><th>S 현금판매받은돈</th><th>T 유심</th><th>U 중고금액</th><th>중고기종</th><th>W 최종마진</th><th>판매자</th><th>관리</th></tr></thead><tbody id="ledgerBody"></tbody></table></div></div>
+</section>
 
-<div id="liveDashboard" class="v3-wrap">
-  <div class="v3-head">
-    <div><h2>정권통신 경영 대시보드</h2><p>장부 · 광고비 · 비용원장 · 목표를 Supabase 실데이터로 자동 계산합니다.</p></div>
-    <div style="display:flex;gap:8px"><button class="btn" onclick="loadV3All()">새로고침</button><button class="btn primary" onclick="openTargetModal()">목표 설정</button></div>
-  </div>
-  <div class="v3-goal">
-    <div class="v3-goal-top">
-      <div><h3>이번 달 목표 달성률</h3><div class="big" id="v3GoalPct">0.0%</div><div style="font-size:11px;color:#697386;margin-top:6px">현재 <b id="v3Current">0원</b> / 목표 <b id="v3Target">미설정</b></div></div>
-      <div style="text-align:right"><span style="font-size:10px;color:#697386">현재 페이스 예상</span><strong id="v3Forecast" style="display:block;font-size:24px;margin-top:5px">0원</strong><small id="v3ForecastGap" style="color:#697386">목표 설정 후 계산</small></div>
-    </div>
-    <div class="v3-progress"><span id="v3GoalBar"></span></div>
-    <div class="v3-goal-meta"><span>목표까지 <b id="v3Remaining">0원</b></span><span>남은 기간 필요 일평균 <b id="v3NeedDaily">0원</b></span></div>
-  </div>
-  <div class="v3-kpis">
-    <div class="v3-kpi"><span>월 누적 최종마진</span><strong id="v3Margin">0원</strong><small id="v3Units">0건 · 평균 0원</small></div>
-    <div class="v3-kpi" id="v3DeltaCard"><span>지난달 이맘때 대비</span><strong id="v3Delta">-</strong><small id="v3PrevSame">지난달 이맘때 0원</small></div>
-    <div class="v3-kpi good"><span>월 순손익</span><strong id="v3Net">0원</strong><small>최종마진 - 광고비 - 비용원장</small></div>
-    <div class="v3-kpi"><span>월 총지출</span><strong id="v3Outflow">0원</strong><small id="v3OutflowDetail">광고 0원 · 비용 0원</small></div>
-    <div class="v3-kpi"><span>고정비</span><strong id="v3Fixed">0원</strong><small>급여·월세·통신비 등</small></div>
-    <div class="v3-kpi"><span>유동비</span><strong id="v3Variable">0원</strong><small>사은품·소모품·식비 등</small></div>
-    <div class="v3-kpi"><span>광고비</span><strong id="v3Ads">0원</strong><small id="v3Roas">마진 ROAS 계산 대기</small></div>
-    <div class="v3-kpi"><span>연간 목표 달성률</span><strong id="v3AnnualPct">0.0%</strong><small id="v3AnnualText">연 목표 미설정</small></div>
-  </div>
-  <div class="v3-grid2">
-    <div class="v3-chart"><h3>일별 매출(최종마진) 추이</h3><p>현재 월 장부의 일별 최종마진 합계</p><canvas id="v3DailyChart"></canvas></div>
-    <div class="v3-chart"><h3>누적 실적 vs 목표 페이스</h3><p>누적 최종마진과 월 목표의 일할 기준선 비교</p><canvas id="v3GoalChart"></canvas></div>
-  </div>
+<section class="page" id="page-report">
+ <div class="section-head"><div><h2>자동 매출보고</h2><p>일일마감을 별도로 쓰지 않습니다. 장부 입력값에서 자동 생성합니다.</p></div><button class="btn primary" onclick="copyReport()">보고 복사</button></div>
+ <div class="toolbar" style="margin-bottom:12px"><input id="reportMonth" type="month" onchange="loadReport()"><input id="reportDate" type="date" onchange="loadReport()"></div>
+ <div class="report-box card"><div class="report-text" id="reportText">장부 데이터가 없습니다.</div></div>
+</section>
 
-  <div class="v31-annual-card">
-    <div class="v31-annual-head">
-      <div><div class="eyebrow">ANNUAL GOAL</div><div style="font-size:14px;font-weight:900;margin-top:6px">연간 매출 목표 달성</div><div class="value" id="v31AnnualGoalPct">0.0%</div><div style="font-size:11px;color:#697386">현재 <b id="v31AnnualCurrent">0원</b> / 목표 <b id="v31AnnualTarget">미설정</b></div></div>
-      <div style="text-align:right"><span style="font-size:10px;color:#697386">전월 대비 성장률</span><strong id="v31MomGrowth" style="display:block;font-size:24px;margin-top:6px">-</strong><small id="v31MomText" style="color:#697386">월별 데이터 기준</small></div>
-    </div>
-    <div class="v3-progress"><span id="v31AnnualBar"></span></div>
-    <div class="v3-chart" style="box-shadow:none;border:0;padding:10px 0 0;min-height:300px"><h3>월별 성장 추이</h3><p>올해 1월부터 월별 최종마진을 비교합니다.</p><canvas id="v31MonthlyChart"></canvas></div>
-  </div>
-  <div class="v31-sources">
-    <div class="v3-chart"><h3>유입경로별 매출 비중</h3><p>현재 월 장부의 유입경로별 최종마진</p><canvas id="v31SourceChart"></canvas></div>
-    <div class="v3-table-card v31-source-table"><div class="v3-table-title"><h3>유입경로 분석</h3><span style="font-size:10px;color:#697386">판매건 · 판매대수 · 최종마진</span></div><div class="table-wrap"><table><thead><tr><th>유입경로</th><th>전체건수</th><th>판매대수</th><th>최종마진</th><th>마진 비중</th></tr></thead><tbody id="v31SourceBody"></tbody></table></div></div>
-  </div>
-  <div class="v3-table-card">
-    <div class="v3-table-title"><h3>매출 증감표</h3><span style="font-size:10px;color:#697386">일별 실적 · 전일 대비 · 누적</span></div>
-    <div class="table-wrap"><table><thead><tr><th>일자</th><th>판매건수</th><th>일 매출</th><th>전일 대비</th><th>누적 매출</th><th>누적 목표율</th></tr></thead><tbody id="v3DeltaBody"><tr><td colspan="6">데이터 없음</td></tr></tbody></table></div>
-  </div>
+<section class="page" id="page-used">
+ <div class="section-head"><div><h2>중고 반납</h2><p>개통월 기준으로 월별 조회합니다.</p></div></div>
+ <div class="summary"><div class="box"><span>월 추적대상</span><strong id="uTotal">0건</strong></div><div class="box"><span>미반납</span><strong id="uOpen">0건</strong></div><div class="box"><span>미답변</span><strong id="uUnanswered">0건</strong></div><div class="box"><span>기한초과</span><strong id="uOverdue">0건</strong></div><div class="box"><span>미반납 예정금액</span><strong id="uAmount">0원</strong></div></div>
+ <div class="table-card card"><div class="table-top"><b>월별 중고 반납 리스트</b><input id="usedMonth" type="month" onchange="loadUsed()"></div><div class="table-wrap"><table><thead><tr><th>고객</th><th>기종</th><th>담당자</th><th>개통일</th><th>반납예정일</th><th>상태</th><th>금액</th><th>메모</th><th>처리</th></tr></thead><tbody id="usedBody"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-payback">
+ <div class="section-head"><div><h2>페이백</h2><p>지급예정 월 기준으로 월별 조회합니다.</p></div></div>
+ <div class="summary"><div class="box"><span>월 약정액</span><strong id="pPromised">0원</strong></div><div class="box"><span>지급완료</span><strong id="pPaid">0원</strong></div><div class="box"><span>미지급</span><strong id="pOut">0원</strong></div><div class="box"><span>계좌 미확인</span><strong id="pUnverified">0명</strong></div><div class="box"><span>지급대상</span><strong id="pCount">0명</strong></div></div>
+ <div class="table-card card"><div class="table-top"><b>월별 페이백 지급 리스트</b><input id="paybackMonth" type="month" onchange="loadPayback()"></div><div class="table-wrap"><table><thead><tr><th>고객</th><th>담당자</th><th>약정액</th><th>지급액</th><th>미지급</th><th>지급예정일</th><th>은행</th><th>예금주</th><th>계좌번호</th><th>계좌확인</th><th>처리</th></tr></thead><tbody id="paybackBody"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-ads">
+ <div class="section-head"><div><h2>광고비</h2><p>월별 광고비·문의·방문·개통·유입마진을 관리합니다.</p></div><button class="btn primary" onclick="openAd()">+ 광고비 입력</button></div>
+ <div class="summary"><div class="box"><span>월 광고비</span><strong id="aSpend">0원</strong></div><div class="box"><span>문의</span><strong id="aInquiry">0건</strong></div><div class="box"><span>방문</span><strong id="aVisit">0건</strong></div><div class="box"><span>개통</span><strong id="aAct">0건</strong></div><div class="box"><span>마진 ROAS</span><strong id="aRoas">-</strong></div></div>
+ <div class="table-card card"><div class="table-top"><b>월별 광고비 원장</b><input id="adMonth" type="month" onchange="loadAds()"></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>채널</th><th>캠페인</th><th>광고비</th><th>문의</th><th>방문</th><th>개통</th><th>유입마진</th><th></th></tr></thead><tbody id="adBody"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-expenses">
+ <div class="section-head"><div><h2>비용원장</h2><p>고정비와 유동비를 분리해 월별 관리합니다.</p></div><button class="btn primary" onclick="openExpense()">+ 지출 추가</button></div>
+ <div class="summary"><div class="box"><span>월 총비용</span><strong id="eTotal">0원</strong></div><div class="box"><span>고정비</span><strong id="eFixed">0원</strong></div><div class="box"><span>유동비</span><strong id="eVariable">0원</strong></div><div class="box"><span>고정비 비율</span><strong id="eFixedPct">0.0%</strong></div><div class="box"><span>등록건수</span><strong id="eCount">0건</strong></div></div>
+ <div class="table-card card"><div class="table-top"><b>월별 비용 원장</b><div class="toolbar"><input id="expenseMonth" type="month" onchange="loadExpenses()"><select id="expenseFilter" onchange="renderExpenses()"><option value="all">전체</option><option value="fixed">고정비</option><option value="variable">유동비</option></select></div></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>구분</th><th>카테고리</th><th>내용</th><th>금액</th><th>결제수단</th><th>사용처</th><th></th></tr></thead><tbody id="expenseBody"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-targets">
+ <div class="section-head"><div><h2>목표 관리</h2><p>월·연 목표를 서버에 저장하고 실적과 비교합니다.</p></div><button class="btn primary" onclick="openTarget()">목표 설정</button></div>
+ <div class="summary"><div class="box"><span>월 목표</span><strong id="tMonthGoal">미설정</strong></div><div class="box"><span>월 실적</span><strong id="tMonthActual">0원</strong></div><div class="box"><span>월 예상</span><strong id="tForecast">0원</strong></div><div class="box"><span>월 달성률</span><strong id="tMonthPct">0.0%</strong></div><div class="box"><span>연 달성률</span><strong id="tYearPct">0.0%</strong></div></div>
+ <div class="grid2"><div class="chart card"><h3>연간 월별 매출 vs 월 목표</h3><p>12개월 실제 매출과 설정한 월별 목표</p><canvas id="targetAnnualChart"></canvas></div><div class="chart card"><h3>월별 성장률</h3><p>전월 대비 매출 증감률</p><canvas id="growthChart"></canvas></div></div>
+</section>
+
+<section class="page" id="page-sources">
+ <div class="section-head"><div><h2>유입 분석</h2><p>장부의 유입경로를 기준으로 판매건수와 매출 기여도를 분석합니다.</p></div></div>
+ <div class="toolbar" style="margin-bottom:12px"><input id="sourceMonth" type="month" onchange="loadSources()"></div>
+ <div class="grid2"><div class="card"><div class="table-top"><b>유입경로별 판매·매출</b></div><div id="sourceDetail" class="source-list"></div></div><div class="table-card card"><div class="table-top"><b>상세</b></div><div class="table-wrap"><table><thead><tr><th>유입경로</th><th>전체건수</th><th>휴대폰 판매대수</th><th>매출</th><th>평균마진</th><th>매출비중</th></tr></thead><tbody id="sourceBody"></tbody></table></div></div></div>
+</section>
+
+<section class="page" id="page-settings">
+ <div class="section-head"><div><h2>환경 설정</h2><p>실제로 장부 입력에서 사용하는 선택항목을 여기서 관리합니다.</p></div></div>
+ <div class="settings-grid">
+  <div class="setting-card card"><h3>유입경로</h3><p>장부의 유입경로 선택지입니다.</p><div class="setting-list" id="setLead"></div><div class="addrow"><input id="newLead" placeholder="예: 맘카페"><button class="btn primary" onclick="addOption('lead_source','newLead')">추가</button></div></div>
+  <div class="setting-card card"><h3>고정비 카테고리</h3><p>월세·급여처럼 반복되는 비용입니다.</p><div class="setting-list" id="setFixed"></div><div class="addrow"><input id="newFixed" placeholder="카테고리 추가"><button class="btn primary" onclick="addOption('expense_fixed','newFixed')">추가</button></div></div>
+  <div class="setting-card card"><h3>유동비 카테고리</h3><p>사은품·소모품처럼 월마다 달라지는 비용입니다.</p><div class="setting-list" id="setVariable"></div><div class="addrow"><input id="newVariable" placeholder="카테고리 추가"><button class="btn primary" onclick="addOption('expense_variable','newVariable')">추가</button></div></div>
+  <div class="setting-card card"><h3>광고 채널</h3><p>광고비 입력에서 사용하는 채널입니다.</p><div class="setting-list" id="setAds"></div><div class="addrow"><input id="newAdChannel" placeholder="예: 유튜브"><button class="btn primary" onclick="addOption('ad_channel','newAdChannel')">추가</button></div></div>
+  <div class="setting-card card"><h3>판매자</h3><p>장부 판매자 선택지입니다.</p><div class="setting-list" id="setStaff"></div><div class="addrow"><input id="newStaff" placeholder="직원명"><button class="btn primary" onclick="addStaff()">추가</button></div></div>
+  <div class="setting-card card"><h3>계정</h3><p>대표 계정과 로그인 상태를 확인합니다.</p><div class="setting-list"><span class="tag">needis123@gmail.com</span><span class="tag" id="authStatus">로그인 필요</span></div><div class="addrow"><button class="btn" onclick="showLogin()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정</button></div></div>
+ </div>
+</section>
+
+ </div>
+</main>
 </div>
 
-        <div class="report-banner">
-          <div><strong>실데이터 적용 · 최근 보고 기준 2026.09.14</strong><small>정산보고상 ‘총매출’은 판매건 평균마진 합계와 일치하는 구조라, 경영판에서는 현재 수익(마진) 기준으로 계산합니다.</small></div>
-          <span class="warn-badge">직원합계 1원 차이</span>
-        </div>
-
-        <div class="calc-banner">
-          <div><b>경영 시뮬레이터 V1.2</b><br>목표매출과 비용을 입력하면 예상 월매출 · 필요한 일매출 · 순손익 · 손익분기 판매량이 즉시 바뀝니다.</div>
-          <button class="btn primary" onclick="openModal('management')">경영값 설정</button>
-        </div>
-
-        <div class="command-hero">
-          <div class="command-main">
-            <div class="command-head">
-              <div>
-                <div class="eyebrow">SEPTEMBER GOAL COMMAND</div>
-                <div class="command-title">9월 목표매출</div>
-                <div class="command-value" id="monthlyTargetText">30,000,000원</div>
-                <div class="command-sub">현재 누적 <b id="currentRevenueText" style="color:#fff">5,504,281원</b> · 16개 · 평균마진 344,017원</div>
-              </div>
-              <span class="tag-example" id="targetTypeBadge">예시 목표값</span>
-            </div>
-            <div class="goal-progress"><span id="goalProgressBar"></span></div>
-            <div class="goal-row"><span>현재 달성률 <b id="goalRateText">18.3%</b></span><span>현재 페이스 예상 달성률 <b id="forecastGoalRateText">39.3%</b></span></div>
-            <div class="meta-chips"><span class="meta-chip">추가 +1</span><span class="meta-chip">동판 +3</span><span class="meta-chip">약갱 +0</span><span class="meta-chip">번들 +0</span></div>
-          </div>
-          <div class="command-side">
-            <div class="forecast-card">
-              <div class="eyebrow">MONTH-END FORECAST</div>
-              <div class="forecast-number" id="forecastRevenueText">11,794,888원</div>
-              <div class="forecast-caption">현재 속도를 유지했을 때 9월 예상매출</div>
-              <div class="settings-hint"><i></i><span id="paceInfoText">14일 실적 → 30일 환산</span></div>
-            </div>
-            <div class="profit-card">
-              <div class="eyebrow">NET PROFIT</div>
-              <div class="forecast-number" id="netProfitHero">계산 대기</div>
-              <div class="forecast-caption">누적 마진 - 광고비 - 인건비 - 고정/변동/기타지출</div>
-              <div class="settings-hint"><i></i><span id="expenseHint">비용을 입력하면 순손익이 계산됩니다.</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="kpi-8">
-          <div class="kpi-rich positive"><div class="kr-label">현재 누적매출</div><div class="kr-value">5,504,281원</div><div class="kr-sub">16개 기준 누적 매출</div></div>
-          <div class="kpi-rich"><div class="kr-label">현재 페이스 예상매출</div><div class="kr-value" id="forecastKpi">11,794,888원</div><div class="kr-sub">입력한 영업일 기준 자동환산</div></div>
-          <div class="kpi-rich warning"><div class="kr-label">목표까지 남은 매출</div><div class="kr-value" id="remainingTargetText">24,495,719원</div><div class="kr-sub">월 목표 - 현재 누적</div></div>
-          <div class="kpi-rich"><div class="kr-label">남은 기간 필요 일매출</div><div class="kr-value" id="dailyNeededText">1,530,982원</div><div class="kr-sub" id="remainingDaysText">남은 16일 기준</div></div>
-          <div class="kpi-rich"><div class="kr-label">월 광고비</div><div class="kr-value" id="adSpendText">미입력</div><div class="kr-sub">당근 · 인스타 · 네이버 · 버스 등</div></div>
-          <div class="kpi-rich"><div class="kr-label">월 총지출</div><div class="kr-value" id="totalExpenseText">미입력</div><div class="kr-sub">광고 + 인건비 + 고정비 + 변동비 + 기타</div></div>
-          <div class="kpi-rich positive"><div class="kr-label">현재 순손익</div><div class="kr-value" id="netProfitText">계산 대기</div><div class="kr-sub">현재 누적마진에서 실제비용 차감</div></div>
-          <div class="kpi-rich dim"><div class="kr-label">손익분기 판매량</div><div class="kr-value" id="breakEvenUnitsText">비용 입력</div><div class="kr-sub">총지출 ÷ 현재 평균마진</div></div>
-        </div>
-
-        <div class="decision-strip">
-          <div class="decision-item"><span>현재 평균마진</span><strong>344,017원</strong><small>현재 16건 기준</small></div>
-          <div class="decision-item"><span>목표 필요 판매량</span><strong id="targetUnitsNeeded">72개</strong><small>남은 목표 ÷ 현재 평균마진</small></div>
-          <div class="decision-item"><span>예상 월 판매량</span><strong id="forecastUnitsText">34개</strong><small>현재 판매속도 유지 기준</small></div>
-          <div class="decision-item"><span>예상 목표 차이</span><strong id="forecastGapText">-18,205,112원</strong><small>예상 월매출 - 월 목표</small></div>
-        </div>
-
-        <div class="card" style="margin-bottom:18px">
-          <div class="card-head"><div><h3>운영 미처리 체크</h3><p>장부에서 발생한 중고 반납 · 페이백 미처리 항목을 자동 집계</p></div><span class="tag-example">SERVER</span></div>
-          <div class="ops-check-grid">
-            <div class="ops-check warn"><span>중고 미반납</span><strong id="opsUsedOpen">0건</strong></div>
-            <div class="ops-check danger"><span>중고 반납 기한초과</span><strong id="opsUsedOverdue">0건</strong></div>
-            <div class="ops-check warn"><span>페이백 계좌 미확인</span><strong id="opsPbUnverified">0건</strong></div>
-            <div class="ops-check"><span>페이백 미지급 잔액</span><strong id="opsPbOutstanding">0원</strong></div>
-          </div>
-        </div>
-
-        <div class="management-grid">
-          <div class="card">
-            <div class="card-head"><div><h3>목표 달성 시나리오</h3><p>현재 속도와 성장 시나리오를 월 목표와 비교</p></div><span class="tag-example">자동계산</span></div>
-            <div class="scenario-list">
-              <div class="scenario current"><div class="scenario-name">현재 페이스</div><div class="scenario-track"><span id="scenarioCurrentBar" style="width:39%"></span></div><div class="scenario-value" id="scenarioCurrentValue">11,794,888원</div></div>
-              <div class="scenario"><div class="scenario-name">+10% 성장</div><div class="scenario-track"><span id="scenario10Bar" style="width:43%"></span></div><div class="scenario-value" id="scenario10Value">12,974,377원</div></div>
-              <div class="scenario"><div class="scenario-name">+20% 성장</div><div class="scenario-track"><span id="scenario20Bar" style="width:47%"></span></div><div class="scenario-value" id="scenario20Value">14,153,866원</div></div>
-              <div class="scenario target"><div class="scenario-name">월 목표</div><div class="scenario-track"><span style="width:100%"></span></div><div class="scenario-value" id="scenarioTargetValue">30,000,000원</div></div>
-            </div>
-            <div class="mini-note">이 값은 현재까지의 실적을 입력한 영업일수로 나눈 단순 페이스 예측입니다. 장부가 연결되면 평일/주말, 최근 7일 가중치까지 반영하도록 고도화할 수 있습니다.</div>
-          </div>
-
-          <div class="card">
-            <div class="card-head"><div><h3>순손익 구조</h3><p>현재 누적 마진에서 실제 지출 차감</p></div><button class="btn" onclick="openModal('management')">비용 수정</button></div>
-            <div class="waterfall">
-              <div class="wf-row"><span>현재 누적 마진(보고 매출)</span><b>+5,504,281원</b></div>
-              <div class="wf-row"><span>광고비</span><b id="wfAd">- 미입력</b></div>
-              <div class="wf-row"><span>인건비</span><b id="wfPayroll">- 미입력</b></div>
-              <div class="wf-row"><span>고정비</span><b id="wfFixed">- 미입력</b></div>
-              <div class="wf-row"><span>변동비</span><b id="wfVariable">- 미입력</b></div>
-              <div class="wf-row"><span>기타지출</span><b id="wfOther">- 미입력</b></div>
-              <div class="wf-row total"><span>현재 순손익</span><b id="wfNet">계산 대기</b></div>
-            </div>
-            <div class="mini-note">‘순손익’은 세무상 최종 당기순이익과 다를 수 있습니다. 이 화면에서는 매장 운영 의사결정을 위한 관리손익으로 사용합니다.</div>
-          </div>
-        </div>
-
-        <div class="two-col">
-          <div class="card">
-            <div class="card-head"><div><h3>직원별 9월 누적 마진</h3><p>현재 제공된 정산보고 기준</p></div><div class="legend"><span><i class="dot"></i>매출/마진</span></div></div>
-            <div class="chart-wrap"><canvas id="salesChart"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="card-head"><div><h3>광고 효율</h3><p>광고 데이터 입력 후 자동 산출</p></div><button class="btn" onclick="openModal('ad')">+ 광고</button></div>
-            <div class="ad-empty">
-              <div class="ad-mini"><span>광고비</span><b id="adMiniSpend">미입력</b></div>
-              <div class="ad-mini"><span>마진 ROAS</span><b id="marginRoasText">-</b></div>
-              <div class="ad-mini"><span>개통당 광고비</span><b>-</b></div>
-            </div>
-            <div class="empty-data" style="margin-top:10px">광고 유입별 문의 → 방문 → 개통 → 마진을 연결하면<br><b style="color:#fff">채널별 CAC · 전환율 · 마진 ROAS</b>까지 표시됩니다.</div>
-          </div>
-        </div>
-
-        <div class="three-col">
-          <div class="card">
-            <div class="card-head"><div><h3>직원 실적</h3><p>9월 누적</p></div></div>
-            <div class="staff-grid">
-              <div class="staff-card"><div class="staff-top"><div class="staff-name">인성</div><span class="pill">10개</span></div><div class="staff-sales">3,929,190원</div><div class="staff-meta"><div><span>평균마진</span><strong>392,919원</strong></div><div><span>기여도</span><strong>71.4%</strong></div></div><div class="meta-chips"><span class="meta-chip">추가 +1</span><span class="meta-chip">동판 +3</span></div></div>
-              <div class="staff-card"><div class="staff-top"><div class="staff-name">송훈</div><span class="pill gray">6개</span></div><div class="staff-sales">1,575,090원</div><div class="staff-meta"><div><span>평균마진</span><strong>262,515원</strong></div><div><span>기여도</span><strong>28.6%</strong></div></div></div>
-            </div>
-          </div>
-          <div class="card"><div class="card-head"><div><h3>비용 구조</h3><p>월 지출 입력값</p></div></div><div class="cost-input-summary"><div class="cost-cell"><span>광고</span><b id="costAd">-</b></div><div class="cost-cell"><span>인건비</span><b id="costPayroll">-</b></div><div class="cost-cell"><span>고정비</span><b id="costFixed">-</b></div><div class="cost-cell"><span>변동비</span><b id="costVariable">-</b></div><div class="cost-cell"><span>기타</span><b id="costOther">-</b></div></div><div class="empty-data" style="margin-top:12px">장부 연동 후 카테고리별 비중과 전월 대비 증감까지 자동 표시합니다.</div></div>
-          <div class="card"><div class="card-head"><div><h3>최근 실적</h3><p>9월 14일 보고</p></div></div><div class="list"><div class="row"><div><b>일 판매</b><small>동판 +2</small></div><div class="money">7개</div></div><div class="row"><div><b>일 매출/마진</b><small>평균 380,857원</small></div><div class="money">2,666,000원</div></div><div class="row"><div><b>월 누적</b><small>16개</small></div><div class="money">5,504,281원</div></div></div></div>
-        </div>
-
-        <div class="card table-card">
-          <div class="table-head"><div><b>9월 14일 매출보고</b><div style="font-size:11px;color:var(--muted);margin-top:4px">기존 정산보고 형식을 그대로 유지하면서 경영지표로 연결</div></div><button class="btn" data-go="daily">상세보기</button></div>
-          <div class="table-wrap"><table><thead><tr><th>구분</th><th>갯수</th><th>추가</th><th>동판</th><th>약갱</th><th>번들</th><th>총매출/마진</th><th>평균마진</th></tr></thead><tbody>
-            <tr><td><strong>월 누적</strong></td><td>16개</td><td>+1</td><td>+3</td><td>-</td><td>-</td><td><strong>5,504,281원</strong></td><td>344,017원</td></tr>
-            <tr><td><strong>9/14 일</strong></td><td>7개</td><td>-</td><td>+2</td><td>-</td><td>-</td><td><strong>2,666,000원</strong></td><td>380,857원</td></tr>
-            <tr><td>송훈</td><td>6개</td><td>-</td><td>-</td><td>-</td><td>-</td><td><strong>1,575,090원</strong></td><td>262,515원</td></tr>
-            <tr><td>인성</td><td>10개</td><td>+1</td><td>+3</td><td>-</td><td>-</td><td><strong>3,929,190원</strong></td><td>392,919원</td></tr>
-          </tbody></table></div>
-        </div>
-      </section>
-
-
-      <section class="page" id="page-daily">
-        <div class="section-title">
-          <div><h2>자동 매출보고</h2><p>별도 일일마감 입력 없이 장부 데이터를 기준으로 자동 집계합니다.</p></div>
-          <div class="v31-toolbar"><input id="autoReportDate" type="date" onchange="loadAutoDailyReport()"><button class="btn" onclick="loadAutoDailyReport()">새로고침</button><button class="btn primary" onclick="copyAutoReport()">보고 복사</button></div>
-        </div>
-        <div class="v31-auto-report"><div id="autoReportView"><div class="empty-data">날짜를 선택하면 장부 기준 매출보고가 자동 생성됩니다.</div></div></div>
-      </section>
-      <section class="page" id="page-ledger">
-        <div class="section-title"><div><h2>장부 관리</h2><p>엑셀 장부 로직 그대로. M=K-L, P=M×10%, W=M-P-Q-R+S-T+U 자동 계산.</p></div><div class="op-toolbar"><button class="btn" onclick="loadLedger()">새로고침</button><button class="btn primary" onclick="addLedgerRow()">+ 판매건 입력</button></div></div>
-        <div class="auth-banner"><div class="state">서버 상태: <b id="dbState">로그인 필요</b> <span id="syncBadge" class="sync-badge off">OFFLINE</span></div><div class="auth-actions"><button class="btn" onclick="showLogin()">로그인</button><button class="btn" onclick="logoutSupabase()">로그아웃</button></div></div>
-        <div class="summary-strip"><div class="summary-box"><span>조회 건수</span><strong id="ledgerCount">0건</strong></div><div class="summary-box"><span>최종마진 합계</span><strong id="ledgerMargin">0원</strong></div><div class="summary-box"><span>평균마진</span><strong id="ledgerAvg">0원</strong></div><div class="summary-box"><span>페이백 약정</span><strong id="ledgerPayback">0원</strong></div><div class="summary-box"><span>미지급 페이백</span><strong id="ledgerOutstanding">0원</strong></div></div>
-        <div class="card table-card"><div class="table-head"><div><b>판매 장부</b><div style="font-size:11px;color:var(--muted);margin-top:4px">민감한 식별번호는 전체 주민번호 대신 마스킹값만 저장합니다.</div></div><div class="op-toolbar"><input id="ledgerSearch" placeholder="고객명/번호/모델 검색" oninput="renderLedgerRows()"><input id="ledgerMonth" type="month" value="2026-09" onchange="loadLedger()"></div></div><div class="table-wrap"><table class="ledger-table"><thead><tr><th>개통일</th><th>거래처</th><th>고객명</th><th>번호</th><th>모델</th><th>가입유형</th><th>유입경로</th><th>요금제</th><th>출고가</th><th>K 기본리베이트</th><th>L 현금판매금액</th><th>M 실리베이트</th><th>P 부가세</th><th>Q 페이백</th><th>R 위약금대납</th><th>S 현금판매받은돈</th><th>T 유심</th><th>U 중고금액</th><th>중고기종</th><th>중고반납</th><th>Q 계좌확인</th><th>W 최종마진</th><th>판매자</th><th>추가</th><th>동판</th><th>약갱</th><th>번들</th><th>관리</th></tr></thead><tbody id="ledgerBody"></tbody></table></div></div>
-      </section>
-
-      <section class="page" id="page-usedreturns">
-        <div class="section-title"><div><h2>중고 반납 체크</h2><p>개통 월별로 중고 반납 건을 분리해 관리합니다.</p></div><div class="v31-toolbar"><input id="usedMonth" type="month" onchange="loadUsedReturns()"><button class="btn primary" onclick="loadUsedReturns()">목록 새로고침</button></div></div>
-        <div class="summary-strip"><div class="summary-box"><span>추적 대상</span><strong id="urTotal">0건</strong></div><div class="summary-box"><span>미반납</span><strong id="urOpen">0건</strong></div><div class="summary-box"><span>미답변</span><strong id="urUnanswered">0건</strong></div><div class="summary-box"><span>기한초과</span><strong id="urOverdue">0건</strong></div><div class="summary-box"><span>미반납 예정금액</span><strong id="urAmount">0원</strong></div></div>
-        <div class="card table-card"><div class="table-head"><div><b>중고 미반납 리스트</b><div style="font-size:11px;color:var(--muted);margin-top:4px">기존 엑셀의 고객명 · 기종 · 담당자 · 미답변/반납일 구조를 서버에서 관리합니다.</div></div></div><div class="table-wrap"><table><thead><tr><th>고객</th><th>중고기종</th><th>담당자</th><th>개통일</th><th>반납예정일</th><th>응답/상태</th><th>예정금액</th><th>메모</th><th>처리</th></tr></thead><tbody id="usedReturnBody"></tbody></table></div></div>
-      </section>
-
-      <section class="page" id="page-payback">
-        <div class="section-title"><div><h2>페이백 체크</h2><p>지급예정 월별로 계좌 확인 → 말일 지급 → 실제 지급완료까지 관리합니다.</p></div><div class="v31-toolbar"><input id="paybackMonth" type="month" onchange="loadPaybacks()"><button class="btn primary" onclick="loadPaybacks()">지급목록 새로고침</button></div></div>
-        <div class="summary-strip"><div class="summary-box"><span>약정 총액</span><strong id="pbPromised">0원</strong></div><div class="summary-box"><span>지급 완료</span><strong id="pbPaid">0원</strong></div><div class="summary-box"><span>미지급</span><strong id="pbOutstanding">0원</strong></div><div class="summary-box"><span>계좌 미확인</span><strong id="pbUnchecked">0명</strong></div><div class="summary-box"><span>지급 대상</span><strong id="pbCount">0명</strong></div></div>
-        <div class="card table-card"><div class="table-head"><div><b>말일 지급 리스트</b><div style="font-size:11px;color:var(--muted);margin-top:4px">계좌번호는 대표/지급담당자 화면에서만 전체 표시하도록 권한을 확장할 예정입니다.</div></div></div><div class="table-wrap"><table><thead><tr><th>고객</th><th>담당자</th><th>약정액</th><th>지급액</th><th>미지급</th><th>지급예정일</th><th>은행</th><th>예금주</th><th>계좌번호</th><th>계좌확인</th><th>지급상태</th><th>처리</th></tr></thead><tbody id="paybackBody"></tbody></table></div></div>
-      </section>
-
-      <section class="page" id="page-sales"><div class="section-title"><div><h2>매출 관리</h2><p>건별 개통과 매출/마진을 조회합니다.</p></div></div><div class="empty-page"><div class="inner"><h2>매출 원장</h2><p>통신사, 기종, 신규/MNP/기변, 담당자, 실매출, 마진까지 연결하는 상세 화면입니다.</p></div></div></section>
-
-      <section class="page" id="page-ads">
-        <div class="section-title"><div><h2>광고비 관리</h2><p>광고비도 서버에 저장하고 순손익에 자동 반영합니다.</p></div><button class="btn primary" onclick="openAdModal()">+ 광고비 입력</button></div>
-        <div class="v3-summary"><div class="box"><span>이번 달 광고비</span><strong id="adSum">0원</strong></div><div class="box"><span>문의</span><strong id="adInquiries">0건</strong></div><div class="box"><span>개통</span><strong id="adActivations">0건</strong></div><div class="box"><span>마진 ROAS</span><strong id="adRoas">-</strong></div></div>
-        <div class="v3-table-card"><div class="v3-table-title"><h3>광고비 원장</h3><div><input id="adMonth" type="month" onchange="loadAdsPage()" style="padding:8px;border:1px solid #d9dee6;border-radius:9px"></div></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>채널</th><th>캠페인</th><th>광고비</th><th>문의</th><th>방문</th><th>개통</th><th>유입마진</th><th></th></tr></thead><tbody id="adBody"></tbody></table></div></div>
-      </section>
-      <section class="page" id="page-expenses">
-        <div class="section-title"><div><h2>비용 원장</h2><p>고정비와 유동비를 분리해 실제 서버에 기록합니다.</p></div><button class="btn primary" onclick="openExpenseModal()">+ 지출 추가</button></div>
-        <div class="v3-summary"><div class="box"><span>월 총비용</span><strong id="expTotal">0원</strong></div><div class="box"><span>고정비</span><strong id="expFixed">0원</strong></div><div class="box"><span>유동비</span><strong id="expVariable">0원</strong></div><div class="box"><span>등록건수</span><strong id="expCount">0건</strong></div></div>
-        <div class="v3-table-card"><div class="v3-table-title"><h3>비용 내역</h3><div style="display:flex;gap:8px"><input id="expenseMonth" type="month" onchange="loadExpensesPage()" style="padding:8px;border:1px solid #d9dee6;border-radius:9px"><select id="expenseTypeFilter" onchange="renderExpensesPage()" style="padding:8px;border:1px solid #d9dee6;border-radius:9px"><option value="all">전체</option><option value="fixed">고정비</option><option value="variable">유동비</option></select></div></div><div class="table-wrap"><table><thead><tr><th>일자</th><th>구분</th><th>카테고리</th><th>내용</th><th>금액</th><th>결제수단</th><th>사용처</th><th></th></tr></thead><tbody id="expenseBody"></tbody></table></div></div>
-      </section>
-      <section class="page" id="page-targets">
-        <div class="section-title"><div><h2>목표 관리</h2><p>월·연 목표를 DB에 저장해 달성률과 예상매출을 계산합니다.</p></div><button class="btn primary" onclick="openTargetModal()">목표 설정</button></div>
-        <div class="v3-summary"><div class="box"><span>월 목표</span><strong id="targetMonthlyLive">미설정</strong></div><div class="box"><span>현재 월 실적</span><strong id="targetCurrentLive">0원</strong></div><div class="box"><span>월 예상매출</span><strong id="targetForecastLive">0원</strong></div><div class="box"><span>목표 달성률</span><strong id="targetPctLive">0.0%</strong></div></div>
-        <div class="card"><div class="card-head"><div><h3>연간 목표</h3><p>올해 누적 실적과 연간 목표를 비교합니다.</p></div></div><div class="v3-goal"><div class="v3-goal-top"><div><span style="font-size:10px;color:#697386">연간 목표</span><div class="big" id="targetAnnualLive">미설정</div></div><div style="text-align:right"><span style="font-size:10px;color:#697386">올해 누적</span><strong id="targetAnnualCurrent" style="display:block;font-size:24px;margin-top:5px">0원</strong></div></div><div class="v3-progress"><span id="targetAnnualBar"></span></div><div class="v3-goal-meta"><span>달성률 <b id="targetAnnualPct">0.0%</b></span><span>월 판매 목표 <b id="targetUnitsLive">0건</b></span></div></div></div>
-      </section>
-      <section class="page" id="page-staff"><div class="section-title"><div><h2>직원 실적</h2><p>월 누적 판매·매출·평균마진을 비교합니다.</p></div></div><div class="staff-grid"><div class="staff-card"><div class="staff-top"><div><div class="eyebrow">9월 누적</div><div class="staff-name" style="margin-top:6px">인성</div></div><span class="pill">10개</span></div><div class="staff-sales">3,929,190원</div><div class="staff-meta"><div><span>평균마진</span><strong>392,919원</strong></div><div><span>비중</span><strong>매출 71.4%</strong></div></div><div class="meta-chips"><span class="meta-chip">추가 +1</span><span class="meta-chip">동판 +3</span></div></div><div class="staff-card"><div class="staff-top"><div><div class="eyebrow">9월 누적</div><div class="staff-name" style="margin-top:6px">송훈</div></div><span class="pill gray">6개</span></div><div class="staff-sales">1,575,090원</div><div class="staff-meta"><div><span>평균마진</span><strong>262,515원</strong></div><div><span>비중</span><strong>매출 28.6%</strong></div></div></div></div></section>
-      <section class="page" id="page-reports"><div class="section-title"><div><h2>보고서</h2><p>월간 경영 리포트를 자동 생성합니다.</p></div></div><div class="empty-page"><div class="inner"><h2>대표 보고서</h2><p>월 매출, 총이익, 광고비, 영업이익, 목표 달성률을 한 장으로 정리해 PDF/엑셀로 출력하는 화면입니다.</p></div></div></section>
-      <section class="page" id="page-close"><div class="section-title"><div><h2>월마감</h2><p>장부·광고비·지출·페이백 현금흐름을 한 번에 검증합니다.</p></div><button class="btn primary" onclick="loadMonthlyClose()">마감 계산</button></div><div class="card"><div class="summary-strip"><div class="summary-box"><span>최종마진</span><strong id="closeMargin">0원</strong></div><div class="summary-box"><span>광고비</span><strong id="closeAds">0원</strong></div><div class="summary-box"><span>기타 지출</span><strong id="closeExpenses">0원</strong></div><div class="summary-box"><span>순손익</span><strong id="closeNet">0원</strong></div><div class="summary-box"><span>페이백 실제 송금</span><strong id="closePaybackCash">0원</strong></div></div><div class="empty-data">순손익 = 최종마진 - 광고비 - 기타지출. 페이백은 최종마진 계산에서 이미 차감되므로 실제 송금액은 <b style="color:#fff">현금흐름 지표</b>로만 별도 표시합니다.</div></div></section>
-
-      <section class="page" id="page-settings">
-        <div class="section-title"><div><h2>환경 설정</h2><p>실제로 장부 입력에 사용하는 선택항목과 목표값을 관리합니다.</p></div><button class="btn primary" onclick="openTargetModal()">월·연 목표 설정</button></div>
-        <div class="settings-grid">
-          <div class="settings-card"><h3>유입경로</h3><p>장부의 유입경로 선택값입니다. 당근·인스타·소개·제휴 등을 여기서 추가/삭제합니다.</p><div id="settingLeadSources" class="option-list"></div><button class="btn" style="margin-top:12px" onclick="addLookupOption('lead_source')">+ 유입경로 추가</button></div>
-          <div class="settings-card"><h3>고정비 카테고리</h3><p>급여·임대료·관리비 등 매달 반복되는 비용 분류입니다.</p><div id="settingFixedExpenses" class="option-list"></div><button class="btn" style="margin-top:12px" onclick="addLookupOption('expense_fixed')">+ 고정비 항목 추가</button></div>
-          <div class="settings-card"><h3>유동비 카테고리</h3><p>사은품·소모품·식비 등 운영 상황에 따라 변하는 비용 분류입니다.</p><div id="settingVariableExpenses" class="option-list"></div><button class="btn" style="margin-top:12px" onclick="addLookupOption('expense_variable')">+ 유동비 항목 추가</button></div>
-          <div class="settings-card"><h3>광고 채널</h3><p>광고비 입력과 분석에 사용할 채널입니다.</p><div id="settingAdChannels" class="option-list"></div><button class="btn" style="margin-top:12px" onclick="addLookupOption('ad_channel')">+ 광고채널 추가</button></div>
-        </div>
-      </section>
-    </div>
-  </main>
-</div>
-
-<div class="mobile-nav" id="mobileNav"><button class="active" data-page="dashboard">홈</button><button data-page="ledger">장부</button><button data-page="usedreturns">중고</button><button data-page="payback">페이백</button><button data-page="expenses">지출</button></div>
-
-<div class="login-panel" id="loginPanel"><div class="login-card"><h2>정권통신 대표 로그인</h2><p>대표 계정으로 로그인하면 장부·고객·페이백·비용 데이터가 서버에서 불러와집니다.</p><input id="loginEmail" type="email" value="needis123@gmail.com" placeholder="이메일"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')loginSupabase()"><div class="login-actions"><button class="btn primary" onclick="loginSupabase()">로그인</button><button class="btn" onclick="resetPasswordEmail()">비밀번호 재설정 메일 보내기</button><button class="btn ghost" onclick="hideLogin()">닫기</button></div><div id="loginMsg" style="font-size:11px;color:#b05a00;margin-top:10px"></div><div class="login-help">현재 계정에는 정상적으로 비밀번호가 설정되어 있습니다. <b>Invalid login credentials</b>가 나오면 입력한 비밀번호가 현재 Supabase 비밀번호와 다른 상태입니다. 비밀번호를 기억하지 못하면 재설정 메일을 이용하세요.</div></div></div>
-<div class="modal-backdrop" id="modalWrap"><div class="modal"><div class="modal-head"><h3 id="modalTitle">입력</h3><button class="close" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="btn" onclick="closeModal()">취소</button><button class="btn primary" onclick="saveModal()">저장</button></div></div></div>
-<div class="toast" id="toast">저장되었습니다.</div>
+<div class="modal-bg" id="modalBg"><div class="modal"><div class="modal-head"><h3 id="modalTitle">입력</h3><button class="close" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="btn" onclick="closeModal()">취소</button><button class="btn primary" id="modalSave" onclick="saveModal()">저장</button></div></div></div>
+<div class="login-bg" id="loginBg"><div class="login"><h2>정권통신 대표 로그인</h2><p>장부와 고객정보는 로그인 후에만 조회됩니다.</p><input id="loginEmail" type="email" value="needis123@gmail.com"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()"><button class="btn primary" onclick="login()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정 메일</button><button class="btn" onclick="hideLogin()">닫기</button><div class="msg" id="loginMsg"></div></div></div>
+<div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let ledgerRows=[],staffRows=[],paybackRows=[],usedReturnRows=[];
-const titles={dashboard:'종합 대시보드',daily:'일일 마감',ledger:'장부 관리',usedreturns:'중고 반납 체크',payback:'페이백 체크',sales:'매출 관리',ads:'광고비 관리',expenses:'지출 관리',targets:'목표 관리',staff:'직원 실적',reports:'보고서',close:'월마감',settings:'설정'};
-const today=new Date();document.getElementById('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'}).format(today);
-function goPage(page){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===page));document.getElementById('topTitle').textContent=titles[page]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});} 
-document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.page)));document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.go)));
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+const state={staff:[],options:[],ledger:[],used:[],payback:[],expenses:[],ads:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
+let modalMode="";
 
-let currentModal='';
-function openModal(type){currentModal=type;const wrap=document.getElementById('modalWrap'),title=document.getElementById('modalTitle'),body=document.getElementById('modalBody');
- if(type==='sales'){title.textContent='매출보고 입력';body.innerHTML=`<div class="form-grid"><div class="field"><label>기준일</label><input id="f0" type="date" value="2026-09-14"></div><div class="field"><label>일 판매 갯수</label><input id="f1" type="number" value="7"></div><div class="field"><label>일 총 매출</label><input id="f2" type="number" value="2666000"></div><div class="field"><label>일 평균마진</label><input id="f3" type="number" value="380857"></div><div class="field"><label>추가</label><input id="f4" type="number" value="0"></div><div class="field"><label>동판</label><input id="f5" type="number" value="2"></div><div class="field"><label>약갱</label><input id="f6" type="number" value="0"></div><div class="field"><label>번들</label><input id="f7" type="number" value="0"></div><div class="field full"><label>메모</label><textarea id="f8" rows="3" placeholder="특이사항"></textarea></div></div>`}
- if(type==='expense'){title.textContent='지출 입력';body.innerHTML=`<div class="form-grid"><div class="field"><label>카테고리</label><select id="f1"><option>급여</option><option>임대료</option><option>사은품/소모품</option><option>식비</option><option>차량</option><option>프로그램</option><option>기타</option></select></div><div class="field"><label>금액</label><input id="f2" type="number" placeholder="원"></div><div class="field"><label>결제수단</label><select id="f3"><option>사업자카드</option><option>계좌이체</option><option>현금</option><option>개인카드</option></select></div><div class="field"><label>거래처/사용처</label><input id="f4" placeholder="예: 네이버, 문구점"></div><div class="field full"><label>메모</label><textarea id="f5" rows="3"></textarea></div></div>`}
- if(type==='ad'){title.textContent='광고비 입력';body.innerHTML=`<div class="form-grid"><div class="field"><label>광고 채널</label><select id="f1"><option>인스타그램</option><option>당근</option><option>네이버</option><option>버스광고</option><option>전단/현수막</option><option>기타</option></select></div><div class="field"><label>광고비</label><input id="f2" type="number" placeholder="원"></div><div class="field"><label>문의 수</label><input id="f3" type="number" value="0"></div><div class="field"><label>방문 수</label><input id="f4" type="number" value="0"></div><div class="field"><label>개통 수</label><input id="f5" type="number" value="0"></div><div class="field"><label>광고 유입 매출</label><input id="f6" type="number" placeholder="원"></div><div class="field full"><label>캠페인명/메모</label><textarea id="f7" rows="3"></textarea></div></div>`}
- if(type==='management'){const m=getManagement();title.textContent='경영 목표 · 비용 설정';body.innerHTML=`<div class="form-grid"><div class="field"><label>월 목표매출</label><input id="mMonthlyTarget" type="number" value="${m.monthlyTarget}"></div><div class="field"><label>연간 목표매출</label><input id="mAnnualTarget" type="number" value="${m.annualTarget}"></div><div class="field"><label>월 총 영업일</label><input id="mTotalDays" type="number" min="1" value="${m.totalDays}"></div><div class="field"><label>현재까지 집계 영업일</label><input id="mElapsedDays" type="number" min="1" value="${m.elapsedDays}"></div><div class="field"><label>광고비</label><input id="mAdSpend" type="number" value="${m.adSpend}" placeholder="0"></div><div class="field"><label>인건비</label><input id="mPayroll" type="number" value="${m.payroll}" placeholder="0"></div><div class="field"><label>고정비</label><input id="mFixed" type="number" value="${m.fixed}" placeholder="월세·통신비 등"></div><div class="field"><label>변동비</label><input id="mVariable" type="number" value="${m.variable}" placeholder="사은품·소모품 등"></div><div class="field full"><label>기타지출</label><input id="mOther" type="number" value="${m.other}" placeholder="기타 비용"></div><div class="field full"><label>안내</label><div style="font-size:11px;color:#8f96a3;line-height:1.6;padding:11px 12px;border:1px solid #242831;border-radius:12px;background:#0c0f12">현재 월 목표 3,000만원과 연 목표 3.6억원은 화면 구조 확인을 위한 예시값입니다. 실제 목표를 입력하면 브라우저에 저장되고 모든 경영지표가 즉시 다시 계산됩니다.</div></div></div>`}
- wrap.classList.add('show');}
-function closeModal(){document.getElementById('modalWrap').classList.remove('show')}
-function saveModal(){
- if(currentModal==='management'){
-   const n=id=>Number(document.getElementById(id)?.value||0);
-   const m={monthlyTarget:n('mMonthlyTarget'),annualTarget:n('mAnnualTarget'),totalDays:Math.max(1,n('mTotalDays')),elapsedDays:Math.max(1,n('mElapsedDays')),adSpend:n('mAdSpend'),payroll:n('mPayroll'),fixed:n('mFixed'),variable:n('mVariable'),other:n('mOther'),userSet:true};
-   localStorage.setItem('jk-management',JSON.stringify(m));renderManagement();
- }else{
-   const rec={type:currentModal,at:new Date().toISOString(),values:[...document.querySelectorAll('#modalBody input,#modalBody select,#modalBody textarea')].map(x=>x.value)};const arr=JSON.parse(localStorage.getItem('jk-demo-records')||'[]');arr.push(rec);localStorage.setItem('jk-demo-records',JSON.stringify(arr));
- }
- closeModal();const t=document.getElementById('toast');t.textContent=currentModal==='management'?'경영값이 반영되었습니다.':'저장되었습니다.';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-document.getElementById('modalWrap').addEventListener('click',e=>{if(e.target.id==='modalWrap')closeModal()});
+const $=id=>document.getElementById(id);
+const won=n=>Math.round(Number(n||0)).toLocaleString('ko-KR')+'원';
+const pct=n=>(Number.isFinite(Number(n))?Number(n):0).toFixed(1)+'%';
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const mk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const bounds=k=>{const [y,m]=k.split('-').map(Number);return [ymd(new Date(y,m-1,1)),ymd(new Date(y,m,1))]};
+const fmtDate=s=>s?`${Number(s.slice(5,7))}월 ${Number(s.slice(8,10))}일`:'-';
+const now=new Date();
 
-const CURRENT_REVENUE=5504281,CURRENT_UNITS=16,AVG_MARGIN=344017;
-function getManagement(){
- const defaults={monthlyTarget:30000000,annualTarget:360000000,totalDays:30,elapsedDays:14,adSpend:0,payroll:0,fixed:0,variable:0,other:0,userSet:false};
- try{return {...defaults,...JSON.parse(localStorage.getItem('jk-management')||'{}')}}catch(e){return defaults}
-}
-function won(n){const sign=n<0?'-':'';return sign+Math.round(Math.abs(n)).toLocaleString('ko-KR')+'원'}
-function shortWon(n){return won(n)}
-function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=v}
-function setWidth(id,v){const e=document.getElementById(id);if(e)e.style.width=Math.max(0,Math.min(100,v))+'%'}
-function renderManagement(){
- const m=getManagement(); const remainingDays=Math.max(0,m.totalDays-m.elapsedDays); const forecast=CURRENT_REVENUE/m.elapsedDays*m.totalDays; const goalRate=m.monthlyTarget?CURRENT_REVENUE/m.monthlyTarget*100:0; const forecastGoalRate=m.monthlyTarget?forecast/m.monthlyTarget*100:0; const remaining=Math.max(0,m.monthlyTarget-CURRENT_REVENUE); const dailyNeeded=remainingDays?remaining/remainingDays:remaining; const costs=m.adSpend+m.payroll+m.fixed+m.variable+m.other; const costsEntered=costs>0; const net=CURRENT_REVENUE-costs; const beUnits=costsEntered?Math.ceil(costs/AVG_MARGIN):0; const targetUnits=Math.ceil(remaining/AVG_MARGIN); const forecastUnits=Math.round(CURRENT_UNITS/m.elapsedDays*m.totalDays); const gap=forecast-m.monthlyTarget;
- setText('monthlyTargetText',won(m.monthlyTarget));setText('currentRevenueText',won(CURRENT_REVENUE));setText('targetTypeBadge',m.userSet?'설정된 목표':'예시 목표값');setWidth('goalProgressBar',goalRate);setText('goalRateText',goalRate.toFixed(1)+'%');setText('forecastGoalRateText',forecastGoalRate.toFixed(1)+'%');setText('forecastRevenueText',won(forecast));setText('forecastKpi',shortWon(forecast));setText('paceInfoText',m.elapsedDays+'일 실적 → '+m.totalDays+'일 환산');setText('remainingTargetText',shortWon(remaining));setText('dailyNeededText',shortWon(dailyNeeded));setText('remainingDaysText','남은 '+remainingDays+'일 기준');setText('adSpendText',m.adSpend?shortWon(m.adSpend):'미입력');setText('totalExpenseText',costsEntered?shortWon(costs):'미입력');setText('netProfitText',costsEntered?shortWon(net):'계산 대기');setText('netProfitHero',costsEntered?won(net):'계산 대기');setText('expenseHint',costsEntered?'누적 기준 관리손익':'비용을 입력하면 순손익이 계산됩니다.');setText('breakEvenUnitsText',costsEntered?beUnits+'개':'비용 입력');setText('targetUnitsNeeded',targetUnits+'개');setText('forecastUnitsText',forecastUnits+'개');setText('forecastGapText',(gap>=0?'+':'')+shortWon(gap));
- const s10=forecast*1.1,s20=forecast*1.2; setText('scenarioCurrentValue',shortWon(forecast));setText('scenario10Value',shortWon(s10));setText('scenario20Value',shortWon(s20));setText('scenarioTargetValue',shortWon(m.monthlyTarget));setWidth('scenarioCurrentBar',m.monthlyTarget?forecast/m.monthlyTarget*100:0);setWidth('scenario10Bar',m.monthlyTarget?s10/m.monthlyTarget*100:0);setWidth('scenario20Bar',m.monthlyTarget?s20/m.monthlyTarget*100:0);
- const neg=v=>v?'-'+won(v):'- 미입력';setText('wfAd',neg(m.adSpend));setText('wfPayroll',neg(m.payroll));setText('wfFixed',neg(m.fixed));setText('wfVariable',neg(m.variable));setText('wfOther',neg(m.other));setText('wfNet',costsEntered?won(net):'계산 대기');setText('adMiniSpend',m.adSpend?won(m.adSpend):'미입력');setText('marginRoasText',m.adSpend?(CURRENT_REVENUE/m.adSpend*100).toFixed(0)+'%':'-');setText('costAd',m.adSpend?shortWon(m.adSpend):'-');setText('costPayroll',m.payroll?shortWon(m.payroll):'-');setText('costFixed',m.fixed?shortWon(m.fixed):'-');setText('costVariable',m.variable?shortWon(m.variable):'-');setText('costOther',m.other?shortWon(m.other):'-');
- setText('targetPageMonthly',shortWon(m.monthlyTarget));setText('targetPageAnnual',shortWon(m.annualTarget));setText('targetPageForecast',shortWon(forecast));setText('targetPageRemaining',shortWon(remaining));
-}
-renderManagement();
+$('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month:'long',day:'numeric',weekday:'short'}).format(now);
+['ledgerMonth','reportMonth','usedMonth','paybackMonth','adMonth','expenseMonth','sourceMonth'].forEach(id=>{if($(id))$(id).value=mk(now)});
+$('reportDate').value=ymd(now);
 
-async function refreshSessionState(){
- const {data:{session}}=await sb.auth.getSession();
- const state=document.getElementById('dbState'), badge=document.getElementById('syncBadge');
- if(session){state.textContent=session.user.email||'로그인됨';badge.textContent='SERVER';badge.classList.remove('off'); await Promise.all([loadStaff(),loadLookupOptions(),loadLedger(),loadPaybacks(),loadUsedReturns(),loadMonthlyClose(),loadV3All(),loadAutoDailyReport()]);}
- else{state.textContent='로그인 필요';badge.textContent='OFFLINE';badge.classList.add('off');}
-}
-function showLogin(){document.getElementById('loginPanel').classList.add('show')}
-function hideLogin(){document.getElementById('loginPanel').classList.remove('show')}
-async function loginSupabase(){const email=document.getElementById('loginEmail').value.trim(),password=document.getElementById('loginPassword').value;const msg=document.getElementById('loginMsg');if(!email||!password){msg.textContent='이메일과 비밀번호를 입력하세요.';return;}msg.textContent='로그인 중...';const {error}=await sb.auth.signInWithPassword({email,password});if(error){msg.textContent=error.message==='Invalid login credentials'?'비밀번호가 맞지 않습니다. 아래 비밀번호 재설정을 이용하세요.':error.message;return;}msg.textContent='';hideLogin();await refreshSessionState();}
-async function logoutSupabase(){await sb.auth.signOut();ledgerRows=[];paybackRows=[];usedReturnRows=[];renderLedgerRows();renderPaybacks();renderUsedReturns();await refreshSessionState()}
-async function loadStaff(){const {data,error}=await sb.from('jk_staff').select('id,name,active').eq('active',true).order('name');if(!error)staffRows=data||[];}
-function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function monthRange(v){const [y,m]=v.split('-').map(Number);const start=`${y}-${String(m).padStart(2,'0')}-01`;const next=m===12?`${y+1}-01-01`:`${y}-${String(m+1).padStart(2,'0')}-01`;return [start,next]}
-async function loadLedger(){const el=document.getElementById('ledgerMonth');if(!el)return;const [start,next]=monthRange(el.value||'2026-09');const {data,error}=await sb.from('jk_sales_ledger').select('id,activation_date,vendor,customer_name_snapshot,customer_phone_snapshot,model_name,activation_type,lead_source,plan_name,retail_price,base_rebate,cash_sale_amount,real_rebate,vat_amount,payback_amount,penalty_paid,cash_received,sim_cost,used_device_amount,used_device_model,final_margin,salesperson_id,flag_additional,flag_dongpan,flag_contract_renewal,flag_bundle,payback_due_date,used_return_required').gte('activation_date',start).lt('activation_date',next).order('activation_date',{ascending:false});if(error){console.warn(error);return;}ledgerRows=data||[];renderLedgerRows();}
-function renderLedgerRows(){const body=document.getElementById('ledgerBody');if(!body)return;const q=(document.getElementById('ledgerSearch')?.value||'').replace(/-/g,'').toLowerCase();const rows=ledgerRows.filter(r=>!q||[r.customer_name_snapshot,r.customer_phone_snapshot,r.model_name].some(v=>String(v||'').replace(/-/g,'').toLowerCase().includes(q)));body.innerHTML=rows.map(r=>{const st=staffRows.find(s=>s.id===r.salesperson_id)?.name||'-';const ur=usedReturnRows.find(x=>x.ledger_id===r.id);const pb=paybackRows.find(x=>x.ledger_id===r.id);const usedCell=Number(r.used_device_amount||0)>0?(ur?`<span class="status-${ur.workflow_status==='done'?'done':ur.workflow_status==='overdue'?'issue':'unanswered'}">${esc(ur.response_status)}</span>`:`<button class="tiny-btn" onclick="ensureUsedReturn('${r.id}')">체크등록</button>`):'-';const pbCell=Number(r.payback_amount||0)>0?(pb?.verification_status==='verified'?'<span class="status-verified">✓ 확인</span>':pb?.verification_status==='issue'?'<span class="status-issue">문제</span>':'<span class="status-unchecked">미확인</span>'):'-';return `<tr><td>${esc(r.activation_date)}</td><td>${esc(r.vendor||'-')}</td><td>${esc(r.customer_name_snapshot)}</td><td>${esc(r.customer_phone_snapshot)}</td><td>${esc(r.model_name||'-')}</td><td>${esc(r.activation_type||'-')}</td><td>${esc(r.lead_source||'-')}</td><td>${esc(r.plan_name||'-')}</td><td>${won(r.retail_price)}</td><td>${won(r.base_rebate)}</td><td>${won(r.cash_sale_amount)}</td><td class="calc">${won(r.real_rebate)}</td><td>${won(r.vat_amount)}</td><td>${won(r.payback_amount)}</td><td>${won(r.penalty_paid)}</td><td>${won(r.cash_received)}</td><td>${won(r.sim_cost)}</td><td>${won(r.used_device_amount)}</td><td>${esc(r.used_device_model||'-')}</td><td>${usedCell}</td><td>${pbCell}</td><td class="calc">${won(r.final_margin)}</td><td>${esc(st)}</td><td class="check-cell">${r.flag_additional?'✓':'-'}</td><td class="check-cell">${r.flag_dongpan?'✓':'-'}</td><td class="check-cell">${r.flag_contract_renewal?'✓':'-'}</td><td class="check-cell">${r.flag_bundle?'✓':'-'}</td><td><button class="btn" onclick="deleteLedger('${r.id}')">삭제</button></td></tr>`}).join('')||'<tr><td colspan="28" style="text-align:center;color:#8f96a3;padding:34px">데이터가 없습니다.</td></tr>';const total=rows.reduce((a,r)=>a+Number(r.final_margin||0),0), pb=rows.reduce((a,r)=>a+Number(r.payback_amount||0),0);setText('ledgerCount',rows.length+'건');setText('ledgerMargin',won(total));setText('ledgerAvg',won(rows.length?Math.floor(total/rows.length):0));setText('ledgerPayback',won(pb));const out=paybackRows.reduce((a,r)=>a+Number(r.outstanding_amount||0),0);setText('ledgerOutstanding',won(out));}
-function staffOptions(){return '<option value="">선택</option>'+staffRows.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}
-function addLedgerRow(){currentModal='ledger';document.getElementById('modalTitle').textContent='판매건 입력';document.getElementById('modalBody').innerHTML=`<div class="form-grid"><div class="field"><label>개통일</label><input id="lDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>거래처</label><input id="lVendor"></div><div class="field"><label>고객명</label><input id="lName"></div><div class="field"><label>번호</label><input id="lPhone" placeholder="01012345678"></div><div class="field"><label>모델명</label><input id="lModel"></div><div class="field"><label>가입유형</label><select id="lType"><option>기변</option><option>MNP</option><option>010신규</option><option>동판</option><option>유심단독</option><option>약정갱신</option><option>번들</option></select></div><div class="field"><label>유입경로</label><select id="lLeadSource">${leadSourceOptions()}</select></div><div class="field"><label>요금제</label><input id="lPlan"></div><div class="field"><label>판매자</label><select id="lStaff">${staffOptions()}</select></div><div class="field"><label>출고가</label><input id="lRetail" type="number" value="0"></div><div class="field"><label>K 기본리베이트</label><input id="lK" type="number" value="0"></div><div class="field"><label>L 현금판매금액</label><input id="lL" type="number" value="0"></div><div class="field"><label>Q 페이백</label><input id="lQ" type="number" value="0"></div><div class="field"><label>R 위약금대납</label><input id="lR" type="number" value="0"></div><div class="field"><label>S 현금판매받은돈</label><input id="lS" type="number" value="0"></div><div class="field"><label>T 유심</label><input id="lT" type="number" value="0"></div><div class="field"><label>U 중고금액</label><input id="lU" type="number" value="0"></div><div class="field"><label>중고기종</label><input id="lUsedModel"></div><div class="field"><label>중고 반납예정일</label><input id="lUsedDue" type="date"></div><div class="field full"><label>중고 반납 체크</label><label style="display:flex;gap:8px;align-items:center"><input id="lUsedReturnRequired" type="checkbox"> 아직 중고기기를 받지 않았음 → 미반납 리스트에 등록</label></div><div class="field"><label>페이백 지급예정일</label><input id="lPbDue" type="date"></div><div class="field"><label>은행</label><input id="lBank"></div><div class="field"><label>예금주</label><input id="lHolder"></div><div class="field"><label>계좌번호</label><input id="lAccount"></div><div class="field full"><label>페이백 계좌 체크</label><label style="display:flex;gap:8px;align-items:center"><input id="lPbVerified" type="checkbox"> 계좌번호 · 예금주까지 확인 완료</label></div><div class="field full"><label>자동 분류 안내</label><div style="font-size:11px;color:#697386;line-height:1.6;padding:11px 12px;border:1px solid #dde2e8;border-radius:12px;background:#f8fafc">가입유형을 기준으로 자동 집계합니다. 기변/MNP/010신규/동판은 판매대수, 유심단독은 (+), 약정갱신은 약갱+, 번들은 번들+로 집계됩니다.</div></div></div>`;document.getElementById('modalWrap').classList.add('show')}
-async function saveLedger(){const n=id=>Number(document.getElementById(id)?.value||0),v=id=>document.getElementById(id)?.value?.trim()||null,b=id=>!!document.getElementById(id)?.checked;const name=v('lName'),phone=(v('lPhone')||'').replace(/\D/g,'');if(!name||phone.length<10){alert('고객명과 전화번호를 확인하세요.');return;}let customerId=null;const {data:cust,error:custErr}=await sb.from('jk_customers').upsert({name,phone:phone,phone_normalized:phone},{onConflict:'phone_normalized'}).select('id').single();if(custErr){alert(custErr.message);return;}if(cust)customerId=cust.id;const usedRequired=b('lUsedReturnRequired');const payload={activation_date:v('lDate'),vendor:v('lVendor'),customer_id:customerId,customer_name_snapshot:name,customer_phone_snapshot:phone,model_name:v('lModel'),activation_type:v('lType'),lead_source:v('lLeadSource'),plan_name:v('lPlan'),retail_price:n('lRetail'),base_rebate:n('lK'),cash_sale_amount:n('lL'),payback_amount:n('lQ'),penalty_paid:n('lR'),cash_received:n('lS'),sim_cost:n('lT'),used_device_amount:n('lU'),used_device_model:v('lUsedModel'),salesperson_id:v('lStaff'),flag_additional:b('lAdd'),flag_dongpan:b('lDong'),flag_contract_renewal:b('lRenew'),flag_bundle:b('lBundle'),payback_due_date:v('lPbDue'),used_return_required:usedRequired};const {data:row,error}=await sb.from('jk_sales_ledger').insert(payload).select('id,payback_amount,used_device_amount,used_device_model,salesperson_id').single();if(error){alert(error.message);return;}if(row?.payback_amount>0&&(v('lBank')||v('lAccount'))){const verified=b('lPbVerified');const {error:pbErr}=await sb.from('jk_payback_accounts').insert({ledger_id:row.id,bank_name:v('lBank')||'미입력',account_holder:v('lHolder')||name,account_number:v('lAccount')||'미입력',verification_status:verified?'verified':'unchecked',verified_at:verified?new Date().toISOString():null});if(pbErr){console.warn(pbErr);}}if(usedRequired){const {error:urErr}=await sb.from('jk_used_device_returns').insert({ledger_id:row.id,expected_model:v('lUsedModel'),expected_amount:n('lU'),assigned_staff_id:v('lStaff'),response_status:'미답변',due_date:v('lUsedDue')});if(urErr){console.warn(urErr);}}closeModal();await Promise.all([loadLedger(),loadPaybacks(),loadUsedReturns(),loadMonthlyClose(),loadV3All(),loadAutoDailyReport()]);toastMsg('장부 저장과 매출 자동집계를 완료했습니다.');}
-async function deleteLedger(id){if(!confirm('이 판매건을 삭제할까요?'))return;const {error}=await sb.from('jk_sales_ledger').delete().eq('id',id);if(error){alert(error.message);return;}await Promise.all([loadLedger(),loadPaybacks(),loadUsedReturns(),loadMonthlyClose()]);}
-async function loadPaybacks(){var mk=(document.getElementById('paybackMonth')?.value||monthKey(new Date())),b=monthBoundsFromKey(mk);const {data,error}=await sb.from('jk_v_payback_checklist').select('*').gte('due_date',b[0]).lt('due_date',b[1]).order('due_date',{ascending:true});if(error){console.warn(error);return;}paybackRows=data||[];renderPaybacks();renderLedgerRows();renderOpsCheck();}
-function renderPaybacks(){const body=document.getElementById('paybackBody');if(!body)return;body.innerHTML=paybackRows.map(r=>{const verify=r.verification_status||'unchecked';const verifyLabel=verify==='verified'?'<span class="status-verified">✓ 확인완료</span>':verify==='issue'?'<span class="status-issue">문제확인</span>':'<span class="status-unchecked">미확인</span>';const payClass=r.payment_status==='paid'?'paid':r.payment_status==='overdue'?'overdue':r.payment_status==='partial'?'partial':'pending';return `<tr><td><strong>${esc(r.customer_name)}</strong><br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.salesperson||'-')}</td><td>${won(r.promised_amount)}</td><td>${won(r.paid_amount)}</td><td><strong>${won(r.outstanding_amount)}</strong></td><td>${esc(r.due_date)}</td><td>${esc(r.bank_name||'-')}</td><td>${esc(r.account_holder||'-')}</td><td>${esc(r.account_number||'-')}</td><td>${verifyLabel}</td><td class="status-${payClass}">${esc(r.payment_status)}</td><td><div class="action-stack">${verify!=='verified'?`<button class="tiny-btn" onclick="verifyPaybackAccount('${r.ledger_id}')">계좌확인</button>`:''}${Number(r.outstanding_amount)>0?`<button class="tiny-btn primary" onclick="payNow('${r.ledger_id}',${Number(r.outstanding_amount)})">지급완료</button>`:''}</div></td></tr>`}).join('')||'<tr><td colspan="12" style="text-align:center;color:#8f96a3;padding:34px">페이백 대상이 없습니다.</td></tr>';const promised=paybackRows.reduce((a,r)=>a+Number(r.promised_amount||0),0),paid=paybackRows.reduce((a,r)=>a+Number(r.paid_amount||0),0),out=paybackRows.reduce((a,r)=>a+Number(r.outstanding_amount||0),0),unchecked=paybackRows.filter(r=>r.verification_status!=='verified').length;setText('pbPromised',won(promised));setText('pbPaid',won(paid));setText('pbOutstanding',won(out));setText('pbUnchecked',unchecked+'명');setText('pbCount',paybackRows.filter(r=>Number(r.outstanding_amount)>0).length+'명');}
-async function verifyPaybackAccount(ledgerId){const r=paybackRows.find(x=>x.ledger_id===ledgerId)||{};const bank=prompt('은행명',r.bank_name||'');if(bank===null)return;const holder=prompt('예금주',r.account_holder||r.customer_name||'');if(holder===null)return;const account=prompt('계좌번호',r.account_number||'');if(account===null||!account.trim()){alert('계좌번호를 입력하세요.');return;}const payload={ledger_id:ledgerId,bank_name:bank.trim()||'미입력',account_holder:holder.trim()||r.customer_name||'미입력',account_number:account.trim(),verification_status:'verified',verified_at:new Date().toISOString()};const {error}=await sb.from('jk_payback_accounts').upsert(payload,{onConflict:'ledger_id'});if(error){alert(error.message);return;}await loadPaybacks();toastMsg('페이백 계좌 확인 완료.');}
-async function loadUsedReturns(){var mk=(document.getElementById('usedMonth')?.value||monthKey(new Date())),b=monthBoundsFromKey(mk);const {data,error}=await sb.from('jk_v_used_device_return_status').select('*').gte('activation_date',b[0]).lt('activation_date',b[1]).order('due_date',{ascending:true,nullsFirst:false});if(error){console.warn(error);return;}usedReturnRows=data||[];renderUsedReturns();renderLedgerRows();renderOpsCheck();}
-function renderUsedReturns(){const body=document.getElementById('usedReturnBody');if(!body)return;body.innerHTML=usedReturnRows.map(r=>{const isDone=['반납완료','취소'].includes(r.response_status);const statusClass=r.workflow_status==='done'?'done':r.workflow_status==='overdue'?'issue':'unanswered';return `<tr><td><strong>${esc(r.customer_name)}</strong><br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.expected_model||'-')}</td><td>${esc(r.assigned_staff||'-')}</td><td>${esc(r.activation_date)}</td><td>${esc(r.due_date||'-')}</td><td><select class="inline-select status-${statusClass}" onchange="updateUsedReturnStatus('${r.id}',this.value)"><option ${r.response_status==='미답변'?'selected':''}>미답변</option><option ${r.response_status==='연락완료'?'selected':''}>연락완료</option><option ${r.response_status==='반납예정'?'selected':''}>반납예정</option><option ${r.response_status==='반납완료'?'selected':''}>반납완료</option><option ${r.response_status==='취소'?'selected':''}>취소</option></select></td><td>${won(r.expected_amount||0)}</td><td>${esc(r.note||'-')}</td><td><div class="action-stack">${!isDone?`<button class="tiny-btn primary" onclick="completeUsedReturn('${r.id}')">반납완료</button>`:''}<button class="tiny-btn" onclick="editUsedReturn('${r.id}')">기한/메모</button></div></td></tr>`}).join('')||'<tr><td colspan="9" style="text-align:center;color:#8f96a3;padding:34px">중고 반납 추적 대상이 없습니다.</td></tr>';const open=usedReturnRows.filter(r=>!['반납완료','취소'].includes(r.response_status));const overdue=open.filter(r=>r.workflow_status==='overdue');const unanswered=open.filter(r=>r.response_status==='미답변');const amount=open.reduce((a,r)=>a+Number(r.expected_amount||0),0);setText('urTotal',usedReturnRows.length+'건');setText('urOpen',open.length+'건');setText('urUnanswered',unanswered.length+'건');setText('urOverdue',overdue.length+'건');setText('urAmount',won(amount));}
-async function updateUsedReturnStatus(id,status){const payload={response_status:status};if(status==='반납완료'){payload.received_at=new Date().toISOString();payload.settled_at=new Date().toISOString();}const {error}=await sb.from('jk_used_device_returns').update(payload).eq('id',id);if(error){alert(error.message);return;}await loadUsedReturns();}
-async function completeUsedReturn(id){await updateUsedReturnStatus(id,'반납완료');toastMsg('중고 반납완료 처리했습니다.');}
-async function editUsedReturn(id){const r=usedReturnRows.find(x=>x.id===id)||{};const due=prompt('반납예정일 YYYY-MM-DD',r.due_date||'');if(due===null)return;const note=prompt('메모',r.note||'');if(note===null)return;const {error}=await sb.from('jk_used_device_returns').update({due_date:due.trim()||null,note:note.trim()||null}).eq('id',id);if(error){alert(error.message);return;}await loadUsedReturns();}
-async function ensureUsedReturn(ledgerId){const l=ledgerRows.find(x=>x.id===ledgerId);if(!l)return;const due=prompt('중고 반납예정일 YYYY-MM-DD','');if(due===null)return;const {error}=await sb.from('jk_used_device_returns').insert({ledger_id:ledgerId,expected_model:l.used_device_model,expected_amount:Number(l.used_device_amount||0),assigned_staff_id:l.salesperson_id,response_status:'미답변',due_date:due.trim()||null});if(error){alert(error.message);return;}await sb.from('jk_sales_ledger').update({used_return_required:true}).eq('id',ledgerId);await Promise.all([loadLedger(),loadUsedReturns()]);toastMsg('중고 반납 체크리스트에 등록했습니다.');}
-function renderOpsCheck(){const open=usedReturnRows.filter(r=>!['반납완료','취소'].includes(r.response_status));const overdue=open.filter(r=>r.workflow_status==='overdue');const unchecked=paybackRows.filter(r=>r.verification_status!=='verified');const out=paybackRows.reduce((a,r)=>a+Number(r.outstanding_amount||0),0);setText('opsUsedOpen',open.length+'건');setText('opsUsedOverdue',overdue.length+'건');setText('opsPbUnverified',unchecked.length+'건');setText('opsPbOutstanding',won(out));}
-async function payNow(ledgerId,amount){const raw=prompt('실제 지급액을 입력하세요.',String(amount));if(raw===null)return;const paid=Number(raw);if(!paid||paid<=0)return;const {error}=await sb.from('jk_payback_payments').insert({ledger_id:ledgerId,paid_amount:paid});if(error){alert(error.message);return;}await Promise.all([loadPaybacks(),loadMonthlyClose()]);toastMsg('페이백 지급완료로 기록했습니다.');}
-async function loadMonthlyClose(){const month=document.getElementById('ledgerMonth')?.value||'2026-09';const target=month+'-01';const {data,error}=await sb.from('jk_v_monthly_business_summary').select('*').eq('month',target).maybeSingle();if(error){console.warn(error);return;}const r=data||{};setText('closeMargin',won(r.margin_total||0));setText('closeAds',won(r.ad_spend_total||0));setText('closeExpenses',won(r.expense_total||0));setText('closeNet',won(r.net_profit||0));setText('closePaybackCash',won(r.payback_paid_cash||0));}
-function toastMsg(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-const oldSaveModal=saveModal;saveModal=async function(){if(currentModal==='ledger'){await saveLedger();return;}return oldSaveModal();}
-sb.auth.onAuthStateChange(()=>refreshSessionState());setTimeout(refreshSessionState,150);
+const titles={dashboard:'종합 대시보드',ledger:'장부 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',ads:'광고비',expenses:'비용원장',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
+document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
+function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
 
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
+function showLogin(){$('loginBg').classList.add('show')}
+function hideLogin(){$('loginBg').classList.remove('show')}
+async function login(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value,msg=$('loginMsg');msg.textContent='로그인 중...';const {error}=await sb.auth.signInWithPassword({email,password});if(error){msg.textContent=error.message==='Invalid login credentials'?'비밀번호가 맞지 않습니다. 재설정 메일을 이용하세요.':error.message;return}msg.textContent='';hideLogin();await sessionChanged()}
+async function logout(){await sb.auth.signOut();await sessionChanged()}
+async function sendReset(){const email=$('loginEmail')?.value?.trim()||'needis123@gmail.com';const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});const msg=$('loginMsg');if(msg)msg.textContent=error?error.message:'비밀번호 재설정 메일을 보냈습니다.';else alert(error?error.message:'비밀번호 재설정 메일을 보냈습니다.')}
+sb.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY')setTimeout(resetPasswordPrompt,250)});
+async function resetPasswordPrompt(){const p1=prompt('새 비밀번호를 입력하세요.');if(!p1)return;const p2=prompt('새 비밀번호를 다시 입력하세요.');if(p1!==p2){alert('비밀번호가 다릅니다.');return}const {error}=await sb.auth.updateUser({password:p1});alert(error?error.message:'비밀번호 변경 완료');if(!error)hideLogin()}
+async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){showLogin();return}await loadAll()}
 
-/* ========================= V3 LIVE BUSINESS CENTER ========================= */
-let v3ExpenseRows=[],v3AdRows=[],lookupRows=[];
-let v3State={series:[],target:0,annualTarget:0};
+function opt(type){return state.options.filter(x=>x.option_type===type&&x.active).sort((a,b)=>a.sort_order-b.sort_order)}
+function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">${esc(x.label)}</option>`).join('')}
+function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
-function localYMD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
-function monthKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
-function monthBoundsFromKey(k){var p=k.split('-').map(Number),s=new Date(p[0],p[1]-1,1),n=new Date(p[0],p[1],1);return [localYMD(s),localYMD(n)]}
-function krw(n){return Math.round(Number(n||0)).toLocaleString('ko-KR')+'원'}
-function pct(n){return (Number.isFinite(n)?n:0).toFixed(1)+'%'}
+async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
+async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadReport(),loadUsed(),loadPayback(),loadAds(),loadExpenses(),loadSources(),loadSettings()])}
 
-async function resetPasswordEmail(){
-  var email=(document.getElementById('loginEmail').value||'needis123@gmail.com').trim();
-  var msg=document.getElementById('loginMsg');
-  msg.textContent='재설정 메일 전송 중...';
-  var redirect=location.origin+location.pathname;
-  var res=await sb.auth.resetPasswordForEmail(email,{redirectTo:redirect});
-  if(res.error){res=await sb.auth.resetPasswordForEmail(email);}
-  msg.textContent=res.error?res.error.message:'재설정 메일을 보냈습니다. 메일의 링크를 눌러 새 비밀번호를 설정하세요.';
-}
-sb.auth.onAuthStateChange(function(event){
-  if(event==='PASSWORD_RECOVERY'){
-    setTimeout(async function(){
-      var p1=prompt('새 비밀번호를 입력하세요. (8자 이상 권장)');
-      if(!p1)return;
-      var p2=prompt('새 비밀번호를 한 번 더 입력하세요.');
-      if(p1!==p2){alert('비밀번호가 서로 다릅니다.');return;}
-      var r=await sb.auth.updateUser({password:p1});
-      if(r.error){alert(r.error.message);return;}
-      alert('비밀번호가 변경되었습니다. 앞으로 새 비밀번호로 로그인하세요.');
-      hideLogin();
-      await refreshSessionState();
-    },300);
-  }
-});
+function dealLabel(r){if(r.deal_type==='휴대폰')return r.activation_type||'휴대폰';if(r.deal_type==='번들')return '번들';return r.deal_type||'-'}
+function classify(v){if(v==='MNP'||v==='기변'||v==='010신규')return {deal_type:'휴대폰',activation_type:v};if(v==='유심단독')return {deal_type:'유심단독',activation_type:'유심단독'};if(v==='동판')return {deal_type:'동판',activation_type:'동판'};if(v==='약갱')return {deal_type:'약갱',activation_type:'약갱'};return {deal_type:'번들',activation_type:'번들'}}
 
+async function loadLedger(){if(!$('ledgerMonth'))return;const [a,b]=bounds($('ledgerMonth').value||mk(now));const {data,error}=await sb.from('jk_sales_ledger').select('*').gte('activation_date',a).lt('activation_date',b).order('activation_date',{ascending:false});if(error){console.warn(error);return}state.ledger=data||[];renderLedger()}
+function renderLedger(){const q=($('ledgerSearch')?.value||'').replace(/-/g,'').toLowerCase();const rows=state.ledger.filter(r=>!q||[r.customer_name_snapshot,r.customer_phone_snapshot,r.model_name,r.lead_source].some(v=>String(v||'').replace(/-/g,'').toLowerCase().includes(q)));$('ledgerBody').innerHTML=rows.map(r=>`<tr><td>${esc(r.activation_date)}</td><td>${esc(r.vendor||'-')}</td><td><b>${esc(r.customer_name_snapshot)}</b></td><td>${esc(r.customer_phone_snapshot)}</td><td>${esc(r.model_name||'-')}</td><td>${esc(dealLabel(r))}</td><td>${esc(r.lead_source||'-')}</td><td>${esc(r.plan_name||'-')}</td><td>${won(r.retail_price)}</td><td>${won(r.base_rebate)}</td><td>${won(r.cash_sale_amount)}</td><td>${won(r.real_rebate)}</td><td>${won(r.vat_amount)}</td><td>${won(r.payback_amount)}</td><td>${won(r.penalty_paid)}</td><td>${won(r.cash_received)}</td><td>${won(r.sim_cost)}</td><td>${won(r.used_device_amount)}</td><td>${esc(r.used_device_model||'-')}</td><td><b>${won(r.final_margin)}</b></td><td>${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}</td><td><button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="22" class="empty">장부 데이터가 없습니다.</td></tr>';
+ const u=state.ledger.filter(r=>r.deal_type==='휴대폰').length,us=state.ledger.filter(r=>r.deal_type==='유심단독').length,d=state.ledger.filter(r=>r.deal_type==='동판').length,re=state.ledger.filter(r=>r.deal_type==='약갱').length,bu=state.ledger.filter(r=>r.deal_type==='번들').length,m=state.ledger.reduce((a,r)=>a+Number(r.final_margin||0),0);$('lUnits').textContent=u+'대';$('lUsim').textContent=us+'건';$('lDong').textContent=d+'건';$('lRB').textContent=re+' / '+bu;$('lMargin').textContent=won(m)
+}
+function openLedger(){modalMode='ledger';$('modalTitle').textContent='판매건 입력';$('modalBody').innerHTML=`<div class="form">
+<div class="field"><label>개통일</label><input id="fDate" type="date" value="${ymd(now)}"></div><div class="field"><label>거래처</label><input id="fVendor"></div>
+<div class="field"><label>고객명</label><input id="fName"></div><div class="field"><label>번호</label><input id="fPhone" placeholder="01012345678"></div>
+<div class="field"><label>모델명</label><input id="fModel"></div><div class="field"><label>판매유형</label><select id="fDeal"><option>MNP</option><option>기변</option><option>010신규</option><option>유심단독</option><option>동판</option><option>약갱</option><option>번들</option></select></div>
+<div class="field"><label>유입경로</label><select id="fSource"><option value="">선택</option>${optHtml('lead_source')}</select></div><div class="field"><label>요금제</label><input id="fPlan"></div>
+<div class="field"><label>판매자</label><select id="fStaff">${staffHtml()}</select></div><div class="field"><label>출고가</label><input id="fRetail" type="number" value="0"></div>
+<div class="field"><label>K 기본리베이트</label><input class="calcI" id="fK" type="number" value="0"></div><div class="field"><label>L 현금판매금액</label><input class="calcI" id="fL" type="number" value="0"></div>
+<div class="field"><label>Q 페이백</label><input class="calcI" id="fQ" type="number" value="0"></div><div class="field"><label>R 위약금대납</label><input class="calcI" id="fR" type="number" value="0"></div>
+<div class="field"><label>S 현금판매받은돈</label><input class="calcI" id="fS" type="number" value="0"></div><div class="field"><label>T 유심</label><input class="calcI" id="fT" type="number" value="0"></div>
+<div class="field"><label>U 중고금액</label><input class="calcI" id="fU" type="number" value="0"></div><div class="field"><label>중고기종</label><input id="fUsedModel"></div>
+<div class="calc-preview"><div><span>M 실리베이트</span><b id="pvM">0원</b></div><div><span>P 부가세</span><b id="pvP">0원</b></div><div><span>W 최종마진</span><b id="pvW">0원</b></div></div>
+<div class="field"><label>중고 반납예정일</label><input id="fUsedDue" type="date"></div><div class="field"><label>중고 미반납 체크</label><select id="fUsedRequired"><option value="false">이미 반납/해당없음</option><option value="true">미반납 추적등록</option></select></div>
+<div class="field"><label>페이백 지급예정일</label><input id="fPbDue" type="date"></div><div class="field"><label>은행</label><input id="fBank"></div>
+<div class="field"><label>예금주</label><input id="fHolder"></div><div class="field"><label>계좌번호</label><input id="fAccount"></div>
+<div class="field full"><label>메모</label><textarea id="fMemo" rows="2"></textarea></div></div>`;document.querySelectorAll('.calcI').forEach(x=>x.oninput=previewCalc);previewCalc();showModal()}
+function previewCalc(){const n=id=>Number($(id)?.value||0),m=n('fK')-n('fL'),p=Math.round(m*.1),w=m-p-n('fQ')-n('fR')+n('fS')-n('fT')+n('fU');if($('pvM'))$('pvM').textContent=won(m);if($('pvP'))$('pvP').textContent=won(p);if($('pvW'))$('pvW').textContent=won(w)}
+async function saveLedger(){const name=$('fName').value.trim(),phone=$('fPhone').value.replace(/\D/g,'');if(!name||phone.length<10){alert('고객명과 번호를 확인하세요.');return}const c=classify($('fDeal').value);let customerId=null;const cu=await sb.from('jk_customers').upsert({name,phone,phone_normalized:phone},{onConflict:'phone_normalized'}).select('id').single();if(cu.error){alert(cu.error.message);return}customerId=cu.data.id;const n=id=>Number($(id).value||0);const usedReq=$('fUsedRequired').value==='true';const payload={activation_date:$('fDate').value,vendor:$('fVendor').value||null,customer_id:customerId,customer_name_snapshot:name,customer_phone_snapshot:phone,model_name:$('fModel').value||null,deal_type:c.deal_type,activation_type:c.activation_type,lead_source:$('fSource').value||null,plan_name:$('fPlan').value||null,retail_price:n('fRetail'),base_rebate:n('fK'),cash_sale_amount:n('fL'),payback_amount:n('fQ'),penalty_paid:n('fR'),cash_received:n('fS'),sim_cost:n('fT'),used_device_amount:n('fU'),used_device_model:$('fUsedModel').value||null,salesperson_id:$('fStaff').value||null,payback_due_date:$('fPbDue').value||null,used_return_required:usedReq,memo:$('fMemo').value||null,flag_additional:c.deal_type==='유심단독',flag_dongpan:c.deal_type==='동판',flag_contract_renewal:c.deal_type==='약갱',flag_bundle:c.deal_type==='번들'};const ins=await sb.from('jk_sales_ledger').insert(payload).select('id,payback_amount,used_device_amount').single();if(ins.error){alert(ins.error.message);return}if(n('fQ')>0&&($('fBank').value||$('fAccount').value)){await sb.from('jk_payback_accounts').insert({ledger_id:ins.data.id,bank_name:$('fBank').value||'미입력',account_holder:$('fHolder').value||name,account_number:$('fAccount').value||'미입력'})}if(usedReq){await sb.from('jk_used_device_returns').insert({ledger_id:ins.data.id,expected_model:$('fUsedModel').value||null,expected_amount:n('fU'),assigned_staff_id:$('fStaff').value||null,response_status:'미답변',due_date:$('fUsedDue').value||null})}closeModal();toast('장부 저장 및 매출 자동반영 완료');await Promise.all([loadLedger(),loadDashboard(),loadReport(),loadUsed(),loadPayback(),loadSources()])}
+async function deleteLedger(id){if(!confirm('판매건을 삭제할까요?'))return;const {error}=await sb.from('jk_sales_ledger').delete().eq('id',id);if(error){alert(error.message);return}await loadAll()}
 
-function normalizedType(r){return String((r&&r.activation_type)||'').trim()}
-function isDeviceSale(r){return ['기변','MNP','010신규','신규','동판'].includes(normalizedType(r))}
-function isSimOnly(r){return normalizedType(r)==='유심단독'||!!r.flag_additional}
-function isDongpan(r){return normalizedType(r)==='동판'||!!r.flag_dongpan}
-function isRenewal(r){return normalizedType(r)==='약정갱신'||!!r.flag_contract_renewal}
-function isBundle(r){return ['번들','인터넷TV','인터넷+TV','인터넷/TV'].includes(normalizedType(r))||!!r.flag_bundle}
-function reportMarker(label,n){if(label==='sim')return n?'(+'+n+')':'(+)';return n?'('+label+'+'+n+')':'('+label+'+)'}
-function lookupByType(type){return lookupRows.filter(r=>r.option_type===type&&r.active!==false)}
-function leadSourceOptions(){var rows=lookupByType('lead_source');return '<option value="">선택</option>'+rows.map(r=>'<option>'+esc(r.label)+'</option>').join('')}
+async function loadReport(){const month=$('reportMonth')?.value||mk(now),date=$('reportDate')?.value||ymd(now);const [a,b]=bounds(month);const [mo,dy,st]=await Promise.all([sb.from('jk_v_monthly_sales_summary').select('*').eq('month',a).maybeSingle(),sb.from('jk_v_daily_sales_summary').select('*').eq('activation_date',date).maybeSingle(),sb.from('jk_v_staff_monthly_summary').select('*').eq('month',a).order('staff_name')]);if(mo.error||dy.error||st.error)return;const m=mo.data||{},d=dy.data||{},staff=st.data||[];const marks=r=>`${Number(r.sim_only_count||0)>0?`(+${r.sim_only_count})`:''}${Number(r.dongpan_count||0)>0?`(동판+${r.dongpan_count})`:''}${Number(r.contract_renewal_count||0)>0?`(약갱+${r.contract_renewal_count})`:''}${Number(r.bundle_count||0)>0?`(번들+${r.bundle_count})`:''}`;let txt=`${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일 매출보고\n\n월 총 갯수 ${Number(m.units||0)}개${marks(m)}\n총 매출 : ${won(m.margin_total||0)}\n평균마진 : ${won(m.avg_margin||0)}\n\n일 총 갯수 ${Number(d.units||0)}개${marks(d)}\n총 매출 : ${won(d.margin_total||0)}\n평균마진 : ${won(d.avg_margin||0)}`;staff.forEach(s=>{txt+=`\n\n[${s.staff_name||'미지정'}]\n갯수 ${Number(s.units||0)}개${marks(s)}\n총 매출 : ${won(s.margin_total||0)}\n평균마진 : ${won(s.avg_margin||0)}`});$('reportText').textContent=txt}
+async function copyReport(){await navigator.clipboard.writeText($('reportText').textContent);toast('매출보고 복사 완료')}
 
-async function loadV3All(){
-  var sess=await sb.auth.getSession(); if(!sess.data.session)return;
-  var now=new Date(), mk=monthKey(now), bounds=monthBoundsFromKey(mk);
-  var prev=new Date(now.getFullYear(),now.getMonth()-1,1), prevKey=monthKey(prev), pb=monthBoundsFromKey(prevKey);
-  var yearStart=now.getFullYear()+'-01-01', yearNext=(now.getFullYear()+1)+'-01-01';
-  var qs=await Promise.all([
-    sb.from('jk_sales_ledger').select('activation_date,final_margin,activation_type,flag_additional,flag_dongpan,flag_contract_renewal,flag_bundle,lead_source').gte('activation_date',bounds[0]).lt('activation_date',bounds[1]).order('activation_date'),
-    sb.from('jk_sales_ledger').select('activation_date,final_margin,activation_type,flag_additional,flag_dongpan,flag_contract_renewal,flag_bundle').gte('activation_date',pb[0]).lt('activation_date',pb[1]).order('activation_date'),
-    sb.from('jk_expenses').select('*').gte('expense_date',bounds[0]).lt('expense_date',bounds[1]).order('expense_date',{ascending:false}),
-    sb.from('jk_ad_spend').select('*').gte('spend_date',bounds[0]).lt('spend_date',bounds[1]).order('spend_date',{ascending:false}),
-    sb.from('jk_targets').select('*').eq('target_month',bounds[0]).maybeSingle(),
-    sb.from('jk_year_targets').select('*').eq('target_year',now.getFullYear()).maybeSingle(),
-    sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',yearStart).lt('activation_date',yearNext),
-    sb.from('jk_targets').select('target_month,target_margin').gte('target_month',yearStart).lt('target_month',yearNext),
-    sb.from('jk_lookup_options').select('*').eq('active',true).order('option_type').order('sort_order')
-  ]);
-  var err=qs.find(function(x){return x.error});
-  if(err){console.warn('V3 load',err.error);return;}
-  var sales=qs[0].data||[], prevSales=qs[1].data||[], exps=qs[2].data||[], ads=qs[3].data||[], target=qs[4].data||null, annual=qs[5].data||null, yearSales=qs[6].data||[], yearTargets=qs[7].data||[], lookups=qs[8].data||[]; lookupRows=lookups;
-  v3ExpenseRows=exps;v3AdRows=ads;
-  var margin=sales.reduce(function(a,r){return a+Number(r.final_margin||0)},0);
-  var units=sales.filter(isDeviceSale).length, simCount=sales.filter(isSimOnly).length, dongCount=sales.filter(isDongpan).length, renewCount=sales.filter(isRenewal).length, bundleCount=sales.filter(isBundle).length, avg=units?Math.floor(margin/units):0;
-  var fixed=exps.filter(function(r){return r.is_fixed}).reduce(function(a,r){return a+Number(r.amount||0)},0);
-  var variable=exps.filter(function(r){return !r.is_fixed}).reduce(function(a,r){return a+Number(r.amount||0)},0);
-  var expTotal=fixed+variable;
-  var adTotal=ads.reduce(function(a,r){return a+Number(r.amount||0)},0);
-  var attributed=ads.reduce(function(a,r){return a+Number(r.attributed_margin||0)},0);
-  var net=margin-expTotal-adTotal;
-  var targetMargin=target?Number(target.target_margin||0):0;
-  var annualTarget=annual?Number(annual.target_margin||0):0;
-  var elapsed=now.getDate(), daysInMonth=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
-  var forecast=elapsed?Math.round(margin/elapsed*daysInMonth):0;
-  var goalPct=targetMargin?margin/targetMargin*100:0;
-  var remain=Math.max(targetMargin-margin,0);
-  var remainingDays=Math.max(daysInMonth-elapsed,1);
-  var needDaily=targetMargin?Math.ceil(remain/remainingDays):0;
-  var prevMonthDays=new Date(prev.getFullYear(),prev.getMonth()+1,0).getDate();
-  var compareDay=Math.min(elapsed,prevMonthDays);
-  var prevSame=prevSales.filter(function(r){return Number(String(r.activation_date).slice(8,10))<=compareDay}).reduce(function(a,r){return a+Number(r.final_margin||0)},0);
-  var delta=prevSame?((margin-prevSame)/Math.abs(prevSame)*100):null;
-  var yearMargin=yearSales.reduce(function(a,r){return a+Number(r.final_margin||0)},0);
-  var annualPct=annualTarget?yearMargin/annualTarget*100:0;
-  var monthlyTotals=Array.from({length:12},()=>0);
-  yearSales.forEach(function(r){var m=Number(String(r.activation_date).slice(5,7));if(m>=1&&m<=12)monthlyTotals[m-1]+=Number(r.final_margin||0)});
-  var currentMonthIndex=now.getMonth(), currentMonthTotal=monthlyTotals[currentMonthIndex]||0, prevMonthTotal=currentMonthIndex>0?(monthlyTotals[currentMonthIndex-1]||0):0;
-  var momGrowth=prevMonthTotal?((currentMonthTotal-prevMonthTotal)/Math.abs(prevMonthTotal)*100):null;
-  var sourceMap={};sales.forEach(function(r){var k=(r.lead_source||'미입력').trim()||'미입력';if(!sourceMap[k])sourceMap[k]={records:0,units:0,margin:0};sourceMap[k].records++;if(isDeviceSale(r))sourceMap[k].units++;sourceMap[k].margin+=Number(r.final_margin||0)});
-  var sourceRows=Object.keys(sourceMap).map(function(k){return {source:k,records:sourceMap[k].records,units:sourceMap[k].units,margin:sourceMap[k].margin}}).sort(function(a,b){return b.margin-a.margin});
-  v3State.monthlyTotals=monthlyTotals;v3State.sourceRows=sourceRows;v3State.yearTargets=yearTargets;
-  v3State.target=targetMargin;v3State.annualTarget=annualTarget;
+async function loadDashboard(){const month=mk(now),[a,b]=bounds(month),prev=new Date(now.getFullYear(),now.getMonth()-1,1),[pa,pb]=bounds(mk(prev)),yearA=`${now.getFullYear()}-01-01`,yearB=`${now.getFullYear()+1}-01-01`;const res=await Promise.all([sb.from('jk_sales_ledger').select('activation_date,final_margin,deal_type,lead_source').gte('activation_date',a).lt('activation_date',b).order('activation_date'),sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',pa).lt('activation_date',pb),sb.from('jk_expenses').select('amount,is_fixed').gte('expense_date',a).lt('expense_date',b),sb.from('jk_ad_spend').select('*').gte('spend_date',a).lt('spend_date',b),sb.from('jk_targets').select('*').gte('target_month',yearA).lt('target_month',yearB).order('target_month'),sb.from('jk_year_targets').select('*').eq('target_year',now.getFullYear()).maybeSingle(),sb.from('jk_v_monthly_sales_summary').select('*').gte('month',yearA).lt('month',yearB).order('month')]);if(res.some(x=>x.error)){console.warn(res.find(x=>x.error)?.error);return}const sales=res[0].data||[],prevSales=res[1].data||[],expenses=res[2].data||[],ads=res[3].data||[],targets=res[4].data||[],yearTarget=res[5].data||null,annual=res[6].data||[];state.annual=annual;state.targets=targets;state.yearTarget=yearTarget;const margin=sales.reduce((a,r)=>a+Number(r.final_margin||0),0),units=sales.filter(r=>r.deal_type==='휴대폰').length,exp=expenses.reduce((a,r)=>a+Number(r.amount||0),0),ad=ads.reduce((a,r)=>a+Number(r.amount||0),0),net=margin-exp-ad;const tgt=targets.find(t=>String(t.target_month).slice(0,7)===month),goal=Number(tgt?.target_margin||0),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),elapsed=now.getDate(),forecast=Math.round(margin/Math.max(elapsed,1)*days),goalPct=goal?margin/goal*100:0,remain=Math.max(goal-margin,0),need=goal?Math.ceil(remain/Math.max(days-elapsed,1)):0;const sameDay=Math.min(elapsed,new Date(prev.getFullYear(),prev.getMonth()+1,0).getDate()),prevSame=prevSales.filter(r=>Number(String(r.activation_date).slice(8,10))<=sameDay).reduce((a,r)=>a+Number(r.final_margin||0),0),sameDelta=prevSame?(margin-prevSame)/Math.abs(prevSame)*100:null;const yearMargin=annual.reduce((a,r)=>a+Number(r.margin_total||0),0),yearGoal=Number(yearTarget?.target_margin||0),yearPct=yearGoal?yearMargin/yearGoal*100:0;const prevMonthRow=annual.find(r=>String(r.month).slice(0,7)===mk(prev)),prevMonth=Number(prevMonthRow?.margin_total||0),mom=prevMonth?(margin-prevMonth)/Math.abs(prevMonth)*100:null;const attributed=ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);
+ $('dGoalPct').textContent=pct(goalPct);$('dCurrent').textContent=won(margin);$('dTarget').textContent=goal?won(goal):'미설정';$('dGoalBar').style.width=Math.min(goalPct,100)+'%';$('dForecast').textContent=won(forecast);$('dForecastGap').textContent=goal?(forecast>=goal?'목표 예상 초과 '+won(forecast-goal):'목표 예상 부족 '+won(goal-forecast)):'목표 설정 후 계산';$('dRemain').textContent=goal?won(remain):'-';$('dNeedDaily').textContent=goal?won(need):'-';$('dMargin').textContent=won(margin);$('dUnits').textContent=`판매 ${units}대`;$('dSameDelta').textContent=sameDelta===null?'-':(sameDelta>=0?'+':'')+pct(sameDelta);$('dPrevSame').textContent='지난달 동일기간 '+won(prevSame);$('samePeriodCard').className='kpi '+(sameDelta===null?'':sameDelta>=0?'good':'bad');$('dNet').textContent=won(net);$('dExpense').textContent=won(exp+ad);$('dExpenseDetail').textContent=`광고 ${won(ad)} · 비용 ${won(exp)}`;$('dYearMargin').textContent=won(yearMargin);$('dYearGoalText').textContent=yearGoal?`연 목표 ${won(yearGoal)}`:'연간 목표 미설정';$('dYearPct').textContent=pct(yearPct);$('dMoMGrowth').textContent=mom===null?'-':(mom>=0?'+':'')+pct(mom);$('dPrevMonth').textContent='전월 '+won(prevMonth);$('dAds').textContent=won(ad);$('dRoas').textContent=ad?'마진 ROAS '+pct(attributed/ad*100):'광고비 입력 전';renderDashboardSources(sales);renderDailyDelta(sales,goal,days);drawGoal(sales,goal,days);drawAnnual();renderTargetPage()}
+function renderDashboardSources(rows){const map={};rows.forEach(r=>{const k=r.lead_source||'미분류';map[k]=map[k]||{n:0,m:0};map[k].n++;map[k].m+=Number(r.final_margin||0)});const arr=Object.entries(map).map(([k,v])=>({k,...v})).sort((a,b)=>b.m-a.m).slice(0,7),max=Math.max(1,...arr.map(x=>x.m));$('dashboardSources').innerHTML=arr.map(x=>`<div class="source-row"><span>${esc(x.k)}</span><div class="source-bar"><i style="width:${x.m/max*100}%"></i></div><b>${won(x.m)}</b></div>`).join('')||'<div class="empty">유입경로 데이터 없음</div>'}
+function dailySeries(rows,days){const map={};rows.forEach(r=>{const d=Number(String(r.activation_date).slice(8,10));map[d]=map[d]||{m:0,u:0};map[d].m+=Number(r.final_margin||0);if(r.deal_type==='휴대폰')map[d].u++});let cum=0,out=[];for(let d=1;d<=Math.min(now.getDate(),days);d++){const x=map[d]||{m:0,u:0};cum+=x.m;out.push({d,m:x.m,u:x.u,cum})}return out}
+function renderDailyDelta(rows,goal,days){const s=dailySeries(rows,days);$('dailyDeltaBody').innerHTML=s.slice(-10).reverse().map((r,i)=>{const prev=s[r.d-2]?.m||0,delta=prev?(r.m-prev)/Math.abs(prev)*100:null;return `<tr><td>${r.d}일</td><td>${r.u}대</td><td>${won(r.m)}</td><td style="color:${delta===null?'#6c7788':delta>=0?'#138754':'#dc3f50'}">${delta===null?'-':(delta>=0?'+':'')+pct(delta)}</td><td>${won(r.cum)}</td><td>${goal?pct(r.cum/goal*100):'-'}</td></tr>`}).join('')}
+function canvas(id){const c=$(id);if(!c)return null;const r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,r.width,r.height);return{x,w:r.width,h:r.height}}
+function axis(o,max){const{x,w,h}=o,p={l:60,r:18,t:16,b:32};x.font='10px system-ui';x.fillStyle='#718093';x.strokeStyle='#e7ebef';for(let i=0;i<=4;i++){const y=p.t+(h-p.t-p.b)*i/4;x.beginPath();x.moveTo(p.l,y);x.lineTo(w-p.r,y);x.stroke();x.fillText(won(max*(4-i)/4).replace('원',''),5,y+3)}return p}
+function drawGoal(rows,goal,days){const o=canvas('goalChart');if(!o)return;const s=dailySeries(rows,days),max=Math.max(1,goal,...s.map(x=>x.cum)),p=axis(o,max),{x,w,h}=o;function line(vals,color){x.beginPath();vals.forEach((v,i)=>{const px=p.l+(w-p.l-p.r)*i/Math.max(vals.length-1,1),py=h-p.b-(h-p.t-p.b)*v/max;i?x.lineTo(px,py):x.moveTo(px,py)});x.strokeStyle=color;x.lineWidth=3;x.stroke()}line(s.map(v=>goal?goal/days*v.d:0),'#b7c0ca');line(s.map(v=>v.cum),'#74b600');x.lineWidth=1}
+function drawAnnual(){const o=canvas('annualChart');if(!o)return;const map={};state.annual.forEach(r=>map[Number(String(r.month).slice(5,7))]=Number(r.margin_total||0));const vals=Array.from({length:12},(_,i)=>map[i+1]||0),max=Math.max(1,...vals),p=axis(o,max),{x,w,h}=o,bw=Math.max(9,(w-p.l-p.r)/12*.55);vals.forEach((v,i)=>{const cx=p.l+(w-p.l-p.r)*(i+.5)/12,bh=(h-p.t-p.b)*v/max;x.fillStyle='#a2e42f';x.fillRect(cx-bw/2,h-p.b-bh,bw,bh);x.fillStyle='#718093';x.font='9px system-ui';x.fillText((i+1)+'월',cx-8,h-10)})}
 
-  setText('v3Margin',krw(margin));setText('v3Units',units+'대 '+reportMarker('sim',simCount)+' '+reportMarker('동판',dongCount)+' '+reportMarker('약갱',renewCount)+' '+reportMarker('번들',bundleCount)+' · 평균 '+krw(avg));
-  setText('v3Current',krw(margin));setText('v3Target',targetMargin?krw(targetMargin):'미설정');
-  setText('v3GoalPct',pct(goalPct));document.getElementById('v3GoalBar').style.width=Math.min(goalPct,100)+'%';
-  setText('v3Forecast',krw(forecast));setText('v3ForecastGap',targetMargin?(forecast>=targetMargin?'목표 예상 초과 '+krw(forecast-targetMargin):'목표 예상 부족 '+krw(targetMargin-forecast)):'목표 설정 후 차이 계산');
-  setText('v3Remaining',targetMargin?krw(remain):'목표 미설정');setText('v3NeedDaily',targetMargin?krw(needDaily):'-');
-  setText('v3Net',krw(net));setText('v3Outflow',krw(expTotal+adTotal));setText('v3OutflowDetail','광고 '+krw(adTotal)+' · 비용 '+krw(expTotal));
-  setText('v3Fixed',krw(fixed));setText('v3Variable',krw(variable));setText('v3Ads',krw(adTotal));setText('v3Roas',adTotal?'마진 ROAS '+pct(attributed/adTotal*100):'광고비 입력 전');
-  setText('v3Delta',delta===null?'-':(delta>=0?'+':'')+pct(delta));setText('v3PrevSame','지난달 이맘때 '+krw(prevSame));
-  var dc=document.getElementById('v3DeltaCard');if(dc){dc.classList.remove('good','bad');if(delta!==null)dc.classList.add(delta>=0?'good':'bad')}
-  setText('v3AnnualPct',pct(annualPct));setText('v3AnnualText',annualTarget?'올해 '+krw(yearMargin)+' / '+krw(annualTarget):'연 목표 미설정');
+async function loadSources(){const [a,b]=bounds($('sourceMonth')?.value||mk(now));const {data,error}=await sb.from('jk_sales_ledger').select('lead_source,deal_type,final_margin').gte('activation_date',a).lt('activation_date',b);if(error)return;const rows=data||[],map={};rows.forEach(r=>{const k=r.lead_source||'미분류';map[k]=map[k]||{n:0,u:0,m:0};map[k].n++;if(r.deal_type==='휴대폰')map[k].u++;map[k].m+=Number(r.final_margin||0)});const arr=Object.entries(map).map(([k,v])=>({k,...v})).sort((a,b)=>b.m-a.m),total=arr.reduce((a,r)=>a+r.m,0),max=Math.max(1,...arr.map(x=>x.m));$('sourceDetail').innerHTML=arr.map(x=>`<div class="source-row"><span>${esc(x.k)}</span><div class="source-bar"><i style="width:${x.m/max*100}%"></i></div><b>${won(x.m)}</b></div>`).join('')||'<div class="empty">데이터 없음</div>';$('sourceBody').innerHTML=arr.map(x=>`<tr><td><b>${esc(x.k)}</b></td><td>${x.n}건</td><td>${x.u}대</td><td>${won(x.m)}</td><td>${won(x.u?Math.floor(x.m/x.u):0)}</td><td>${total?pct(x.m/total*100):'0.0%'}</td></tr>`).join('')}
 
-  setText('targetMonthlyLive',targetMargin?krw(targetMargin):'미설정');setText('targetCurrentLive',krw(margin));setText('targetForecastLive',krw(forecast));setText('targetPctLive',pct(goalPct));
-  setText('targetAnnualLive',annualTarget?krw(annualTarget):'미설정');setText('targetAnnualCurrent',krw(yearMargin));setText('targetAnnualPct',pct(annualPct));setText('targetUnitsLive',target?Number(target.target_units||0)+'건':'0건');
-  var ab=document.getElementById('targetAnnualBar');if(ab)ab.style.width=Math.min(annualPct,100)+'%';
+async function loadUsed(){if(!$('usedMonth'))return;const [a,b]=bounds($('usedMonth').value||mk(now));const {data,error}=await sb.from('jk_v_used_device_return_status').select('*').gte('activation_date',a).lt('activation_date',b).order('activation_date',{ascending:false});if(error)return;state.used=data||[];$('usedBody').innerHTML=state.used.map(r=>`<tr><td><b>${esc(r.customer_name)}</b><br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.expected_model||'-')}</td><td>${esc(r.assigned_staff||'-')}</td><td>${esc(r.activation_date)}</td><td>${esc(r.due_date||'-')}</td><td><select onchange="usedStatus('${r.id}',this.value)"><option ${r.response_status==='미답변'?'selected':''}>미답변</option><option ${r.response_status==='연락완료'?'selected':''}>연락완료</option><option ${r.response_status==='반납예정'?'selected':''}>반납예정</option><option ${r.response_status==='반납완료'?'selected':''}>반납완료</option><option ${r.response_status==='취소'?'selected':''}>취소</option></select></td><td>${won(r.expected_amount)}</td><td>${esc(r.note||'-')}</td><td><button class="btn" onclick="usedEdit('${r.id}')">기한/메모</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">해당 월 중고 반납 건이 없습니다.</td></tr>';const open=state.used.filter(r=>!['반납완료','취소'].includes(r.response_status));$('uTotal').textContent=state.used.length+'건';$('uOpen').textContent=open.length+'건';$('uUnanswered').textContent=open.filter(r=>r.response_status==='미답변').length+'건';$('uOverdue').textContent=open.filter(r=>r.workflow_status==='overdue').length+'건';$('uAmount').textContent=won(open.reduce((a,r)=>a+Number(r.expected_amount||0),0))}
+async function usedStatus(id,status){const payload={response_status:status};if(status==='반납완료'){payload.received_at=new Date().toISOString();payload.settled_at=new Date().toISOString()}const{error}=await sb.from('jk_used_device_returns').update(payload).eq('id',id);if(error)alert(error.message);else loadUsed()}
+async function usedEdit(id){const r=state.used.find(x=>x.id===id);const due=prompt('반납예정일 YYYY-MM-DD',r?.due_date||'');if(due===null)return;const note=prompt('메모',r?.note||'');if(note===null)return;await sb.from('jk_used_device_returns').update({due_date:due||null,note:note||null}).eq('id',id);loadUsed()}
 
-  setText('v31AnnualGoalPct',pct(annualPct));setText('v31AnnualCurrent',krw(yearMargin));setText('v31AnnualTarget',annualTarget?krw(annualTarget):'미설정');
-  var aBar=document.getElementById('v31AnnualBar');if(aBar)aBar.style.width=Math.min(annualPct,100)+'%';
-  setText('v31MomGrowth',momGrowth===null?'-':(momGrowth>=0?'+':'')+pct(momGrowth));
-  setText('v31MomText',(currentMonthIndex)+'월 '+krw(prevMonthTotal)+' → '+(currentMonthIndex+1)+'월 '+krw(currentMonthTotal));
-  renderLeadSourceTable(sourceRows,margin);
-  v3State.series=buildDailySeries(sales,elapsed,targetMargin,daysInMonth);
-  renderV3DeltaTable(v3State.series,targetMargin);
-  renderV3Charts();drawMonthlyGrowthChart();drawSourceChart();renderSettings();
-  renderExpensesPage();
-  renderAdsPage();
-  initV3Months();
-}
-function buildDailySeries(rows,elapsed,target,days){
-  var map={};rows.forEach(function(r){var d=Number(String(r.activation_date).slice(8,10));if(!map[d])map[d]={amount:0,units:0};map[d].amount+=Number(r.final_margin||0);if(isDeviceSale(r))map[d].units++});
-  var out=[],cum=0;for(var d=1;d<=elapsed;d++){var x=map[d]||{amount:0,units:0};cum+=x.amount;out.push({day:d,amount:x.amount,units:x.units,cum:cum,targetCum:target?target/days*d:0})}return out;
-}
-function renderV3DeltaTable(s,target){
-  var body=document.getElementById('v3DeltaBody');if(!body)return;
-  var rows=s.slice(-12).reverse();body.innerHTML=rows.map(function(r){var prev=s[r.day-2]?s[r.day-2].amount:0;var d=prev?((r.amount-prev)/Math.abs(prev)*100):null;var gp=target?r.cum/target*100:0;return '<tr><td>'+String(r.day).padStart(2,'0')+'일</td><td>'+r.units+'건</td><td><strong>'+krw(r.amount)+'</strong></td><td style="color:'+(d===null?'#7a8492':d>=0?'#148a55':'#d33c49')+'">'+(d===null?'-':(d>=0?'+':'')+pct(d))+'</td><td>'+krw(r.cum)+'</td><td>'+pct(gp)+'</td></tr>'}).join('')||'<tr><td colspan="6" style="text-align:center;padding:30px;color:#7a8492">장부 데이터가 없습니다.</td></tr>';
-}
-function prepCanvas(id){
-  var c=document.getElementById(id);if(!c)return null;var r=c.getBoundingClientRect(),d=window.devicePixelRatio||1;c.width=Math.max(1,r.width*d);c.height=Math.max(1,r.height*d);var x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,r.width,r.height);return {c:c,x:x,w:r.width,h:r.height};
-}
-function renderV3Charts(){var s=v3State.series||[];drawDailyChart(s);drawGoalChart(s)}
-function drawDailyChart(s){
-  var o=prepCanvas('v3DailyChart');if(!o)return;var x=o.x,W=o.w,H=o.h,p={l:58,r:18,t:16,b:32};var vals=s.map(function(r){return r.amount}),max=Math.max.apply(null,[1].concat(vals));
-  x.strokeStyle='#e8ebef';x.fillStyle='#758092';x.font='10px system-ui';
-  for(var i=0;i<=4;i++){var y=p.t+(H-p.t-p.b)*i/4;x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.stroke();var val=max*(4-i)/4;x.fillText(Math.round(val/10000).toLocaleString('ko-KR')+'만',5,y+3)}
-  var bw=Math.max(3,(W-p.l-p.r)/Math.max(s.length,1)*.56);
-  s.forEach(function(r,i){var cx=p.l+(W-p.l-p.r)*(i+.5)/Math.max(s.length,1);var bh=(H-p.t-p.b)*(r.amount/max);x.fillStyle='#9be320';x.fillRect(cx-bw/2,H-p.b-bh,bw,bh);if((i+1)%Math.max(1,Math.ceil(s.length/8))===0){x.fillStyle='#758092';x.fillText(r.day+'일',cx-8,H-10)}});
-}
-function drawGoalChart(s){
-  var o=prepCanvas('v3GoalChart');if(!o)return;var x=o.x,W=o.w,H=o.h,p={l:58,r:18,t:16,b:32};var max=Math.max.apply(null,[1,v3State.target].concat(s.map(function(r){return r.cum})));
-  x.strokeStyle='#e8ebef';x.fillStyle='#758092';x.font='10px system-ui';
-  for(var i=0;i<=4;i++){var y=p.t+(H-p.t-p.b)*i/4;x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.stroke();var val=max*(4-i)/4;x.fillText(Math.round(val/10000).toLocaleString('ko-KR')+'만',5,y+3)}
-  function line(key,color){if(!s.length)return;x.beginPath();s.forEach(function(r,i){var px=p.l+(W-p.l-p.r)*i/Math.max(s.length-1,1),py=H-p.b-(H-p.t-p.b)*(Number(r[key]||0)/max);if(i===0)x.moveTo(px,py);else x.lineTo(px,py)});x.strokeStyle=color;x.lineWidth=3;x.stroke()}
-  line('targetCum','#b7bec8');line('cum','#73b900');x.lineWidth=1;
-}
-function initV3Months(){var mk=monthKey(new Date());['expenseMonth','adMonth'].forEach(function(id){var e=document.getElementById(id);if(e&&!e.value)e.value=mk})}
+async function loadPayback(){if(!$('paybackMonth'))return;const [a,b]=bounds($('paybackMonth').value||mk(now));const {data,error}=await sb.from('jk_v_payback_checklist').select('*').gte('due_date',a).lt('due_date',b).order('due_date');if(error)return;state.payback=data||[];$('paybackBody').innerHTML=state.payback.map(r=>`<tr><td><b>${esc(r.customer_name)}</b><br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.salesperson||'-')}</td><td>${won(r.promised_amount)}</td><td>${won(r.paid_amount)}</td><td><b>${won(r.outstanding_amount)}</b></td><td>${esc(r.due_date)}</td><td>${esc(r.bank_name||'-')}</td><td>${esc(r.account_holder||'-')}</td><td>${esc(r.account_number||'-')}</td><td>${r.verification_status==='verified'?'<span class="pill green">확인완료</span>':`<button class="btn" onclick="verifyAccount('${r.ledger_id}')">계좌확인</button>`}</td><td>${Number(r.outstanding_amount)>0?`<button class="btn primary" onclick="payNow('${r.ledger_id}',${Number(r.outstanding_amount)})">지급완료</button>`:'완료'}</td></tr>`).join('')||'<tr><td colspan="11" class="empty">해당 월 페이백 대상이 없습니다.</td></tr>';const pr=state.payback.reduce((a,r)=>a+Number(r.promised_amount||0),0),pd=state.payback.reduce((a,r)=>a+Number(r.paid_amount||0),0),out=state.payback.reduce((a,r)=>a+Number(r.outstanding_amount||0),0);$('pPromised').textContent=won(pr);$('pPaid').textContent=won(pd);$('pOut').textContent=won(out);$('pUnverified').textContent=state.payback.filter(r=>r.verification_status!=='verified').length+'명';$('pCount').textContent=state.payback.filter(r=>Number(r.outstanding_amount)>0).length+'명'}
+async function verifyAccount(id){const r=state.payback.find(x=>x.ledger_id===id),bank=prompt('은행',r?.bank_name||'');if(bank===null)return;const holder=prompt('예금주',r?.account_holder||r?.customer_name||'');if(holder===null)return;const account=prompt('계좌번호',r?.account_number||'');if(!account)return;const{error}=await sb.from('jk_payback_accounts').upsert({ledger_id:id,bank_name:bank||'미입력',account_holder:holder||'미입력',account_number:account,verification_status:'verified',verified_at:new Date().toISOString()},{onConflict:'ledger_id'});if(error)alert(error.message);else loadPayback()}
+async function payNow(id,amount){const raw=prompt('실제 지급액',String(amount));if(raw===null)return;const n=Number(raw);if(n<=0)return;const{error}=await sb.from('jk_payback_payments').insert({ledger_id:id,paid_amount:n});if(error)alert(error.message);else{toast('지급완료 기록');loadPayback();loadDashboard()}}
 
-async function loadExpensesPage(){
-  var el=document.getElementById('expenseMonth');if(!el)return;var k=el.value||monthKey(new Date()),b=monthBoundsFromKey(k);
-  var q=await sb.from('jk_expenses').select('*').gte('expense_date',b[0]).lt('expense_date',b[1]).order('expense_date',{ascending:false});
-  if(q.error){console.warn(q.error);return;}v3ExpenseRows=q.data||[];renderExpensesPage();
-}
-function renderExpensesPage(){
-  var body=document.getElementById('expenseBody');if(!body)return;var f=(document.getElementById('expenseTypeFilter')||{}).value||'all';
-  var rows=v3ExpenseRows.filter(function(r){return f==='all'||(f==='fixed'?r.is_fixed:!r.is_fixed)});
-  body.innerHTML=rows.map(function(r){return '<tr><td>'+esc(r.expense_date)+'</td><td><span class="type-badge '+(r.is_fixed?'type-fixed':'type-variable')+'">'+(r.is_fixed?'고정비':'유동비')+'</span></td><td>'+esc(r.category||'-')+'</td><td>'+esc(r.description||r.subcategory||'-')+'</td><td><strong>'+krw(r.amount)+'</strong></td><td>'+esc(r.payment_method||'-')+'</td><td>'+esc(r.vendor||'-')+'</td><td><button class="btn" onclick="deleteExpenseV3(&quot;'+r.id+'&quot;)">삭제</button></td></tr>'}).join('')||'<tr><td colspan="8" style="text-align:center;padding:30px;color:#7a8492">등록된 비용이 없습니다.</td></tr>';
-  var fixed=v3ExpenseRows.filter(function(r){return r.is_fixed}).reduce(function(a,r){return a+Number(r.amount||0)},0),variable=v3ExpenseRows.filter(function(r){return !r.is_fixed}).reduce(function(a,r){return a+Number(r.amount||0)},0);
-  setText('expTotal',krw(fixed+variable));setText('expFixed',krw(fixed));setText('expVariable',krw(variable));setText('expCount',v3ExpenseRows.length+'건');
-}
+async function loadAds(){if(!$('adMonth'))return;const [a,b]=bounds($('adMonth').value||mk(now));const {data,error}=await sb.from('jk_ad_spend').select('*').gte('spend_date',a).lt('spend_date',b).order('spend_date',{ascending:false});if(error)return;state.ads=data||[];$('adBody').innerHTML=state.ads.map(r=>`<tr><td>${r.spend_date}</td><td>${esc(r.channel)}</td><td>${esc(r.campaign||'-')}</td><td>${won(r.amount)}</td><td>${r.inquiries}</td><td>${r.visits}</td><td>${r.activations}</td><td>${won(r.attributed_margin)}</td><td><button class="btn danger" onclick="deleteAd('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">광고비 데이터 없음</td></tr>';const spend=state.ads.reduce((a,r)=>a+Number(r.amount||0),0),inq=state.ads.reduce((a,r)=>a+Number(r.inquiries||0),0),vis=state.ads.reduce((a,r)=>a+Number(r.visits||0),0),act=state.ads.reduce((a,r)=>a+Number(r.activations||0),0),mar=state.ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);$('aSpend').textContent=won(spend);$('aInquiry').textContent=inq+'건';$('aVisit').textContent=vis+'건';$('aAct').textContent=act+'건';$('aRoas').textContent=spend?pct(mar/spend*100):'-'}
+function openAd(){modalMode='ad';$('modalTitle').textContent='광고비 입력';$('modalBody').innerHTML=`<div class="form"><div class="field"><label>집행일</label><input id="adDateF" type="date" value="${ymd(now)}"></div><div class="field"><label>채널</label><select id="adChannelF">${optHtml('ad_channel')}</select></div><div class="field"><label>광고비</label><input id="adAmountF" type="number"></div><div class="field"><label>캠페인명</label><input id="adCampaignF"></div><div class="field"><label>문의</label><input id="adInquiryF" type="number" value="0"></div><div class="field"><label>방문</label><input id="adVisitF" type="number" value="0"></div><div class="field"><label>개통</label><input id="adActF" type="number" value="0"></div><div class="field"><label>유입 최종마진</label><input id="adMarginF" type="number" value="0"></div><div class="field full"><label>메모</label><textarea id="adNoteF"></textarea></div></div>`;showModal()}
+async function saveAd(){const amount=Number($('adAmountF').value||0);if(amount<=0){alert('광고비를 입력하세요.');return}const{error}=await sb.from('jk_ad_spend').insert({spend_date:$('adDateF').value,channel:$('adChannelF').value,amount,campaign:$('adCampaignF').value||null,inquiries:Number($('adInquiryF').value||0),visits:Number($('adVisitF').value||0),activations:Number($('adActF').value||0),attributed_margin:Number($('adMarginF').value||0),note:$('adNoteF').value||null});if(error)alert(error.message);else{closeModal();loadAds();loadDashboard()}}
+async function deleteAd(id){if(!confirm('삭제할까요?'))return;await sb.from('jk_ad_spend').delete().eq('id',id);loadAds();loadDashboard()}
 
-function lookupOptionsHtml(type){var rows=lookupByType(type);return rows.map(function(r){return '<option>'+esc(r.label)+'</option>'}).join('')}
-function syncExpenseCategory(){var fixed=document.getElementById('exFixed')?.value==='true',cat=document.getElementById('exCat');if(cat)cat.innerHTML=lookupOptionsHtml(fixed?'expense_fixed':'expense_variable')}
+async function loadExpenses(){if(!$('expenseMonth'))return;const [a,b]=bounds($('expenseMonth').value||mk(now));const {data,error}=await sb.from('jk_expenses').select('*').gte('expense_date',a).lt('expense_date',b).order('expense_date',{ascending:false});if(error)return;state.expenses=data||[];renderExpenses()}
+function renderExpenses(){const f=$('expenseFilter')?.value||'all',rows=state.expenses.filter(r=>f==='all'||(f==='fixed'?r.is_fixed:!r.is_fixed));$('expenseBody').innerHTML=rows.map(r=>`<tr><td>${r.expense_date}</td><td><span class="pill ${r.is_fixed?'blue':'orange'}">${r.is_fixed?'고정비':'유동비'}</span></td><td>${esc(r.category)}</td><td>${esc(r.description||'-')}</td><td><b>${won(r.amount)}</b></td><td>${esc(r.payment_method||'-')}</td><td>${esc(r.vendor||'-')}</td><td><button class="btn danger" onclick="deleteExpense('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="8" class="empty">비용 데이터 없음</td></tr>';const fix=state.expenses.filter(r=>r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0),vari=state.expenses.filter(r=>!r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0),total=fix+vari;$('eTotal').textContent=won(total);$('eFixed').textContent=won(fix);$('eVariable').textContent=won(vari);$('eFixedPct').textContent=total?pct(fix/total*100):'0.0%';$('eCount').textContent=state.expenses.length+'건'}
+function openExpense(){modalMode='expense';$('modalTitle').textContent='비용원장 지출 추가';$('modalBody').innerHTML=`<div class="form"><div class="field"><label>지출일</label><input id="eDateF" type="date" value="${ymd(now)}"></div><div class="field"><label>구분</label><select id="eTypeF" onchange="expenseCats()"><option value="fixed">고정비</option><option value="variable">유동비</option></select></div><div class="field"><label>카테고리</label><select id="eCatF"></select></div><div class="field"><label>금액</label><input id="eAmountF" type="number"></div><div class="field"><label>결제수단</label><select id="ePayF"><option>사업자카드</option><option>계좌이체</option><option>현금</option><option>개인카드</option></select></div><div class="field"><label>사용처</label><input id="eVendorF"></div><div class="field full"><label>내용</label><input id="eDescF"></div><div class="field full"><label>메모</label><textarea id="eNoteF"></textarea></div></div>`;expenseCats();showModal()}
+function expenseCats(){if(!$('eCatF'))return;const type=$('eTypeF').value==='fixed'?'expense_fixed':'expense_variable';$('eCatF').innerHTML=optHtml(type)}
+async function saveExpense(){const amount=Number($('eAmountF').value||0);if(amount<=0){alert('금액을 입력하세요.');return}const{error}=await sb.from('jk_expenses').insert({expense_date:$('eDateF').value,is_fixed:$('eTypeF').value==='fixed',category:$('eCatF').value,amount,payment_method:$('ePayF').value,vendor:$('eVendorF').value||null,description:$('eDescF').value||null,note:$('eNoteF').value||null});if(error)alert(error.message);else{closeModal();loadExpenses();loadDashboard()}}
+async function deleteExpense(id){if(!confirm('삭제할까요?'))return;await sb.from('jk_expenses').delete().eq('id',id);loadExpenses();loadDashboard()}
 
-function openExpenseModal(){
-  currentModal='expenseServer';document.getElementById('modalTitle').textContent='비용원장 지출 추가';var d=localYMD(new Date());
-  document.getElementById('modalBody').innerHTML='<div class="form-grid"><div class="field"><label>지출일</label><input id="exDate" type="date" value="'+d+'"></div><div class="field"><label>비용 구분</label><select id="exFixed" onchange="syncExpenseCategory()"><option value="true">고정비</option><option value="false">유동비</option></select></div><div class="field"><label>카테고리</label><select id="exCat">'+lookupOptionsHtml('expense_fixed')+'</select></div><div class="field"><label>금액</label><input id="exAmount" type="number" min="0" placeholder="원"></div><div class="field"><label>결제수단</label><select id="exPay"><option>사업자카드</option><option>계좌이체</option><option>현금</option><option>개인카드</option></select></div><div class="field"><label>사용처/거래처</label><input id="exVendor"></div><div class="field full"><label>내용</label><input id="exDesc" placeholder="예: 9월 매장 월세"></div><div class="field full"><label>메모</label><textarea id="exNote" rows="3"></textarea></div></div>';document.getElementById('modalWrap').classList.add('show');
-}
-async function saveExpenseServer(){
-  var amount=Number(document.getElementById('exAmount').value||0);if(amount<=0){alert('금액을 입력하세요.');return;}
-  var payload={expense_date:document.getElementById('exDate').value,is_fixed:document.getElementById('exFixed').value==='true',category:document.getElementById('exCat').value,amount:amount,payment_method:document.getElementById('exPay').value,vendor:document.getElementById('exVendor').value||null,description:document.getElementById('exDesc').value||null,note:document.getElementById('exNote').value||null};
-  var q=await sb.from('jk_expenses').insert(payload);if(q.error){alert(q.error.message);return;}closeModal();await Promise.all([loadExpensesPage(),loadV3All(),loadMonthlyClose()]);toastMsg('비용원장에 저장했습니다.');
-}
-async function deleteExpenseV3(id){if(!confirm('이 지출을 삭제할까요?'))return;var q=await sb.from('jk_expenses').delete().eq('id',id);if(q.error){alert(q.error.message);return;}await Promise.all([loadExpensesPage(),loadV3All(),loadMonthlyClose()]);}
+function renderTargetPage(){const month=mk(now),t=state.targets.find(x=>String(x.target_month).slice(0,7)===month),a=state.annual.find(x=>String(x.month).slice(0,7)===month),goal=Number(t?.target_margin||0),actual=Number(a?.margin_total||0),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),forecast=Math.round(actual/Math.max(now.getDate(),1)*days),yearActual=state.annual.reduce((s,r)=>s+Number(r.margin_total||0),0),yg=Number(state.yearTarget?.target_margin||0);$('tMonthGoal').textContent=goal?won(goal):'미설정';$('tMonthActual').textContent=won(actual);$('tForecast').textContent=won(forecast);$('tMonthPct').textContent=goal?pct(actual/goal*100):'0.0%';$('tYearPct').textContent=yg?pct(yearActual/yg*100):'0.0%';drawTargetAnnual();drawGrowth()}
+function drawTargetAnnual(){const o=canvas('targetAnnualChart');if(!o)return;const actual={},targets={};state.annual.forEach(r=>actual[Number(String(r.month).slice(5,7))]=Number(r.margin_total||0));state.targets.forEach(r=>targets[Number(String(r.target_month).slice(5,7))]=Number(r.target_margin||0));const av=Array.from({length:12},(_,i)=>actual[i+1]||0),tv=Array.from({length:12},(_,i)=>targets[i+1]||0),max=Math.max(1,...av,...tv),p=axis(o,max),{x,w,h}=o,bw=Math.max(7,(w-p.l-p.r)/12*.34);for(let i=0;i<12;i++){const cx=p.l+(w-p.l-p.r)*(i+.5)/12,ha=(h-p.t-p.b)*av[i]/max,ht=(h-p.t-p.b)*tv[i]/max;x.fillStyle='#9ee22f';x.fillRect(cx-bw-2,h-p.b-ha,bw,ha);x.fillStyle='#c5ccd5';x.fillRect(cx+2,h-p.b-ht,bw,ht);x.fillStyle='#718093';x.font='9px system-ui';x.fillText((i+1)+'월',cx-8,h-10)}}
+function drawGrowth(){const o=canvas('growthChart');if(!o)return;const map={};state.annual.forEach(r=>map[Number(String(r.month).slice(5,7))]=Number(r.margin_total||0));const growth=[];for(let m=2;m<=12;m++){const p=map[m-1]||0,c=map[m]||0;growth.push({m,g:p?((c-p)/Math.abs(p)*100):0})}const max=Math.max(10,...growth.map(x=>Math.abs(x.g))),p=axis(o,max),{x,w,h}=o,zero=h-p.b-(h-p.t-p.b)*0/max,bw=Math.max(7,(w-p.l-p.r)/11*.5);growth.forEach((r,i)=>{const cx=p.l+(w-p.l-p.r)*(i+.5)/11,mag=(h-p.t-p.b)*Math.abs(r.g)/max;x.fillStyle=r.g>=0?'#87cb1e':'#df5664';x.fillRect(cx-bw/2,r.g>=0?zero-mag:zero,bw,mag);x.fillStyle='#718093';x.font='9px system-ui';x.fillText(r.m+'월',cx-8,h-10)})}
+function openTarget(){modalMode='target';const t=state.targets.find(x=>String(x.target_month).slice(0,7)===mk(now));$('modalTitle').textContent='목표 설정';$('modalBody').innerHTML=`<div class="form"><div class="field"><label>월</label><input id="tMonthF" type="month" value="${mk(now)}"></div><div class="field"><label>월 목표매출</label><input id="tGoalF" type="number" value="${Number(t?.target_margin||0)}"></div><div class="field"><label>월 판매 목표</label><input id="tUnitsF" type="number" value="${Number(t?.target_units||0)}"></div><div class="field"><label>월 영업일</label><input id="tDaysF" type="number" value="${Number(t?.workdays_total||new Date(now.getFullYear(),now.getMonth()+1,0).getDate())}"></div><div class="field full"><label>${now.getFullYear()}년 연간 목표매출</label><input id="tYearGoalF" type="number" value="${Number(state.yearTarget?.target_margin||0)}"></div></div>`;showModal()}
+async function saveTarget(){const mon=$('tMonthF').value,goal=Number($('tGoalF').value||0),yg=Number($('tYearGoalF').value||0);if(!mon||goal<=0){alert('월 목표를 입력하세요.');return}let q=await sb.from('jk_targets').upsert({target_month:mon+'-01',target_margin:goal,target_units:Number($('tUnitsF').value||0),workdays_total:Number($('tDaysF').value||0)},{onConflict:'target_month'});if(q.error){alert(q.error.message);return}if(yg>0){q=await sb.from('jk_year_targets').upsert({target_year:Number(mon.slice(0,4)),target_margin:yg},{onConflict:'target_year'});if(q.error){alert(q.error.message);return}}closeModal();toast('목표 저장 완료');loadDashboard()}
 
-async function loadAdsPage(){
-  var el=document.getElementById('adMonth');if(!el)return;var k=el.value||monthKey(new Date()),b=monthBoundsFromKey(k);
-  var q=await sb.from('jk_ad_spend').select('*').gte('spend_date',b[0]).lt('spend_date',b[1]).order('spend_date',{ascending:false});
-  if(q.error){console.warn(q.error);return;}v3AdRows=q.data||[];renderAdsPage();
-}
-function renderAdsPage(){
-  var body=document.getElementById('adBody');if(!body)return;
-  body.innerHTML=v3AdRows.map(function(r){return '<tr><td>'+esc(r.spend_date)+'</td><td>'+esc(r.channel)+'</td><td>'+esc(r.campaign||'-')+'</td><td><strong>'+krw(r.amount)+'</strong></td><td>'+Number(r.inquiries||0)+'건</td><td>'+Number(r.visits||0)+'건</td><td>'+Number(r.activations||0)+'건</td><td>'+krw(r.attributed_margin||0)+'</td><td><button class="btn" onclick="deleteAdV3(&quot;'+r.id+'&quot;)">삭제</button></td></tr>'}).join('')||'<tr><td colspan="9" style="text-align:center;padding:30px;color:#7a8492">등록된 광고비가 없습니다.</td></tr>';
-  var spend=v3AdRows.reduce(function(a,r){return a+Number(r.amount||0)},0),inq=v3AdRows.reduce(function(a,r){return a+Number(r.inquiries||0)},0),act=v3AdRows.reduce(function(a,r){return a+Number(r.activations||0)},0),margin=v3AdRows.reduce(function(a,r){return a+Number(r.attributed_margin||0)},0);
-  setText('adSum',krw(spend));setText('adInquiries',inq+'건');setText('adActivations',act+'건');setText('adRoas',spend?pct(margin/spend*100):'-');
-}
-function openAdModal(){
-  currentModal='adServer';document.getElementById('modalTitle').textContent='광고비 입력';var d=localYMD(new Date());
-  document.getElementById('modalBody').innerHTML='<div class="form-grid"><div class="field"><label>집행일</label><input id="adDateV3" type="date" value="'+d+'"></div><div class="field"><label>채널</label><select id="adChannelV3">'+lookupOptionsHtml('ad_channel')+'</select></div><div class="field"><label>광고비</label><input id="adAmountV3" type="number" min="0"></div><div class="field"><label>캠페인명</label><input id="adCampaignV3"></div><div class="field"><label>문의</label><input id="adInquiryV3" type="number" value="0"></div><div class="field"><label>방문</label><input id="adVisitV3" type="number" value="0"></div><div class="field"><label>개통</label><input id="adActV3" type="number" value="0"></div><div class="field"><label>광고 유입 최종마진</label><input id="adMarginV3" type="number" value="0"></div><div class="field full"><label>메모</label><textarea id="adNoteV3" rows="3"></textarea></div></div>';document.getElementById('modalWrap').classList.add('show');
-}
-async function saveAdServer(){
-  var amount=Number(document.getElementById('adAmountV3').value||0);if(amount<=0){alert('광고비를 입력하세요.');return;}
-  var payload={spend_date:document.getElementById('adDateV3').value,channel:document.getElementById('adChannelV3').value,campaign:document.getElementById('adCampaignV3').value||null,amount:amount,inquiries:Number(document.getElementById('adInquiryV3').value||0),visits:Number(document.getElementById('adVisitV3').value||0),activations:Number(document.getElementById('adActV3').value||0),attributed_margin:Number(document.getElementById('adMarginV3').value||0),note:document.getElementById('adNoteV3').value||null};
-  var q=await sb.from('jk_ad_spend').insert(payload);if(q.error){alert(q.error.message);return;}closeModal();await Promise.all([loadAdsPage(),loadV3All(),loadMonthlyClose()]);toastMsg('광고비를 저장했습니다.');
-}
-async function deleteAdV3(id){if(!confirm('이 광고비 내역을 삭제할까요?'))return;var q=await sb.from('jk_ad_spend').delete().eq('id',id);if(q.error){alert(q.error.message);return;}await Promise.all([loadAdsPage(),loadV3All(),loadMonthlyClose()]);}
+async function loadSettings(){if(!$('setLead'))return;await loadBase();const render=(id,type)=>$(id).innerHTML=opt(type).map(x=>`<span class="tag">${esc(x.label)}</span>`).join('');render('setLead','lead_source');render('setFixed','expense_fixed');render('setVariable','expense_variable');render('setAds','ad_channel');$('setStaff').innerHTML=state.staff.filter(x=>x.active).map(x=>`<span class="tag">${esc(x.name)}</span>`).join('')}
+async function addOption(type,inputId){const label=$(inputId).value.trim();if(!label)return;const{error}=await sb.from('jk_lookup_options').insert({option_type:type,label,sort_order:100});if(error)alert(error.message);else{$(inputId).value='';await loadSettings();toast('설정 추가 완료')}}
+async function addStaff(){const name=$('newStaff').value.trim();if(!name)return;const{error}=await sb.from('jk_staff').insert({name});if(error)alert(error.message);else{$('newStaff').value='';await loadSettings();toast('판매자 추가 완료')}}
 
-function openTargetModal(){
-  currentModal='targetServer';var now=new Date();
-  document.getElementById('modalTitle').textContent='매출 목표 설정';
-  document.getElementById('modalBody').innerHTML='<div class="form-grid"><div class="field"><label>월</label><input id="tgMonth" type="month" value="'+monthKey(now)+'"></div><div class="field"><label>월 목표매출(최종마진)</label><input id="tgMargin" type="number" value="'+Number(v3State.target||0)+'"></div><div class="field"><label>월 판매 목표</label><input id="tgUnits" type="number" value="0"></div><div class="field"><label>월 영업일</label><input id="tgDays" type="number" min="1" max="31" value="'+new Date(now.getFullYear(),now.getMonth()+1,0).getDate()+'"></div><div class="field full"><label>'+now.getFullYear()+'년 연간 목표매출</label><input id="tgAnnual" type="number" value="'+Number(v3State.annualTarget||0)+'"></div><div class="field full"><label>메모</label><textarea id="tgNote" rows="3"></textarea></div></div>';document.getElementById('modalWrap').classList.add('show');
-}
-async function saveTargetServer(){
-  var k=document.getElementById('tgMonth').value, monthly=Number(document.getElementById('tgMargin').value||0),annual=Number(document.getElementById('tgAnnual').value||0),units=Number(document.getElementById('tgUnits').value||0),days=Number(document.getElementById('tgDays').value||0),note=document.getElementById('tgNote').value||null;
-  if(!k||monthly<=0){alert('월 목표매출을 입력하세요.');return;}
-  var y=Number(k.slice(0,4));
-  var q1=await sb.from('jk_targets').upsert({target_month:k+'-01',target_margin:monthly,target_units:units,workdays_total:days||null,note:note},{onConflict:'target_month'});
-  if(q1.error){alert(q1.error.message);return;}
-  if(annual>0){var q2=await sb.from('jk_year_targets').upsert({target_year:y,target_margin:annual,note:note},{onConflict:'target_year'});if(q2.error){alert(q2.error.message);return;}}
-  closeModal();await loadV3All();toastMsg('목표를 서버에 저장했습니다.');
-}
+function showModal(){$('modalBg').classList.add('show');setTimeout(()=>$('modalBody').scrollTop=0,0)}
+function closeModal(){$('modalBg').classList.remove('show')}
+async function saveModal(){if(modalMode==='ledger')return saveLedger();if(modalMode==='ad')return saveAd();if(modalMode==='expense')return saveExpense();if(modalMode==='target')return saveTarget()}
+$('modalBg').onclick=e=>{if(e.target.id==='modalBg')closeModal()}
 
-
-function drawMonthlyGrowthChart(){
-  var s=v3State.monthlyTotals||[],o=prepCanvas('v31MonthlyChart');if(!o)return;
-  var x=o.x,W=o.w,H=o.h,p={l:58,r:18,t:16,b:32},max=Math.max.apply(null,[1].concat(s));
-  x.strokeStyle='#e8ebef';x.fillStyle='#758092';x.font='10px system-ui';
-  for(var i=0;i<=4;i++){var y=p.t+(H-p.t-p.b)*i/4;x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.stroke();var val=max*(4-i)/4;x.fillText(Math.round(val/10000).toLocaleString('ko-KR')+'만',5,y+3)}
-  var bw=(W-p.l-p.r)/12*.58;
-  s.forEach(function(v,i){var cx=p.l+(W-p.l-p.r)*(i+.5)/12,bh=(H-p.t-p.b)*(v/max);x.fillStyle=i===new Date().getMonth()?'#8fd514':'#cbd3dd';x.fillRect(cx-bw/2,H-p.b-bh,bw,bh);x.fillStyle='#758092';x.fillText((i+1)+'월',cx-9,H-10)});
-}
-function renderLeadSourceTable(rows,total){
-  var body=document.getElementById('v31SourceBody');if(!body)return;
-  body.innerHTML=(rows||[]).map(function(r){var share=total?r.margin/total*100:0;return '<tr><td><strong>'+esc(r.source)+'</strong></td><td>'+r.records+'건</td><td>'+r.units+'대</td><td>'+krw(r.margin)+'</td><td>'+pct(share)+'</td></tr>'}).join('')||'<tr><td colspan="5" style="text-align:center;padding:28px;color:#7a8492">유입경로 데이터가 없습니다.</td></tr>';
-}
-function drawSourceChart(){
-  var rows=(v3State.sourceRows||[]).slice(0,8),o=prepCanvas('v31SourceChart');if(!o)return;
-  var x=o.x,W=o.w,H=o.h,p={l:90,r:18,t:16,b:25},max=Math.max.apply(null,[1].concat(rows.map(function(r){return r.margin})));
-  x.font='10px system-ui';
-  rows.forEach(function(r,i){var rowH=(H-p.t-p.b)/Math.max(rows.length,1),cy=p.t+rowH*(i+.5),bw=(W-p.l-p.r)*(r.margin/max);x.fillStyle='#eef1f5';x.fillRect(p.l,cy-7,W-p.l-p.r,14);x.fillStyle='#9be320';x.fillRect(p.l,cy-7,bw,14);x.fillStyle='#596474';x.fillText(r.source.slice(0,10),5,cy+4);x.fillText(Math.round(r.margin).toLocaleString('ko-KR')+'원',Math.min(p.l+bw+6,W-95),cy+4)});
-}
-
-function initV31Filters(){
-  var now=new Date(),mk=monthKey(now);
-  ['usedMonth','paybackMonth','ledgerMonth','expenseMonth','adMonth'].forEach(function(id){var e=document.getElementById(id);if(e&&!e.value)e.value=mk});
-  var d=document.getElementById('autoReportDate');if(d&&!d.value)d.value=localYMD(now);
-}
-async function loadAutoDailyReport(){
-  var el=document.getElementById('autoReportDate');if(!el)return;var date=el.value||localYMD(new Date()),month=date.slice(0,7)+'-01';
-  var qs=await Promise.all([
-    sb.from('jk_v_daily_sales_summary').select('*').eq('activation_date',date).maybeSingle(),
-    sb.from('jk_v_monthly_sales_summary').select('*').eq('month',month).maybeSingle(),
-    sb.from('jk_v_staff_monthly_summary').select('*').eq('month',month).order('margin_total',{ascending:false})
-  ]);
-  if(qs.some(function(q){return q.error})){console.warn(qs.map(function(q){return q.error}));return}
-  var d=qs[0].data||{},m=qs[1].data||{},staff=qs[2].data||[];
-  var dt=new Date(date+'T00:00:00'),title=(dt.getMonth()+1)+'월 '+dt.getDate()+'일 매출보고',monthLabel=(dt.getMonth()+1)+'월';
-  function meta(r){return Number(r.units||0)+'개'+reportMarker('sim',Number(r.sim_only_count||0))+reportMarker('동판',Number(r.dongpan_count||0))+reportMarker('약갱',Number(r.contract_renewal_count||0))+reportMarker('번들',Number(r.bundle_count||0))}
-  var view='<div class="v31-report-block"><div class="v31-report-title">'+title+'</div><div class="v31-report-line">'+monthLabel+' 총 갯수 <b>'+meta(m)+'</b></div><div class="v31-report-money">'+krw(m.margin_total||0)+'</div><div class="v31-report-line">평균마진 : <b>'+krw(m.avg_margin||0)+'</b></div></div>'+
-    '<div class="v31-report-block"><div class="v31-report-line">일 총 갯수 <b>'+meta(d)+'</b></div><div class="v31-report-money">'+krw(d.margin_total||0)+'</div><div class="v31-report-line">평균마진 : <b>'+krw(d.avg_margin||0)+'</b></div></div>';
-  staff.forEach(function(s){view+='<div class="v31-report-block"><div class="v31-report-title">['+esc(s.staff_name||'미지정')+']</div><div class="v31-report-line">갯수 <b>'+meta(s)+'</b></div><div class="v31-report-money">'+krw(s.margin_total||0)+'</div><div class="v31-report-line">평균마진 : <b>'+krw(s.avg_margin||0)+'</b></div></div>'});
-  document.getElementById('autoReportView').innerHTML=view;
-  var lines=[title,'',monthLabel+' 총 갯수 '+meta(m),'총 매출 : '+krw(m.margin_total||0),'평균마진 : '+krw(m.avg_margin||0),'','일 총 갯수 '+meta(d),'총 매출 : '+krw(d.margin_total||0),'평균마진 : '+krw(d.avg_margin||0),''];
-  staff.forEach(function(s){lines.push('['+(s.staff_name||'미지정')+']','갯수 '+meta(s),'총 매출 : '+krw(s.margin_total||0),'평균마진 : '+krw(s.avg_margin||0),'')});
-  window.__autoReportText=lines.join('\n');
-}
-async function copyAutoReport(){
-  if(!window.__autoReportText)await loadAutoDailyReport();
-  try{await navigator.clipboard.writeText(window.__autoReportText||'');toastMsg('매출보고를 복사했습니다.')}catch(e){alert(window.__autoReportText||'')}
-}
-
-async function loadLookupOptions(){
-  var q=await sb.from('jk_lookup_options').select('*').eq('active',true).order('option_type').order('sort_order');
-  if(!q.error){lookupRows=q.data||[];renderSettings()}
-}
-function renderSettings(){
-  var map={lead_source:'settingLeadSources',expense_fixed:'settingFixedExpenses',expense_variable:'settingVariableExpenses',ad_channel:'settingAdChannels'};
-  Object.keys(map).forEach(function(type){var el=document.getElementById(map[type]);if(!el)return;var rows=lookupByType(type);el.innerHTML=rows.map(function(r){return '<span class="option-chip">'+esc(r.label)+'<button title="삭제" onclick="deleteLookupOption(&quot;'+r.id+'&quot;)">×</button></span>'}).join('')||'<span style="font-size:11px;color:#8a94a3">항목 없음</span>'});
-}
-async function addLookupOption(type){
-  var label=prompt('추가할 항목명을 입력하세요.');if(!label||!label.trim())return;
-  var q=await sb.from('jk_lookup_options').insert({option_type:type,label:label.trim(),sort_order:100});
-  if(q.error){alert(q.error.message);return;}await loadLookupOptions();toastMsg('설정 항목을 추가했습니다.');
-}
-async function deleteLookupOption(id){
-  if(!confirm('이 항목을 비활성화할까요?'))return;
-  var q=await sb.from('jk_lookup_options').update({active:false}).eq('id',id);if(q.error){alert(q.error.message);return;}await loadLookupOptions();
-}
-
-const v3SaveModal=saveModal;
-saveModal=async function(){
-  if(currentModal==='expenseServer'){await saveExpenseServer();return;}
-  if(currentModal==='adServer'){await saveAdServer();return;}
-  if(currentModal==='targetServer'){await saveTargetServer();return;}
-  return v3SaveModal();
-};
-
-window.addEventListener('resize',function(){if(v3State.series&&v3State.series.length)renderV3Charts()});
-setTimeout(function(){initV3Months();initV31Filters();},200);
-
-function drawChart(){const c=document.getElementById('salesChart');if(!c)return;const rect=c.getBoundingClientRect(),dpr=window.devicePixelRatio||1;c.width=rect.width*dpr;c.height=rect.height*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);const W=rect.width,H=rect.height,p={l:72,r:24,t:24,b:42};x.clearRect(0,0,W,H);const data=[3929190,1575090],labels=['인성','송훈'],max=4500000;const barW=Math.min(110,(W-p.l-p.r)/5);x.font='10px system-ui';x.fillStyle='#7f8794';x.strokeStyle='#232832';for(let i=0;i<=3;i++){const v=max*i/3,y=p.t+(H-p.t-p.b)*(1-v/max);x.beginPath();x.moveTo(p.l,y);x.lineTo(W-p.r,y);x.stroke();x.fillText(Math.round(v/10000).toLocaleString('ko-KR')+'만원',8,y+3)}const centers=[p.l+(W-p.l-p.r)*.3,p.l+(W-p.l-p.r)*.72];data.forEach((v,i)=>{const h=(H-p.t-p.b)*(v/max),y=H-p.b-h;const g=x.createLinearGradient(0,y,0,H-p.b);g.addColorStop(0,'#c8ff4f');g.addColorStop(1,'rgba(200,255,79,.35)');x.fillStyle=g;x.fillRect(centers[i]-barW/2,y,barW,h);x.fillStyle='#f6f7f8';x.font='700 12px system-ui';x.fillText(Math.round(v).toLocaleString('ko-KR')+'원',centers[i]-42,y-9);x.fillStyle='#8f96a3';x.font='11px system-ui';x.fillText(labels[i],centers[i]-12,H-14)});}
-window.addEventListener('resize',drawChart);setTimeout(drawChart,80);
+window.addEventListener('resize',()=>{drawGoal(state.ledger,0,new Date(now.getFullYear(),now.getMonth()+1,0).getDate());drawAnnual();drawTargetAnnual();drawGrowth()});
+sessionChanged();
 </script>
 </body>
 </html>

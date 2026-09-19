@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.24</title>
+<title>정권통신 Business Center V3.25</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.24</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.25</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -162,9 +162,28 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   </div>
  </div>
 
+ <div class="card" style="padding:16px;margin-bottom:16px;border:2px solid #dcebc7">
+  <div class="table-top">
+   <div>
+    <b id="survivalTitle">다음달을 버티기 위한 이번달 마감매출</b>
+    <div id="survivalSub" style="font-size:9px;color:#6c7788;margin-top:3px">현재 잔고·정산입금·비용원장·카드값·급여를 모두 반영합니다.</div>
+   </div>
+   <button class="btn" onclick="go('cash')">자금 상세보기</button>
+  </div>
+  <div class="summary" style="margin:0">
+   <div class="box"><span>이번달 현재 W매출</span><strong id="survivalCurrent">0원</strong></div>
+   <div class="box"><span>이번달 목표매출</span><strong id="survivalTarget">0원</strong></div>
+   <div class="box"><span>생존 마감매출</span><strong id="survivalRequired">0원</strong><small id="survivalRate" style="display:block;color:#6c7788;margin-top:4px">급여율 반영</small></div>
+   <div class="box"><span>앞으로 더 필요한 W매출</span><strong id="survivalAdditional">0원</strong></div>
+   <div class="box"><span>보수적 안전 마감선</span><strong id="survivalSafe">0원</strong><small id="survivalSafeRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box"><span>현재 목표의 안전여유</span><strong id="survivalHeadroom">0원</strong></div>
+  </div>
+  <div id="survivalMessage" style="margin-top:12px;padding:12px 14px;border-radius:12px;background:#f5f7f9;font-size:10px;line-height:1.6;color:#4f5d6b"></div>
+ </div>
+
  <div class="card" style="padding:16px;margin-bottom:16px">
   <div class="table-top">
-   <div><b id="bepTitle">다음달 손익 마지노선</b><div id="bepSub" style="font-size:9px;color:#6c7788;margin-top:3px">비용·광고비·급여율 기준 자동계산</div></div>
+   <div><b id="bepTitle">다음달 자체 영업 손익분기</b><div id="bepSub" style="font-size:9px;color:#6c7788;margin-top:3px">다음달 매출 자체가 적자인지 보는 지표 · 위 생존 마감매출과 별도</div></div>
    <button class="btn" onclick="go('targets')">목표 설정</button>
   </div>
   <div class="summary" style="margin:0">
@@ -449,7 +468,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-const state={staff:[],options:[],ledger:[],ledgerYear:[],used:[],payback:[],affiliate:[],alerts:[],alertHistory:[],notificationHistory:[],expenses:[],ads:[],payroll:[],cashStatus:null,cashSnapshots:[],settlements:[],breakEven:null,sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
+const state={staff:[],options:[],ledger:[],ledgerYear:[],used:[],payback:[],affiliate:[],alerts:[],alertHistory:[],notificationHistory:[],expenses:[],ads:[],payroll:[],cashStatus:null,cashSnapshots:[],settlements:[],breakEven:null,survival:null,sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
 let modalMode="";
 let editingLedgerId=null;
 let editingAdId=null;
@@ -499,7 +518,7 @@ function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">
 function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
 async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
-async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadBreakEven(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
+async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadSurvival(),loadBreakEven(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
 
 
 function alertTypeLabel(t){return ({PAYBACK_MONTHEND:'페이백',USED_DEVICE_RETURN:'중고반납',AFFILIATE_CARD:'제휴카드',PLAN_CHANGE:'요금제 변경',INSURANCE_CANCEL:'보험 해지',ADDON_CANCEL:'부가서비스 해지'})[t]||t}
@@ -1017,7 +1036,51 @@ async function loadReport(){const month=$('reportMonth')?.value||mk(now),date=$(
 async function copyReport(){await navigator.clipboard.writeText($('reportText').textContent);toast('매출보고 복사 완료')}
 
 async function loadDashboard(){const month=mk(now),[a,b]=bounds(month),prev=new Date(now.getFullYear(),now.getMonth()-1,1),[pa,pb]=bounds(mk(prev)),yearA=`${now.getFullYear()}-01-01`,yearB=`${now.getFullYear()+1}-01-01`;const res=await Promise.all([sb.from('jk_sales_ledger').select('activation_date,final_margin,deal_type,lead_source,salesperson_id').gte('activation_date',a).lt('activation_date',b).order('activation_date'),sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',pa).lt('activation_date',pb),sb.rpc('jk_expense_monthly_rows',{p_month:a}),sb.rpc('jk_ad_monthly_rows',{p_month:a}),sb.from('jk_targets').select('*').gte('target_month',yearA).lt('target_month',yearB).order('target_month'),sb.from('jk_year_targets').select('*').eq('target_year',now.getFullYear()).maybeSingle(),sb.from('jk_v_monthly_sales_summary').select('*').gte('month',yearA).lt('month',yearB).order('month'),sb.from('jk_v_staff_monthly_payroll').select('*').eq('month',a).order('staff_name')]);if(res.some(x=>x.error)){console.warn(res.find(x=>x.error)?.error);return}const sales=res[0].data||[],prevSales=res[1].data||[],expenses=res[2].data||[],ads=res[3].data||[],targets=res[4].data||[],yearTarget=res[5].data||null,annual=res[6].data||[],payrollRows=res[7].data||[];state.annual=annual;state.targets=targets;state.yearTarget=yearTarget;state.payroll=payrollRows;const margin=sales.reduce((a,r)=>a+Number(r.final_margin||0),0),units=sales.filter(r=>r.deal_type==='휴대폰').length,manualSalary=expenses.filter(r=>String(r.category||'').trim()==='급여').reduce((a,r)=>a+Number(r.allocated_amount||r.amount||0),0),exp=expenses.filter(r=>String(r.category||'').trim()!=='급여').reduce((a,r)=>a+Number(r.allocated_amount||r.amount||0),0),ad=ads.reduce((a,r)=>a+Number(r.allocated_amount||0),0),payroll=payrollRows.reduce((a,r)=>a+Number(r.payroll_amount||0),0),net=margin-exp-ad-payroll;const tgt=targets.find(t=>String(t.target_month).slice(0,7)===month),goal=Number(tgt?.target_margin||0),days=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),elapsed=now.getDate(),forecast=Math.round(margin/Math.max(elapsed,1)*days),goalPct=goal?margin/goal*100:0,remain=Math.max(goal-margin,0),need=goal?Math.ceil(remain/Math.max(days-elapsed,1)):0;const sameDay=Math.min(elapsed,new Date(prev.getFullYear(),prev.getMonth()+1,0).getDate()),prevSame=prevSales.filter(r=>Number(String(r.activation_date).slice(8,10))<=sameDay).reduce((a,r)=>a+Number(r.final_margin||0),0),sameDelta=prevSame?(margin-prevSame)/Math.abs(prevSame)*100:null;const yearMargin=annual.reduce((a,r)=>a+Number(r.margin_total||0),0),yearGoal=Number(yearTarget?.target_margin||0),yearPct=yearGoal?yearMargin/yearGoal*100:0;const prevMonthRow=annual.find(r=>String(r.month).slice(0,7)===mk(prev)),prevMonth=Number(prevMonthRow?.margin_total||0),mom=prevMonth?(margin-prevMonth)/Math.abs(prevMonth)*100:null;const attributed=ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);
- $('dGoalPct').textContent=pct(goalPct);$('dCurrent').textContent=won(margin);$('dTarget').textContent=goal?won(goal):'미설정';$('dGoalBar').style.width=Math.min(goalPct,100)+'%';$('dForecast').textContent=won(forecast);$('dForecastGap').textContent=goal?(forecast>=goal?'목표 예상 초과 '+won(forecast-goal):'목표 예상 부족 '+won(goal-forecast)):'목표 설정 후 계산';$('dRemain').textContent=goal?won(remain):'-';$('dNeedDaily').textContent=goal?won(need):'-';$('dMargin').textContent=won(margin);$('dUnits').textContent=`판매 ${units}대`;$('dSameDelta').textContent=sameDelta===null?'-':(sameDelta>=0?'+':'')+pct(sameDelta);$('dPrevSame').textContent='지난달 동일기간 '+won(prevSame);$('samePeriodCard').className='kpi '+(sameDelta===null?'':sameDelta>=0?'good':'bad');$('dNet').textContent=won(net);$('dExpense').textContent=won(exp+ad+payroll);$('dExpenseDetail').textContent=`광고 ${won(ad)} · 기타비용 ${won(exp)} · 급여 ${won(payroll)}`;$('dPayroll').textContent=won(payroll);$('dPayrollDetail').textContent=payrollRows.length?payrollRows.map(r=>`${r.staff_name} ${Number(r.rate_pct||0).toFixed(1)}%`).join(' · '):'급여율 설정 전';$('dYearMargin').textContent=won(yearMargin);$('dYearGoalText').textContent=yearGoal?`연 목표 ${won(yearGoal)}`:'연간 목표 미설정';$('dYearPct').textContent=pct(yearPct);$('dMoMGrowth').textContent=mom===null?'-':(mom>=0?'+':'')+pct(mom);$('dPrevMonth').textContent='전월 '+won(prevMonth);$('dAds').textContent=won(ad);$('dRoas').textContent=ad?'마진 ROAS '+pct(attributed/ad*100):'광고비 입력 전';renderDashboardSources(sales);renderSellerPerformance(sales,payrollRows);renderDailyDelta(sales,goal,days);drawGoal(sales,goal,days);drawAnnual();renderTargetPage();await loadBreakEven()}
+ $('dGoalPct').textContent=pct(goalPct);$('dCurrent').textContent=won(margin);$('dTarget').textContent=goal?won(goal):'미설정';$('dGoalBar').style.width=Math.min(goalPct,100)+'%';$('dForecast').textContent=won(forecast);$('dForecastGap').textContent=goal?(forecast>=goal?'목표 예상 초과 '+won(forecast-goal):'목표 예상 부족 '+won(goal-forecast)):'목표 설정 후 계산';$('dRemain').textContent=goal?won(remain):'-';$('dNeedDaily').textContent=goal?won(need):'-';$('dMargin').textContent=won(margin);$('dUnits').textContent=`판매 ${units}대`;$('dSameDelta').textContent=sameDelta===null?'-':(sameDelta>=0?'+':'')+pct(sameDelta);$('dPrevSame').textContent='지난달 동일기간 '+won(prevSame);$('samePeriodCard').className='kpi '+(sameDelta===null?'':sameDelta>=0?'good':'bad');$('dNet').textContent=won(net);$('dExpense').textContent=won(exp+ad+payroll);$('dExpenseDetail').textContent=`광고 ${won(ad)} · 기타비용 ${won(exp)} · 급여 ${won(payroll)}`;$('dPayroll').textContent=won(payroll);$('dPayrollDetail').textContent=payrollRows.length?payrollRows.map(r=>`${r.staff_name} ${Number(r.rate_pct||0).toFixed(1)}%`).join(' · '):'급여율 설정 전';$('dYearMargin').textContent=won(yearMargin);$('dYearGoalText').textContent=yearGoal?`연 목표 ${won(yearGoal)}`:'연간 목표 미설정';$('dYearPct').textContent=pct(yearPct);$('dMoMGrowth').textContent=mom===null?'-':(mom>=0?'+':'')+pct(mom);$('dPrevMonth').textContent='전월 '+won(prevMonth);$('dAds').textContent=won(ad);$('dRoas').textContent=ad?'마진 ROAS '+pct(attributed/ad*100):'광고비 입력 전';renderDashboardSources(sales);renderSellerPerformance(sales,payrollRows);renderDailyDelta(sales,goal,days);drawGoal(sales,goal,days);drawAnnual();renderTargetPage();await Promise.all([loadSurvival(),loadBreakEven()])}
+
+async function loadSurvival(){
+ if(!$('survivalRequired'))return;
+ const q=await sb.rpc('jk_next_month_cash_survival',{p_as_of:ymd(now)});
+ if(q.error){console.warn(q.error);return}
+ const d=q.data||{};state.survival=d;
+
+ const salesMonth=String(d.sales_month||'').slice(0,7);
+ const surviveMonth=String(d.survival_month||'').slice(0,7);
+ const sm=salesMonth?salesMonth.replace('-','년 ')+'월':'이번달';
+ const nm=surviveMonth?surviveMonth.replace('-','년 ')+'월':'다음달';
+
+ $('survivalTitle').textContent=nm+'을 버티기 위한 '+sm+' 마감매출';
+ $('survivalSub').textContent='현재 '+sm+' W매출을 더 만들어 '+nm+' 말 현금잔고가 최소 시재 아래로 내려가지 않게 하는 기준';
+ $('survivalCurrent').textContent=won(d.current_booked_margin||0);
+ $('survivalTarget').textContent=d.current_target_margin?won(d.current_target_margin):'미설정';
+ $('survivalRequired').textContent=won(d.required_month_close_margin||0);
+ $('survivalAdditional').textContent=won(d.additional_margin_needed||0);
+ $('survivalSafe').textContent=won(d.safe_required_month_close_margin||0);
+ $('survivalRate').textContent='가중 급여율 '+Number(d.weighted_payroll_rate||0).toFixed(1)+'% 반영';
+ $('survivalSafeRate').textContent='최고 급여율 '+Number(d.safe_payroll_rate||0).toFixed(1)+'% 가정';
+
+ const head=Number(d.target_headroom_over_safe||0);
+ $('survivalHeadroom').textContent=d.current_target_margin?won(Math.abs(head)):'-';
+ $('survivalHeadroom').style.color=!d.current_target_margin?'#6c7788':head>=0?'#138754':'#dc3f50';
+ if(d.current_target_margin)$('survivalHeadroom').parentElement.querySelector('span').textContent=head>=0?'현재 목표의 안전여유':'현재 목표도 부족';
+
+ $('survivalAdditional').style.color=Number(d.additional_margin_needed||0)>0?'#dc3f50':'#138754';
+ $('survivalRequired').style.color=Number(d.additional_margin_needed||0)>0?'#111820':'#138754';
+
+ const noMore=Number(d.next_month_end_without_more_sales||0);
+ const deficit=Number(d.cash_deficit_without_more_sales||0);
+ let msg=sm+' 매출이 지금 상태에서 멈추면 '+nm+' 말 예상 현금은 '+won(noMore)+'입니다. ';
+ if(deficit>0){
+   msg+='최소 시재 기준 '+won(deficit)+'이 부족합니다. 급여율까지 역산하면 '+sm+' W매출을 앞으로 '+won(d.additional_margin_needed||0)+' 더 만들어서 최소 '+won(d.required_month_close_margin||0)+'까지 마감해야 합니다.';
+ }else{
+   msg+='현재 입력된 비용·정산 기준으로는 추가 매출 없이도 최소 시재를 지킬 수 있습니다.';
+ }
+ if(d.current_target_margin){
+   if(head>=0)msg+=' 현재 목표 '+won(d.current_target_margin)+'을 달성하면 보수적 안전선보다 '+won(head)+' 여유가 있습니다.';
+   else msg+=' 현재 목표 '+won(d.current_target_margin)+'도 보수적 안전선보다 '+won(Math.abs(head))+' 낮습니다.';
+ }
+ $('survivalMessage').textContent=msg;
+}
 
 async function loadBreakEven(){
  if(!$('bepExpected'))return;
@@ -1025,8 +1088,8 @@ async function loadBreakEven(){
  if(q.error){console.warn(q.error);return}
  const d=q.data||{};state.breakEven=d;
  const plan=String(d.plan_month||'').slice(0,7);
- if($('bepTitle'))$('bepTitle').textContent=(plan?plan.replace('-','년 ')+'월 ':'다음달 ')+'손익 마지노선';
- if($('bepSub'))$('bepSub').textContent='다음달 비용 '+won(d.expense_total||0)+' · 광고 '+won(d.ad_total||0)+' · 급여율 반영';
+ if($('bepTitle'))$('bepTitle').textContent=(plan?plan.replace('-','년 ')+'월 ':'다음달 ')+'자체 영업 손익분기 (해당월 매출 기준)';
+ if($('bepSub'))$('bepSub').textContent='해당월 비용 '+won(d.expense_total||0)+' · 광고 '+won(d.ad_total||0)+' · 해당월 영업 자체 손익 계산';
  $('bepBooked').textContent=won(d.booked_margin||0);
  $('bepTarget').textContent=d.display_target_margin?won(d.display_target_margin):'미설정';
  $('bepTargetNote').textContent=d.target_carried_forward?'이번달 목표 이월 참고치 · 다음달 목표는 미설정':(d.target_margin?'다음달 설정 목표':'목표 관리에서 설정');

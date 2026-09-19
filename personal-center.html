@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PERSONAL CENTER V0.1</title>
+<style>
+:root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:235px minmax(0,1fr);min-height:100vh}.side{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;z-index:20}.brand{padding:5px 9px 20px;display:flex;gap:11px;align-items:center}.logo{width:40px;height:40px;border-radius:12px;background:var(--dark);color:var(--accent);display:grid;place-items:center;font-weight:1000}.brand b{display:block}.brand small{display:block;font-size:10px;color:var(--muted);margin-top:2px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;text-align:left;color:#657083;padding:11px 12px;border-radius:11px;font-weight:800}.nav button:hover,.nav button.active{background:#f1f4f7;color:#111}.nav button.active{box-shadow:inset 3px 0 0 var(--accent2)}.sidefoot{margin-top:auto;border-top:1px solid var(--line);padding:15px 8px 0}.sidefoot small{display:block;color:var(--muted);font-size:10px;margin-bottom:8px}
+.main{min-width:0}.top{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:15;backdrop-filter:blur(14px)}.top h1{margin:0;font-size:17px}.top p{margin:4px 0 0;color:var(--muted);font-size:11px}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #d8dee6;background:#fff;padding:9px 13px;border-radius:11px;font-weight:850;color:#15191f}.btn.primary{background:var(--accent);border-color:#a7ec27}.btn.dark{background:var(--dark);color:#fff;border-color:var(--dark)}.btn.danger{color:var(--bad)}.btn.mini{padding:6px 8px;border-radius:8px;font-size:10px}
+.content{padding:24px;max-width:1650px;margin:0 auto}.page{display:none}.page.active{display:block}.head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:16px}.head h2{margin:0;font-size:24px}.head p{margin:5px 0 0;color:var(--muted);font-size:11px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}.hero{background:var(--dark);color:#fff;padding:24px;margin-bottom:16px;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(184,255,53,.13);right:-80px;top:-120px}.hero small{color:#aeb8c4}.hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px;align-items:end;position:relative;z-index:1}.hero h2{font-size:14px;margin:0;color:#c9d1da}.hero .need{font-size:40px;font-weight:1000;letter-spacing:-1.5px;margin-top:7px}.hero .remain{font-size:13px;color:#d2dae3;margin-top:8px}.hero .remain b{color:var(--accent)}.hero-side{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hero-box{border:1px solid #343b44;border-radius:13px;padding:12px;background:#1c2229}.hero-box span{display:block;color:#98a4b1;font-size:9px}.hero-box b{display:block;font-size:17px;margin-top:4px}.progress{height:13px;border-radius:999px;overflow:hidden;background:#303741;margin-top:17px}.progress i{display:block;height:100%;background:linear-gradient(90deg,#77bd0c,#b8ff35);width:0}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px}.kpi{padding:16px}.kpi span{font-size:9px;color:var(--muted);display:block}.kpi strong{display:block;font-size:20px;margin-top:6px}.kpi small{display:block;font-size:9px;color:#8d97a5;margin-top:5px;line-height:1.4}.bad{color:var(--bad)!important}.good{color:var(--good)!important}.warn{color:var(--warn)!important}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}.panel{padding:18px}.panel h3{font-size:14px;margin:0}.panel>p{font-size:10px;color:var(--muted);margin:5px 0 14px}.list{display:grid;gap:8px}.row{border:1px solid #e7ebef;border-radius:13px;padding:11px 12px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.row b{font-size:11px}.row small{display:block;font-size:9px;color:var(--muted);margin-top:3px}.amt{font-variant-numeric:tabular-nums;font-weight:900;font-size:12px}.tag{display:inline-flex;padding:4px 7px;border-radius:999px;background:#eef2f5;color:#616d7c;font-size:9px;font-weight:900}.tag.red{background:#ffedf0;color:#b82f40}.tag.green{background:#e9f7ef;color:#147548}.tag.orange{background:#fff4e4;color:#9e6100}
+.todo{display:flex;align-items:flex-start;gap:10px}.todo input{width:19px;height:19px;accent-color:#7fbf16}.todo.done b{text-decoration:line-through;color:#929aa5}.empty{padding:25px;text-align:center;color:var(--muted);font-size:10px}
+.tablecard{overflow:hidden;margin-bottom:16px}.tabletop{padding:14px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:800px}th,td{padding:11px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:10px;white-space:nowrap}th{background:#f7f9fb;color:#697586;font-size:9px}td b{font-size:11px}
+.formcard{padding:18px;margin-bottom:16px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:9px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111}.field.full{grid-column:1/-1}.formactions{display:flex;gap:7px;align-items:end}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800}.tabs button.active{background:#15191f;color:#fff;border-color:#15191f}
+.meter{margin-top:10px}.meterline{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:5px}.bar{height:9px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar i{height:100%;display:block;background:#9bdc2e;border-radius:99px}
+.calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.task{background:#f1fbe3}.calitem.money{background:#fff0e5}.calitem.must{background:#ffe9ed;color:#a72738}
+.callout{border:1px solid #dfe5ea;background:#fafcfd;border-radius:13px;padding:13px;margin-bottom:12px}.callout b{font-size:12px}.callout p{font-size:10px;color:var(--muted);line-height:1.6;margin:5px 0 0}
+.loginbg{position:fixed;inset:0;background:#f4f6f8;z-index:300;display:none;align-items:center;justify-content:center;padding:20px}.loginbg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 25px 80px rgba(10,20,30,.14)}.loginmark{width:52px;height:52px;border-radius:15px;background:#15191f;color:#b8ff35;display:grid;place-items:center;font-size:19px;font-weight:1000;margin-bottom:14px}.login h2{margin:0}.login p{font-size:11px;color:var(--muted);line-height:1.6}.login input{width:100%;border:1px solid #d6dde5;border-radius:11px;padding:11px;margin-top:8px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:var(--warn);margin-top:10px}.toast{position:fixed;right:22px;bottom:22px;background:#15191f;color:#fff;padding:11px 14px;border-radius:11px;display:none;z-index:500;font-size:11px}.toast.show{display:block}
+.mobile{display:none}
+@media(max-width:1150px){.kpis{grid-template-columns:repeat(3,1fr)}.formgrid{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}.hero-grid{grid-template-columns:1fr}}
+@media(max-width:900px){body{padding-bottom:72px}.app{grid-template-columns:1fr}.side{display:none}.content{padding:15px 15px 88px}.top{height:66px;padding:0 13px}.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.hero .need{font-size:32px}.formgrid{grid-template-columns:1fr 1fr}.mobile{position:fixed;bottom:0;left:0;right:0;height:68px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);z-index:100;display:grid;grid-template-columns:repeat(5,1fr);padding:5px 6px}.mobile button{border:0;background:transparent;font-size:9px;font-weight:900;color:#687382;border-radius:10px}.mobile button.active{background:#f2f5f7;color:#111}.day{min-height:90px}.toast{bottom:82px}}
+@media(max-width:560px){.kpis{grid-template-columns:1fr 1fr}.hero-side{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}.actions .btn.hide-sm{display:none}.calgrid{min-width:730px}.calendar{overflow:auto}.content{padding-left:10px;padding-right:10px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.1</small></div></div>
+ <nav class="nav">
+  <button class="active" data-page="dashboard">오늘 / 대시보드</button>
+  <button data-page="money">자산 · 지출</button>
+  <button data-page="debt">빚 상환</button>
+  <button data-page="business">사업체 ↔ 개인</button>
+  <button data-page="calendar">캘린더 · 할 일</button>
+  <button data-page="goals">5년 목표</button>
+  <button data-page="settings">설정</button>
+ </nav>
+ <div class="sidefoot"><small id="sessionText">로그인 필요</small><button class="btn mini" id="logoutBtn">로그아웃</button></div>
+</aside>
+<main class="main">
+<header class="top"><div><h1 id="pageTitle">오늘 / 대시보드</h1><p id="todayText"></p></div><div class="actions"><button class="btn hide-sm" onclick="go('calendar')">+ 오늘 할 일</button><button class="btn primary" onclick="go('money')">+ 돈 기록</button></div></header>
+<div class="content">
+<section class="page active" id="page-dashboard">
+ <div class="head"><div><h2>오늘 정신 차릴 숫자</h2><p>사업과 개인 돈을 섞지 않고, 오늘 해야 할 행동까지 한 화면에서 봅니다.</p></div><button class="btn" onclick="loadAll()">새로고침</button></div>
+ <div class="hero card">
+  <div class="hero-grid">
+   <div><h2>이번 달 실제 현금부담선</h2><div class="need" id="heroNeed">0원</div><div class="remain">개인 목표까지 <b id="heroRemain">0원</b> · 남은 날짜 하루 평균 <b id="heroDaily">0원</b></div><div class="progress"><i id="incomeBar"></i></div><small id="heroCaption">데이터를 입력하면 이번 달 목표가 계산됩니다.</small></div>
+   <div class="hero-side">
+    <div class="hero-box"><span>개인 생존선</span><b id="heroSurvival">0원</b></div>
+    <div class="hero-box"><span>이번 달 개인유입</span><b id="heroIncome">0원</b></div>
+    <div class="hero-box"><span>사업체 메꾼 돈</span><b id="heroSupport">0원</b></div>
+    <div class="hero-box"><span>빚 탈출 예상</span><b id="heroPayoff">-</b></div>
+   </div>
+  </div>
+ </div>
+ <div class="kpis">
+  <div class="kpi card"><span>현재 현금성 자산</span><strong id="kCash">0원</strong><small>계좌/현금 직접 입력</small></div>
+  <div class="kpi card"><span>개인 총부채</span><strong id="kDebt">0원</strong><small id="kDebtSub">월 최소상환 0원</small></div>
+  <div class="kpi card"><span>순현금 포지션</span><strong id="kNet">0원</strong><small>현금성 자산 - 개인부채</small></div>
+  <div class="kpi card"><span>이번 달 실제 개인지출</span><strong id="kSpend">0원</strong><small>거래내역 기준</small></div>
+  <div class="kpi card"><span>이번 달 목표 달성률</span><strong id="kRate">0%</strong><small id="kRateSub">목표 0원</small></div>
+ </div>
+ <div class="grid2">
+  <div class="panel card"><h3>오늘 반드시 끝내기</h3><p>미완료 항목은 다음 날 다시 오늘 목록으로 이월됩니다.</p><div id="todayTasks" class="list"></div></div>
+  <div class="panel card"><h3>앞으로 나갈 돈</h3><p>고정비·카드·대출 납입일을 기준으로 가까운 순서입니다.</p><div id="upcoming" class="list"></div></div>
+ </div>
+ <div class="grid3">
+  <div class="panel card"><h3>사업체와 내 돈 분리</h3><p>사업체에서 가져온 돈과 내가 메꾼 돈을 따로 봅니다.</p><div id="businessPulse" class="list"></div></div>
+  <div class="panel card"><h3>빚 상환 가속</h3><p>현재 계획과 추가 상환 시 완납 시점 비교.</p><div id="payoffPulse" class="list"></div></div>
+  <div class="panel card"><h3>5년 목표</h3><p>돈과 행동 목표를 같은 화면에서 추적합니다.</p><div id="goalPulse" class="list"></div></div>
+ </div>
+</section>
+
+<section class="page" id="page-money">
+ <div class="head"><div><h2>자산 · 지출</h2><p>잔액은 직접 업데이트하고, 실제 수입·지출은 거래내역에 기록합니다.</p></div></div>
+ <div class="formcard card">
+  <h3>계좌 / 현금 추가</h3><div class="formgrid">
+   <div class="field"><label>이름</label><input id="accName" placeholder="예: 국민 주계좌"></div>
+   <div class="field"><label>구분</label><select id="accType"><option value="bank">은행</option><option value="cash">현금</option><option value="cma">CMA</option><option value="savings">저축</option><option value="other">기타</option></select></div>
+   <div class="field"><label>현재 잔액</label><input id="accBalance" type="number" placeholder="0"></div>
+   <div class="formactions"><button class="btn primary" onclick="addAccount()">저장</button></div>
+  </div>
+ </div>
+ <div class="tablecard card"><div class="tabletop"><b>현재 자산</b><span id="accountSum" class="amt">0원</span></div><div class="tablewrap"><table><thead><tr><th>계좌</th><th>유형</th><th>잔액</th><th>현금성 포함</th><th>관리</th></tr></thead><tbody id="accountRows"></tbody></table></div></div>
+ <div class="formcard card">
+  <h3>월 반복 수입 / 지출</h3><div class="formgrid">
+   <div class="field"><label>항목명</label><input id="recName" placeholder="월세 / 차량할부 / 보험 / 구독"></div>
+   <div class="field"><label>종류</label><select id="recType"><option value="expense">지출</option><option value="income">수입</option></select></div>
+   <div class="field"><label>분류</label><select id="recCat"><option>주거</option><option>카드</option><option>차량</option><option>보험</option><option>통신</option><option>식비</option><option>구독</option><option>세금</option><option>저축</option><option>기타</option></select></div>
+   <div class="field"><label>금액</label><input id="recAmount" type="number" placeholder="0"></div>
+   <div class="field"><label>매월 납부/입금일</label><input id="recDay" type="number" min="1" max="31" placeholder="25"></div>
+   <div class="field"><label>범위</label><select id="recScope"><option value="personal">개인</option><option value="business">사업체 비용</option></select></div>
+   <div class="field"><label>결제수단/카드</label><input id="recMethod" placeholder="예: 현대카드"></div>
+   <div class="formactions"><button class="btn primary" onclick="addRecurring()">저장</button></div>
+  </div>
+ </div>
+ <div class="tablecard card"><div class="tabletop"><b>반복 항목</b><span id="recurringSum" class="amt">0원</span></div><div class="tablewrap"><table><thead><tr><th>항목</th><th>구분</th><th>범위</th><th>금액</th><th>매월</th><th>수단</th><th>관리</th></tr></thead><tbody id="recurringRows"></tbody></table></div></div>
+ <div class="formcard card">
+  <h3>실제 거래 기록</h3><div class="formgrid">
+   <div class="field"><label>날짜</label><input id="txDate" type="date"></div>
+   <div class="field"><label>입출금</label><select id="txType"><option value="expense">지출</option><option value="income">수입</option><option value="transfer">이체</option></select></div>
+   <div class="field"><label>금액</label><input id="txAmount" type="number" placeholder="0"></div>
+   <div class="field"><label>분류</label><input id="txCategory" placeholder="식비 / 주유 / 쇼핑 / 급여 등"></div>
+   <div class="field"><label>사용처/보낸곳</label><input id="txMerchant" placeholder="가맹점/상대방"></div>
+   <div class="field"><label>계좌/카드</label><input id="txAccount" placeholder="현대카드 / 국민은행"></div>
+   <div class="field"><label>범위</label><select id="txScope"><option value="personal">개인</option><option value="business">사업 관련</option></select></div>
+   <div class="formactions"><button class="btn primary" onclick="addTransaction()">저장</button></div>
+  </div>
+ </div>
+ <div class="tablecard card"><div class="tabletop"><b>최근 거래</b><span id="txSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>유형</th><th>분류</th><th>사용처</th><th>수단</th><th>금액</th><th>범위</th><th>관리</th></tr></thead><tbody id="txRows"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-debt">
+ <div class="head"><div><h2>빚 상환</h2><p>개인 부채와 사업 부채를 분리하고, 개인 부채는 금리 우선 상환으로 시뮬레이션합니다.</p></div></div>
+ <div class="kpis">
+  <div class="kpi card"><span>개인 부채</span><strong id="dTotal">0원</strong></div>
+  <div class="kpi card"><span>월 최소상환</span><strong id="dMin">0원</strong></div>
+  <div class="kpi card"><span>추가상환 목표</span><strong id="dExtra">0원</strong></div>
+  <div class="kpi card"><span>현재 계획 완납</span><strong id="dDate">-</strong></div>
+  <div class="kpi card"><span>+100만원 상환</span><strong id="dDate100">-</strong></div>
+ </div>
+ <div class="formcard card">
+  <h3>대출 추가</h3><div class="formgrid">
+   <div class="field"><label>대출명</label><input id="debtName" placeholder="신용대출"></div>
+   <div class="field"><label>금융사</label><input id="debtLender" placeholder="은행/카드사"></div>
+   <div class="field"><label>남은 원금</label><input id="debtBalance" type="number" placeholder="0"></div>
+   <div class="field"><label>연 금리 %</label><input id="debtApr" type="number" step="0.01" placeholder="6.5"></div>
+   <div class="field"><label>월 최소상환</label><input id="debtMin" type="number" placeholder="0"></div>
+   <div class="field"><label>납부일</label><input id="debtDay" type="number" min="1" max="31" placeholder="25"></div>
+   <div class="field"><label>만기</label><input id="debtMaturity" type="date"></div>
+   <div class="field"><label>성격</label><select id="debtBusiness"><option value="false">개인 부채</option><option value="true">사업 부채</option></select></div>
+   <div class="field"><label>중도상환수수료 %</label><input id="debtFee" type="number" step="0.01" placeholder="0"></div>
+   <div class="formactions"><button class="btn primary" onclick="addDebt()">저장</button></div>
+  </div>
+ </div>
+ <div class="callout"><b>상환 로직</b><p>개인 부채는 월 최소상환액을 낸 뒤 남는 추가상환금을 금리가 높은 대출부터 넣는 방식으로 계산합니다. 중도상환수수료가 있거나 금리 구조가 복잡한 상품은 실제 약관을 함께 확인해야 합니다.</p></div>
+ <div class="tablecard card"><div class="tabletop"><b>대출 목록</b><span id="debtSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>대출</th><th>구분</th><th>잔액</th><th>금리</th><th>최소상환</th><th>납부일</th><th>만기</th><th>관리</th></tr></thead><tbody id="debtRows"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-business">
+ <div class="head"><div><h2>사업체 ↔ 개인</h2><p>공동사업장 손익과 실제 개인계좌 이동을 분리해 기록합니다.</p></div></div>
+ <div class="formcard card">
+  <h3>사업체 등록</h3><div class="formgrid">
+   <div class="field"><label>사업체명</label><input id="bizName" placeholder="사업체명"></div>
+   <div class="field"><label>내 지분 %</label><input id="bizOwn" type="number" step="0.01" placeholder="50"></div>
+   <div class="field"><label>약정 손익분배 %</label><input id="bizProfit" type="number" step="0.01" placeholder="50"></div>
+   <div class="field"><label>월 개인 인출 목표</label><input id="bizDraw" type="number" placeholder="0"></div>
+   <div class="formactions"><button class="btn primary" onclick="addBusiness()">저장</button></div>
+  </div>
+ </div>
+ <div class="grid3" id="bizCards"></div>
+ <div class="formcard card">
+  <h3>사업체와 내 계좌 사이 돈 이동</h3><div class="formgrid">
+   <div class="field"><label>날짜</label><input id="flowDate" type="date"></div>
+   <div class="field"><label>사업체</label><select id="flowBusiness"></select></div>
+   <div class="field"><label>유형</label><select id="flowType"><option value="draw">사업체 → 개인 인출</option><option value="profit_distribution">이익 분배</option><option value="reimbursement">내가 대신 낸 사업비 돌려받음</option><option value="personal_paid_business">개인계좌로 사업비 대신 결제</option><option value="capital_injection">사업 적자/운전자금 메꿈</option><option value="business_paid_personal">사업체가 개인비용 대신 결제</option><option value="other">기타</option></select></div>
+   <div class="field"><label>금액</label><input id="flowAmount" type="number" placeholder="0"></div>
+   <div class="field full"><label>메모</label><input id="flowMemo" placeholder="왜 이동했는지 짧게 기록"></div>
+   <div class="formactions"><button class="btn primary" onclick="addFlow()">저장</button></div>
+  </div>
+ </div>
+ <div class="tablecard card"><div class="tabletop"><b>최근 사업체 ↔ 개인 이동</b><span id="flowSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>사업체</th><th>유형</th><th>금액</th><th>메모</th><th>관리</th></tr></thead><tbody id="flowRows"></tbody></table></div></div>
+</section>
+
+<section class="page" id="page-calendar">
+ <div class="head"><div><h2>캘린더 · 할 일</h2><p>오늘 해야 할 일, 일정, 돈 나가는 날을 한 달력에서 봅니다.</p></div></div>
+ <div class="grid2">
+  <div class="formcard card">
+   <h3>할 일 추가</h3><div class="formgrid" style="grid-template-columns:1fr 150px 150px auto">
+    <div class="field"><label>할 일</label><input id="taskTitle" placeholder="오늘 반드시 끝낼 일"></div>
+    <div class="field"><label>날짜</label><input id="taskDate" type="date"></div>
+    <div class="field"><label>우선순위</label><select id="taskPriority"><option value="normal">보통</option><option value="high">중요</option><option value="must">무조건</option><option value="low">낮음</option></select></div>
+    <div class="formactions"><button class="btn primary" onclick="addTask()">저장</button></div>
+   </div>
+  </div>
+  <div class="formcard card">
+   <h3>일정 / 메모 추가</h3><div class="formgrid" style="grid-template-columns:150px 1fr 150px auto">
+    <div class="field"><label>날짜</label><input id="eventDate" type="date"></div>
+    <div class="field"><label>내용</label><input id="eventTitle" placeholder="미팅 / 메모 / 입금 예정"></div>
+    <div class="field"><label>종류</label><select id="eventType"><option value="schedule">일정</option><option value="memo">메모</option><option value="money_in">돈 들어옴</option><option value="money_out">돈 나감</option><option value="goal">목표</option></select></div>
+    <div class="formactions"><button class="btn primary" onclick="addEvent()">저장</button></div>
+   </div>
+  </div>
+ </div>
+ <div class="calendar card"><div class="calhead"><button class="btn mini" onclick="moveCal(-1)">←</button><b id="calTitle"></b><button class="btn mini" onclick="moveCal(1)">→</button></div><div id="calendarGrid" class="calgrid"></div></div>
+</section>
+
+<section class="page" id="page-goals">
+ <div class="head"><div><h2>5년 목표</h2><p>건물·차량 같은 큰 목표는 숫자로, 행동 목표는 체크 가능한 형태로 관리합니다.</p></div></div>
+ <div class="formcard card">
+  <h3>목표 추가</h3><div class="formgrid">
+   <div class="field"><label>목표</label><input id="goalTitle" placeholder="건물 종잣돈 / 포르쉐 / 순자산"></div>
+   <div class="field"><label>목표값</label><input id="goalTarget" type="number" placeholder="0"></div>
+   <div class="field"><label>현재값</label><input id="goalCurrent" type="number" placeholder="0"></div>
+   <div class="field"><label>목표일</label><input id="goalDate" type="date"></div>
+   <div class="formactions"><button class="btn primary" onclick="addGoal()">저장</button></div>
+  </div>
+ </div>
+ <div id="goalCards" class="grid3"></div>
+</section>
+
+<section class="page" id="page-settings">
+ <div class="head"><div><h2>설정</h2><p>월 목표는 매출이 아니라 개인적으로 확보해야 할 금액을 뜻합니다.</p></div></div>
+ <div class="formcard card">
+  <h3>개인 재무 기준</h3><div class="formgrid">
+   <div class="field"><label>월 개인 확보 목표</label><input id="setIncomeTarget" type="number" placeholder="예: 8,000,000"></div>
+   <div class="field"><label>월 추가 빚 상환 목표</label><input id="setDebtExtra" type="number" placeholder="예: 1,000,000"></div>
+   <div class="field"><label>비상자금 목표</label><input id="setEmergency" type="number" placeholder="예: 20,000,000"></div>
+   <div class="field"><label>5년 자산 목표</label><input id="setFiveYear" type="number" placeholder="0"></div>
+   <div class="field full"><label>5년 목표 메모</label><textarea id="setNote" rows="3" placeholder="왜 돈을 모으는지, 5년 뒤 원하는 상태"></textarea></div>
+   <div class="formactions"><button class="btn primary" onclick="saveSettings()">저장</button></div>
+  </div>
+ </div>
+ <div class="callout"><b>사업비를 개인계좌에서 냈다면?</b><p>개인지출에 넣지 말고 ‘사업체 ↔ 개인’ 메뉴에서 <b>개인계좌로 사업비 대신 결제</b>로 기록하세요. 나중에 사업체에서 돌려받으면 <b>돌려받음</b>으로 기록하면 개인 현금부담과 실제 생활소비가 섞이지 않습니다.</p></div>
+ <div class="callout"><b>은행·카드 자동연동</b><p>V0.1은 직접입력 중심입니다. 다음 버전에서 은행/카드 CSV 업로드 → 자동분류 → 월 소비분석 순으로 붙이고, 금융 API 직접연동은 인증·계약 구조를 별도 검토해 연결합니다.</p></div>
+</section>
+</div>
+</main>
+</div>
+
+<nav class="mobile">
+ <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="business">사업</button>
+</nav>
+
+<div class="loginbg" id="loginBg"><div class="login"><div class="loginmark">P</div><h2>PERSONAL CENTER</h2><p>개인 금융정보가 들어가므로 Supabase 계정으로 로그인해야 합니다. 다른 사용자는 내 데이터를 볼 수 없도록 행 단위 보안을 적용했습니다.</p><input id="loginEmail" type="email" placeholder="이메일"><input id="loginPassword" type="password" placeholder="비밀번호"><button class="btn primary" id="loginBtn">로그인</button><button class="btn" id="signupBtn">처음이면 계정 만들기</button><div class="msg" id="loginMsg"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script>
+const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
+const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+const $=id=>document.getElementById(id), won=n=>Math.round(Number(n||0)).toLocaleString('ko-KR')+'원';
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
+let calDate=new Date(now.getFullYear(),now.getMonth(),1);
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[]};
+
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
+function setDefaults(){['txDate','flowDate','taskDate','eventDate'].forEach(id=>{if($(id))$(id).value=today})}
+function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',goals:'5년 목표',settings:'설정'})[p]||p}
+function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+$('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{dateStyle:'full'}).format(now);
+$('logoutBtn').onclick=()=>sb.auth.signOut();
+$('loginBtn').onclick=login;$('signupBtn').onclick=signup;
+$('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+
+async function login(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});$('loginMsg').textContent=error?error.message:''}
+async function signup(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value;if(!email||password.length<6){$('loginMsg').textContent='이메일과 6자 이상 비밀번호를 입력하세요.';return}const {error}=await sb.auth.signUp({email,password});$('loginMsg').textContent=error?error.message:'계정 생성 요청 완료. 이메일 확인이 필요하면 메일을 확인하세요.'}
+sb.auth.onAuthStateChange((_e,s)=>sessionChanged(s));sb.auth.getSession().then(({data})=>sessionChanged(data.session));
+async function sessionChanged(session){if(!session){state.user=null;$('loginBg').classList.add('show');$('sessionText').textContent='로그인 필요';return}state.user=session.user;$('loginBg').classList.remove('show');$('sessionText').textContent=session.user.email||'로그인됨';await ensureProfile();await loadAll()}
+async function ensureProfile(){let {data}=await sb.from('pc_profiles').select('*').maybeSingle();if(!data){const r=await sb.from('pc_profiles').insert({user_id:state.user.id}).select().single();data=r.data}state.profile=data}
+
+async function loadAll(){
+ if(!state.user)return;
+ const qs=await Promise.all([
+  sb.from('pc_profiles').select('*').maybeSingle(),
+  sb.from('pc_businesses').select('*').order('created_at'),
+  sb.from('pc_accounts').select('*').order('created_at'),
+  sb.from('pc_debts').select('*').order('apr',{ascending:false}),
+  sb.from('pc_recurring_items').select('*').eq('active',true).order('due_day'),
+  sb.from('pc_transactions').select('*').order('tx_date',{ascending:false}).limit(300),
+  sb.from('pc_business_flows').select('*').order('flow_date',{ascending:false}).limit(300),
+  sb.from('pc_goals').select('*').eq('active',true).order('created_at'),
+  sb.from('pc_tasks').select('*').order('due_date').limit(300),
+  sb.from('pc_calendar_events').select('*').order('event_date').limit(300)
+ ]);
+ const keys=['profile','businesses','accounts','debts','recurring','tx','flows','goals','tasks','events'];
+ qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
+ await rolloverTasks();
+ renderAll();
+}
+async function rolloverTasks(){
+ const overdue=state.tasks.filter(t=>t.status==='pending'&&t.auto_rollover&&t.due_date<today);
+ for(const t of overdue){await sb.from('pc_tasks').update({due_date:today,original_due_date:t.original_due_date||t.due_date,rollover_count:(t.rollover_count||0)+1}).eq('id',t.id);t.original_due_date=t.original_due_date||t.due_date;t.due_date=today;t.rollover_count=(t.rollover_count||0)+1}
+}
+function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects()}
+function monthRows(a,key){return a.filter(x=>x[key]>=monthStart&&x[key]<=monthEnd)}
+function personalDebts(){return state.debts.filter(d=>!d.is_business_debt&&Number(d.balance)>0)}
+function debtSimulation(extra=0){
+ let ds=personalDebts().map(d=>({balance:+d.balance,apr:+d.apr,min:+d.min_payment,name:d.name}));if(!ds.length)return 0;
+ let months=0;while(ds.some(d=>d.balance>1)&&months<600){months++;for(const d of ds){if(d.balance>0)d.balance+=d.balance*(d.apr/100)/12}
+ let budget=ds.reduce((s,d)=>s+(d.balance>0?d.min:0),0)+Math.max(0,+state.profile?.monthly_debt_extra_target||0)+extra;
+ for(const d of ds){if(d.balance<=0)continue;const p=Math.min(d.balance,d.min,budget);d.balance-=p;budget-=p}
+ const ord=ds.filter(d=>d.balance>0).sort((a,b)=>b.apr-a.apr);
+ for(const d of ord){if(budget<=0)break;const p=Math.min(d.balance,budget);d.balance-=p;budget-=p}
+ if(!ord.length)break;
+ if(ord.every(d=>d.min<=d.balance*(d.apr/100)/12)&&extra<=0&&!(+state.profile?.monthly_debt_extra_target>0))return null;
+ }return months>=600?null:months
+}
+function payoffText(extra=0){const m=debtSimulation(extra);if(m===0)return '빚 없음';if(m==null)return '계산불가';const d=new Date(now.getFullYear(),now.getMonth()+m,1);return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+' ('+m+'개월)'}
+function metrics(){
+ const cash=state.accounts.filter(a=>a.include_in_cash).reduce((s,a)=>s+Number(a.balance||0),0);
+ const pdebts=personalDebts(), debt=pdebts.reduce((s,d)=>s+Number(d.balance||0),0), debtMin=pdebts.reduce((s,d)=>s+Number(d.min_payment||0),0);
+ const recurringExpense=state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense').reduce((s,r)=>s+Number(r.amount||0),0);
+ const extra=Number(state.profile?.monthly_debt_extra_target||0), survival=recurringExpense+debtMin+extra;
+ const mflows=monthRows(state.flows,'flow_date');
+ const support=mflows.filter(f=>['personal_paid_business','capital_injection'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);
+ const reimburse=mflows.filter(f=>f.flow_type==='reimbursement').reduce((s,f)=>s+Number(f.amount||0),0);
+ const bizIncome=mflows.filter(f=>['draw','profit_distribution'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);
+ const mtx=monthRows(state.tx,'tx_date');
+ const directIncome=mtx.filter(t=>t.scope==='personal'&&t.tx_type==='income').reduce((s,t)=>s+Number(t.amount||0),0);
+ const actualSpend=mtx.filter(t=>t.scope==='personal'&&t.tx_type==='expense').reduce((s,t)=>s+Number(t.amount||0),0);
+ const earned=directIncome+bizIncome;
+ const cashBurden=Math.max(0,survival+support-reimburse);
+ const manualTarget=Number(state.profile?.monthly_personal_income_target||0), target=Math.max(manualTarget,cashBurden), remain=Math.max(0,target-earned);
+ const last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(), left=Math.max(1,last-now.getDate()+1), daily=remain/left;
+ return {cash,debt,debtMin,recurringExpense,extra,survival,support,reimburse,bizIncome,directIncome,actualSpend,earned,cashBurden,target,remain,daily,left}
+}
+function renderDashboard(){
+ const m=metrics(),rate=m.target?Math.min(999,m.earned/m.target*100):0;
+ $('heroNeed').textContent=won(m.cashBurden);$('heroRemain').textContent=won(m.remain);$('heroDaily').textContent=won(m.daily);$('heroSurvival').textContent=won(m.survival);$('heroIncome').textContent=won(m.earned);$('heroSupport').textContent=won(m.support);$('heroPayoff').textContent=payoffText(0);$('incomeBar').style.width=Math.min(100,rate)+'%';$('heroCaption').textContent='목표 '+won(m.target)+' · 달성 '+rate.toFixed(1)+'% · 사업비 환급 '+won(m.reimburse);
+ $('kCash').textContent=won(m.cash);$('kDebt').textContent=won(m.debt);$('kDebtSub').textContent='월 최소상환 '+won(m.debtMin);$('kNet').textContent=(m.cash-m.debt<0?'-':'')+won(Math.abs(m.cash-m.debt));$('kNet').className=m.cash-m.debt<0?'bad':'good';$('kSpend').textContent=won(m.actualSpend);$('kRate').textContent=rate.toFixed(1)+'%';$('kRateSub').textContent='목표 '+won(m.target);
+ renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
+}
+function renderTodayTasks(){
+ const arr=state.tasks.filter(t=>t.due_date===today&&t.status!=='skipped').sort((a,b)=>({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority])));
+ $('todayTasks').innerHTML=arr.length?arr.map(t=>'<div class="row"><label class="todo '+(t.status==='done'?'done':'')+'"><input type="checkbox" '+(t.status==='done'?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><div><b>'+esc(t.title)+'</b><small>'+(t.priority==='must'?'무조건 · ':'')+(t.rollover_count?'이월 '+t.rollover_count+'회':'오늘')+'</small></div></label><span class="tag '+(t.priority==='must'?'red':'')+'">'+t.priority+'</span></div>').join(''):'<div class="empty">오늘 할 일을 추가하세요. 오늘 화면의 핵심입니다.</div>'
+}
+async function toggleTask(id,done){const {error}=await sb.from('pc_tasks').update({status:done?'done':'pending',completed_at:done?new Date().toISOString():null}).eq('id',id);if(error)return alert(error.message);const t=state.tasks.find(x=>x.id===id);if(t){t.status=done?'done':'pending';t.completed_at=done?new Date().toISOString():null}renderTodayTasks();renderCalendar();toast(done?'완료 체크':'미완료로 변경')}
+function nextOccurrence(day){const y=now.getFullYear(),m=now.getMonth(),last=new Date(y,m+1,0).getDate(),d=Math.min(+day||1,last);let x=new Date(y,m,d);if(x<new Date(y,m,now.getDate())){const l2=new Date(y,m+2,0).getDate();x=new Date(y,m+1,Math.min(+day||1,l2))}return x}
+function renderUpcoming(){
+ let a=[];state.recurring.filter(r=>r.item_type==='expense'&&r.scope==='personal'&&r.due_day).forEach(r=>a.push({date:nextOccurrence(r.due_day),name:r.name,amount:+r.amount,type:'고정/카드'}));
+ personalDebts().filter(d=>d.payment_day).forEach(d=>a.push({date:nextOccurrence(d.payment_day),name:d.name,amount:+d.min_payment,type:'대출'}));
+ a.sort((x,y)=>x.date-y.date);a=a.slice(0,6);$('upcoming').innerHTML=a.length?a.map(x=>'<div class="row"><div><b>'+esc(x.name)+'</b><small>'+ymd(x.date)+' · '+x.type+'</small></div><span class="amt">'+won(x.amount)+'</span></div>').join(''):'<div class="empty">반복지출과 대출 납부일을 입력하면 표시됩니다.</div>'
+}
+function renderBusinessPulse(){
+ const m=metrics();$('businessPulse').innerHTML='<div class="row"><div><b>사업체 → 개인</b><small>인출 + 이익분배</small></div><span class="amt good">'+won(m.bizIncome)+'</span></div><div class="row"><div><b>개인 → 사업체</b><small>대신 결제 + 적자 메꿈</small></div><span class="amt bad">'+won(m.support)+'</span></div><div class="row"><div><b>사업비 환급</b><small>내가 먼저 낸 돈 회수</small></div><span class="amt">'+won(m.reimburse)+'</span></div>'
+}
+function renderPayoffPulse(){
+ const x=[0,500000,1000000,2000000];$('payoffPulse').innerHTML=x.map(v=>'<div class="row"><div><b>'+(v?'+ '+won(v):'현재 계획')+'</b><small>매월 추가상환 기준</small></div><span class="amt">'+payoffText(v)+'</span></div>').join('')
+}
+function renderGoalPulse(){
+ const a=state.goals.slice(0,3);$('goalPulse').innerHTML=a.length?a.map(g=>{const p=+g.target_value?Math.min(100,+g.current_value/+g.target_value*100):0;return '<div><div class="meterline"><b>'+esc(g.title)+'</b><span>'+p.toFixed(0)+'%</span></div><div class="bar"><i style="width:'+p+'%"></i></div></div>'}).join(''):'<div class="empty">5년 목표를 추가하세요.</div>'
+}
+
+function renderMoney(){
+ $('accountRows').innerHTML=state.accounts.length?state.accounts.map(a=>'<tr><td><b>'+esc(a.name)+'</b></td><td>'+esc(a.account_type)+'</td><td class="amt">'+won(a.balance)+'</td><td>'+(a.include_in_cash?'포함':'제외')+'</td><td><button class="btn mini" onclick="updateBalance(\''+a.id+'\','+Number(a.balance||0)+')">잔액수정</button> <button class="btn mini danger" onclick="delRow(\'pc_accounts\',\''+a.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="5" class="empty">계좌를 추가하세요.</td></tr>';
+ $('accountSum').textContent=won(state.accounts.filter(a=>a.include_in_cash).reduce((s,a)=>s+Number(a.balance||0),0));
+ $('recurringRows').innerHTML=state.recurring.length?state.recurring.map(r=>'<tr><td><b>'+esc(r.name)+'</b><br><small>'+esc(r.category)+'</small></td><td>'+r.item_type+'</td><td>'+r.scope+'</td><td class="amt">'+won(r.amount)+'</td><td>'+ (r.due_day?r.due_day+'일':'-')+'</td><td>'+esc(r.payment_method||'-')+'</td><td><button class="btn mini danger" onclick="deactivateRecurring(\''+r.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="7" class="empty">반복비용을 등록하세요.</td></tr>';
+ $('recurringSum').textContent='개인 월지출 '+won(state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense').reduce((s,r)=>s+Number(r.amount||0),0));
+ const tx=state.tx.slice(0,40);$('txRows').innerHTML=tx.length?tx.map(t=>'<tr><td>'+t.tx_date+'</td><td>'+t.tx_type+'</td><td>'+esc(t.category)+'</td><td>'+esc(t.merchant||'-')+'</td><td>'+esc(t.account_name||'-')+'</td><td class="amt '+(t.tx_type==='expense'?'bad':t.tx_type==='income'?'good':'')+'">'+won(t.amount)+'</td><td>'+t.scope+'</td><td><button class="btn mini danger" onclick="delRow(\'pc_transactions\',\''+t.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">실제 거래를 기록하세요.</td></tr>';
+ const mm=metrics();$('txSummary').textContent='이번달 지출 '+won(mm.actualSpend)+' / 수입 '+won(mm.directIncome)
+}
+async function addAccount(){const row={name:$('accName').value.trim(),account_type:$('accType').value,balance:+$('accBalance').value||0};if(!row.name)return;const {error}=await sb.from('pc_accounts').insert(row);if(error)return alert(error.message);$('accName').value='';$('accBalance').value='';await loadAll();toast('계좌 저장')}
+async function updateBalance(id,current){const v=prompt('현재 잔액을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return alert('숫자로 입력하세요.');const {error}=await sb.from('pc_accounts').update({balance:n,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);await loadAll()}
+async function addRecurring(){const row={name:$('recName').value.trim(),item_type:$('recType').value,category:$('recCat').value,amount:+$('recAmount').value||0,due_day:+$('recDay').value||null,scope:$('recScope').value,payment_method:$('recMethod').value.trim()};if(!row.name)return;const {error}=await sb.from('pc_recurring_items').insert(row);if(error)return alert(error.message);['recName','recAmount','recDay','recMethod'].forEach(id=>$(id).value='');await loadAll();toast('반복항목 저장')}
+async function deactivateRecurring(id){if(!confirm('이 반복항목을 삭제할까요?'))return;await sb.from('pc_recurring_items').update({active:false}).eq('id',id);await loadAll()}
+async function addTransaction(){const row={tx_date:$('txDate').value||today,tx_type:$('txType').value,amount:+$('txAmount').value||0,category:$('txCategory').value.trim()||'기타',merchant:$('txMerchant').value.trim(),account_name:$('txAccount').value.trim(),scope:$('txScope').value};if(!row.amount)return;const {error}=await sb.from('pc_transactions').insert(row);if(error)return alert(error.message);['txAmount','txCategory','txMerchant','txAccount'].forEach(id=>$(id).value='');await loadAll();toast('거래 저장')}
+
+function renderDebt(){const m=metrics();$('dTotal').textContent=won(m.debt);$('dMin').textContent=won(m.debtMin);$('dExtra').textContent=won(m.extra);$('dDate').textContent=payoffText(0);$('dDate100').textContent=payoffText(1000000);$('debtSummary').textContent='개인 '+won(m.debt)+' / 사업 '+won(state.debts.filter(d=>d.is_business_debt).reduce((s,d)=>s+Number(d.balance||0),0));
+ $('debtRows').innerHTML=state.debts.length?state.debts.map(d=>'<tr><td><b>'+esc(d.name)+'</b><br><small>'+esc(d.lender||'-')+'</small></td><td><span class="tag '+(d.is_business_debt?'orange':'green')+'">'+(d.is_business_debt?'사업':'개인')+'</span></td><td class="amt">'+won(d.balance)+'</td><td>'+Number(d.apr||0).toFixed(2)+'%</td><td class="amt">'+won(d.min_payment)+'</td><td>'+(d.payment_day?d.payment_day+'일':'-')+'</td><td>'+(d.maturity_date||'-')+'</td><td><button class="btn mini" onclick="updateDebtBalance(\''+d.id+'\','+Number(d.balance||0)+')">잔액수정</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">대출을 추가하세요.</td></tr>'}
+async function addDebt(){const row={name:$('debtName').value.trim(),lender:$('debtLender').value.trim(),balance:+$('debtBalance').value||0,apr:+$('debtApr').value||0,min_payment:+$('debtMin').value||0,payment_day:+$('debtDay').value||null,maturity_date:$('debtMaturity').value||null,is_business_debt:$('debtBusiness').value==='true',prepayment_fee_pct:+$('debtFee').value||0};if(!row.name)return;const {error}=await sb.from('pc_debts').insert(row);if(error)return alert(error.message);['debtName','debtLender','debtBalance','debtApr','debtMin','debtDay','debtMaturity','debtFee'].forEach(id=>$(id).value='');await loadAll();toast('대출 저장')}
+async function updateDebtBalance(id,current){const v=prompt('현재 남은 원금을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_debts').update({balance:n}).eq('id',id);await loadAll()}
+
+function bizName(id){return state.businesses.find(b=>b.id===id)?.name||'-'}
+function flowLabel(t){return({draw:'사업체→개인 인출',profit_distribution:'이익분배',reimbursement:'사업비 환급',personal_paid_business:'개인계좌로 사업비 결제',capital_injection:'사업 적자/운전자금 메꿈',business_paid_personal:'사업체가 개인비용 결제',other:'기타'})[t]||t}
+function renderBusiness(){
+ $('bizCards').innerHTML=state.businesses.length?state.businesses.map(b=>{const fs=monthRows(state.flows,'flow_date').filter(f=>f.business_id===b.id),inn=fs.filter(f=>['draw','profit_distribution','reimbursement'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0),out=fs.filter(f=>['personal_paid_business','capital_injection'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);return '<div class="panel card"><h3>'+esc(b.name)+'</h3><p>지분 '+Number(b.ownership_pct||0)+'% · 손익분배 '+Number(b.profit_share_pct||0)+'%</p><div class="row"><div><b>이번달 받은 돈</b></div><span class="amt good">'+won(inn)+'</span></div><div class="row"><div><b>이번달 넣은 돈</b></div><span class="amt bad">'+won(out)+'</span></div><div class="row"><div><b>월 인출 목표</b></div><span class="amt">'+won(b.target_monthly_draw)+'</span></div></div>'}).join(''):'<div class="panel card"><div class="empty">공동사업체 3개를 각각 등록하세요.</div></div>';
+ $('flowRows').innerHTML=state.flows.slice(0,50).map(f=>'<tr><td>'+f.flow_date+'</td><td><b>'+esc(bizName(f.business_id))+'</b></td><td>'+flowLabel(f.flow_type)+'</td><td class="amt">'+won(f.amount)+'</td><td>'+esc(f.memo||'-')+'</td><td><button class="btn mini danger" onclick="delRow(\'pc_business_flows\',\''+f.id+'\')">삭제</button></td></tr>').join('')||'<tr><td colspan="6" class="empty">사업체와 개인 사이 돈 이동을 기록하세요.</td></tr>';
+ const m=metrics();$('flowSummary').textContent='이번달 받은 '+won(m.bizIncome+m.reimburse)+' / 넣은 '+won(m.support)
+}
+function renderBizSelects(){$('flowBusiness').innerHTML=state.businesses.map(b=>'<option value="'+b.id+'">'+esc(b.name)+'</option>').join('')}
+async function addBusiness(){const row={name:$('bizName').value.trim(),ownership_pct:+$('bizOwn').value||0,profit_share_pct:+$('bizProfit').value||0,target_monthly_draw:+$('bizDraw').value||0};if(!row.name)return;const {error}=await sb.from('pc_businesses').insert(row);if(error)return alert(error.message);['bizName','bizOwn','bizProfit','bizDraw'].forEach(id=>$(id).value='');await loadAll();toast('사업체 등록')}
+async function addFlow(){const row={flow_date:$('flowDate').value||today,business_id:$('flowBusiness').value,flow_type:$('flowType').value,amount:+$('flowAmount').value||0,memo:$('flowMemo').value.trim()};if(!row.business_id||!row.amount)return;const {error}=await sb.from('pc_business_flows').insert(row);if(error)return alert(error.message);$('flowAmount').value='';$('flowMemo').value='';await loadAll();toast('사업체 이동 저장')}
+
+function renderTasks(){renderTodayTasks()}
+async function addTask(){const row={title:$('taskTitle').value.trim(),due_date:$('taskDate').value||today,priority:$('taskPriority').value,auto_rollover:true};if(!row.title)return;const {error}=await sb.from('pc_tasks').insert(row);if(error)return alert(error.message);$('taskTitle').value='';await loadAll();toast('할 일 저장')}
+async function addEvent(){const row={event_date:$('eventDate').value||today,title:$('eventTitle').value.trim(),event_type:$('eventType').value};if(!row.title)return;const {error}=await sb.from('pc_calendar_events').insert(row);if(error)return alert(error.message);$('eventTitle').value='';await loadAll();toast('일정 저장')}
+function moveCal(n){calDate=new Date(calDate.getFullYear(),calDate.getMonth()+n,1);renderCalendar()}
+function renderCalendar(){
+ if(!$('calendarGrid'))return;const y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate();$('calTitle').textContent=y+'년 '+(m+1)+'월';
+ let h=['일','월','화','수','목','금','토'].map(x=>'<div class="dow">'+x+'</div>').join('');
+ for(let i=0;i<first;i++)h+='<div class="day off"></div>';
+ for(let d=1;d<=last;d++){const date=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');let items=[];
+ state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'">'+(t.status==='done'?'✓ ':'')+esc(t.title)+'</span>'));
+ state.events.filter(e=>e.event_date===date).forEach(e=>items.push('<span class="calitem">'+esc(e.title)+'</span>'));
+ state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d).forEach(r=>items.push('<span class="calitem money">-'+esc(r.name)+' '+won(r.amount)+'</span>'));
+ personalDebts().filter(x=>+x.payment_day===d).forEach(x=>items.push('<span class="calitem money">대출 '+esc(x.name)+' '+won(x.min_payment)+'</span>'));
+ h+='<div class="day '+(date===today?'today':'')+'"><div class="daynum">'+d+'</div>'+items.slice(0,5).join('')+(items.length>5?'<span class="calitem">+'+(items.length-5)+'개</span>':'')+'</div>'}
+ $('calendarGrid').innerHTML=h
+}
+function renderGoals(){
+ $('goalCards').innerHTML=state.goals.length?state.goals.map(g=>{const p=+g.target_value?Math.min(100,+g.current_value/+g.target_value*100):0;return '<div class="panel card"><h3>'+esc(g.title)+'</h3><p>'+(g.target_date?'목표일 '+g.target_date:'목표일 미정')+'</p><div style="font-size:24px;font-weight:1000">'+won(g.current_value)+'</div><small style="color:var(--muted)">/ '+won(g.target_value)+'</small><div class="meter"><div class="meterline"><span>진행률</span><b>'+p.toFixed(1)+'%</b></div><div class="bar"><i style="width:'+p+'%"></i></div></div><div style="margin-top:12px"><button class="btn mini" onclick="updateGoal(\''+g.id+'\','+Number(g.current_value||0)+')">현재값 수정</button> <button class="btn mini danger" onclick="disableGoal(\''+g.id+'\')">삭제</button></div></div>'}).join(''):'<div class="panel card"><div class="empty">첫 5년 목표를 추가하세요.</div></div>'
+}
+async function addGoal(){const row={title:$('goalTitle').value.trim(),target_value:+$('goalTarget').value||0,current_value:+$('goalCurrent').value||0,target_date:$('goalDate').value||null};if(!row.title)return;const {error}=await sb.from('pc_goals').insert(row);if(error)return alert(error.message);['goalTitle','goalTarget','goalCurrent','goalDate'].forEach(id=>$(id).value='');await loadAll();toast('목표 저장')}
+async function updateGoal(id,current){const v=prompt('현재 달성값을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_goals').update({current_value:n}).eq('id',id);await loadAll()}
+async function disableGoal(id){await sb.from('pc_goals').update({active:false}).eq('id',id);await loadAll()}
+function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p.monthly_personal_income_target||'';$('setDebtExtra').value=p.monthly_debt_extra_target||'';$('setEmergency').value=p.emergency_fund_target||'';$('setFiveYear').value=p.five_year_asset_target||'';$('setNote').value=p.five_year_note||''}
+async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장')}
+
+async function delRow(table,id){if(!confirm('삭제할까요?'))return;const {error}=await sb.from(table).delete().eq('id',id);if(error)return alert(error.message);await loadAll()}
+setDefaults();
+</script>
+</body>
+</html>

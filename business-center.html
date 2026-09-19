@@ -474,7 +474,7 @@ sb.auth.onAuthStateChange(()=>refreshSessionState());setTimeout(refreshSessionSt
 
 
 /* ========================= V3 LIVE BUSINESS CENTER ========================= */
-let v3ExpenseRows=[],v3AdRows=[];
+let v3ExpenseRows=[],v3AdRows=[],lookupRows=[];
 let v3State={series:[],target:0,annualTarget:0};
 
 function localYMD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
@@ -508,26 +508,39 @@ sb.auth.onAuthStateChange(function(event){
   }
 });
 
+
+function normalizedType(r){return String((r&&r.activation_type)||'').trim()}
+function isDeviceSale(r){return ['기변','MNP','010신규','신규','동판'].includes(normalizedType(r))}
+function isSimOnly(r){return normalizedType(r)==='유심단독'||!!r.flag_additional}
+function isDongpan(r){return normalizedType(r)==='동판'||!!r.flag_dongpan}
+function isRenewal(r){return normalizedType(r)==='약정갱신'||!!r.flag_contract_renewal}
+function isBundle(r){return ['번들','인터넷TV','인터넷+TV','인터넷/TV'].includes(normalizedType(r))||!!r.flag_bundle}
+function reportMarker(label,n){if(label==='sim')return n?'(+'+n+')':'(+)';return n?'('+label+'+'+n+')':'('+label+'+)'}
+function lookupByType(type){return lookupRows.filter(r=>r.option_type===type&&r.active!==false)}
+function leadSourceOptions(){var rows=lookupByType('lead_source');return '<option value="">선택</option>'+rows.map(r=>'<option>'+esc(r.label)+'</option>').join('')}
+
 async function loadV3All(){
   var sess=await sb.auth.getSession(); if(!sess.data.session)return;
   var now=new Date(), mk=monthKey(now), bounds=monthBoundsFromKey(mk);
   var prev=new Date(now.getFullYear(),now.getMonth()-1,1), prevKey=monthKey(prev), pb=monthBoundsFromKey(prevKey);
   var yearStart=now.getFullYear()+'-01-01', yearNext=(now.getFullYear()+1)+'-01-01';
   var qs=await Promise.all([
-    sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',bounds[0]).lt('activation_date',bounds[1]).order('activation_date'),
-    sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',pb[0]).lt('activation_date',pb[1]).order('activation_date'),
+    sb.from('jk_sales_ledger').select('activation_date,final_margin,activation_type,flag_additional,flag_dongpan,flag_contract_renewal,flag_bundle,lead_source').gte('activation_date',bounds[0]).lt('activation_date',bounds[1]).order('activation_date'),
+    sb.from('jk_sales_ledger').select('activation_date,final_margin,activation_type,flag_additional,flag_dongpan,flag_contract_renewal,flag_bundle').gte('activation_date',pb[0]).lt('activation_date',pb[1]).order('activation_date'),
     sb.from('jk_expenses').select('*').gte('expense_date',bounds[0]).lt('expense_date',bounds[1]).order('expense_date',{ascending:false}),
     sb.from('jk_ad_spend').select('*').gte('spend_date',bounds[0]).lt('spend_date',bounds[1]).order('spend_date',{ascending:false}),
     sb.from('jk_targets').select('*').eq('target_month',bounds[0]).maybeSingle(),
     sb.from('jk_year_targets').select('*').eq('target_year',now.getFullYear()).maybeSingle(),
-    sb.from('jk_sales_ledger').select('final_margin').gte('activation_date',yearStart).lt('activation_date',yearNext)
+    sb.from('jk_sales_ledger').select('activation_date,final_margin').gte('activation_date',yearStart).lt('activation_date',yearNext),
+    sb.from('jk_targets').select('target_month,target_margin').gte('target_month',yearStart).lt('target_month',yearNext),
+    sb.from('jk_lookup_options').select('*').eq('active',true).order('option_type').order('sort_order')
   ]);
   var err=qs.find(function(x){return x.error});
   if(err){console.warn('V3 load',err.error);return;}
-  var sales=qs[0].data||[], prevSales=qs[1].data||[], exps=qs[2].data||[], ads=qs[3].data||[], target=qs[4].data||null, annual=qs[5].data||null, yearSales=qs[6].data||[];
+  var sales=qs[0].data||[], prevSales=qs[1].data||[], exps=qs[2].data||[], ads=qs[3].data||[], target=qs[4].data||null, annual=qs[5].data||null, yearSales=qs[6].data||[], yearTargets=qs[7].data||[], lookups=qs[8].data||[]; lookupRows=lookups;
   v3ExpenseRows=exps;v3AdRows=ads;
   var margin=sales.reduce(function(a,r){return a+Number(r.final_margin||0)},0);
-  var units=sales.length, avg=units?Math.floor(margin/units):0;
+  var units=sales.filter(isDeviceSale).length, simCount=sales.filter(isSimOnly).length, dongCount=sales.filter(isDongpan).length, renewCount=sales.filter(isRenewal).length, bundleCount=sales.filter(isBundle).length, avg=units?Math.floor(margin/units):0;
   var fixed=exps.filter(function(r){return r.is_fixed}).reduce(function(a,r){return a+Number(r.amount||0)},0);
   var variable=exps.filter(function(r){return !r.is_fixed}).reduce(function(a,r){return a+Number(r.amount||0)},0);
   var expTotal=fixed+variable;
@@ -548,9 +561,16 @@ async function loadV3All(){
   var delta=prevSame?((margin-prevSame)/Math.abs(prevSame)*100):null;
   var yearMargin=yearSales.reduce(function(a,r){return a+Number(r.final_margin||0)},0);
   var annualPct=annualTarget?yearMargin/annualTarget*100:0;
+  var monthlyTotals=Array.from({length:12},()=>0);
+  yearSales.forEach(function(r){var m=Number(String(r.activation_date).slice(5,7));if(m>=1&&m<=12)monthlyTotals[m-1]+=Number(r.final_margin||0)});
+  var currentMonthIndex=now.getMonth(), currentMonthTotal=monthlyTotals[currentMonthIndex]||0, prevMonthTotal=currentMonthIndex>0?(monthlyTotals[currentMonthIndex-1]||0):0;
+  var momGrowth=prevMonthTotal?((currentMonthTotal-prevMonthTotal)/Math.abs(prevMonthTotal)*100):null;
+  var sourceMap={};sales.forEach(function(r){var k=(r.lead_source||'미입력').trim()||'미입력';if(!sourceMap[k])sourceMap[k]={records:0,units:0,margin:0};sourceMap[k].records++;if(isDeviceSale(r))sourceMap[k].units++;sourceMap[k].margin+=Number(r.final_margin||0)});
+  var sourceRows=Object.keys(sourceMap).map(function(k){return {source:k,records:sourceMap[k].records,units:sourceMap[k].units,margin:sourceMap[k].margin}}).sort(function(a,b){return b.margin-a.margin});
+  v3State.monthlyTotals=monthlyTotals;v3State.sourceRows=sourceRows;v3State.yearTargets=yearTargets;
   v3State.target=targetMargin;v3State.annualTarget=annualTarget;
 
-  setText('v3Margin',krw(margin));setText('v3Units',units+'건 · 평균 '+krw(avg));
+  setText('v3Margin',krw(margin));setText('v3Units',units+'대 '+reportMarker('sim',simCount)+' '+reportMarker('동판',dongCount)+' '+reportMarker('약갱',renewCount)+' '+reportMarker('번들',bundleCount)+' · 평균 '+krw(avg));
   setText('v3Current',krw(margin));setText('v3Target',targetMargin?krw(targetMargin):'미설정');
   setText('v3GoalPct',pct(goalPct));document.getElementById('v3GoalBar').style.width=Math.min(goalPct,100)+'%';
   setText('v3Forecast',krw(forecast));setText('v3ForecastGap',targetMargin?(forecast>=targetMargin?'목표 예상 초과 '+krw(forecast-targetMargin):'목표 예상 부족 '+krw(targetMargin-forecast)):'목표 설정 후 차이 계산');
@@ -565,15 +585,20 @@ async function loadV3All(){
   setText('targetAnnualLive',annualTarget?krw(annualTarget):'미설정');setText('targetAnnualCurrent',krw(yearMargin));setText('targetAnnualPct',pct(annualPct));setText('targetUnitsLive',target?Number(target.target_units||0)+'건':'0건');
   var ab=document.getElementById('targetAnnualBar');if(ab)ab.style.width=Math.min(annualPct,100)+'%';
 
+  setText('v31AnnualGoalPct',pct(annualPct));setText('v31AnnualCurrent',krw(yearMargin));setText('v31AnnualTarget',annualTarget?krw(annualTarget):'미설정');
+  var aBar=document.getElementById('v31AnnualBar');if(aBar)aBar.style.width=Math.min(annualPct,100)+'%';
+  setText('v31MomGrowth',momGrowth===null?'-':(momGrowth>=0?'+':'')+pct(momGrowth));
+  setText('v31MomText',(currentMonthIndex)+'월 '+krw(prevMonthTotal)+' → '+(currentMonthIndex+1)+'월 '+krw(currentMonthTotal));
+  renderLeadSourceTable(sourceRows,margin);
   v3State.series=buildDailySeries(sales,elapsed,targetMargin,daysInMonth);
   renderV3DeltaTable(v3State.series,targetMargin);
-  renderV3Charts();
+  renderV3Charts();drawMonthlyGrowthChart();drawSourceChart();renderSettings();
   renderExpensesPage();
   renderAdsPage();
   initV3Months();
 }
 function buildDailySeries(rows,elapsed,target,days){
-  var map={};rows.forEach(function(r){var d=Number(String(r.activation_date).slice(8,10));if(!map[d])map[d]={amount:0,units:0};map[d].amount+=Number(r.final_margin||0);map[d].units++});
+  var map={};rows.forEach(function(r){var d=Number(String(r.activation_date).slice(8,10));if(!map[d])map[d]={amount:0,units:0};map[d].amount+=Number(r.final_margin||0);if(isDeviceSale(r))map[d].units++});
   var out=[],cum=0;for(var d=1;d<=elapsed;d++){var x=map[d]||{amount:0,units:0};cum+=x.amount;out.push({day:d,amount:x.amount,units:x.units,cum:cum,targetCum:target?target/days*d:0})}return out;
 }
 function renderV3DeltaTable(s,target){

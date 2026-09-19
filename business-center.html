@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.4.1</title>
+<title>정권통신 Business Center V3.5</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -46,7 +46,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.4</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.5</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="ledger">장부 관리</button>
@@ -100,7 +100,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <section class="page" id="page-ledger">
  <div class="section-head"><div><h2>장부 관리</h2><p>여기에 한 번 입력하면 매출보고·직원실적·유입분석·페이백·중고반납에 자동 반영됩니다.</p></div><button class="btn primary" onclick="openLedger()">+ 판매건 입력</button></div>
  <div class="summary"><div class="box"><span>판매대수</span><strong id="lUnits">0대</strong></div><div class="box"><span>유심단독</span><strong id="lUsim">0건</strong></div><div class="box"><span>동판</span><strong id="lDong">0건</strong></div><div class="box"><span>약갱 / 번들</span><strong id="lRB">0 / 0</strong></div><div class="box"><span>월 매출</span><strong id="lMargin">0원</strong></div></div>
- <div class="table-card card"><div class="table-top"><b>월별 장부</b><div class="toolbar"><input id="ledgerMonth" type="month" onchange="loadLedger()"><input id="ledgerSearch" placeholder="고객명·번호·기종" oninput="renderLedger()"></div></div><div class="table-wrap"><table style="min-width:2080px"><thead><tr><th>개통일</th><th>거래처</th><th>고객명</th><th>생년월일</th><th>번호</th><th>모델</th><th>판매유형</th><th>유입경로</th><th>요금제</th><th>출고가</th><th>K 기본리베이트</th><th>L 현금판매금액</th><th>M 실리베이트</th><th>P 부가세</th><th>Q 페이백</th><th>R 위약금대납</th><th>S 현금판매받은돈</th><th>T 유심</th><th>U 중고금액</th><th>중고기종</th><th>W 최종마진</th><th>판매자</th><th>관리</th></tr></thead><tbody id="ledgerBody"></tbody></table></div></div>
+ <div class="table-card card"><div class="table-top"><b>월별 장부</b><div class="toolbar"><input id="ledgerMonth" type="month" onchange="loadLedger()"><input id="ledgerSearch" placeholder="고객명·번호·기종" oninput="renderLedger()"></div></div><div class="table-wrap"><table style="min-width:2240px"><thead><tr><th>개통일</th><th>거래처</th><th>고객명</th><th>생년월일</th><th>번호</th><th>모델</th><th>판매유형</th><th>유입경로</th><th>요금제</th><th>유지조건</th><th>출고가</th><th>K 기본리베이트</th><th>L 현금판매금액</th><th>M 실리베이트</th><th>P 부가세</th><th>Q 페이백</th><th>R 위약금대납</th><th>S 현금판매받은돈</th><th>T 유심</th><th>U 중고금액</th><th>중고기종</th><th>W 최종마진</th><th>판매자</th><th>관리</th></tr></thead><tbody id="ledgerBody"></tbody></table></div></div>
 </section>
 
 <section class="page" id="page-report">
@@ -217,17 +217,81 @@ function dealLabel(r){if(r.deal_type==='휴대폰')return r.activation_type||'�
 function classify(v){if(v==='MNP'||v==='기변'||v==='010신규')return {deal_type:'휴대폰',activation_type:v};if(v==='유심단독')return {deal_type:'유심단독',activation_type:'유심단독'};if(v==='동판')return {deal_type:'동판',activation_type:'동판'};if(v==='약갱')return {deal_type:'약갱',activation_type:'약갱'};return {deal_type:'번들',activation_type:'번들'}}
 
 async function loadLedger(){if(!$('ledgerMonth'))return;const [a,b]=bounds($('ledgerMonth').value||mk(now));const {data,error}=await sb.from('jk_sales_ledger').select('*').gte('activation_date',a).lt('activation_date',b).order('activation_date',{ascending:false});if(error){console.warn(error);return}state.ledger=data||[];renderLedger()}
-function renderLedger(){const q=($('ledgerSearch')?.value||'').replace(/-/g,'').toLowerCase();const rows=state.ledger.filter(r=>!q||[r.customer_name_snapshot,r.customer_phone_snapshot,r.model_name,r.lead_source].some(v=>String(v||'').replace(/-/g,'').toLowerCase().includes(q)));$('ledgerBody').innerHTML=rows.map(r=>`<tr><td>${esc(r.activation_date)}</td><td>${esc(r.vendor||'-')}</td><td><b>${esc(r.customer_name_snapshot)}</b></td><td>${esc(r.customer_birth_date_snapshot||'-')}</td><td>${esc(r.customer_phone_snapshot)}</td><td>${esc(r.model_name||'-')}</td><td>${esc(dealLabel(r))}</td><td>${esc(r.lead_source||'-')}</td><td>${esc(r.plan_name||'-')}</td><td>${won(r.retail_price)}</td><td>${won(r.base_rebate)}</td><td>${won(r.cash_sale_amount)}</td><td>${won(r.real_rebate)}</td><td>${won(r.vat_amount)}</td><td>${won(r.payback_amount)}</td><td>${won(r.penalty_paid)}</td><td>${won(r.cash_received)}</td><td>${won(r.sim_cost)}</td><td>${won(r.used_device_amount)}</td><td>${esc(r.used_device_model||'-')}</td><td><b>${won(r.final_margin)}</b></td><td>${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}</td><td><button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="23" class="empty">장부 데이터가 없습니다.</td></tr>';
+function renderLedger(){const q=($('ledgerSearch')?.value||'').replace(/-/g,'').toLowerCase();const rows=state.ledger.filter(r=>!q||[r.customer_name_snapshot,r.customer_phone_snapshot,r.model_name,r.lead_source].some(v=>String(v||'').replace(/-/g,'').toLowerCase().includes(q)));$('ledgerBody').innerHTML=rows.map(r=>`<tr><td>${esc(r.activation_date)}</td><td>${esc(r.vendor||'-')}</td><td><b>${esc(r.customer_name_snapshot)}</b></td><td>${esc(r.customer_birth_date_snapshot||'-')}</td><td>${esc(r.customer_phone_snapshot)}</td><td>${esc(r.model_name||'-')}</td><td>${esc(dealLabel(r))}</td><td>${esc(r.lead_source||'-')}</td><td>${esc(r.plan_name||'-')}</td><td style="line-height:1.55"><small>요금 ${esc(r.plan_change_date||'-')}<br>보험 ${esc(r.insurance_cancel_date||'-')}<br>부가 ${esc(r.addon_cancel_date||'-')}</small></td><td>${won(r.retail_price)}</td><td>${won(r.base_rebate)}</td><td>${won(r.cash_sale_amount)}</td><td>${won(r.real_rebate)}</td><td>${won(r.vat_amount)}</td><td>${won(r.payback_amount)}</td><td>${won(r.penalty_paid)}</td><td>${won(r.cash_received)}</td><td>${won(r.sim_cost)}</td><td>${won(r.used_device_amount)}</td><td>${esc(r.used_device_model||'-')}</td><td><b>${won(r.final_margin)}</b></td><td>${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}</td><td><button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="24" class="empty">장부 데이터가 없습니다.</td></tr>';
  const u=state.ledger.filter(r=>r.deal_type==='휴대폰').length,us=state.ledger.filter(r=>r.deal_type==='유심단독').length,d=state.ledger.filter(r=>r.deal_type==='동판').length,re=state.ledger.filter(r=>r.deal_type==='약갱').length,bu=state.ledger.filter(r=>r.deal_type==='번들').length,m=state.ledger.reduce((a,r)=>a+Number(r.final_margin||0),0);$('lUnits').textContent=u+'대';$('lUsim').textContent=us+'건';$('lDong').textContent=d+'건';$('lRB').textContent=re+' / '+bu;$('lMargin').textContent=won(m)
 }
 
-const LEDGER_DRAFT_KEY='jk-ledger-draft-v34';
-const LEDGER_DRAFT_FIELDS=['fDate','fVendor','fName','fBirth','fPhone','fCarrier','fModel','fDeal','fSource','fPlan','fStaff','fRetail','fK','fL','fQ','fR','fS','fT','fU','fUsedModel','fUsedDue','fUsedRequired','fPbDue','fBank','fHolder','fAccount','fCardStatus','fCardCompany','fCardAmount','fCardDue','fMemo'];
+const LEDGER_DRAFT_KEY='jk-ledger-draft-v35';
+const LEDGER_DRAFT_FIELDS=['fDate','fVendor','fName','fBirth','fPhone','fCarrier','fModel','fDeal','fSource','fPlan','fStaff','fRetail','fK','fL','fQ','fR','fS','fT','fU','fUsedModel','fUsedDue','fUsedRequired','fPbDue','fBank','fHolder','fAccount','fCardStatus','fCardCompany','fCardAmount','fCardDue','fPlanRule','fPlanCustomDays','fPlanCustomMonths','fPlanCustomExtra','fPlanDate','fInsuranceRule','fInsuranceCustomDays','fInsuranceCustomMonths','fInsuranceCustomExtra','fInsuranceDate','fAddonRule','fAddonCustomDays','fAddonCustomMonths','fAddonCustomExtra','fAddonDate','fMemo'];
 function saveLedgerDraft(){if(modalMode!=='ledger')return;const d={savedAt:new Date().toISOString()};LEDGER_DRAFT_FIELDS.forEach(id=>{const e=$(id);if(e)d[id]=e.value});localStorage.setItem(LEDGER_DRAFT_KEY,JSON.stringify(d))}
 function restoreLedgerDraft(){try{const d=JSON.parse(localStorage.getItem(LEDGER_DRAFT_KEY)||'null');if(!d)return false;LEDGER_DRAFT_FIELDS.forEach(id=>{const e=$(id);if(e&&d[id]!==undefined)e.value=d[id]});return true}catch(e){return false}}
 function clearLedgerDraft(){localStorage.removeItem(LEDGER_DRAFT_KEY)}
 function affiliateDueDate(){const d=$('fDate')?.value;if(!d)return '';const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+14);return ymd(x)}
 function affiliateCardUI(){if(!$('fCardStatus'))return;const active=$('fCardStatus').value!=='안함';['fCardCompany','fCardAmount'].forEach(id=>{if($(id))$(id).disabled=!active});if($('fCardDue')){$('fCardDue').disabled=!active;$('fCardDue').value=active?affiliateDueDate():'';$('fCardDue').readOnly=true}if($('cardDueHelp'))$('cardDueHelp').textContent=active?'자동기한: 개통일 + 14일':'제휴카드 미사용'}
+
+
+function maintenanceRuleOptions(){
+  return '<option value="NONE">사용 안 함</option>'+
+    '<option value="DIRECT">직접입력</option>'+
+    '<option value="D_CUSTOM">D + 직접 일수</option>'+
+    '<option value="M_CUSTOM">M + 개월 + 일</option>'+
+    '<option value="MEND+0">당월말(M)</option>'+
+    '<option value="MEND+1">익월말(M + 1개월)</option>'+
+    '<option value="MEND+2">익익월말(M + 2개월)</option>'+
+    '<option value="MEND+3">M + 3개월 월말</option>'+
+    '<option value="MEND+4">M + 4개월 월말</option>'+
+    '<option value="MEND+5">M + 5개월 월말</option>'+
+    '<option value="MEND+6">M + 6개월 월말</option>'+
+    '<option value="D+31">31일(D+31일)</option>'+
+    '<option value="D+91">91일(D+91일)</option>'+
+    '<option value="D+93">93일(D+93일)</option>'+
+    '<option value="D+95">95일(D+95일)</option>'+
+    '<option value="D+125">125일(D+125일)</option>'+
+    '<option value="D+183">183일(D+183일)</option>';
+}
+function addDaysFromActivation(days){
+  const base=$('fDate')?.value;if(!base)return '';
+  const d=new Date(base+'T12:00:00');d.setDate(d.getDate()+Number(days||0));return ymd(d);
+}
+function addMonthsClamped(base,months,extraDays){
+  if(!base)return '';
+  const p=base.split('-').map(Number),first=new Date(p[0],p[1]-1,1,12,0,0);
+  first.setMonth(first.getMonth()+Number(months||0));
+  const lastDay=new Date(first.getFullYear(),first.getMonth()+1,0,12,0,0).getDate();
+  first.setDate(Math.min(p[2],lastDay));
+  first.setDate(first.getDate()+Number(extraDays||0));
+  return ymd(first);
+}
+function monthEndFromActivation(months){
+  const base=$('fDate')?.value;if(!base)return '';
+  const p=base.split('-').map(Number);
+  return ymd(new Date(p[0],p[1]+Number(months||0),0,12,0,0));
+}
+function storedMaintenanceRule(prefix){
+  const rule=$(prefix+'Rule')?.value||'NONE';
+  if(rule==='D_CUSTOM')return 'D+'+Math.max(0,Number($(prefix+'CustomDays')?.value||0));
+  if(rule==='M_CUSTOM')return 'M+'+Math.max(0,Number($(prefix+'CustomMonths')?.value||0))+'+D+'+Math.max(0,Number($(prefix+'CustomExtra')?.value||0));
+  return rule;
+}
+function maintenanceUI(prefix){
+  const rule=$(prefix+'Rule')?.value||'NONE',dateEl=$(prefix+'Date'),dWrap=$(prefix+'DWrap'),mWrap=$(prefix+'MWrap');
+  if(!dateEl)return;
+  if(dWrap)dWrap.style.display=rule==='D_CUSTOM'?'flex':'none';
+  if(mWrap)mWrap.style.display=rule==='M_CUSTOM'?'flex':'none';
+  if(rule==='NONE'){dateEl.value='';dateEl.readOnly=true}
+  else if(rule==='DIRECT'){dateEl.readOnly=false}
+  else{
+    dateEl.readOnly=true;
+    let out='';
+    if(rule==='D_CUSTOM')out=addDaysFromActivation(Number($(prefix+'CustomDays')?.value||0));
+    else if(rule==='M_CUSTOM')out=addMonthsClamped($('fDate')?.value,Number($(prefix+'CustomMonths')?.value||0),Number($(prefix+'CustomExtra')?.value||0));
+    else if(rule.startsWith('D+'))out=addDaysFromActivation(Number(rule.slice(2)));
+    else if(rule.startsWith('MEND+'))out=monthEndFromActivation(Number(rule.slice(5)));
+    dateEl.value=out;
+  }
+  if(modalMode==='ledger')saveLedgerDraft();
+}
+function refreshMaintenanceDates(){['fPlan','fInsurance','fAddon'].forEach(maintenanceUI)}
 
 function openLedger(){modalMode='ledger';$('modalTitle').textContent='판매건 입력';$('modalBody').innerHTML=`<div class="form">
 <div class="field"><label>개통일</label><input id="fDate" type="date" value="${ymd(now)}"></div><div class="field"><label>거래처</label><select id="fVendor"><option value="">선택</option><option>MD</option><option>PS</option><option>니어</option><option>동원</option><option>대교</option></select></div>

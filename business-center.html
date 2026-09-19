@@ -963,10 +963,139 @@ async function loadAffiliate(){if(!$('affiliateMonth'))return;const [a,b]=bounds
 async function setAffiliateStatus(ledgerId,status){const {error}=await sb.from('jk_sales_ledger').update({affiliate_card_status:status}).eq('id',ledgerId);if(error){alert(error.message);return}toast(status==='완료'?'제휴카드 등록 완료 처리':'미완료로 변경');await loadAffiliate();await loadAlerts();await loadAlertCenter();await checkAffiliateAlerts()}
 async function checkAffiliateAlerts(){const today=ymd(new Date());const {data,error}=await sb.from('jk_v_affiliate_card_status').select('*').eq('status','미완료').lte('due_date',today).order('due_date');if(error)return;const rows=data||[],badge=$('affiliateBadge');if(rows.length){badge.textContent=rows.length;badge.style.display='inline-flex';const sig=rows.map(r=>r.ledger_id+':'+r.due_date).join('|'),last=sessionStorage.getItem('jk-card-alert-sig');if(sig!==last){sessionStorage.setItem('jk-card-alert-sig',sig);setTimeout(()=>alert('제휴카드 등록 기한 도래/초과 '+rows.length+'건이 있습니다.\n\n'+rows.slice(0,8).map(r=>r.customer_name+' · '+r.carrier+' · '+r.due_date).join('\n')+(rows.length>8?'\n외 '+(rows.length-8)+'건':'')),300)}}else{badge.style.display='none';sessionStorage.removeItem('jk-card-alert-sig')}}
 
-async function loadAds(){if(!$('adMonth'))return;const [a,b]=bounds($('adMonth').value||mk(now));const {data,error}=await sb.from('jk_ad_spend').select('*').gte('spend_date',a).lt('spend_date',b).order('spend_date',{ascending:false});if(error)return;state.ads=data||[];$('adBody').innerHTML=state.ads.map(r=>`<tr><td>${r.spend_date}</td><td>${esc(r.channel)}</td><td>${esc(r.campaign||'-')}</td><td>${won(r.amount)}</td><td>${r.inquiries}</td><td>${r.visits}</td><td>${r.activations}</td><td>${won(r.attributed_margin)}</td><td><button class="btn danger" onclick="deleteAd('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">광고비 데이터 없음</td></tr>';const spend=state.ads.reduce((a,r)=>a+Number(r.amount||0),0),inq=state.ads.reduce((a,r)=>a+Number(r.inquiries||0),0),vis=state.ads.reduce((a,r)=>a+Number(r.visits||0),0),act=state.ads.reduce((a,r)=>a+Number(r.activations||0),0),mar=state.ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);$('aSpend').textContent=won(spend);$('aInquiry').textContent=inq+'건';$('aVisit').textContent=vis+'건';$('aAct').textContent=act+'건';$('aRoas').textContent=spend?pct(mar/spend*100):'-'}
-function openAd(){modalMode='ad';$('modalTitle').textContent='광고비 입력';$('modalBody').innerHTML=`<div class="form"><div class="field"><label>집행일</label><input id="adDateF" type="date" value="${ymd(now)}"></div><div class="field"><label>채널</label><select id="adChannelF">${optHtml('ad_channel')}</select></div><div class="field"><label>광고비</label><input id="adAmountF" type="number"></div><div class="field"><label>캠페인명</label><input id="adCampaignF"></div><div class="field"><label>문의</label><input id="adInquiryF" type="number" value="0"></div><div class="field"><label>방문</label><input id="adVisitF" type="number" value="0"></div><div class="field"><label>개통</label><input id="adActF" type="number" value="0"></div><div class="field"><label>유입 최종마진</label><input id="adMarginF" type="number" value="0"></div><div class="field full"><label>메모</label><textarea id="adNoteF"></textarea></div></div>`;showModal()}
-async function saveAd(){const amount=Number($('adAmountF').value||0);if(amount<=0){alert('광고비를 입력하세요.');return}const{error}=await sb.from('jk_ad_spend').insert({spend_date:$('adDateF').value,channel:$('adChannelF').value,amount,campaign:$('adCampaignF').value||null,inquiries:Number($('adInquiryF').value||0),visits:Number($('adVisitF').value||0),activations:Number($('adActF').value||0),attributed_margin:Number($('adMarginF').value||0),note:$('adNoteF').value||null});if(error)alert(error.message);else{closeModal();loadAds();loadDashboard()}}
-async function deleteAd(id){if(!confirm('삭제할까요?'))return;await sb.from('jk_ad_spend').delete().eq('id',id);loadAds();loadDashboard()}
+
+function adBillingLabel(t){return ({one_time:'일회성',contract_total:'기간총액 분할',monthly:'월정액',daily:'일예산'})[t]||t||'-'}
+function adConfiguredLabel(r){
+  if(r.billing_type==='daily')return won(r.configured_amount)+'/일';
+  if(r.billing_type==='monthly')return won(r.configured_amount)+'/월';
+  if(r.billing_type==='contract_total')return won(r.configured_amount)+' 총액';
+  return won(r.configured_amount);
+}
+function adPeriodLabel(r){
+  if(r.billing_type==='one_time')return r.start_date;
+  return r.start_date+' ~ '+(r.end_date||'계속');
+}
+async function loadAds(){
+  if(!$('adMonth'))return;
+  const month=($('adMonth').value||mk(now))+'-01';
+  const q=await sb.rpc('jk_ad_monthly_rows',{p_month:month});
+  if(q.error){console.warn(q.error);return}
+  state.ads=q.data||[];
+  const body=state.ads.map(function(r){
+    const dur=r.duration_months&&r.billing_type!=='one_time'?'<br><small>'+r.duration_months+'개월</small>':'';
+    return '<tr>'+
+      '<td>'+esc(adPeriodLabel(r))+'</td>'+
+      '<td>'+esc(r.channel)+'</td>'+
+      '<td>'+esc(r.campaign||'-')+'</td>'+
+      '<td><span class="pill blue">'+esc(adBillingLabel(r.billing_type))+'</span>'+dur+'</td>'+
+      '<td>'+esc(adConfiguredLabel(r))+'</td>'+
+      '<td><b>'+won(r.allocated_amount)+'</b></td>'+
+      '<td>'+Number(r.inquiries||0)+'</td>'+
+      '<td>'+Number(r.visits||0)+'</td>'+
+      '<td>'+Number(r.activations||0)+'</td>'+
+      '<td>'+won(r.attributed_margin)+'</td>'+
+      '<td><div style="display:flex;gap:6px"><button class="btn" onclick="openAd(\''+r.id+'\')">수정</button><button class="btn danger" onclick="deleteAd(\''+r.id+'\')">삭제</button></div></td>'+
+    '</tr>';
+  }).join('');
+  $('adBody').innerHTML=body||'<tr><td colspan="11" class="empty">해당 월에 반영되는 광고비가 없습니다.</td></tr>';
+  const spend=state.ads.reduce((a,r)=>a+Number(r.allocated_amount||0),0);
+  const inq=state.ads.reduce((a,r)=>a+Number(r.inquiries||0),0);
+  const vis=state.ads.reduce((a,r)=>a+Number(r.visits||0),0);
+  const act=state.ads.reduce((a,r)=>a+Number(r.activations||0),0);
+  const mar=state.ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);
+  $('aSpend').textContent=won(spend);$('aInquiry').textContent=inq+'건';$('aVisit').textContent=vis+'건';$('aAct').textContent=act+'건';$('aRoas').textContent=spend?pct(mar/spend*100):'-';
+}
+function adCalcEndDate(){
+  const start=$('adStartF')?.value,dur=Number($('adDurationF')?.value||0),type=$('adBillingF')?.value;
+  if(!start)return '';
+  if(type==='one_time')return start;
+  if(!dur)return '';
+  const p=start.split('-').map(Number);
+  return ymd(new Date(p[0],p[1]-1+dur,0,12,0,0));
+}
+function adPreviewAmount(){
+  const type=$('adBillingF')?.value,amount=moneyNumber($('adAmountF')?.value),dur=Number($('adDurationF')?.value||0),start=$('adStartF')?.value;
+  if(!type||!start)return '';
+  if(type==='one_time')return '일회성 '+won(amount);
+  if(type==='monthly')return '매월 '+won(amount)+(dur?' · '+dur+'개월':' · 종료일 없음');
+  if(type==='contract_total')return dur?'총 '+won(amount)+' ÷ '+dur+'개월 ≈ 월 '+won(Math.floor(amount/dur)):'기간 개월수를 입력하세요.';
+  if(type==='daily'){
+    const p=start.split('-').map(Number),last=new Date(p[0],p[1],0).getDate(),days=Math.max(last-p[2]+1,0);
+    return '일 '+won(amount)+' · 시작월 '+days+'일 반영 시 '+won(amount*days);
+  }
+  return '';
+}
+function adBillingUI(){
+  if(!$('adBillingF'))return;
+  const type=$('adBillingF').value;
+  if($('adDurationWrap'))$('adDurationWrap').style.display=type==='one_time'?'none':'block';
+  if(type==='one_time'&&$('adDurationF'))$('adDurationF').value='1';
+  if($('adEndF'))$('adEndF').value=adCalcEndDate();
+  if($('adAmountLabel'))$('adAmountLabel').textContent=type==='daily'?'일 광고비':type==='monthly'?'월 광고비':type==='contract_total'?'계약 총액':'광고비';
+  if($('adPreview'))$('adPreview').textContent=adPreviewAmount();
+}
+function adPresetUI(){
+  const p=$('adPresetF')?.value||'custom';
+  if(p==='bus_inside'){
+    $('adChannelF').value='버스광고';$('adCampaignF').value='버스광고 내부';$('adBillingF').value='contract_total';$('adDurationF').value='6';
+  }else if(p==='bus_outside'){
+    $('adChannelF').value='버스광고';$('adCampaignF').value='버스광고 외부';$('adBillingF').value='contract_total';$('adDurationF').value='3';
+  }else if(p==='danggeun_daily'){
+    $('adChannelF').value='당근';$('adCampaignF').value='당근 일예산';$('adBillingF').value='daily';$('adDurationF').value='';$('adAmountF').value='8,000';formatMoneyInput($('adAmountF'));
+  }
+  adBillingUI();
+}
+async function openAd(id=null){
+  editingAdId=id||null;modalMode='ad';
+  $('modalTitle').textContent=editingAdId?'광고비 수정':'광고비 입력';
+  $('modalSave').textContent=editingAdId?'수정 저장':'저장';
+  let r=null;
+  if(editingAdId){
+    const q=await sb.from('jk_ad_spend').select('*').eq('id',editingAdId).single();
+    if(q.error){alert(q.error.message);editingAdId=null;return}
+    r=q.data;
+  }
+  let h='<div class="form">';
+  h+='<div class="field"><label>빠른 설정</label><select id="adPresetF" onchange="adPresetUI()"><option value="custom">직접 설정</option><option value="bus_inside">버스광고 내부 · 6개월</option><option value="bus_outside">버스광고 외부 · 3개월</option><option value="danggeun_daily">당근 · 매일 8,000원</option></select></div>';
+  h+='<div class="field"><label>계산방식</label><select id="adBillingF" onchange="adBillingUI()"><option value="one_time">일회성</option><option value="contract_total">기간총액 분할</option><option value="monthly">월정액</option><option value="daily">일예산</option></select></div>';
+  h+='<div class="field"><label>시작일</label><input id="adStartF" type="date" value="'+esc(r?.start_date||r?.spend_date||ymd(now))+'" onchange="adBillingUI()"></div>';
+  h+='<div class="field" id="adDurationWrap"><label>기간(개월)</label><input id="adDurationF" type="number" min="1" max="120" placeholder="비우면 계속" oninput="adBillingUI()"></div>';
+  h+='<div class="field"><label>종료일</label><input id="adEndF" type="date" readonly><small style="color:#6c7788">기간 입력 시 자동계산 · 비우면 계속</small></div>';
+  h+='<div class="field"><label>채널</label><select id="adChannelF">'+optHtml('ad_channel')+'</select></div>';
+  h+='<div class="field"><label id="adAmountLabel">광고비</label><input class="moneyI" id="adAmountF" type="text" inputmode="numeric" value="'+Number(r?.amount||0)+'" oninput="formatMoneyInput(this);adBillingUI()"><small id="adPreview" style="color:#6c7788"></small></div>';
+  h+='<div class="field"><label>캠페인명</label><input id="adCampaignF" value="'+esc(r?.campaign||'')+'"></div>';
+  h+='<div class="field"><label>문의</label><input id="adInquiryF" type="number" value="'+Number(r?.inquiries||0)+'"></div>';
+  h+='<div class="field"><label>방문</label><input id="adVisitF" type="number" value="'+Number(r?.visits||0)+'"></div>';
+  h+='<div class="field"><label>개통</label><input id="adActF" type="number" value="'+Number(r?.activations||0)+'"></div>';
+  h+='<div class="field"><label>유입 최종마진</label><input class="moneyI" id="adMarginF" type="text" inputmode="numeric" value="'+Number(r?.attributed_margin||0)+'" oninput="formatMoneyInput(this)"></div>';
+  h+='<div class="field full"><label>메모</label><textarea id="adNoteF">'+esc(r?.note||'')+'</textarea></div></div>';
+  $('modalBody').innerHTML=h;
+  $('adPresetF').value=r?.preset_type||'custom';
+  $('adBillingF').value=r?.billing_type||'one_time';
+  $('adDurationF').value=r?.duration_months&&r.billing_type!=='one_time'?r.duration_months:'';
+  if(r?.channel&&![...$('adChannelF').options].some(o=>o.value===r.channel)){
+    const o=document.createElement('option');o.value=r.channel;o.textContent=r.channel;$('adChannelF').appendChild(o);
+  }
+  if(r?.channel)$('adChannelF').value=r.channel;
+  formatMoneyInput($('adAmountF'));formatMoneyInput($('adMarginF'));adBillingUI();showModal();
+}
+async function saveAd(){
+  const amount=moneyNumber($('adAmountF').value),type=$('adBillingF').value,dur=Number($('adDurationF').value||0)||null,start=$('adStartF').value;
+  if(amount<=0){alert('광고비를 입력하세요.');return}
+  if(!start){alert('시작일을 입력하세요.');return}
+  if(type==='contract_total'&&!dur){alert('기간총액 분할은 기간(개월)을 입력해야 합니다.');return}
+  const payload={spend_date:start,start_date:start,end_date:$('adEndF').value||null,billing_type:type,duration_months:type==='one_time'?1:dur,preset_type:$('adPresetF').value||'custom',channel:$('adChannelF').value,amount:amount,campaign:$('adCampaignF').value||null,inquiries:Number($('adInquiryF').value||0),visits:Number($('adVisitF').value||0),activations:Number($('adActF').value||0),attributed_margin:moneyNumber($('adMarginF').value),note:$('adNoteF').value||null,updated_at:new Date().toISOString()};
+  const q=editingAdId?await sb.from('jk_ad_spend').update(payload).eq('id',editingAdId):await sb.from('jk_ad_spend').insert(payload);
+  if(q.error){alert(q.error.message);return}
+  const wasEdit=Boolean(editingAdId);editingAdId=null;closeModal();toast(wasEdit?'광고비 수정 완료':'광고비 등록 완료');
+  await Promise.all([loadAds(),loadDashboard()]);
+}
+async function deleteAd(id){
+  if(!confirm('삭제할까요?'))return;
+  const q=await sb.from('jk_ad_spend').delete().eq('id',id);
+  if(q.error){alert(q.error.message);return}
+  await Promise.all([loadAds(),loadDashboard()]);
+}
 
 async function loadExpenses(){if(!$('expenseMonth'))return;const [a,b]=bounds($('expenseMonth').value||mk(now));const {data,error}=await sb.from('jk_expenses').select('*').gte('expense_date',a).lt('expense_date',b).order('expense_date',{ascending:false});if(error)return;state.expenses=data||[];renderExpenses()}
 function renderExpenses(){const f=$('expenseFilter')?.value||'all',rows=state.expenses.filter(r=>f==='all'||(f==='fixed'?r.is_fixed:!r.is_fixed));$('expenseBody').innerHTML=rows.map(r=>`<tr><td>${r.expense_date}</td><td><span class="pill ${r.is_fixed?'blue':'orange'}">${r.is_fixed?'고정비':'유동비'}</span></td><td>${esc(r.category)}</td><td>${esc(r.description||'-')}</td><td><b>${won(r.amount)}</b></td><td>${esc(r.payment_method||'-')}</td><td>${esc(r.vendor||'-')}</td><td><button class="btn danger" onclick="deleteExpense('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="8" class="empty">비용 데이터 없음</td></tr>';const fix=state.expenses.filter(r=>r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0),vari=state.expenses.filter(r=>!r.is_fixed).reduce((a,r)=>a+Number(r.amount||0),0),total=fix+vari;$('eTotal').textContent=won(total);$('eFixed').textContent=won(fix);$('eVariable').textContent=won(vari);$('eFixedPct').textContent=total?pct(fix/total*100):'0.0%';$('eCount').textContent=state.expenses.length+'건'}

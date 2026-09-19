@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.8</title>
+<title>정권통신 Business Center V3.9</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -67,7 +67,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.8</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.9</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -216,7 +216,24 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <div class="setting-card card"><h3>광고 채널</h3><p>광고비 입력에서 사용하는 채널입니다.</p><div class="setting-list" id="setAds"></div><div class="addrow"><input id="newAdChannel" placeholder="예: 유튜브"><button class="btn primary" onclick="addOption('ad_channel','newAdChannel')">추가</button></div></div>
   <div class="setting-card card"><h3>판매자</h3><p>장부 판매자 선택지입니다.</p><div class="setting-list" id="setStaff"></div><div class="addrow"><input id="newStaff" placeholder="직원명"><button class="btn primary" onclick="addStaff()">추가</button></div></div>
   <div class="setting-card card"><h3>계정</h3><p>대표 계정과 로그인 상태를 확인합니다.</p><div class="setting-list"><span class="tag">needis123@gmail.com</span><span class="tag" id="authStatus">로그인 필요</span></div><div class="addrow"><button class="btn" onclick="showLogin()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정</button></div></div>
-  <div class="setting-card card"><h3>카카오 알림톡 자동발송</h3><p>매일 09:10 / 18:10에 발송대기열을 확인합니다. SOLAPI 채널·템플릿 연결 후 자동발송됩니다.</p><div class="setting-list"><span class="tag" id="notifyProviderStatus">연결 확인중</span><span class="tag" id="notifyTemplateStatus">템플릿 0개</span><span class="tag" id="notifyQueueStatus">대기 0건</span></div></div>
+  <div class="setting-card card" style="grid-column:1/-1">
+ <h3>카카오 알림톡 연결설정</h3>
+ <p>API 비밀키는 이 화면에서만 입력하고 저장 후 다시 표시하지 않습니다. 카카오 비즈니스 채널을 SOLAPI에 연동한 뒤 발급값을 넣으세요.</p>
+ <div class="setting-list" style="margin-bottom:12px"><span class="tag" id="notifyProviderStatus">연결 확인중</span><span class="tag" id="notifyTemplateStatus">템플릿 0개</span><span class="tag" id="notifyQueueStatus">대기 0건</span></div>
+ <div class="form">
+  <div class="field"><label>SOLAPI API Key</label><input id="solApiKey" autocomplete="off" placeholder="저장 후에는 화면에 표시하지 않음"></div>
+  <div class="field"><label>SOLAPI API Secret</label><input id="solApiSecret" type="password" autocomplete="new-password" placeholder="변경할 때만 입력"></div>
+  <div class="field"><label>카카오채널 PF ID</label><input id="solPfId" autocomplete="off" placeholder="예: KA01PF..."></div>
+  <div class="field"><label>대체문자 발신번호</label><input id="solFromNumber" inputmode="numeric" placeholder="숫자만 입력"></div>
+  <div class="field"><label>자동발송</label><select id="solEnabled"><option value="false">OFF · 연결테스트 중</option><option value="true">ON · 자동발송</option></select></div>
+  <div class="field"><label>발송 스케줄</label><input value="매일 09:10 / 18:10" readonly></div>
+ </div>
+ <div class="addrow" style="margin-top:10px"><button class="btn primary" onclick="saveNotificationProvider()">연결정보 저장</button><a class="btn" href="https://console.solapi.com" target="_blank" rel="noopener">SOLAPI 콘솔 열기</a></div>
+ <div style="border-top:1px solid var(--line);margin:16px 0"></div>
+ <h3 style="font-size:13px">알림톡 템플릿 ID</h3>
+ <p>카카오 검수 승인 후 받은 템플릿 ID를 넣고 항목별 발송을 켜면 됩니다.</p>
+ <div id="notifyTemplateSettings"></div>
+</div>
  </div>
 </section>
 
@@ -382,12 +399,43 @@ async function markMaintenanceDone(ledgerId,eventType){
 }
 async function loadNotificationStatus(){
   if(!$('notifyProviderStatus'))return;
-  const {data,error}=await sb.rpc('jk_notification_connection_status');
-  if(error){console.warn(error);return}
-  const d=data||{};
+  const [st,tp]=await Promise.all([sb.rpc('jk_notification_connection_status'),sb.rpc('jk_notification_template_settings')]);
+  if(st.error){console.warn(st.error);return}
+  const d=st.data||{};
   $('notifyProviderStatus').textContent=d.enabled&&d.credentials_ready&&d.channel_ready?'SOLAPI 연결완료':'SOLAPI 연결대기';
   $('notifyTemplateStatus').textContent='템플릿 '+Number(d.enabled_templates||0)+'개';
   $('notifyQueueStatus').textContent='대기 '+Number(d.pending_count||0)+'건'+(Number(d.failed_count||0)>0?' · 실패 '+d.failed_count+'건':'');
+  if($('solEnabled'))$('solEnabled').value=d.enabled?'true':'false';
+  if(!tp.error&&$('notifyTemplateSettings')){
+    const rows=tp.data||[];
+    $('notifyTemplateSettings').innerHTML=rows.map(r=>'<div class="addrow" style="grid-template-columns:160px 1fr 110px 80px;align-items:center;margin-bottom:7px"><b style="font-size:10px">'+esc(r.label)+'</b><input id="tpl_'+esc(r.event_type)+'" value="'+esc(r.template_id||'')+'" placeholder="템플릿 ID"><select id="tplOn_'+esc(r.event_type)+'"><option value="false">OFF</option><option value="true"'+(r.enabled?' selected':'')+'>ON</option></select><button class="btn" data-tpl-save="'+esc(r.event_type)+'">저장</button></div><div style="font-size:9px;color:#6c7788;margin:-2px 0 10px 160px">'+esc(r.message_preview)+'</div>').join('');
+    $('notifyTemplateSettings').querySelectorAll('[data-tpl-save]').forEach(b=>b.onclick=()=>saveNotificationTemplate(b.dataset.tplSave));
+  }
+}
+
+async function saveNotificationProvider(){
+  const payload={
+    p_api_key:$('solApiKey')?.value.trim()||'',
+    p_api_secret:$('solApiSecret')?.value.trim()||'',
+    p_pf_id:$('solPfId')?.value.trim()||'',
+    p_from_number:$('solFromNumber')?.value.trim()||'',
+    p_enabled:$('solEnabled')?.value==='true'
+  };
+  const {data,error}=await sb.rpc('jk_save_notification_provider_config',payload);
+  if(error){alert(error.message);return}
+  if($('solApiSecret'))$('solApiSecret').value='';
+  if($('solApiKey'))$('solApiKey').value='';
+  toast('알림톡 연결정보 저장 완료');
+  await loadNotificationStatus();
+}
+async function saveNotificationTemplate(eventType){
+  const id=$('tpl_'+eventType)?.value.trim()||'';
+  const enabled=$('tplOn_'+eventType)?.value==='true';
+  if(enabled&&!id){alert('템플릿 ID를 먼저 입력하세요.');return}
+  const {error}=await sb.rpc('jk_save_notification_template',{p_event_type:eventType,p_template_id:id,p_enabled:enabled});
+  if(error){alert(error.message);return}
+  toast('템플릿 설정 저장 완료');
+  await loadNotificationStatus();
 }
 
 function dealLabel(r){if(r.deal_type==='휴대폰')return r.activation_type||'휴대폰';if(r.deal_type==='번들')return '번들';return r.deal_type||'-'}
@@ -667,7 +715,7 @@ function drawGrowth(){const o=canvas('growthChart');if(!o)return;const map={};st
 function openTarget(){modalMode='target';const t=state.targets.find(x=>String(x.target_month).slice(0,7)===mk(now));$('modalTitle').textContent='목표 설정';$('modalBody').innerHTML=`<div class="form"><div class="field"><label>월</label><input id="tMonthF" type="month" value="${mk(now)}"></div><div class="field"><label>월 목표매출</label><input id="tGoalF" type="number" value="${Number(t?.target_margin||0)}"></div><div class="field"><label>월 판매 목표</label><input id="tUnitsF" type="number" value="${Number(t?.target_units||0)}"></div><div class="field"><label>월 영업일</label><input id="tDaysF" type="number" value="${Number(t?.workdays_total||new Date(now.getFullYear(),now.getMonth()+1,0).getDate())}"></div><div class="field full"><label>${now.getFullYear()}년 연간 목표매출</label><input id="tYearGoalF" type="number" value="${Number(state.yearTarget?.target_margin||0)}"></div></div>`;showModal()}
 async function saveTarget(){const mon=$('tMonthF').value,goal=Number($('tGoalF').value||0),yg=Number($('tYearGoalF').value||0);if(!mon||goal<=0){alert('월 목표를 입력하세요.');return}let q=await sb.from('jk_targets').upsert({target_month:mon+'-01',target_margin:goal,target_units:Number($('tUnitsF').value||0),workdays_total:Number($('tDaysF').value||0)},{onConflict:'target_month'});if(q.error){alert(q.error.message);return}if(yg>0){q=await sb.from('jk_year_targets').upsert({target_year:Number(mon.slice(0,4)),target_margin:yg},{onConflict:'target_year'});if(q.error){alert(q.error.message);return}}closeModal();toast('목표 저장 완료');loadDashboard()}
 
-async function loadSettings(){if(!$('setLead'))return;await loadBase();const render=(id,type)=>$(id).innerHTML=opt(type).map(x=>`<span class="tag">${esc(x.label)}</span>`).join('');render('setLead','lead_source');render('setFixed','expense_fixed');render('setVariable','expense_variable');render('setAds','ad_channel');$('setStaff').innerHTML=state.staff.filter(x=>x.active).map(x=>`<span class="tag">${esc(x.name)}</span>`).join('')}
+async function loadSettings(){if(!$('setLead'))return;await loadBase();const render=(id,type)=>$(id).innerHTML=opt(type).map(x=>`<span class="tag">${esc(x.label)}</span>`).join('');render('setLead','lead_source');render('setFixed','expense_fixed');render('setVariable','expense_variable');render('setAds','ad_channel');$('setStaff').innerHTML=state.staff.filter(x=>x.active).map(x=>`<span class="tag">${esc(x.name)}</span>`).join('');await loadNotificationStatus()}
 async function addOption(type,inputId){const label=$(inputId).value.trim();if(!label)return;const{error}=await sb.from('jk_lookup_options').insert({option_type:type,label,sort_order:100});if(error)alert(error.message);else{$(inputId).value='';await loadSettings();toast('설정 추가 완료')}}
 async function addStaff(){const name=$('newStaff').value.trim();if(!name)return;const{error}=await sb.from('jk_staff').insert({name});if(error)alert(error.message);else{$('newStaff').value='';await loadSettings();toast('판매자 추가 완료')}}
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.20</title>
+<title>정권통신 Business Center V3.21</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -112,7 +112,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.20</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.21</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -293,7 +293,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <div class="box"><span>이번달 말 정산입금</span><strong id="cashSettlementThis">0원</strong></div>
   <div class="box"><span>다음달 말 정산입금</span><strong id="cashSettlementNext">0원</strong></div>
   <div class="box"><span>이번달 페이백</span><strong id="cashPayback">0원</strong></div>
-  <div class="box"><span>이번달 자동급여</span><strong id="cashPayroll">0원</strong></div>
+  <div class="box"><span>이번달 말 지급급여</span><strong id="cashPayroll">0원</strong><small id="cashPayrollSource" style="display:block;color:#6c7788;margin-top:4px">전월 판매분</small></div>
   <div class="box"><span>월 광고비 계획</span><strong id="cashAdBudget">0원</strong></div>
   <div class="box"><span>월말 예상잔고</span><strong id="cashProjected">0원</strong></div>
   <div class="box"><span>추가 확보 필요</span><strong id="cashGap">0원</strong></div>
@@ -320,8 +320,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
     <div>① 현재 가용자금 = <b>통장 + 현금시재 + 기타 가용자금</b></div>
     <div>② 이번달 말 들어올 돈 = <b>전월 W 최종마진 - 이미 받은 현금완납(S)</b></div>
     <div>③ 페이백 Q는 W에 이미 차감되어 있으므로 <b>월말 예상잔고에서 두 번 빼지 않습니다.</b></div>
-    <div>④ 월말 예상잔고 = 현재 가용자금 + 실제 정산예정 - 자동급여 - 직접 입력한 예정지출</div>
-    <div>⑤ 최소 유지 시재보다 부족하면 그 차액을 <b>추가 확보 필요</b>로 표시합니다.</div>
+    <div>④ 급여는 <b>판매월 다음달 말일</b>에 실제 현금유출로 반영합니다. 예: 8월 판매급여 → 9/30, 9월 판매급여 → 10/31</div>
+    <div>⑤ 월말 예상잔고 = 현재 가용자금 + 실제 정산예정 - 이번달 말 지급급여 - 직접 입력한 예정지출</div>
+    <div>⑥ 최소 유지 시재보다 부족하면 그 차액을 <b>추가 확보 필요</b>로 표시합니다.</div>
     <div style="padding:10px 12px;background:#f5f7f9;border-radius:12px;color:#6c7788">광고비는 월 계획액을 별도로 보여주되 현재잔고에 이미 빠진 광고비를 중복 차감하지 않습니다.</div>
    </div>
   </div>
@@ -1301,6 +1302,7 @@ async function loadCashflow(){
   const setText=(id,val)=>{if($(id))$(id).textContent=won(val||0)};
   setText('cashAvailable',d.available_cash);setText('cashSettlementThis',d.settlement_due_this_month);setText('cashSettlementNext',d.settlement_due_next_month);
   setText('cashPayback',d.payback_due_this_month);setText('cashPayroll',d.payroll_due_this_month);setText('cashAdBudget',d.ad_budget_this_month);
+  if($('cashPayrollSource'))$('cashPayrollSource').textContent=d.payroll_source_sales_month?String(d.payroll_source_sales_month).slice(0,7)+' 판매분 · '+esc(d.month_end_date)+' 지급':'전월 판매분 · 이번달 말 지급';
   setText('cashProjected',d.projected_after_month_end);setText('cashGap',d.cash_gap_to_buffer);
   setText('dCashAvailable',d.available_cash);setText('dCashSettlement',d.settlement_due_this_month);setText('dCashProjected',d.projected_after_month_end);setText('dCashGap',d.cash_gap_to_buffer);
   if($('cashGap'))$('cashGap').style.color=Number(d.cash_gap_to_buffer||0)>0?'#dc3f50':'#138754';

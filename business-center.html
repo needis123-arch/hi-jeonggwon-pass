@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.5</title>
+<title>정권통신 Business Center V3.6</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -41,12 +41,25 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 @media(max-width:1150px){.kpis{grid-template-columns:repeat(2,1fr)}.summary{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}}
 @media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{display:none}.content{padding:15px}.topbar{padding:0 14px}.grid2,.grid3,.settings-grid{grid-template-columns:1fr}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.calc-preview{grid-column:auto;grid-template-columns:1fr 1fr}.kpis{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.kpis,.summary{grid-template-columns:1fr}.goal-top,.section-head{flex-direction:column;align-items:flex-start}.actions{flex-wrap:wrap}}
+
+.alert-center{padding:18px;margin-bottom:16px}
+.alert-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.alert-head h3{margin:0;font-size:15px}.alert-head small{color:var(--muted)}
+.alert-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.alert-sum{border:1px solid var(--line);background:#fbfcfd;border-radius:13px;padding:12px}
+.alert-sum span{display:block;font-size:9px;color:var(--muted)}.alert-sum b{display:block;font-size:16px;margin-top:5px}
+.alert-list{display:grid;gap:8px}.alert-item{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid #e6eaf0;border-radius:13px;padding:11px 12px;background:#fff}
+.alert-dot{width:10px;height:10px;border-radius:50%;background:#98a2b2}.alert-item.warning .alert-dot{background:#f0a22e}.alert-item.critical .alert-dot{background:#df3f50}
+.alert-title{font-size:11px;font-weight:900}.alert-detail{font-size:9px;color:var(--muted);margin-top:3px}
+.alert-actions{display:flex;gap:6px}.alert-empty{padding:16px;text-align:center;color:var(--muted);font-size:10px}
+@media(max-width:900px){.alert-summary{grid-template-columns:1fr 1fr}.alert-item{grid-template-columns:auto 1fr}.alert-actions{grid-column:2}}
+
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.5</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.6</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="ledger">장부 관리</button>
@@ -71,6 +84,16 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 <section class="page active" id="page-dashboard">
  <div class="section-head"><div><h2>정권통신 경영 현황</h2><p>장부 입력만으로 매출·갯수·손익·목표·유입을 자동 계산합니다.</p></div><button class="btn" onclick="loadAll()">새로고침</button></div>
+ <div class="alert-center card">
+  <div class="alert-head"><div><h3>기간 도래 알림</h3><small>월말 페이백 · 중고반납 · 제휴카드 · 유지조건을 자동 추적합니다.</small></div><button class="btn" onclick="loadAlerts()">알림 새로고침</button></div>
+  <div class="alert-summary">
+   <div class="alert-sum"><span>월말 페이백 예정</span><b id="alertPayback">0원</b></div>
+   <div class="alert-sum"><span>중고 반납 14일 초과</span><b id="alertUsed">0건</b></div>
+   <div class="alert-sum"><span>제휴카드 도래/초과</span><b id="alertCard">0건</b></div>
+   <div class="alert-sum"><span>요금제·보험·부가 도래</span><b id="alertMaintenance">0건</b></div>
+  </div>
+  <div class="alert-list" id="opsAlertList"><div class="alert-empty">도래한 알림이 없습니다.</div></div>
+ </div>
  <div class="goal card">
   <div class="goal-top"><div><h3>이번 달 목표 달성률</h3><div class="goal-big" id="dGoalPct">0.0%</div><div style="font-size:10px;color:#6c7788;margin-top:5px">현재 <b id="dCurrent">0원</b> / 목표 <b id="dTarget">미설정</b></div></div><div style="text-align:right"><span style="font-size:10px;color:#6c7788">현재 페이스 예상</span><b id="dForecast" style="display:block;font-size:23px;margin-top:5px">0원</b><small id="dForecastGap" style="color:#6c7788">목표 설정 후 계산</small></div></div>
   <div class="progress"><span id="dGoalBar"></span></div>
@@ -159,6 +182,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <div class="setting-card card"><h3>광고 채널</h3><p>광고비 입력에서 사용하는 채널입니다.</p><div class="setting-list" id="setAds"></div><div class="addrow"><input id="newAdChannel" placeholder="예: 유튜브"><button class="btn primary" onclick="addOption('ad_channel','newAdChannel')">추가</button></div></div>
   <div class="setting-card card"><h3>판매자</h3><p>장부 판매자 선택지입니다.</p><div class="setting-list" id="setStaff"></div><div class="addrow"><input id="newStaff" placeholder="직원명"><button class="btn primary" onclick="addStaff()">추가</button></div></div>
   <div class="setting-card card"><h3>계정</h3><p>대표 계정과 로그인 상태를 확인합니다.</p><div class="setting-list"><span class="tag">needis123@gmail.com</span><span class="tag" id="authStatus">로그인 필요</span></div><div class="addrow"><button class="btn" onclick="showLogin()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정</button></div></div>
+  <div class="setting-card card"><h3>카카오 알림톡 자동발송</h3><p>매일 09:10 / 18:10에 발송대기열을 확인합니다. SOLAPI 채널·템플릿 연결 후 자동발송됩니다.</p><div class="setting-list"><span class="tag" id="notifyProviderStatus">연결 확인중</span><span class="tag" id="notifyTemplateStatus">템플릿 0개</span><span class="tag" id="notifyQueueStatus">대기 0건</span></div></div>
  </div>
 </section>
 
@@ -175,7 +199,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-const state={staff:[],options:[],ledger:[],used:[],payback:[],affiliate:[],expenses:[],ads:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
+const state={staff:[],options:[],ledger:[],used:[],payback:[],affiliate:[],alerts:[],expenses:[],ads:[],sourceRows:[],daily:[],annual:[],targets:[],yearTarget:null};
 let modalMode="";
 
 const $=id=>document.getElementById(id);
@@ -211,7 +235,50 @@ function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">
 function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
 async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
-async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadSources(),loadSettings()]);await checkAffiliateAlerts()}
+async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
+
+
+async function loadAlerts(){
+  if(!$('opsAlertList'))return;
+  const {data,error}=await sb.from('jk_v_dashboard_alerts').select('*').order('severity',{ascending:true}).order('due_date',{ascending:true});
+  if(error){console.warn(error);return}
+  state.alerts=data||[];
+  const pay=state.alerts.find(x=>x.alert_type==='PAYBACK_MONTHEND');
+  const used=state.alerts.filter(x=>x.alert_type==='USED_DEVICE_RETURN');
+  const card=state.alerts.filter(x=>x.alert_type==='AFFILIATE_CARD');
+  const maint=state.alerts.filter(x=>['PLAN_CHANGE','INSURANCE_CANCEL','ADDON_CANCEL'].includes(x.alert_type));
+  $('alertPayback').textContent=pay?won(pay.amount):'0원';
+  $('alertUsed').textContent=used.length+'건';
+  $('alertCard').textContent=card.length+'건';
+  $('alertMaintenance').textContent=maint.length+'건';
+  const order={critical:0,warning:1,info:2};
+  state.alerts.sort((a,b)=>(order[a.severity]??9)-(order[b.severity]??9)||String(a.due_date).localeCompare(String(b.due_date)));
+  $('opsAlertList').innerHTML=state.alerts.length?state.alerts.map(renderAlertRow).join(''):'<div class="alert-empty">현재 도래한 알림이 없습니다.</div>';
+}
+function renderAlertRow(a){
+  let action='';
+  if(a.alert_type==='PAYBACK_MONTHEND')action='<button class="btn" onclick="go(\\'payback\\')">페이백 보기</button>';
+  else if(a.alert_type==='USED_DEVICE_RETURN')action='<button class="btn" onclick="go(\\'used\\')">반납 확인</button>';
+  else if(a.alert_type==='AFFILIATE_CARD')action='<button class="btn" onclick="go(\\'affiliate\\')">카드 확인</button>';
+  else action='<button class="btn primary" onclick="markMaintenanceDone(\\''+a.ledger_id+'\\',\\''+a.alert_type+'\\')">처리완료</button>';
+  return '<div class="alert-item '+esc(a.severity)+'"><span class="alert-dot"></span><div><div class="alert-title">'+esc(a.title)+'</div><div class="alert-detail">'+esc(a.detail)+' · 기준일 '+esc(a.due_date)+'</div></div><div class="alert-actions">'+action+'</div></div>';
+}
+async function markMaintenanceDone(ledgerId,eventType){
+  if(!confirm('이 항목을 처리완료로 표시할까요?'))return;
+  const {error}=await sb.rpc('jk_mark_maintenance_done',{p_ledger_id:ledgerId,p_event_type:eventType});
+  if(error){alert(error.message);return}
+  toast('처리완료 반영');
+  await Promise.all([loadAlerts(),loadLedger()]);
+}
+async function loadNotificationStatus(){
+  if(!$('notifyProviderStatus'))return;
+  const {data,error}=await sb.rpc('jk_notification_connection_status');
+  if(error){console.warn(error);return}
+  const d=data||{};
+  $('notifyProviderStatus').textContent=d.enabled&&d.credentials_ready&&d.channel_ready?'SOLAPI 연결완료':'SOLAPI 연결대기';
+  $('notifyTemplateStatus').textContent='템플릿 '+Number(d.enabled_templates||0)+'개';
+  $('notifyQueueStatus').textContent='대기 '+Number(d.pending_count||0)+'건'+(Number(d.failed_count||0)>0?' · 실패 '+d.failed_count+'건':'');
+}
 
 function dealLabel(r){if(r.deal_type==='휴대폰')return r.activation_type||'휴대폰';if(r.deal_type==='번들')return '번들';return r.deal_type||'-'}
 function classify(v){if(v==='MNP'||v==='기변'||v==='010신규')return {deal_type:'휴대폰',activation_type:v};if(v==='유심단독')return {deal_type:'유심단독',activation_type:'유심단독'};if(v==='동판')return {deal_type:'동판',activation_type:'동판'};if(v==='약갱')return {deal_type:'약갱',activation_type:'약갱'};return {deal_type:'번들',activation_type:'번들'}}
@@ -319,7 +386,7 @@ function openLedger(){modalMode='ledger';$('modalTitle').textContent='판매건 
 <div class="field"><label>부가서비스 해지가능일</label><input id="fAddonDate" type="date" readonly></div>
 <div class="field full"><label>메모</label><textarea id="fMemo" rows="2"></textarea></div></div>`;sessionStorage.setItem('jk-ledger-modal-open','1');const restored=restoreLedgerDraft();document.querySelectorAll('#modalBody input,#modalBody select,#modalBody textarea').forEach(x=>{x.addEventListener('input',saveLedgerDraft);x.addEventListener('change',saveLedgerDraft)});document.querySelectorAll('.calcI').forEach(x=>x.addEventListener('input',previewCalc));if($('fDate'))$('fDate').addEventListener('change',()=>{affiliateCardUI();refreshMaintenanceDates()});affiliateCardUI();refreshMaintenanceDates();previewCalc();showModal();if(restored)toast('작성 중이던 판매건을 복원했습니다.')}
 function previewCalc(){const n=id=>Number($(id)?.value||0),m=n('fK')-n('fL'),p=Math.round(m*.1),w=m-p-n('fQ')-n('fR')+n('fS')-n('fT')+n('fU');if($('pvM'))$('pvM').textContent=won(m);if($('pvP'))$('pvP').textContent=won(p);if($('pvW'))$('pvW').textContent=won(w)}
-async function saveLedger(){const name=$('fName').value.trim(),phone=$('fPhone').value.replace(/\D/g,''),birth=$('fBirth').value||null;if(!name||phone.length<10){alert('고객명과 번호를 확인하세요.');return}const c=classify($('fDeal').value);let customerId=null;const customerPayload={name,phone,phone_normalized:phone};if(birth)customerPayload.birth_date=birth;const cu=await sb.from('jk_customers').upsert(customerPayload,{onConflict:'phone_normalized'}).select('id').single();if(cu.error){alert(cu.error.message);return}customerId=cu.data.id;const n=id=>Number($(id).value||0);const usedReq=$('fUsedRequired').value==='true';const payload={activation_date:$('fDate').value,vendor:$('fVendor').value||null,customer_id:customerId,customer_name_snapshot:name,customer_phone_snapshot:phone,customer_birth_date_snapshot:birth,model_name:$('fModel').value||null,deal_type:c.deal_type,activation_type:c.activation_type,carrier:$('fCarrier').value||null,lead_source:$('fSource').value||null,plan_name:$('fPlan').value||null,retail_price:n('fRetail'),base_rebate:n('fK'),cash_sale_amount:n('fL'),payback_amount:n('fQ'),penalty_paid:n('fR'),cash_received:n('fS'),sim_cost:n('fT'),used_device_amount:n('fU'),used_device_model:$('fUsedModel').value||null,salesperson_id:$('fStaff').value||null,payback_due_date:$('fPbDue').value||null,used_return_required:usedReq,affiliate_card_status:$('fCardStatus').value,affiliate_card_company:$('fCardCompany').value||null,affiliate_card_amount:Number($('fCardAmount').value||0),affiliate_card_due_date:$('fCardStatus').value!=='안함'?affiliateDueDate():null,plan_change_rule:storedMaintenanceRule('fPlan'),plan_change_date:$('fPlanDate').value||null,insurance_cancel_rule:storedMaintenanceRule('fInsurance'),insurance_cancel_date:$('fInsuranceDate').value||null,addon_cancel_rule:storedMaintenanceRule('fAddon'),addon_cancel_date:$('fAddonDate').value||null,memo:$('fMemo').value||null,flag_additional:c.deal_type==='유심단독',flag_dongpan:c.deal_type==='동판',flag_contract_renewal:c.deal_type==='약갱',flag_bundle:c.deal_type==='번들'};const ins=await sb.from('jk_sales_ledger').insert(payload).select('id,payback_amount,used_device_amount').single();if(ins.error){alert(ins.error.message);return}if(n('fQ')>0&&($('fBank').value||$('fAccount').value)){await sb.from('jk_payback_accounts').insert({ledger_id:ins.data.id,bank_name:$('fBank').value||'미입력',account_holder:$('fHolder').value||name,account_number:$('fAccount').value||'미입력'})}if(usedReq){await sb.from('jk_used_device_returns').insert({ledger_id:ins.data.id,expected_model:$('fUsedModel').value||null,expected_amount:n('fU'),assigned_staff_id:$('fStaff').value||null,response_status:'미답변',due_date:$('fUsedDue').value||null})}clearLedgerDraft();sessionStorage.removeItem('jk-ledger-modal-open');closeModal();toast('장부 저장 및 매출 자동반영 완료');await Promise.all([loadLedger(),loadDashboard(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadSources()]);await checkAffiliateAlerts()}
+async function saveLedger(){const name=$('fName').value.trim(),phone=$('fPhone').value.replace(/\D/g,''),birth=$('fBirth').value||null;if(!name||phone.length<10){alert('고객명과 번호를 확인하세요.');return}const c=classify($('fDeal').value);let customerId=null;const customerPayload={name,phone,phone_normalized:phone};if(birth)customerPayload.birth_date=birth;const cu=await sb.from('jk_customers').upsert(customerPayload,{onConflict:'phone_normalized'}).select('id').single();if(cu.error){alert(cu.error.message);return}customerId=cu.data.id;const n=id=>Number($(id).value||0);const usedReq=$('fUsedRequired').value==='true';const payload={activation_date:$('fDate').value,vendor:$('fVendor').value||null,customer_id:customerId,customer_name_snapshot:name,customer_phone_snapshot:phone,customer_birth_date_snapshot:birth,model_name:$('fModel').value||null,deal_type:c.deal_type,activation_type:c.activation_type,carrier:$('fCarrier').value||null,lead_source:$('fSource').value||null,plan_name:$('fPlan').value||null,retail_price:n('fRetail'),base_rebate:n('fK'),cash_sale_amount:n('fL'),payback_amount:n('fQ'),penalty_paid:n('fR'),cash_received:n('fS'),sim_cost:n('fT'),used_device_amount:n('fU'),used_device_model:$('fUsedModel').value||null,salesperson_id:$('fStaff').value||null,payback_due_date:$('fPbDue').value||null,used_return_required:usedReq,affiliate_card_status:$('fCardStatus').value,affiliate_card_company:$('fCardCompany').value||null,affiliate_card_amount:Number($('fCardAmount').value||0),affiliate_card_due_date:$('fCardStatus').value!=='안함'?affiliateDueDate():null,plan_change_rule:storedMaintenanceRule('fPlan'),plan_change_date:$('fPlanDate').value||null,insurance_cancel_rule:storedMaintenanceRule('fInsurance'),insurance_cancel_date:$('fInsuranceDate').value||null,addon_cancel_rule:storedMaintenanceRule('fAddon'),addon_cancel_date:$('fAddonDate').value||null,memo:$('fMemo').value||null,flag_additional:c.deal_type==='유심단독',flag_dongpan:c.deal_type==='동판',flag_contract_renewal:c.deal_type==='약갱',flag_bundle:c.deal_type==='번들'};const ins=await sb.from('jk_sales_ledger').insert(payload).select('id,payback_amount,used_device_amount').single();if(ins.error){alert(ins.error.message);return}if(n('fQ')>0&&($('fBank').value||$('fAccount').value)){await sb.from('jk_payback_accounts').insert({ledger_id:ins.data.id,bank_name:$('fBank').value||'미입력',account_holder:$('fHolder').value||name,account_number:$('fAccount').value||'미입력'})}if(usedReq){await sb.from('jk_used_device_returns').insert({ledger_id:ins.data.id,expected_model:$('fUsedModel').value||null,expected_amount:n('fU'),assigned_staff_id:$('fStaff').value||null,response_status:'미답변',due_date:$('fUsedDue').value||null})}clearLedgerDraft();sessionStorage.removeItem('jk-ledger-modal-open');closeModal();toast('장부 저장 및 매출 자동반영 완료');await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadSources(),loadNotificationStatus()]);await checkAffiliateAlerts()}
 async function deleteLedger(id){if(!confirm('판매건을 삭제할까요?'))return;const {error}=await sb.from('jk_sales_ledger').delete().eq('id',id);if(error){alert(error.message);return}await loadAll()}
 
 async function loadReport(){const month=$('reportMonth')?.value||mk(now),date=$('reportDate')?.value||ymd(now);const [a,b]=bounds(month);const [mo,dy,st]=await Promise.all([sb.from('jk_v_monthly_sales_summary').select('*').eq('month',a).maybeSingle(),sb.from('jk_v_daily_sales_summary').select('*').eq('activation_date',date).maybeSingle(),sb.from('jk_v_staff_monthly_summary').select('*').eq('month',a).order('staff_name')]);if(mo.error||dy.error||st.error)return;const m=mo.data||{},d=dy.data||{},staff=st.data||[];const marks=r=>`${Number(r.sim_only_count||0)>0?`(+${r.sim_only_count})`:''}${Number(r.dongpan_count||0)>0?`(동판+${r.dongpan_count})`:''}${Number(r.contract_renewal_count||0)>0?`(약갱+${r.contract_renewal_count})`:''}${Number(r.bundle_count||0)>0?`(번들+${r.bundle_count})`:''}`;let txt=`${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일 매출보고\n\n월 총 갯수 ${Number(m.units||0)}개${marks(m)}\n총 매출 : ${won(m.margin_total||0)}\n평균마진 : ${won(m.avg_margin||0)}\n\n일 총 갯수 ${Number(d.units||0)}개${marks(d)}\n총 매출 : ${won(d.margin_total||0)}\n평균마진 : ${won(d.avg_margin||0)}`;staff.forEach(s=>{txt+=`\n\n[${s.staff_name||'미지정'}]\n갯수 ${Number(s.units||0)}개${marks(s)}\n총 매출 : ${won(s.margin_total||0)}\n평균마진 : ${won(s.avg_margin||0)}`});$('reportText').textContent=txt}
@@ -340,16 +407,16 @@ function drawAnnual(){const o=canvas('annualChart');if(!o)return;const map={};st
 async function loadSources(){const [a,b]=bounds($('sourceMonth')?.value||mk(now));const {data,error}=await sb.from('jk_sales_ledger').select('lead_source,deal_type,final_margin').gte('activation_date',a).lt('activation_date',b);if(error)return;const rows=data||[],map={};rows.forEach(r=>{const k=r.lead_source||'미분류';map[k]=map[k]||{n:0,u:0,m:0};map[k].n++;if(r.deal_type==='휴대폰')map[k].u++;map[k].m+=Number(r.final_margin||0)});const arr=Object.entries(map).map(([k,v])=>({k,...v})).sort((a,b)=>b.m-a.m),total=arr.reduce((a,r)=>a+r.m,0),max=Math.max(1,...arr.map(x=>x.m));$('sourceDetail').innerHTML=arr.map(x=>`<div class="source-row"><span>${esc(x.k)}</span><div class="source-bar"><i style="width:${x.m/max*100}%"></i></div><b>${won(x.m)}</b></div>`).join('')||'<div class="empty">데이터 없음</div>';$('sourceBody').innerHTML=arr.map(x=>`<tr><td><b>${esc(x.k)}</b></td><td>${x.n}건</td><td>${x.u}대</td><td>${won(x.m)}</td><td>${won(x.u?Math.floor(x.m/x.u):0)}</td><td>${total?pct(x.m/total*100):'0.0%'}</td></tr>`).join('')}
 
 async function loadUsed(){if(!$('usedMonth'))return;const [a,b]=bounds($('usedMonth').value||mk(now));const {data,error}=await sb.from('jk_v_used_device_return_status').select('*').gte('activation_date',a).lt('activation_date',b).order('activation_date',{ascending:false});if(error)return;state.used=data||[];$('usedBody').innerHTML=state.used.map(r=>`<tr><td><b>${esc(r.customer_name)}</b><br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.expected_model||'-')}</td><td>${esc(r.assigned_staff||'-')}</td><td>${esc(r.activation_date)}</td><td>${esc(r.due_date||'-')}</td><td><select onchange="usedStatus('${r.id}',this.value)"><option ${r.response_status==='미답변'?'selected':''}>미답변</option><option ${r.response_status==='연락완료'?'selected':''}>연락완료</option><option ${r.response_status==='반납예정'?'selected':''}>반납예정</option><option ${r.response_status==='반납완료'?'selected':''}>반납완료</option><option ${r.response_status==='취소'?'selected':''}>취소</option></select></td><td>${won(r.expected_amount)}</td><td>${esc(r.note||'-')}</td><td><button class="btn" onclick="usedEdit('${r.id}')">기한/메모</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">해당 월 중고 반납 건이 없습니다.</td></tr>';const open=state.used.filter(r=>!['반납완료','취소'].includes(r.response_status));$('uTotal').textContent=state.used.length+'건';$('uOpen').textContent=open.length+'건';$('uUnanswered').textContent=open.filter(r=>r.response_status==='미답변').length+'건';$('uOverdue').textContent=open.filter(r=>r.workflow_status==='overdue').length+'건';$('uAmount').textContent=won(open.reduce((a,r)=>a+Number(r.expected_amount||0),0))}
-async function usedStatus(id,status){const payload={response_status:status};if(status==='반납완료'){payload.received_at=new Date().toISOString();payload.settled_at=new Date().toISOString()}const{error}=await sb.from('jk_used_device_returns').update(payload).eq('id',id);if(error)alert(error.message);else loadUsed()}
+async function usedStatus(id,status){const payload={response_status:status};if(status==='반납완료'){payload.received_at=new Date().toISOString();payload.settled_at=new Date().toISOString()}const{error}=await sb.from('jk_used_device_returns').update(payload).eq('id',id);if(error)alert(error.message);else{loadUsed();loadAlerts()}}
 async function usedEdit(id){const r=state.used.find(x=>x.id===id);const due=prompt('반납예정일 YYYY-MM-DD',r?.due_date||'');if(due===null)return;const note=prompt('메모',r?.note||'');if(note===null)return;await sb.from('jk_used_device_returns').update({due_date:due||null,note:note||null}).eq('id',id);loadUsed()}
 
 async function loadPayback(){if(!$('paybackMonth'))return;const [a,b]=bounds($('paybackMonth').value||mk(now));const {data,error}=await sb.from('jk_v_payback_checklist').select('*').gte('due_date',a).lt('due_date',b).order('due_date');if(error)return;state.payback=data||[];$('paybackBody').innerHTML=state.payback.map(r=>`<tr><td><b>${esc(r.customer_name)}</b><br><small>${esc(r.customer_phone)}</small></td><td>${esc(r.salesperson||'-')}</td><td>${won(r.promised_amount)}</td><td>${won(r.paid_amount)}</td><td><b>${won(r.outstanding_amount)}</b></td><td>${esc(r.due_date)}</td><td>${esc(r.bank_name||'-')}</td><td>${esc(r.account_holder||'-')}</td><td>${esc(r.account_number||'-')}</td><td>${r.verification_status==='verified'?'<span class="pill green">확인완료</span>':`<button class="btn" onclick="verifyAccount('${r.ledger_id}')">계좌확인</button>`}</td><td>${Number(r.outstanding_amount)>0?`<button class="btn primary" onclick="payNow('${r.ledger_id}',${Number(r.outstanding_amount)})">지급완료</button>`:'완료'}</td></tr>`).join('')||'<tr><td colspan="11" class="empty">해당 월 페이백 대상이 없습니다.</td></tr>';const pr=state.payback.reduce((a,r)=>a+Number(r.promised_amount||0),0),pd=state.payback.reduce((a,r)=>a+Number(r.paid_amount||0),0),out=state.payback.reduce((a,r)=>a+Number(r.outstanding_amount||0),0);$('pPromised').textContent=won(pr);$('pPaid').textContent=won(pd);$('pOut').textContent=won(out);$('pUnverified').textContent=state.payback.filter(r=>r.verification_status!=='verified').length+'명';$('pCount').textContent=state.payback.filter(r=>Number(r.outstanding_amount)>0).length+'명'}
 async function verifyAccount(id){const r=state.payback.find(x=>x.ledger_id===id),bank=prompt('은행',r?.bank_name||'');if(bank===null)return;const holder=prompt('예금주',r?.account_holder||r?.customer_name||'');if(holder===null)return;const account=prompt('계좌번호',r?.account_number||'');if(!account)return;const{error}=await sb.from('jk_payback_accounts').upsert({ledger_id:id,bank_name:bank||'미입력',account_holder:holder||'미입력',account_number:account,verification_status:'verified',verified_at:new Date().toISOString()},{onConflict:'ledger_id'});if(error)alert(error.message);else loadPayback()}
-async function payNow(id,amount){const raw=prompt('실제 지급액',String(amount));if(raw===null)return;const n=Number(raw);if(n<=0)return;const{error}=await sb.from('jk_payback_payments').insert({ledger_id:id,paid_amount:n});if(error)alert(error.message);else{toast('지급완료 기록');loadPayback();loadDashboard()}}
+async function payNow(id,amount){const raw=prompt('실제 지급액',String(amount));if(raw===null)return;const n=Number(raw);if(n<=0)return;const{error}=await sb.from('jk_payback_payments').insert({ledger_id:id,paid_amount:n});if(error)alert(error.message);else{toast('지급완료 기록');loadPayback();loadDashboard();loadAlerts()}}
 
 
 async function loadAffiliate(){if(!$('affiliateMonth'))return;const [a,b]=bounds($('affiliateMonth').value||mk(now));const {data,error}=await sb.from('jk_v_affiliate_card_status').select('*').gte('due_date',a).lt('due_date',b).order('due_date');if(error){console.warn(error);return}state.affiliate=data||[];$('affiliateBody').innerHTML=state.affiliate.map(r=>`<tr><td><b>${esc(r.customer_name)}</b></td><td>${esc(r.customer_phone)}</td><td>${esc(r.activation_date)}</td><td>${esc(r.carrier||'-')}</td><td style="color:${r.alert_status==='due'?'#dc3f50':r.alert_status==='soon'?'#c77b00':'inherit'}"><b>${esc(r.due_date||'-')}</b>${r.days_remaining!==null?`<br><small>${r.days_remaining<0?Math.abs(r.days_remaining)+'일 초과':r.days_remaining===0?'오늘 마감':r.days_remaining+'일 남음'}</small>`:''}</td><td>${esc(r.card_company||'-')}</td><td>${won(r.card_amount)}</td><td>${esc(r.salesperson||'-')}</td><td>${r.status==='완료'?'<span class="pill green">완료</span>':'<span class="pill orange">미완료</span>'}</td><td>${r.status==='완료'?`<button class="btn" onclick="setAffiliateStatus('${r.ledger_id}','미완료')">미완료로</button>`:`<button class="btn primary" onclick="setAffiliateStatus('${r.ledger_id}','완료')">완료 체크</button>`}</td></tr>`).join('')||'<tr><td colspan="10" class="empty">해당 월 제휴카드 대상이 없습니다.</td></tr>';const open=state.affiliate.filter(r=>r.status!=='완료'),due=open.filter(r=>r.alert_status==='due');$('cTotal').textContent=state.affiliate.length+'건';$('cOpen').textContent=open.length+'건';$('cDue').textContent=due.length+'건';$('cDone').textContent=state.affiliate.filter(r=>r.status==='완료').length+'건';$('cAmount').textContent=won(state.affiliate.reduce((s,r)=>s+Number(r.card_amount||0),0))}
-async function setAffiliateStatus(ledgerId,status){const {error}=await sb.from('jk_sales_ledger').update({affiliate_card_status:status}).eq('id',ledgerId);if(error){alert(error.message);return}toast(status==='완료'?'제휴카드 등록 완료 처리':'미완료로 변경');await loadAffiliate();await checkAffiliateAlerts()}
+async function setAffiliateStatus(ledgerId,status){const {error}=await sb.from('jk_sales_ledger').update({affiliate_card_status:status}).eq('id',ledgerId);if(error){alert(error.message);return}toast(status==='완료'?'제휴카드 등록 완료 처리':'미완료로 변경');await loadAffiliate();await loadAlerts();await checkAffiliateAlerts()}
 async function checkAffiliateAlerts(){const today=ymd(new Date());const {data,error}=await sb.from('jk_v_affiliate_card_status').select('*').eq('status','미완료').lte('due_date',today).order('due_date');if(error)return;const rows=data||[],badge=$('affiliateBadge');if(rows.length){badge.textContent=rows.length;badge.style.display='inline-flex';const sig=rows.map(r=>r.ledger_id+':'+r.due_date).join('|'),last=sessionStorage.getItem('jk-card-alert-sig');if(sig!==last){sessionStorage.setItem('jk-card-alert-sig',sig);setTimeout(()=>alert('제휴카드 등록 기한 도래/초과 '+rows.length+'건이 있습니다.\n\n'+rows.slice(0,8).map(r=>r.customer_name+' · '+r.carrier+' · '+r.due_date).join('\n')+(rows.length>8?'\n외 '+(rows.length-8)+'건':'')),300)}}else{badge.style.display='none';sessionStorage.removeItem('jk-card-alert-sig')}}
 
 async function loadAds(){if(!$('adMonth'))return;const [a,b]=bounds($('adMonth').value||mk(now));const {data,error}=await sb.from('jk_ad_spend').select('*').gte('spend_date',a).lt('spend_date',b).order('spend_date',{ascending:false});if(error)return;state.ads=data||[];$('adBody').innerHTML=state.ads.map(r=>`<tr><td>${r.spend_date}</td><td>${esc(r.channel)}</td><td>${esc(r.campaign||'-')}</td><td>${won(r.amount)}</td><td>${r.inquiries}</td><td>${r.visits}</td><td>${r.activations}</td><td>${won(r.attributed_margin)}</td><td><button class="btn danger" onclick="deleteAd('${r.id}')">삭제</button></td></tr>`).join('')||'<tr><td colspan="9" class="empty">광고비 데이터 없음</td></tr>';const spend=state.ads.reduce((a,r)=>a+Number(r.amount||0),0),inq=state.ads.reduce((a,r)=>a+Number(r.inquiries||0),0),vis=state.ads.reduce((a,r)=>a+Number(r.visits||0),0),act=state.ads.reduce((a,r)=>a+Number(r.activations||0),0),mar=state.ads.reduce((a,r)=>a+Number(r.attributed_margin||0),0);$('aSpend').textContent=won(spend);$('aInquiry').textContent=inq+'건';$('aVisit').textContent=vis+'건';$('aAct').textContent=act+'건';$('aRoas').textContent=spend?pct(mar/spend*100):'-'}

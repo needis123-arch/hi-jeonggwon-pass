@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>정권통신 Business Center V3.27</title>
+<title>정권통신 Business Center V3.28</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -129,7 +129,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.27</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.28</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -1677,8 +1677,12 @@ async function saveStaffPayRate(staffId){
  if(rate<0||rate>100){alert('급여율은 0~100% 사이로 입력하세요.');return}
  const {error}=await sb.rpc('jk_set_staff_pay_rate',{p_staff_id:staffId,p_effective_month:month,p_rate_pct:rate});
  if(error){alert(error.message);return}
+ const row=input?.closest('.addrow');
+ const info=row?.querySelector('small');
+ if(info)info.textContent='현재 적용 시작 '+month;
+ if(input)input.dataset.savedValue=String(rate);
  toast('급여율 저장 완료');
- await Promise.all([loadPayrollSettings(),loadDashboard()]);
+ await loadDashboard();
 }
 
 async function loadSettings(){

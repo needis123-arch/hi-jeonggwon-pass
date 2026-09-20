@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V1.3.1</title>
+<title>PERSONAL CENTER V1.4</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -40,7 +40,11 @@
 .debt-card-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:9px;margin-top:12px}.debt-info{border:1px solid #edf0f3;border-radius:11px;padding:9px 10px;min-width:0;background:#fbfcfd}.debt-info label{display:block;font-size:8px;color:var(--muted);font-weight:900;margin-bottom:4px}.debt-info b{font-size:10px;line-height:1.4;display:block;word-break:keep-all}.debt-info input,.debt-info select{width:100%;min-width:0;border:0;background:transparent;padding:1px 0;font-size:10px;font-weight:900;color:var(--text);outline:none}.debt-info small{font-size:8px;color:var(--muted);line-height:1.35}.debt-card-foot{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:11px;flex-wrap:wrap}.debt-card-note{font-size:9px;color:var(--muted);line-height:1.45;max-width:70%}
 .finance-alerts{display:grid;gap:8px}.finance-alert{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid #e3e8ed;border-radius:12px;padding:11px 12px}.finance-alert.warn{background:#fff9ee;border-color:#ffd89a}.finance-alert.danger{background:#fff3f5;border-color:#ffc3cd}.finance-alert.info{background:#f5f9ff;border-color:#ccdcf5}.finance-alert .icon{font-size:16px}.finance-alert b{font-size:11px}.finance-alert small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.finance-alert .when{font-size:9px;font-weight:1000;white-space:nowrap}
 .strategy-tools{display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end}.strategy-result{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}.strategy-result .box{border:1px solid #e5e9ed;border-radius:12px;padding:11px;background:#fbfcfd}.strategy-result span{font-size:8px;color:var(--muted)}.strategy-result b{display:block;font-size:16px;margin-top:5px}.strategy-priority{margin-top:12px;padding:12px 13px;border-radius:12px;background:#f6f9f2;border:1px solid #dfead0;font-size:10px;line-height:1.6}.strategy-hero{margin-top:12px;border:1px solid #d8e8bd;background:linear-gradient(135deg,#fbfff5,#f4fbea);border-radius:16px;padding:18px}.strategy-hero span{font-size:9px;color:#61704f;font-weight:900}.strategy-hero strong{display:block;font-size:25px;line-height:1.28;margin-top:6px;letter-spacing:-.7px}.strategy-hero p{font-size:10px;color:#657083;line-height:1.65;margin:8px 0 0}.strategy-year{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:11px}.strategy-year .box{border:1px solid #dfe7d6;background:#fff;border-radius:12px;padding:11px}.strategy-year span{font-size:8px;color:var(--muted)}.strategy-year b{display:block;font-size:15px;margin-top:5px}.card-cycle-list{display:grid;gap:9px;margin-top:12px}.card-cycle-row{display:grid;grid-template-columns:130px 1.6fr 110px 110px auto;gap:9px;align-items:end;border:1px solid #e2e7eb;border-radius:12px;padding:11px;background:#fbfcfd}.card-cycle-row .name{align-self:center}.card-cycle-row .name b{font-size:11px}.card-cycle-row .name small{display:block;font-size:8px;color:var(--muted);margin-top:3px}.card-cycle-row input{width:100%;border:1px solid #d7dde5;border-radius:9px;padding:8px 9px;background:#fff;font-size:10px}.card-cycle-help{margin-top:8px;font-size:9px;color:var(--muted);line-height:1.5}.card-confirm-alert{background:#fff5e9!important;color:#854d00!important;font-weight:900}
-.priority-strip{display:flex;align-items:center;gap:10px;padding:8px 11px;margin-bottom:12px;min-height:46px;border-color:#dce6d2;background:#fbfff7;overflow:hidden}.priority-strip-title{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:10px;font-weight:1000}.priority-strip-title .dot{width:8px;height:8px;border-radius:50%;background:#91e71d}.priority-strip-items{display:flex;align-items:center;gap:7px;overflow-x:auto;flex:1;scrollbar-width:thin}.priority-pill{display:flex;align-items:center;gap:6px;border:1px solid #dfe5e9;border-radius:999px;background:#fff;padding:5px 9px;white-space:nowrap;font-size:9px}.priority-pill.must{border-color:#ffb8c2;background:#fff6f7}.priority-pill.high{border-color:#ffd69a;background:#fffaf2}.priority-pill input{width:15px;height:15px;accent-color:#78ba0d}.priority-pill button{border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-weight:900;color:var(--text)}.priority-pill .pbadge{font-size:7px;font-weight:1000;color:#75808d}.priority-strip-more{white-space:nowrap}.strategy-saved{font-size:8px;color:var(--muted);margin-top:5px}.task-detail-grid{display:grid;grid-template-columns:150px 1fr 150px;gap:10px}@media(max-width:700px){.priority-strip{align-items:flex-start;flex-wrap:wrap}.priority-strip-items{width:100%;order:3}.task-detail-grid{grid-template-columns:1fr}.priority-strip-more{margin-left:auto}}@media(max-width:900px){.strategy-year{grid-template-columns:1fr 1fr}.card-cycle-row{grid-template-columns:1fr 1fr}.card-cycle-row .name{grid-column:1/-1}}
+.priority-strip{display:flex;align-items:center;gap:10px;padding:8px 11px;margin-bottom:12px;min-height:46px;border-color:#dce6d2;background:#fbfff7;overflow:hidden}.priority-strip-title{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:10px;font-weight:1000}.priority-strip-title .dot{width:8px;height:8px;border-radius:50%;background:#91e71d}.priority-strip-items{display:flex;align-items:center;gap:7px;overflow-x:auto;flex:1;scrollbar-width:thin}.priority-pill{display:flex;align-items:center;gap:6px;border:1px solid #dfe5e9;border-radius:999px;background:#fff;padding:5px 9px;white-space:nowrap;font-size:9px}.priority-pill.must{border-color:#ffb8c2;background:#fff6f7}.priority-pill.high{border-color:#ffd69a;background:#fffaf2}.priority-pill input{width:15px;height:15px;accent-color:#78ba0d}.priority-pill button{border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-weight:900;color:var(--text)}.priority-pill .pbadge{font-size:7px;font-weight:1000;color:#75808d}.priority-strip-more{white-space:nowrap}.strategy-saved{font-size:8px;color:var(--muted);margin-top:5px}
+.secretary-card{border-color:#d9e6c7;background:linear-gradient(135deg,#fff,#fbfff6)}.secretary-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.secretary-head h3{margin:0;font-size:14px}.secretary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:13px}.secretary-box{border:1px solid #e2e8dd;background:#fff;border-radius:13px;padding:11px}.secretary-box span{font-size:8px;color:var(--muted);font-weight:900}.secretary-box b{display:block;font-size:17px;margin-top:5px;line-height:1.25}.secretary-brief{margin-top:11px;padding:12px 13px;border-radius:12px;background:#f5f9ef;border:1px solid #dfead2;font-size:10px;line-height:1.65}.secretary-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.cash-stale{color:var(--bad)!important}.cash-ok{color:#249018!important}
+.receivable-list{display:grid;gap:8px;margin-top:12px}.receivable-row{display:grid;grid-template-columns:1.6fr 120px 130px 130px auto;gap:9px;align-items:center;border:1px solid #e2e7eb;border-radius:12px;padding:10px;background:#fbfcfd}.receivable-row.received{opacity:.62}.receivable-row .source b{font-size:10px}.receivable-row .source small{display:block;font-size:8px;color:var(--muted);margin-top:3px}.receivable-row input,.receivable-row select{width:100%;border:1px solid #d7dde5;border-radius:9px;padding:8px 9px;background:#fff;font-size:10px}.receivable-form{display:grid;grid-template-columns:120px 1.5fr 140px 120px 140px auto;gap:8px;align-items:end;margin-top:12px}.balance-check-card{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.balance-check-card .big{font-size:22px;font-weight:1000}.balance-check-meta{font-size:9px;color:var(--muted);margin-top:4px}
+@media(max-width:1000px){.secretary-grid{grid-template-columns:1fr 1fr}.receivable-row{grid-template-columns:1fr 1fr}.receivable-row .source{grid-column:1/-1}.receivable-form{grid-template-columns:1fr 1fr 1fr}.receivable-form .wide{grid-column:1/-1}}
+@media(max-width:620px){.secretary-grid{grid-template-columns:1fr 1fr}.receivable-row,.receivable-form{grid-template-columns:1fr}.receivable-row .source,.receivable-form .wide{grid-column:auto}}.task-detail-grid{display:grid;grid-template-columns:150px 1fr 150px;gap:10px}@media(max-width:700px){.priority-strip{align-items:flex-start;flex-wrap:wrap}.priority-strip-items{width:100%;order:3}.task-detail-grid{grid-template-columns:1fr}.priority-strip-more{margin-left:auto}}@media(max-width:900px){.strategy-year{grid-template-columns:1fr 1fr}.card-cycle-row{grid-template-columns:1fr 1fr}.card-cycle-row .name{grid-column:1/-1}}
 .jk-link{margin-top:12px;border:1px solid #dfe8d2;background:#fbfff5;border-radius:12px;padding:11px 12px;display:grid;grid-template-columns:1fr repeat(3,120px) auto;gap:10px;align-items:center}.jk-link .stat span{font-size:8px;color:var(--muted);display:block}.jk-link .stat b{font-size:12px}
 @media(max-width:1100px){.debt-card-grid{grid-template-columns:repeat(3,1fr)}.debt-card-top{grid-template-columns:1fr 150px 110px}.principal-check{grid-column:1/-1;width:max-content}.strategy-result{grid-template-columns:repeat(3,1fr)}.jk-link{grid-template-columns:1fr 1fr 1fr}.jk-link>button{grid-column:1/-1;width:max-content}}
 @media(max-width:650px){.debt-card-grid{grid-template-columns:1fr 1fr}.debt-card-top{grid-template-columns:1fr 1fr}.debt-title-block{grid-column:1/-1}.debt-balance-big{text-align:left}.debt-rate-big{text-align:right}.principal-check{grid-column:1/-1}.debt-card-note{max-width:100%}.strategy-tools{grid-template-columns:1fr}.strategy-result{grid-template-columns:1fr 1fr}.finance-alert{grid-template-columns:auto 1fr}.finance-alert .when{grid-column:2}.jk-link{grid-template-columns:1fr 1fr}}th,td{padding:11px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:10px;white-space:nowrap;vertical-align:middle;line-height:1.45}th{background:#f7f9fb;color:#697586;font-size:9px}td b{font-size:11px}
@@ -60,7 +64,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.3.1</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.4</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -93,20 +97,43 @@
    </div>
   </div>
  </div>
+ <div class="panel card secretary-card" style="margin-bottom:16px">
+  <div class="secretary-head"><div><h3>전략 비서 브리핑</h3><p style="margin:4px 0 0;color:var(--muted);font-size:9px">잔고·소비·빚·받을 돈을 보고 지금 해야 할 행동을 자동으로 정리합니다.</p></div><span class="tag green">MONEY SECRETARY</span></div>
+  <div class="secretary-grid">
+   <div class="secretary-box"><span>현재 등록 잔고</span><b id="secCash">0원</b><small id="secCashDate" class="balance-check-meta">확인일 -</small></div>
+   <div class="secretary-box"><span>현재 패턴 최소 월소득</span><b id="secCurrentNeed">0원</b><small class="balance-check-meta">지금 소비습관 기준</small></div>
+   <div class="secretary-box"><span>카드 절약계획 최소 월소득</span><b id="secPlanNeed">0원</b><small id="secPlanNeedSub" class="balance-check-meta">신용→체크 전환 기준</small></div>
+   <div class="secretary-box"><span>현재 잔고 버티는 기간</span><b id="secRunway">-</b><small class="balance-check-meta">수입 0원 가정</small></div>
+  </div>
+  <div id="secretaryBrief" class="secretary-brief">재무상태를 계산하는 중입니다.</div>
+  <div class="secretary-actions"><button class="btn mini primary" type="button" onclick="go('money')">잔고 업데이트</button><button class="btn mini" type="button" onclick="confirmBalanceCheck()">잔고 맞음 · 확인완료</button><button class="btn mini" type="button" onclick="go('settings')">카드·저축 계획 수정</button></div>
+ </div>
  <div class="panel card" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-   <div><h3>월 수익 입력 — 내가 실제로 번 돈</h3><p style="margin:4px 0 0">사업체 정산 후 실제로 가져온 돈과 내가 직접 판매·영업해서 번 돈을 분리해 기록합니다.</p></div>
+   <div><h3>월 수익 입력 — 내가 실제로 번 돈</h3><p style="margin:4px 0 0">하이·레이는 운영비를 제외하고 실제 가져온 돈, 정권은 지분/정산 +@, 개인 급여·판매·영업소득은 별도로 기록합니다.</p></div>
    <div style="text-align:right"><span class="autosave-note">월 합계</span><div class="income-total" id="monthlyIncomeTotal">0원</div></div>
   </div>
   <div class="income-editor">
    <div class="income-month-wrap"><div class="field"><label>정산 월</label><input class="income-month" id="incomeMonthPicker" type="month"></div></div>
    <div class="income-source"><label>하이에서 남은 돈</label><input id="incomeHigh" type="number" placeholder="0"></div>
    <div class="income-source"><label>레이에서 남은 돈</label><input id="incomeRay" type="number" placeholder="0"></div>
-   <div class="income-source"><label>정권에서 남은 돈</label><input id="incomeJeong" type="number" placeholder="0"></div>
-   <div class="income-source direct-income"><label>내가 직접 번 돈 (판매 / 영업 포함)</label><input id="incomeDirect" type="number" placeholder="내가 직접 번 금액"></div>
+   <div class="income-source"><label>정권 지분/정산 +@</label><input id="incomeJeong" type="number" placeholder="0"></div>
+   <div class="income-source direct-income"><label>개인 급여·판매·영업 소득</label><input id="incomeDirect" type="number" placeholder="내가 직접 번 금액"></div>
    <button class="btn primary" type="button" onclick="saveMonthlyIncome()">월 수익 저장</button>
   </div>
   
+ </div>
+ <div class="panel card" style="margin-bottom:16px">
+  <div class="tabletop" style="padding:0"><div><b>앞으로 받을 돈</b><div class="autosave-note">근무한 달과 실제 입금되는 달을 분리합니다. 휴대폰 매장 9월 근무분은 10월 말 급여로 잡습니다.</div></div><span id="receivableTotal" class="amt">0원</span></div>
+  <div id="receivableRows" class="receivable-list"></div>
+  <div class="receivable-form">
+   <div class="field"><label>일한/발생 월</label><input id="recvEarnedMonth" type="month"></div>
+   <div class="field wide"><label>받을 돈 이름</label><input id="recvSource" placeholder="예: 정권통신 10월 근무 급여"></div>
+   <div class="field"><label>종류</label><select id="recvType"><option value="salary">급여</option><option value="profit_share">지분 +@</option><option value="business_distribution">사업체 정산</option><option value="direct">직접수입</option><option value="other">기타</option></select></div>
+   <div class="field"><label>입금예정일</label><input id="recvDate" type="date"></div>
+   <div class="field"><label>예상금액</label><input id="recvAmount" type="number" placeholder="미정이면 0"></div>
+   <button class="btn mini primary" type="button" onclick="addReceivable()">예정수입 추가</button>
+  </div>
  </div>
  <div class="kpis">
   <div class="kpi card"><span>이번 달 빚 상환</span><strong id="kDebtDue">0원</strong><small id="kDebtDueSub">대출 + 기한채무</small></div>
@@ -138,7 +165,7 @@
     <div class="box"><span>1년간 저축 예상</span><b id="strategyYearSave">0원</b></div>
     <div class="box"><span>1년간 원금 상환</span><b id="strategyYearDebtPaid">0원</b></div>
     <div class="box"><span>비상금·마통 정리</span><b id="strategyPriorityClear">-</b></div>
-    <div class="box"><span>1년 후 남은 부채</span><b id="strategyEndDebt">0원</b></div>
+    <div class="box"><span>1년 후 예상 현금성 자산</span><b id="strategyEndCash">0원</b></div><div class="box"><span>1년 후 남은 부채</span><b id="strategyEndDebt">0원</b></div>
    </div>
   </div>
   <div id="strategyPriority" class="strategy-priority"></div>
@@ -153,6 +180,10 @@
 
 <section class="page" id="page-money">
  <div class="head"><div><h2>자산 · 지출</h2><p>잔액은 직접 업데이트하고, 실제 수입·지출은 거래내역에 기록합니다.</p></div></div>
+ <div class="panel card balance-check-card" style="margin-bottom:16px">
+  <div><span class="autosave-note">7일 잔고 점검</span><div id="balanceCheckCash" class="big">0원</div><div id="balanceCheckMeta" class="balance-check-meta">마지막 확인 -</div></div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn mini" type="button" onclick="confirmBalanceCheck()">현재 잔고 확인 완료</button><button class="btn mini primary" type="button" onclick="document.getElementById('accountRows')?.scrollIntoView({behavior:'smooth'})">계좌 잔고 수정</button></div>
+ </div>
  <div class="formcard card">
   <h3>계좌 / 현금 추가</h3><div class="formgrid">
    <div class="field"><label>이름</label><input id="accName" placeholder="예: 국민 주계좌"></div>
@@ -326,6 +357,8 @@
    <div class="field"><label>월 추가 빚 상환 목표</label><input id="setDebtExtra" type="number" placeholder="예: 1,000,000"></div>
    <div class="field"><label>월 저축·투자 목표</label><input id="setSavingsTarget" type="number" placeholder="예: 1,000,000"></div>
    <div class="field"><label>월 세금 적립 목표</label><input id="setTaxReserve" type="number" placeholder="개인 세금 대비 적립액"></div>
+   <div class="field"><label>신용카드 월 사용 상한</label><input id="setCreditCap" type="number" placeholder="고정결제 위주"></div>
+   <div class="field"><label>체크카드 주간 생활비</label><input id="setDebitWeekly" type="number" placeholder="주 단위 예산"></div>
    <div class="field"><label>비상자금 목표</label><input id="setEmergency" type="number" placeholder="예: 20,000,000"></div>
    <div class="field"><label>5년 자산 목표</label><input id="setFiveYear" type="number" placeholder="0"></div>
    <div class="field full"><label>5년 목표 메모</label><textarea id="setNote" rows="3" placeholder="왜 돈을 모으는지, 5년 뒤 원하는 상태"></textarea></div>
@@ -433,10 +466,10 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[],receivables:[],balanceCheckins:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7)}
+function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('recvEarnedMonth'))$('recvEarnedMonth').value=today.slice(0,7);if($('recvDate'))$('recvDate').value=lastDayStr(now.getFullYear(),now.getMonth()+1)
 function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',goals:'5년 목표',settings:'설정'})[p]||p}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
@@ -470,9 +503,11 @@ async function loadAll(){
   sb.from('pc_monthly_income_entries').select('*').order('income_month',{ascending:false}).limit(120),
   sb.from('pc_spending_patterns').select('*').order('avg_monthly_amount',{ascending:false}).limit(100),
   sb.from('pc_spending_category_details').select('*').order('category').limit(100),
-  sb.from('pc_cards').select('*').eq('active',true).order('card_name')
+  sb.from('pc_cards').select('*').eq('active',true).order('card_name'),
+  sb.from('pc_income_receivables').select('*').order('expected_receive_date').limit(200),
+  sb.from('pc_balance_checkins').select('*').order('check_date',{ascending:false}).limit(100)
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards','receivables','balanceCheckins'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -481,7 +516,7 @@ async function rolloverTasks(){
  const overdue=state.tasks.filter(t=>t.status==='pending'&&t.auto_rollover&&t.due_date<today);
  for(const t of overdue){await sb.from('pc_tasks').update({due_date:today,original_due_date:t.original_due_date||t.due_date,rollover_count:(t.rollover_count||0)+1}).eq('id',t.id);t.original_due_date=t.original_due_date||t.due_date;t.due_date=today;t.rollover_count=(t.rollover_count||0)+1}
 }
-function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
+function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderReceivables();renderBalanceCheck();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
 function monthRows(a,key){return a.filter(x=>x[key]>=monthStart&&x[key]<=monthEnd)}
 function personalDebts(){return state.debts.filter(d=>!d.is_business_debt&&Number(d.balance)>0)}
 function deadlineDebts(){return personalDebts().filter(d=>d.deadline_priority&&d.target_payoff_date)}

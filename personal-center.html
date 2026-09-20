@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V1.1</title>
+<title>PERSONAL CENTER V1.2</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -39,7 +39,7 @@
 .debt-card-top{display:grid;grid-template-columns:minmax(220px,1.5fr) 170px 130px auto;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid #edf0f3}.debt-title-block{min-width:0}.debt-title-block input{font-size:13px;font-weight:1000}.debt-balance-big{font-size:18px;font-weight:1000;color:var(--bad);text-align:right;white-space:nowrap}.debt-rate-big{text-align:right}.debt-rate-big b{font-size:15px}.principal-check{display:flex;align-items:center;gap:7px;border:1px solid #dce3e8;border-radius:10px;padding:9px 10px;font-size:9px;font-weight:900;white-space:nowrap}.principal-check input{width:17px;height:17px;accent-color:#78ba0d}
 .debt-card-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:9px;margin-top:12px}.debt-info{border:1px solid #edf0f3;border-radius:11px;padding:9px 10px;min-width:0;background:#fbfcfd}.debt-info label{display:block;font-size:8px;color:var(--muted);font-weight:900;margin-bottom:4px}.debt-info b{font-size:10px;line-height:1.4;display:block;word-break:keep-all}.debt-info input,.debt-info select{width:100%;min-width:0;border:0;background:transparent;padding:1px 0;font-size:10px;font-weight:900;color:var(--text);outline:none}.debt-info small{font-size:8px;color:var(--muted);line-height:1.35}.debt-card-foot{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:11px;flex-wrap:wrap}.debt-card-note{font-size:9px;color:var(--muted);line-height:1.45;max-width:70%}
 .finance-alerts{display:grid;gap:8px}.finance-alert{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid #e3e8ed;border-radius:12px;padding:11px 12px}.finance-alert.warn{background:#fff9ee;border-color:#ffd89a}.finance-alert.danger{background:#fff3f5;border-color:#ffc3cd}.finance-alert.info{background:#f5f9ff;border-color:#ccdcf5}.finance-alert .icon{font-size:16px}.finance-alert b{font-size:11px}.finance-alert small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.finance-alert .when{font-size:9px;font-weight:1000;white-space:nowrap}
-.strategy-tools{display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end}.strategy-result{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}.strategy-result .box{border:1px solid #e5e9ed;border-radius:12px;padding:11px;background:#fbfcfd}.strategy-result span{font-size:8px;color:var(--muted)}.strategy-result b{display:block;font-size:16px;margin-top:5px}.strategy-priority{margin-top:12px;padding:12px 13px;border-radius:12px;background:#f6f9f2;border:1px solid #dfead0;font-size:10px;line-height:1.6}
+.strategy-tools{display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end}.strategy-result{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}.strategy-result .box{border:1px solid #e5e9ed;border-radius:12px;padding:11px;background:#fbfcfd}.strategy-result span{font-size:8px;color:var(--muted)}.strategy-result b{display:block;font-size:16px;margin-top:5px}.strategy-priority{margin-top:12px;padding:12px 13px;border-radius:12px;background:#f6f9f2;border:1px solid #dfead0;font-size:10px;line-height:1.6}.strategy-hero{margin-top:12px;border:1px solid #d8e8bd;background:linear-gradient(135deg,#fbfff5,#f4fbea);border-radius:16px;padding:18px}.strategy-hero span{font-size:9px;color:#61704f;font-weight:900}.strategy-hero strong{display:block;font-size:25px;line-height:1.28;margin-top:6px;letter-spacing:-.7px}.strategy-hero p{font-size:10px;color:#657083;line-height:1.65;margin:8px 0 0}.strategy-year{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:11px}.strategy-year .box{border:1px solid #dfe7d6;background:#fff;border-radius:12px;padding:11px}.strategy-year span{font-size:8px;color:var(--muted)}.strategy-year b{display:block;font-size:15px;margin-top:5px}.card-cycle-list{display:grid;gap:9px;margin-top:12px}.card-cycle-row{display:grid;grid-template-columns:130px 1.6fr 110px 110px auto;gap:9px;align-items:end;border:1px solid #e2e7eb;border-radius:12px;padding:11px;background:#fbfcfd}.card-cycle-row .name{align-self:center}.card-cycle-row .name b{font-size:11px}.card-cycle-row .name small{display:block;font-size:8px;color:var(--muted);margin-top:3px}.card-cycle-row input{width:100%;border:1px solid #d7dde5;border-radius:9px;padding:8px 9px;background:#fff;font-size:10px}.card-cycle-help{margin-top:8px;font-size:9px;color:var(--muted);line-height:1.5}.card-confirm-alert{background:#fff5e9!important;color:#854d00!important;font-weight:900}@media(max-width:900px){.strategy-year{grid-template-columns:1fr 1fr}.card-cycle-row{grid-template-columns:1fr 1fr}.card-cycle-row .name{grid-column:1/-1}}
 .jk-link{margin-top:12px;border:1px solid #dfe8d2;background:#fbfff5;border-radius:12px;padding:11px 12px;display:grid;grid-template-columns:1fr repeat(3,120px) auto;gap:10px;align-items:center}.jk-link .stat span{font-size:8px;color:var(--muted);display:block}.jk-link .stat b{font-size:12px}
 @media(max-width:1100px){.debt-card-grid{grid-template-columns:repeat(3,1fr)}.debt-card-top{grid-template-columns:1fr 150px 110px}.principal-check{grid-column:1/-1;width:max-content}.strategy-result{grid-template-columns:repeat(3,1fr)}.jk-link{grid-template-columns:1fr 1fr 1fr}.jk-link>button{grid-column:1/-1;width:max-content}}
 @media(max-width:650px){.debt-card-grid{grid-template-columns:1fr 1fr}.debt-card-top{grid-template-columns:1fr 1fr}.debt-title-block{grid-column:1/-1}.debt-balance-big{text-align:left}.debt-rate-big{text-align:right}.principal-check{grid-column:1/-1}.debt-card-note{max-width:100%}.strategy-tools{grid-template-columns:1fr}.strategy-result{grid-template-columns:1fr 1fr}.finance-alert{grid-template-columns:auto 1fr}.finance-alert .when{grid-column:2}.jk-link{grid-template-columns:1fr 1fr}}th,td{padding:11px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:10px;white-space:nowrap;vertical-align:middle;line-height:1.45}th{background:#f7f9fb;color:#697586;font-size:9px}td b{font-size:11px}
@@ -59,7 +59,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.1</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.2</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -124,7 +124,7 @@
   <div class="strategy-tools">
    <div class="field"><label>계산할 월</label><input id="strategyMonth" type="month" onchange="renderStrategy()"></div>
    <div class="field"><label>그 달 내가 버는 돈</label><input id="strategyIncome" type="number" placeholder="예: 6000000" oninput="renderStrategy()"></div>
-   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn mini" onclick="setStrategyIncome(4000000)">400만</button><button class="btn mini" onclick="setStrategyIncome(5000000)">500만</button><button class="btn mini" onclick="setStrategyIncome(6000000)">600만</button><button class="btn mini" onclick="setStrategyIncome(7000000)">700만</button></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn mini" onclick="setStrategyIncome(5000000)">500만</button><button class="btn mini" onclick="setStrategyIncome(7000000)">700만</button><button class="btn mini primary" onclick="setStrategyIncome(10000000)">1,000만</button><button class="btn mini" onclick="setStrategyIncome(15000000)">1,500만</button></div>
   </div>
   <div class="strategy-result">
    <div class="box"><span>생활비 기준</span><b id="strategyLiving">0원</b></div>
@@ -132,6 +132,14 @@
    <div class="box"><span>남는 돈</span><b id="strategySurplus">0원</b></div>
    <div class="box"><span>비상금·마통 추가상환</span><b id="strategyExtraDebt">0원</b></div>
    <div class="box"><span>저축 가능</span><b id="strategySave">0원</b></div>
+  </div>
+  <div class="strategy-hero"><span>1년 뒤 예상</span><strong id="strategyHeadline">소득을 입력하면 12개월 뒤가 보입니다.</strong><p id="strategyProjectionNote">현재 카드 소비패턴, 현금 고정비, 대출 상환시작일을 기준으로 계산합니다.</p>
+   <div class="strategy-year">
+    <div class="box"><span>1년간 저축 예상</span><b id="strategyYearSave">0원</b></div>
+    <div class="box"><span>1년간 원금 상환</span><b id="strategyYearDebtPaid">0원</b></div>
+    <div class="box"><span>비상금·마통 정리</span><b id="strategyPriorityClear">-</b></div>
+    <div class="box"><span>1년 후 남은 부채</span><b id="strategyEndDebt">0원</b></div>
+   </div>
   </div>
   <div id="strategyPriority" class="strategy-priority"></div>
  </div>
@@ -174,6 +182,7 @@
    <div><h3 style="margin:0">카드값 출금 관리</h3><p style="margin:5px 0 0;color:var(--muted);font-size:10px">매월 1일 실제 계좌에서 빠지는 카드대금입니다. <b>소비지출에는 다시 더하지 않고 현금흐름에만 반영</b>합니다.</p></div>
    <span class="tag orange">중복지출 방지</span>
   </div>
+  <div style="margin-top:14px"><b style="font-size:11px">카드별 확정일 · 사용기간</b><div class="card-cycle-help">카드사마다 금액 확정일이 다르니 한 번만 설정하세요. 그 날짜에 캘린더와 알림센터에서 “확정금액 입력해주세요”라고 알려줍니다.</div><div id="cardCycleRows" class="card-cycle-list"></div></div>
   <div class="card-bill-grid" style="margin-top:14px">
    <div class="field"><label>출금 월</label><input id="cardBillMonth" type="month"></div>
    <div class="field"><label>삼성카드 결제금액</label><input id="cardBillSamsung" type="number" placeholder="0"></div>
@@ -411,10 +420,10 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],jkStaff:[],jkSales:[],jkPayRates:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],jkStaff:[],jkSales:[],jkPayRates:[],cards:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7)}
+function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('strategyIncome')&&!$('strategyIncome').value)$('strategyIncome').value='10000000'
 function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',goals:'5년 목표',settings:'설정'})[p]||p}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
@@ -450,9 +459,10 @@ async function loadAll(){
   sb.from('pc_spending_category_details').select('*').order('category').limit(100),
   sb.from('jk_staff').select('id,name,active'),
   sb.from('jk_sales_ledger').select('activation_date,final_margin,salesperson_id,deal_type').gte('activation_date',String(now.getFullYear())+'-01-01').lte('activation_date',String(now.getFullYear())+'-12-31').limit(2000),
-  sb.from('jk_staff_pay_rates').select('staff_id,effective_month,rate_pct').order('effective_month')
+  sb.from('jk_staff_pay_rates').select('staff_id,effective_month,rate_pct').order('effective_month'),
+  sb.from('pc_cards').select('*').eq('active',true).order('card_name')
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','jkStaff','jkSales','jkPayRates'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','jkStaff','jkSales','jkPayRates','cards'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -461,7 +471,7 @@ async function rolloverTasks(){
  const overdue=state.tasks.filter(t=>t.status==='pending'&&t.auto_rollover&&t.due_date<today);
  for(const t of overdue){await sb.from('pc_tasks').update({due_date:today,original_due_date:t.original_due_date||t.due_date,rollover_count:(t.rollover_count||0)+1}).eq('id',t.id);t.original_due_date=t.original_due_date||t.due_date;t.due_date=today;t.rollover_count=(t.rollover_count||0)+1}
 }
-function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderCardBillEditor();renderSpendingReport()}
+function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
 function monthRows(a,key){return a.filter(x=>x[key]>=monthStart&&x[key]<=monthEnd)}
 function personalDebts(){return state.debts.filter(d=>!d.is_business_debt&&Number(d.balance)>0)}
 function deadlineDebts(){return personalDebts().filter(d=>d.deadline_priority&&d.target_payoff_date)}
@@ -576,6 +586,12 @@ function renderFinancialAlerts(){
   const end=d.target_payoff_date||d.maturity_date,dd=daysTo(end);
   if(end&&dd!=null&&dd>=0&&dd<=90)alerts.push({level:dd<=30?'danger':'warn',icon:'⏰',title:d.name+' '+(d.target_payoff_date?'목표상환':'만기')+' 임박',sub:end+' · 남은 원금 '+won(d.balance),when:'D-'+dd});
  });
+ state.cards.forEach(card=>{
+  if(!card.confirmation_day){alerts.push({level:'info',icon:'💳',title:card.card_name+' 확정일 설정 필요',sub:'자산·지출에서 사용기간과 금액 확정일을 한 번 입력하세요.',when:'설정'});return}
+  const last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),day=Math.min(Number(card.confirmation_day),last),confirmDate=ymd(new Date(now.getFullYear(),now.getMonth(),day)),dd=daysTo(confirmDate);
+  if(dd===0)alerts.push({level:'danger',icon:'💳',title:'오늘 '+card.card_name+' 카드값 확정일',sub:'확정금액을 입력해주세요.'+(card.period_label?' · 사용기간 '+card.period_label:''),when:'오늘'});
+  else if(dd>0&&dd<=3)alerts.push({level:'warn',icon:'💳',title:card.card_name+' 카드값 확정 예정',sub:(card.period_label?'사용기간 '+card.period_label+' · ':'')+'확정되면 금액 입력',when:'D-'+dd});
+ });
  alerts.sort((a,b)=>a.level==='danger'?-1:b.level==='danger'?1:0);
  $('financeAlertBadge').textContent=alerts.length+'건';
  if(alerts.length)$('financeAlerts').innerHTML=alerts.map(a=>'<div class="finance-alert '+a.level+'"><span class="icon">'+a.icon+'</span><div><b>'+esc(a.title)+'</b><small>'+esc(a.sub)+'</small></div><span class="when">'+esc(a.when)+'</span></div>').join('');
@@ -585,21 +601,50 @@ function renderFinancialAlerts(){
  }
 }
 function setStrategyIncome(v){if($('strategyIncome')){$('strategyIncome').value=v;renderStrategy()}}
+function addMonthKey(mk,n){const p=mk.split('-').map(Number),d=new Date(p[0],p[1]-1+n,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function simDebtPlan(d,mk){
+ const bal=Math.max(0,Number(d.balance||0)),interest=Math.round(bal*(Number(d.apr||0)/100)/12),start=String(d.principal_start_date||'').slice(0,7),end=String(d.target_payoff_date||d.maturity_date||'').slice(0,7);
+ if(d.principal_repayment_enabled&&start&&end){
+  if(mk<start)return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest)};
+  if(mk>end)return {principal:0,interest:0,total:0};
+  const rem=monthDiffInclusive(mk,end),principal=Math.min(bal,Math.ceil(bal/Math.max(1,rem)));return {principal,interest,total:principal+interest}
+ }
+ return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest)}
+}
+function simulateYearPlan(startMonth,income){
+ const ds=personalDebts().map(d=>({...d,balance:Number(d.balance||0)})),livingBase=personalCardSpendAverage()+cashFixedAverage()+Number(state.profile?.monthly_tax_reserve||0);
+ let savings=0,principalPaid=0,priorityExtra=0,clearMonth=null,totalIncome=0,totalLiving=0,totalDebtCash=0;
+ for(let i=0;i<12;i++){
+  const mk=addMonthKey(startMonth,i);totalIncome+=income;totalLiving+=livingBase;
+  let debtCash=0,scheduledPrincipal=0;
+  ds.forEach(d=>{if(d.balance<=0)return;const p=simDebtPlan(d,mk);debtCash+=p.total;scheduledPrincipal+=p.principal;d.balance=Math.max(0,d.balance-p.principal)});
+  principalPaid+=scheduledPrincipal;totalDebtCash+=debtCash;
+  let free=Math.max(0,income-livingBase-debtCash);
+  const priority=ds.filter(d=>d.balance>0&&/비상금대출/.test(String(d.name))).concat(ds.filter(d=>d.balance>0&&/안심통장|마이너스/.test(String(d.name))));
+  for(const d of priority){if(free<=0)break;const pay=Math.min(free,d.balance);d.balance-=pay;free-=pay;priorityExtra+=pay;principalPaid+=pay}
+  if(!clearMonth&&ds.filter(d=>d.balance>0&&/비상금대출|안심통장|마이너스/.test(String(d.name))).length===0)clearMonth=mk;
+  savings+=free;
+ }
+ return {savings,principalPaid,priorityExtra,clearMonth,endDebt:ds.reduce((s,d)=>s+Math.max(0,Number(d.balance||0)),0),livingBase,totalIncome,totalLiving,totalDebtCash}
+}
 function renderStrategy(){
  if(!$('strategyIncome'))return;if(!$('strategyMonth').value)$('strategyMonth').value=today.slice(0,7);
  const mk=$('strategyMonth').value||today.slice(0,7),saved=incomeRowsForMonth(mk).reduce((s,x)=>s+Number(x.amount||0),0);
- if(!$('strategyIncome').value&&saved)$('strategyIncome').value=Math.round(saved);
- const income=Number($('strategyIncome').value||0),living=personalCardSpendAverage()+cashFixedAverage(),debt=strategyDebtForMonth(mk)+Number(state.profile?.monthly_tax_reserve||0);
- const base=living+debt,surplus=Math.max(0,income-base),short=Math.max(0,base-income),priority=priorityDebtBalance(),extra=Math.min(surplus,priority),save=Math.max(0,surplus-extra);
+ if(!$('strategyIncome').value)$('strategyIncome').value=Math.round(saved||10000000);
+ const income=Number($('strategyIncome').value||0),living=personalCardSpendAverage()+cashFixedAverage()+Number(state.profile?.monthly_tax_reserve||0),debt=strategyDebtForMonth(mk);
+ const base=living+debt,surplus=Math.max(0,income-base),short=Math.max(0,base-income),priority=priorityDebtBalance(),extra=Math.min(surplus,priority),save=Math.max(0,surplus-extra),yr=simulateYearPlan(mk,income);
  $('strategyLiving').textContent=won(living);$('strategyDebt').textContent=won(debt);$('strategySurplus').textContent=short?'-'+won(short):won(surplus);$('strategySurplus').className=short?'bad':'good';$('strategyExtraDebt').textContent=won(extra);$('strategySave').textContent=won(save);
+ $('strategyYearSave').textContent=won(yr.savings);$('strategyYearDebtPaid').textContent=won(yr.principalPaid);$('strategyPriorityClear').textContent=yr.clearMonth?yr.clearMonth.replace('-','년 ')+'월':'1년 내 미완료';$('strategyEndDebt').textContent='-'+won(yr.endDebt);$('strategyEndDebt').className='bad';
+ if(income>0){
+  const incomeTxt=(income/10000).toLocaleString('ko-KR')+'만원',saveTxt=won(yr.savings),debtTxt=won(yr.principalPaid);
+  $('strategyHeadline').textContent='매월 '+incomeTxt+'을 유지하면, 1년 뒤 약 '+saveTxt+'을 모을 수 있어요.';
+  $('strategyProjectionNote').textContent='동시에 1년 동안 대출 원금 약 '+debtTxt+'을 줄이는 계산입니다.'+(yr.clearMonth?' 비상금대출·마이너스통장은 '+yr.clearMonth.replace('-','년 ')+'월경 정리 예상입니다.':' 우선상환 부채는 1년 안에 전부 정리되지 않는 시나리오입니다.');
+ }else{$('strategyHeadline').textContent='월 소득을 입력하면 1년 뒤 저축액이 보입니다.';$('strategyProjectionNote').textContent='현재 소비패턴과 대출일정을 기준으로 계산합니다.'}
  const brother=state.debts.find(d=>d.name==='친형 개인채무'),broPlan=brother?debtPlanForMonth(brother,mk):null;
- const woori=personalDebts().filter(d=>d.lender==='우리은행'&&d.principal_repayment_enabled&&d.principal_start_date).filter(d=>String(d.principal_start_date).slice(0,7)===mk);
- let notes='우선상환 잔액(비상금+마이너스통장) '+won(priority)+'. ';
- if(short)notes+='이 소득이면 기본 생활·정규상환에 '+won(short)+' 부족합니다.';
- else if(priority>0)notes+='기본비용을 내고 남는 '+won(surplus)+' 중 최대 '+won(extra)+'을 우선상환에 넣고, 우선상환 잔액이 끝난 뒤부터 같은 소득 기준 월 '+won(surplus)+'을 저축할 수 있습니다.';
- else notes+='비상금·마통 정리 완료 기준이라 남는 '+won(surplus)+'을 저축으로 돌릴 수 있습니다.';
+ let notes='계산 순서: 생활비·세금 → 그 달 정규 대출상환 → 남는 돈으로 비상금대출 → 마이너스통장 → 둘 다 끝난 뒤 전액 저축. ';
+ if(short)notes+='현재 입력소득은 기본지출보다 '+won(short)+' 부족합니다.';
+ else notes+='이번 달 기준 남는 '+won(surplus)+' 중 '+won(extra)+'은 우선빚, '+won(save)+'은 바로 저축 가능한 금액입니다.';
  if(broPlan&&broPlan.principal>0)notes+=' · 형 채무 원금 '+won(broPlan.principal)+'/월 포함';
- if(woori.length)notes+=' · 이 달부터 '+woori.map(d=>d.name+' 약 '+won(debtPlanForMonth(d,mk).total)).join(', ')+' 고정비 증가';
  $('strategyPriority').textContent=notes
 }
 function renderTodayTasks(){
@@ -665,6 +710,17 @@ function cardPatternStats(){
  const avg=complete.length?complete.reduce((s,m)=>s+sums[m],0)/complete.length:0;
  return {rows,sums,byCard,current,complete,avg,currentTotal:sums[current]||0,samsung:byCard[current]?.['삼성카드']||0,lotte:byCard[current]?.['롯데카드']||0}
 }
+function renderCardCycleEditor(){
+ if(!$('cardCycleRows'))return;
+ $('cardCycleRows').innerHTML=state.cards.length?state.cards.map(card=>'<div class="card-cycle-row"><div class="name"><b>'+esc(card.card_name)+'</b><small>개인카드</small></div><div class="field"><label>사용기간 설명</label><input id="cardPeriod_'+card.id+'" value="'+esc(card.period_label||'')+'" placeholder="예: 전전월 19일 ~ 전월 18일"></div><div class="field"><label>금액 확정일</label><input id="cardConfirm_'+card.id+'" type="number" min="1" max="31" value="'+(card.confirmation_day||'')+'" placeholder="예: 25"></div><div class="field"><label>결제일</label><input id="cardPay_'+card.id+'" type="number" min="1" max="31" value="'+(card.payment_day||1)+'"></div><button class="btn mini primary" onclick="saveCardCycle(\''+card.id+'\')">저장</button></div>').join(''):'<div class="empty">카드 설정이 없습니다.</div>'
+}
+async function saveCardCycle(id){
+ const card=state.cards.find(x=>x.id===id);if(!card)return;
+ const confirmation_day=+$('cardConfirm_'+id).value||null,payment_day=+$('cardPay_'+id).value||1,period_label=$('cardPeriod_'+id).value.trim();
+ const {error}=await sb.from('pc_cards').update({confirmation_day,payment_day,period_label,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);
+ await loadAll();toast(card.card_name+' 확정일 저장 완료')
+}
+function cardForName(name){return state.cards.find(c=>c.card_name===name)}
 function renderCardBillEditor(){
  if(!$('cardBillMonth'))return;
  if(!$('cardBillMonth').value)$('cardBillMonth').value=today.slice(0,7);
@@ -674,14 +730,12 @@ function renderCardBillEditor(){
  $('cardBillStatus').textContent=total?'해당 월 카드 출금 예정 '+won(total)+(paid?' · 납부완료':' · 미납/예정'):'금액 미입력 · 캘린더 1일에는 카드값 출금일만 표시됩니다.'
 }
 async function saveCardBills(){
- const month=$('cardBillMonth').value||today.slice(0,7),billing_month=monthKeyToDate(month),due_date=month+'-01';
- const entries=[['삼성카드',+$('cardBillSamsung').value||0],['롯데카드',+$('cardBillLotte').value||0]];
+ const month=$('cardBillMonth').value||today.slice(0,7),billing_month=monthKeyToDate(month),entries=[['삼성카드',+$('cardBillSamsung').value||0],['롯데카드',+$('cardBillLotte').value||0]];
  for(const [card_name,amount] of entries){
-  const existing=state.cardBills.find(x=>x.billing_month===billing_month&&x.card_name===card_name);
-  const {error}=await sb.from('pc_card_bills').upsert({user_id:state.user.id,billing_month,card_name,amount,due_date,paid:existing?.paid||false,updated_at:new Date().toISOString()},{onConflict:'user_id,billing_month,card_name'});
-  if(error)return alert(error.message)
+  const existing=state.cardBills.find(x=>x.billing_month===billing_month&&x.card_name===card_name),card=cardForName(card_name),day=Math.min(Number(card?.payment_day||1),new Date(Number(month.slice(0,4)),Number(month.slice(5,7)),0).getDate()),due_date=month+'-'+String(day).padStart(2,'0');
+  const {error}=await sb.from('pc_card_bills').upsert({user_id:state.user.id,billing_month,card_name,amount,due_date,paid:existing?.paid||false,updated_at:new Date().toISOString()},{onConflict:'user_id,billing_month,card_name'});if(error)return alert(error.message)
  }
- await loadAll();toast('카드값 저장 · 소비지출에는 중복 반영되지 않습니다')
+ await loadAll();toast('확정 카드값 저장 · 결제일 현금흐름에 반영')
 }
 function renderSpendingReport(){
  if(!$('spendingReportRows'))return;
@@ -960,7 +1014,11 @@ function renderCalendar(){
  let h=['일','월','화','수','목','금','토'].map(x=>'<div class="dow">'+x+'</div>').join('');
  for(let i=0;i<first;i++)h+='<div class="day off"></div>';
  for(let d=1;d<=last;d++){const date=monthKey+'-'+String(d).padStart(2,'0');let items=[];
- if(d===1)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'money\')">💳 카드값 출금일'+(billTotal?' '+won(billTotal):' · 금액 미입력')+(billPaid?' ✓':'')+'</span>');
+ state.cards.forEach(card=>{
+  const bill=bills.find(b=>b.card_name===card.card_name),payDay=Math.min(Number(card.payment_day||1),last),confirmDay=card.confirmation_day?Math.min(Number(card.confirmation_day),last):null;
+  if(confirmDay===d)items.push('<span class="calitem system-cal card-confirm-alert" onclick="event.stopPropagation();go(\'money\')">📣 '+esc(card.card_name)+' 확정금액 입력'+(card.period_label?' · '+esc(card.period_label):'')+'</span>');
+  if(payDay===d)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'money\')">💳 '+esc(card.card_name)+' 출금'+(bill&&Number(bill.amount)?' '+won(bill.amount):' · 금액 미입력')+(bill?.paid?' ✓':'')+'</span>')
+ });
  if(d===last)items.push('<span class="calitem system-cal" onclick="event.stopPropagation();openMonthlyIncomeMonth(\''+monthKey+'\')">🏢 사업체 정산일'+(monthIncome?' · 내 수익 '+won(monthIncome):' · 수익 입력')+'</span>');
  personalDebts().forEach(x=>{
   if(x.principal_repayment_enabled&&x.principal_start_date){

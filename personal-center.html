@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V1.2</title>
+<title>PERSONAL CENTER V1.3</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -60,7 +60,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.2</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.3</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -442,7 +442,7 @@ let calDate=new Date(now.getFullYear(),now.getMonth(),1);
 let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],jkStaff:[],jkSales:[],jkPayRates:[],cards:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('strategyIncome')&&!$('strategyIncome').value)$('strategyIncome').value='10000000'}
+function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7)}
 function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',goals:'5년 목표',settings:'설정'})[p]||p}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
@@ -625,6 +625,11 @@ function renderFinancialAlerts(){
  }
 }
 function setStrategyIncome(v){if($('strategyIncome')){$('strategyIncome').value=v;renderStrategy()}}
+async function saveStrategyIncome(){
+ const v=Number($('strategyIncome')?.value||0);if(v<0){toast('금액을 확인하세요.');return}
+ const {error}=await sb.from('pc_profiles').update({strategy_monthly_income_assumption:v,updated_at:new Date().toISOString()}).eq('user_id',state.user.id);
+ if(error)return alert(error.message);state.profile.strategy_monthly_income_assumption=v;renderStrategy();toast('전략소득 저장 완료 · 언제든 수정 가능')
+}
 function addMonthKey(mk,n){const p=mk.split('-').map(Number),d=new Date(p[0],p[1]-1+n,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function simDebtPlan(d,mk){
  const bal=Math.max(0,Number(d.balance||0)),interest=Math.round(bal*(Number(d.apr||0)/100)/12),start=String(d.principal_start_date||'').slice(0,7),end=String(d.target_payoff_date||d.maturity_date||'').slice(0,7);
@@ -657,8 +662,9 @@ function simulateYearPlan(startMonth,income){
 }
 function renderStrategy(){
  if(!$('strategyIncome'))return;if(!$('strategyMonth').value)$('strategyMonth').value=today.slice(0,7);
- const mk=$('strategyMonth').value||today.slice(0,7),saved=incomeRowsForMonth(mk).reduce((s,x)=>s+Number(x.amount||0),0);
- if(!$('strategyIncome').value)$('strategyIncome').value=Math.round(saved||10000000);
+ const mk=$('strategyMonth').value||today.slice(0,7),actualSaved=incomeRowsForMonth(mk).reduce((s,x)=>s+Number(x.amount||0),0),planSaved=Number(state.profile?.strategy_monthly_income_assumption||0);
+ if(!$('strategyIncome').value&&(planSaved||actualSaved))$('strategyIncome').value=Math.round(planSaved||actualSaved);
+ if($('strategySavedText'))$('strategySavedText').textContent=planSaved?'저장된 전략소득 '+won(planSaved)+' · 값 수정 후 다시 저장 가능':(actualSaved?'저장값 없음 · 이번 달 실제수익 '+won(actualSaved)+'을 임시로 불러옴':'저장된 전략소득 없음 · 직접 입력 후 저장');
  const income=Number($('strategyIncome').value||0),living=personalCardSpendAverage()+cashFixedAverage()+Number(state.profile?.monthly_tax_reserve||0),debt=strategyDebtForMonth(mk);
  const base=living+debt,surplus=Math.max(0,income-base),short=Math.max(0,base-income),priority=priorityDebtBalance(),extra=Math.min(surplus,priority),save=Math.max(0,surplus-extra),yr=simulateYearPlan(mk,income);
  $('strategyLiving').textContent=won(living);$('strategyDebt').textContent=won(debt);$('strategySurplus').textContent=short?'-'+won(short):won(surplus);$('strategySurplus').className=short?'bad':'good';$('strategyExtraDebt').textContent=won(extra);$('strategySave').textContent=won(save);
@@ -676,11 +682,32 @@ function renderStrategy(){
  $('strategyPriority').textContent=notes
 }
 function renderTodayTasks(){
- const arr=state.tasks.filter(t=>t.due_date===today&&t.status!=='skipped').sort((a,b)=>({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority])));
- const events=state.events.filter(e=>e.event_date===today);
- const eventHtml=events.map(e=>'<div class="row"><label class="todo '+(e.status==='done'?'done':'')+'"><input type="checkbox" '+(e.status==='done'?'checked':'')+' onchange="toggleEvent(\''+e.id+'\',this.checked)"><div style="cursor:pointer" onclick="openEventDetail(\''+e.id+'\')"><b>📅 '+esc(e.title)+'</b><small>'+(e.memo?'추가내용 있음':'메모 없음')+'</small></div></label><span class="tag">스케줄</span></div>').join('');
- const taskHtml=arr.map(t=>'<div class="row"><label class="todo '+(t.status==='done'?'done':'')+'"><input type="checkbox" '+(t.status==='done'?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><div><b>'+esc(t.title)+'</b><small>'+(t.priority==='must'?'무조건 · ':'')+(t.rollover_count?'이월 '+t.rollover_count+'회':'오늘')+(t.event_id?' · 일정 연결':'')+'</small></div></label><span class="tag '+(t.priority==='must'?'red':'')+'">'+t.priority+'</span></div>').join('');
- $('todayTasks').innerHTML=(eventHtml+taskHtml)||'<div class="empty">오늘 일정이나 할 일을 추가하세요. 오늘 화면의 핵심입니다.</div>'
+ if(!$('priorityStripItems'))return;
+ const rank={must:0,high:1,normal:2,low:3};
+ const tasks=state.tasks.filter(t=>t.due_date===today&&t.status==='pending').map(t=>({kind:'task',id:t.id,title:t.title,priority:t.priority||'normal'}));
+ const events=state.events.filter(e=>e.event_date===today&&e.status==='pending').map(e=>({kind:'event',id:e.id,title:e.title,priority:e.priority||'normal'}));
+ const all=[...tasks,...events].sort((a,b)=>(rank[a.priority]??2)-(rank[b.priority]??2)).slice(0,10);
+ $('priorityStripItems').innerHTML=all.length?all.map(x=>{
+  const toggle=x.kind==='task'?"toggleTask('"+x.id+"',this.checked)":"toggleEvent('"+x.id+"',this.checked)";
+  const open=x.kind==='task'?"openTaskDetail('"+x.id+"')":"openEventDetail('"+x.id+"')";
+  const mark=x.priority==='must'?'‼ ':x.priority==='high'?'! ':'';
+  return '<div class="priority-pill '+esc(x.priority)+'"><input type="checkbox" onchange="'+toggle+'"><button type="button" onclick="'+open+'">'+mark+esc(x.title)+'</button><span class="pbadge">'+(x.kind==='task'?'할일':'일정')+'</span></div>'
+ }).join(''):'<span class="autosave-note">오늘 미완료 일정 없음</span>'
+}
+function openTaskDetail(id){
+ const t=state.tasks.find(x=>x.id===id);if(!t)return;
+ $('detailTaskId').value=t.id;$('detailTaskDate').value=t.due_date||today;$('detailTaskTitle').value=t.title||'';$('detailTaskPriority').value=t.priority||'normal';$('detailTaskMemo').value=t.memo||'';$('detailTaskDone').checked=t.status==='done';
+ const dlg=$('taskDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
+}
+function closeTaskDetail(){const dlg=$('taskDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
+async function saveTaskDetail(){
+ const id=$('detailTaskId').value,title=$('detailTaskTitle').value.trim();if(!id||!title){toast('할 일을 입력하세요.');return}
+ const done=$('detailTaskDone').checked,patch={due_date:$('detailTaskDate').value||today,title,priority:$('detailTaskPriority').value,memo:$('detailTaskMemo').value.trim(),status:done?'done':'pending',completed_at:done?new Date().toISOString():null};
+ const {error}=await sb.from('pc_tasks').update(patch).eq('id',id);if(error)return alert(error.message);closeTaskDetail();await loadAll();toast('할 일 수정 저장')
+}
+async function deleteTaskDetail(){
+ const id=$('detailTaskId').value;if(!id||!confirm('이 할 일을 삭제할까요?'))return;
+ const {error}=await sb.from('pc_tasks').delete().eq('id',id);if(error)return alert(error.message);closeTaskDetail();await loadAll();toast('할 일 삭제')
 }
 async function toggleTask(id,done){const {error}=await sb.from('pc_tasks').update({status:done?'done':'pending',completed_at:done?new Date().toISOString():null}).eq('id',id);if(error)return alert(error.message);const t=state.tasks.find(x=>x.id===id);if(t){t.status=done?'done':'pending';t.completed_at=done?new Date().toISOString():null}renderTodayTasks();renderCalendar();toast(done?'완료 체크':'미완료로 변경')}
 function nextOccurrence(day){const y=now.getFullYear(),m=now.getMonth(),last=new Date(y,m+1,0).getDate(),d=Math.min(+day||1,last);let x=new Date(y,m,d);if(x<new Date(y,m,now.getDate())){const l2=new Date(y,m+2,0).getDate();x=new Date(y,m+1,Math.min(+day||1,l2))}return x}
@@ -993,7 +1020,7 @@ async function addEvent(){
 }
 function openEventDetail(id){
  const e=state.events.find(x=>x.id===id);if(!e)return;
- $('detailEventId').value=e.id;$('detailEventDate').value=e.event_date;$('detailEventTitle').value=e.title||'';$('detailEventType').value=e.event_type||'schedule';$('detailEventMemo').value=e.memo||'';$('detailEventDone').checked=e.status==='done';$('detailMemoState').textContent=e.memo?'추가내용 있음':'메모 없음';$('eventTaskTitle').value='';renderEventTasks(e.id);
+ $('detailEventId').value=e.id;$('detailEventDate').value=e.event_date;$('detailEventTitle').value=e.title||'';$('detailEventType').value=e.event_type||'schedule';$('detailEventPriority').value=e.priority||'normal';$('detailEventMemo').value=e.memo||'';$('detailEventDone').checked=e.status==='done';$('detailMemoState').textContent=e.memo?'추가내용 있음':'메모 없음';$('eventTaskTitle').value='';renderEventTasks(e.id);
  const dlg=$('eventDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
 }
 function closeEventDetail(){const dlg=$('eventDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
@@ -1010,7 +1037,7 @@ async function deleteEventTask(id,eventId){if(!confirm('이 할 일을 삭제할
 
 async function saveEventDetail(){
  const id=$('detailEventId').value,title=$('detailEventTitle').value.trim();if(!id||!title){toast('제목을 입력하세요.');return}
- const done=$('detailEventDone').checked;const patch={event_date:$('detailEventDate').value||today,title,event_type:$('detailEventType').value,memo:$('detailEventMemo').value.trim(),status:done?'done':'pending',completed_at:done?new Date().toISOString():null};
+ const done=$('detailEventDone').checked;const patch={event_date:$('detailEventDate').value||today,title,event_type:$('detailEventType').value,priority:$('detailEventPriority').value,memo:$('detailEventMemo').value.trim(),status:done?'done':'pending',completed_at:done?new Date().toISOString():null};
  const {error}=await sb.from('pc_calendar_events').update(patch).eq('id',id);if(error)return alert(error.message);
  await sb.from('pc_tasks').update({due_date:patch.event_date}).eq('event_id',id).eq('status','pending');
  closeEventDetail();await loadAll();toast('일정과 연결 할 일 날짜까지 수정 저장')
@@ -1025,14 +1052,14 @@ async function toggleEvent(id,done){
  if(error)return alert(error.message);const e=state.events.find(x=>x.id===id);if(e){e.status=done?'done':'pending';e.completed_at=done?new Date().toISOString():null}renderDashboard();renderCalendar();toast(done?'스케줄 완료':'미완료로 변경')
 }
 function openQuickSchedule(date){
- $('quickScheduleDate').value=date;$('quickScheduleDateLabel').textContent=date;$('quickScheduleTitle').value='';$('quickScheduleMemo').value='';$('quickScheduleType').value='schedule';
+ $('quickScheduleDate').value=date;$('quickScheduleDateLabel').textContent=date;$('quickScheduleTitle').value='';$('quickScheduleMemo').value='';$('quickScheduleType').value='schedule';$('quickSchedulePriority').value='normal';
  const dlg=$('quickScheduleDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
  setTimeout(()=>$('quickScheduleTitle').focus(),50)
 }
 function closeQuickSchedule(){const dlg=$('quickScheduleDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
 async function saveQuickSchedule(){
  const title=$('quickScheduleTitle').value.trim();if(!title){toast('해야 할 일을 입력하세요.');return}
- const row={event_date:$('quickScheduleDate').value||today,title,event_type:$('quickScheduleType').value,memo:$('quickScheduleMemo').value.trim(),status:'pending'};
+ const row={event_date:$('quickScheduleDate').value||today,title,event_type:$('quickScheduleType').value,priority:$('quickSchedulePriority').value,memo:$('quickScheduleMemo').value.trim(),status:'pending'};
  const {error}=await sb.from('pc_calendar_events').insert(row);if(error)return alert(error.message);
  closeQuickSchedule();await loadAll();toast('스케줄 추가')
 }
@@ -1056,8 +1083,8 @@ function renderCalendar(){
   }
   const end=x.target_payoff_date||x.maturity_date;if(end&&date===end)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'debt\')">⏰ '+esc(x.name)+' '+(x.target_payoff_date?'목표상환일':'만기')+'</span>')
  });
- state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'" onclick="event.stopPropagation()">'+(t.status==='done'?'✓ ':'')+esc(t.title)+'</span>'));
- state.events.filter(e=>e.event_date===date&&e.status!=='skipped').forEach(e=>items.push('<div class="calitem eventbtn '+(e.status==='done'?'done':'')+'" onclick="event.stopPropagation()"><span class="schedule-check" onclick="event.stopPropagation();toggleEvent(\''+e.id+'\','+(e.status!=='done')+')">'+(e.status==='done'?'✓':'')+'</span><button type="button" style="border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer" onclick="event.stopPropagation();openEventDetail(\''+e.id+'\')">'+esc(e.title)+(e.memo?' · 📝':'')+'</button></div>'));
+ state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'" onclick="event.stopPropagation();openTaskDetail(\''+t.id+'\')">'+(t.status==='done'?'✓ ':'')+(t.priority==='must'?'‼ ':t.priority==='high'?'! ':'')+esc(t.title)+'</span>'));
+ state.events.filter(e=>e.event_date===date&&e.status!=='skipped').forEach(e=>items.push('<div class="calitem eventbtn '+(e.status==='done'?'done ':'')+(e.priority==='must'?'must':'')+'" onclick="event.stopPropagation()"><span class="schedule-check" onclick="event.stopPropagation();toggleEvent(\''+e.id+'\','+(e.status!=='done')+')">'+(e.status==='done'?'✓':'')+'</span><button type="button" style="border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer" onclick="event.stopPropagation();openEventDetail(\''+e.id+'\')">'+(e.priority==='must'?'‼ ':e.priority==='high'?'! ':'')+esc(e.title)+(e.memo?' · 📝':'')+'</button></div>'));
  state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d&&!isCardMethod(r.payment_method)).forEach(r=>items.push('<span class="calitem money" onclick="event.stopPropagation()">-'+esc(r.name)+' '+won(r.amount)+'</span>'));
  personalDebts().filter(x=>+x.payment_day===d).forEach(x=>items.push('<span class="calitem money" onclick="event.stopPropagation()">대출 '+esc(x.name)+' '+won(x.min_payment)+'</span>'));
  h+='<div class="day '+(date===today?'today':'')+'" onclick="openQuickSchedule(\''+date+'\')"><div class="daynum">'+d+' <span style="color:#9aa4b1;font-weight:500">＋</span></div>'+items.slice(0,6).join('')+(items.length>6?'<span class="calitem" onclick="event.stopPropagation()">+'+(items.length-6)+'개</span>':'')+'</div>'}

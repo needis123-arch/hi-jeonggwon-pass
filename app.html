@@ -1,28 +1,13 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#20211d">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PASS 관리자">
-<title>PASS 관리자</title>
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./pass-admin-icon.svg" type="image/svg+xml">
-<style>
-html,body{margin:0;width:100%;height:100%;background:#f6f6f3;font-family:Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
-.loading{min-height:100%;display:grid;place-items:center;color:#20211d;font-weight:800}
-</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PASS 관리자 이동</title>
+<meta http-equiv="refresh" content="0;url=./pass-admin/">
 </head>
 <body>
-<div class="loading">PASS 관리자 여는 중...</div>
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
-location.replace('./admin.html?app=1');
-</script>
+<script>location.replace('./pass-admin/');</script>
+<a href="./pass-admin/">PASS 관리자 열기</a>
 </body>
 </html>

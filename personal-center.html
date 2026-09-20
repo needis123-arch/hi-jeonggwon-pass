@@ -1173,6 +1173,8 @@ function renderCalendar(){
   if(payDay===d)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'money\')">💳 '+esc(card.card_name)+' 출금'+(bill&&Number(bill.amount)?' '+won(bill.amount):' · 금액 미입력')+(bill?.paid?' ✓':'')+'</span>')
  });
  if(d===last)items.push('<span class="calitem system-cal" onclick="event.stopPropagation();openMonthlyIncomeMonth(\''+monthKey+'\')">🏢 사업체 정산일'+(monthIncome?' · 내 수익 '+won(monthIncome):' · 수익 입력')+'</span>');
+ const balanceDue=nextBalanceCheckDate();if(date===balanceDue)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'money\')">💰 7일 잔고 점검 · 잔고 업데이트</span>');
+ state.receivables.filter(r=>r.status==='expected'&&r.expected_receive_date===date).forEach(r=>items.push('<span class="calitem system-cal" onclick="event.stopPropagation();go(\'dashboard\')">💵 '+esc(r.source)+' 입금예정'+(Number(r.amount)>0?' '+won(r.amount):' · 금액 미정')+'</span>'));
  personalDebts().forEach(x=>{
   if(x.principal_repayment_enabled&&x.principal_start_date){
    const warn=dateAddMonths(x.principal_start_date,-3);

@@ -478,8 +478,8 @@ function daysTo(target){
 function debtPlanForMonth(d,monthKey){
  const balance=Number(d.balance||0),interest=Math.round(balance*(Number(d.apr||0)/100)/12),start=String(d.principal_start_date||'').slice(0,7),end=String(d.target_payoff_date||d.maturity_date||'').slice(0,7),mk=String(monthKey||today.slice(0,7)).slice(0,7);
  if(d.principal_repayment_enabled&&start&&end){
-  const totalMonths=monthDiffInclusive(start,end);
-  const basePrincipal=Math.ceil(Number(d.original_principal||balance)/Math.max(1,totalMonths));
+  const totalMonths=monthDiffInclusive(start,end),remainingMonths=monthDiffInclusive(mk<start?start:mk,end);
+  const basePrincipal=Math.ceil(balance/Math.max(1,remainingMonths||totalMonths));
   if(mk<start)return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest),status:'거치/이자만'};
   if(mk>end)return {principal:0,interest:0,total:0,status:'상환기간 종료'};
   const principal=Math.min(balance,basePrincipal);

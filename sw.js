@@ -1,20 +1,63 @@
-const CACHE_NAME='pass-admin-app-v1';
-const SHELL=['./app.html','./manifest.webmanifest','./pass-admin-icon.svg'];
-self.addEventListener('install',e=>{
- e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(SHELL)).catch(()=>{}));
- self.skipWaiting();
+const CACHE_NAME='jk-business-pwa-v2';
+const BUSINESS_PATH='/hi-jeonggwon-pass/business-center.html';
+const APP_SHELL=[
+  BUSINESS_PATH,
+  '/hi-jeonggwon-pass/manifest.webmanifest',
+  '/hi-jeonggwon-pass/app-icon.svg'
+];
+
+self.addEventListener('install',event=>{
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache=>cache.addAll(APP_SHELL))
+      .catch(()=>{})
+      .then(()=>self.skipWaiting())
+  );
 });
-self.addEventListener('activate',e=>{
- e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));
- self.clients.claim();
+
+self.addEventListener('activate',event=>{
+  event.waitUntil(
+    caches.keys()
+      .then(keys=>Promise.all(
+        keys.filter(k=>k.startsWith('jk-business-pwa-')&&k!==CACHE_NAME).map(k=>caches.delete(k))
+      ))
+      .then(()=>self.clients.claim())
+  );
 });
-self.addEventListener('fetch',e=>{
- if(e.request.method!=='GET') return;
- const u=new URL(e.request.url);
- if(u.origin!==self.location.origin) return;
- e.respondWith(fetch(e.request).then(r=>{
-   const copy=r.clone();
-   caches.open(CACHE_NAME).then(c=>c.put(e.request,copy)).catch(()=>{});
-   return r;
- }).catch(()=>caches.match(e.request)));
+
+self.addEventListener('fetch',event=>{
+  const req=event.request;
+  if(req.method!=='GET') return;
+  const url=new URL(req.url);
+  if(url.origin!==self.location.origin) return;
+
+  const isBusinessNav=req.mode==='navigate' && url.pathname===BUSINESS_PATH;
+  if(isBusinessNav){
+    event.respondWith(
+      fetch(req)
+        .then(res=>{
+          const copy=res.clone();
+          caches.open(CACHE_NAME).then(cache=>cache.put(BUSINESS_PATH,copy)).catch(()=>{});
+          return res;
+        })
+        .catch(()=>caches.match(BUSINESS_PATH))
+    );
+    return;
+  }
+
+  const isBusinessAsset=
+    url.pathname.endsWith('/manifest.webmanifest') ||
+    url.pathname.endsWith('/app-icon.svg');
+
+  if(isBusinessAsset){
+    event.respondWith(
+      fetch(req)
+        .then(res=>{
+          const copy=res.clone();
+          caches.open(CACHE_NAME).then(cache=>cache.put(req,copy)).catch(()=>{});
+          return res;
+        })
+        .catch(()=>caches.match(req))
+    );
+  }
 });

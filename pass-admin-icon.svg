@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" rx="112" fill="#20211d"/>
+<rect x="54" y="54" width="404" height="404" rx="92" fill="#f5d33d"/>
+<text x="256" y="245" text-anchor="middle" font-family="Arial,sans-serif" font-size="118" font-weight="900" fill="#20211d">PASS</text>
+<text x="256" y="335" text-anchor="middle" font-family="Arial,sans-serif" font-size="58" font-weight="800" fill="#20211d">ADMIN</text>
+</svg>

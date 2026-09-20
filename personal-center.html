@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V1.0.2</title>
+<title>PERSONAL CENTER V1.1</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -33,7 +33,16 @@
 .debt-name-stack{display:grid;gap:5px;min-width:0}.debt-name-stack .inlineedit{min-width:0;width:100%;display:block}
 .debt-table select.inlineedit{min-width:90px}
 .debt-table input[type="date"].inlineedit{min-width:130px}
-.debt-table .btn{white-space:nowrap}th,td{padding:11px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:10px;white-space:nowrap;vertical-align:middle;line-height:1.45}th{background:#f7f9fb;color:#697586;font-size:9px}td b{font-size:11px}
+.debt-table .btn{white-space:nowrap}
+.debt-groups{display:grid;gap:16px}.debt-group{display:grid;gap:9px}.debt-group-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 3px}.debt-group-head h3{font-size:13px;margin:0}.debt-group-head span{font-size:9px;color:var(--muted)}
+.debt-card{border:1px solid #e0e6eb;border-radius:16px;background:#fff;padding:15px;box-shadow:0 4px 16px rgba(31,45,61,.035)}.debt-card.deadline{border-color:#ffc5cd;background:#fffafb}.debt-card.principal-soon{border-color:#ffd99d;background:#fffdf9}.debt-card.principal-active{border-color:#b9e875;background:#fbfff5}
+.debt-card-top{display:grid;grid-template-columns:minmax(220px,1.5fr) 170px 130px auto;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid #edf0f3}.debt-title-block{min-width:0}.debt-title-block input{font-size:13px;font-weight:1000}.debt-balance-big{font-size:18px;font-weight:1000;color:var(--bad);text-align:right;white-space:nowrap}.debt-rate-big{text-align:right}.debt-rate-big b{font-size:15px}.principal-check{display:flex;align-items:center;gap:7px;border:1px solid #dce3e8;border-radius:10px;padding:9px 10px;font-size:9px;font-weight:900;white-space:nowrap}.principal-check input{width:17px;height:17px;accent-color:#78ba0d}
+.debt-card-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:9px;margin-top:12px}.debt-info{border:1px solid #edf0f3;border-radius:11px;padding:9px 10px;min-width:0;background:#fbfcfd}.debt-info label{display:block;font-size:8px;color:var(--muted);font-weight:900;margin-bottom:4px}.debt-info b{font-size:10px;line-height:1.4;display:block;word-break:keep-all}.debt-info input,.debt-info select{width:100%;min-width:0;border:0;background:transparent;padding:1px 0;font-size:10px;font-weight:900;color:var(--text);outline:none}.debt-info small{font-size:8px;color:var(--muted);line-height:1.35}.debt-card-foot{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:11px;flex-wrap:wrap}.debt-card-note{font-size:9px;color:var(--muted);line-height:1.45;max-width:70%}
+.finance-alerts{display:grid;gap:8px}.finance-alert{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid #e3e8ed;border-radius:12px;padding:11px 12px}.finance-alert.warn{background:#fff9ee;border-color:#ffd89a}.finance-alert.danger{background:#fff3f5;border-color:#ffc3cd}.finance-alert.info{background:#f5f9ff;border-color:#ccdcf5}.finance-alert .icon{font-size:16px}.finance-alert b{font-size:11px}.finance-alert small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.finance-alert .when{font-size:9px;font-weight:1000;white-space:nowrap}
+.strategy-tools{display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end}.strategy-result{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}.strategy-result .box{border:1px solid #e5e9ed;border-radius:12px;padding:11px;background:#fbfcfd}.strategy-result span{font-size:8px;color:var(--muted)}.strategy-result b{display:block;font-size:16px;margin-top:5px}.strategy-priority{margin-top:12px;padding:12px 13px;border-radius:12px;background:#f6f9f2;border:1px solid #dfead0;font-size:10px;line-height:1.6}
+.jk-link{margin-top:12px;border:1px solid #dfe8d2;background:#fbfff5;border-radius:12px;padding:11px 12px;display:grid;grid-template-columns:1fr repeat(3,120px) auto;gap:10px;align-items:center}.jk-link .stat span{font-size:8px;color:var(--muted);display:block}.jk-link .stat b{font-size:12px}
+@media(max-width:1100px){.debt-card-grid{grid-template-columns:repeat(3,1fr)}.debt-card-top{grid-template-columns:1fr 150px 110px}.principal-check{grid-column:1/-1;width:max-content}.strategy-result{grid-template-columns:repeat(3,1fr)}.jk-link{grid-template-columns:1fr 1fr 1fr}.jk-link>button{grid-column:1/-1;width:max-content}}
+@media(max-width:650px){.debt-card-grid{grid-template-columns:1fr 1fr}.debt-card-top{grid-template-columns:1fr 1fr}.debt-title-block{grid-column:1/-1}.debt-balance-big{text-align:left}.debt-rate-big{text-align:right}.principal-check{grid-column:1/-1}.debt-card-note{max-width:100%}.strategy-tools{grid-template-columns:1fr}.strategy-result{grid-template-columns:1fr 1fr}.finance-alert{grid-template-columns:auto 1fr}.finance-alert .when{grid-column:2}.jk-link{grid-template-columns:1fr 1fr}}th,td{padding:11px 12px;border-bottom:1px solid #edf0f3;text-align:left;font-size:10px;white-space:nowrap;vertical-align:middle;line-height:1.45}th{background:#f7f9fb;color:#697586;font-size:9px}td b{font-size:11px}
 .formcard{padding:18px;margin-bottom:16px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:9px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111}.field.full{grid-column:1/-1}.formactions{display:flex;gap:7px;align-items:end}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800}.tabs button.active{background:#15191f;color:#fff;border-color:#15191f}
 .meter{margin-top:10px}.meterline{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:5px}.bar{height:9px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar i{height:100%;display:block;background:#9bdc2e;border-radius:99px}
@@ -50,7 +59,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.0.2</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.1</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -91,6 +100,13 @@
    <div class="income-source direct-income"><label>내가 직접 번 돈 (내 일 / 영업)</label><input id="incomeDirect" type="number" placeholder="직접 번 금액"></div>
    <button class="btn primary" type="button" onclick="saveMonthlyIncome()">월 수익 저장</button>
   </div>
+  <div class="jk-link" id="jkLinkBox">
+   <div><b style="font-size:11px">정권장부 자동연동</b><div class="autosave-note">정권통신 장부의 판매자 ‘인성’ 매출을 자동으로 읽습니다. 실제 정산 확정 전에는 예상치입니다.</div></div>
+   <div class="stat"><span>내 W매출</span><b id="jkMyMargin">0원</b></div>
+   <div class="stat"><span>적용 급여율</span><b id="jkMyRate">-</b></div>
+   <div class="stat"><span>예상 내 몫</span><b id="jkMyExpected">0원</b></div>
+   <button class="btn mini primary" type="button" onclick="applyJeongLedgerIncome()">정권 칸에 가져오기</button>
+  </div>
  </div>
  <div class="kpis">
   <div class="kpi card"><span>이번 달 빚 상환</span><strong id="kDebtDue">0원</strong><small id="kDebtDueSub">대출 + 기한채무</small></div>
@@ -98,6 +114,26 @@
   <div class="kpi card"><span>생활 · 고정비</span><strong id="kLivingDue">0원</strong><small>현금고정 + 생활예산</small></div>
   <div class="kpi card"><span>이번 달 내 수익</span><strong id="kEarned">0원</strong><small>하이 + 레이 + 정권 + 직접</small></div>
   <div class="kpi card"><span>개인 총부채</span><strong id="kDebtTotal">0원</strong><small id="kDebtTotalSub">현재 남은 원금</small></div>
+ </div>
+ <div class="panel card" style="margin-bottom:16px">
+  <div class="tabletop" style="padding:0;margin-bottom:10px"><div><b>재무 알림센터</b><div class="autosave-note">대출 원금상환 시작 3개월 전·만기 임박을 자동 경고합니다.</div></div><span class="tag orange" id="financeAlertBadge">0건</span></div>
+  <div id="financeAlerts" class="finance-alerts"></div>
+ </div>
+ <div class="panel card" style="margin-bottom:16px">
+  <div class="tabletop" style="padding:0;margin-bottom:10px"><div><b>월 소득 → 빚 → 저축 전략</b><div class="autosave-note">네 계획: 비상금대출 → 마이너스통장 먼저 메우고, 그 뒤 남는 돈은 모으기.</div></div><span class="tag green">전략 계산</span></div>
+  <div class="strategy-tools">
+   <div class="field"><label>계산할 월</label><input id="strategyMonth" type="month" onchange="renderStrategy()"></div>
+   <div class="field"><label>그 달 내가 버는 돈</label><input id="strategyIncome" type="number" placeholder="예: 6000000" oninput="renderStrategy()"></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn mini" onclick="setStrategyIncome(4000000)">400만</button><button class="btn mini" onclick="setStrategyIncome(5000000)">500만</button><button class="btn mini" onclick="setStrategyIncome(6000000)">600만</button><button class="btn mini" onclick="setStrategyIncome(7000000)">700만</button></div>
+  </div>
+  <div class="strategy-result">
+   <div class="box"><span>생활비 기준</span><b id="strategyLiving">0원</b></div>
+   <div class="box"><span>그 달 정규 빚상환</span><b id="strategyDebt">0원</b></div>
+   <div class="box"><span>남는 돈</span><b id="strategySurplus">0원</b></div>
+   <div class="box"><span>비상금·마통 추가상환</span><b id="strategyExtraDebt">0원</b></div>
+   <div class="box"><span>저축 가능</span><b id="strategySave">0원</b></div>
+  </div>
+  <div id="strategyPriority" class="strategy-priority"></div>
  </div>
  <div class="grid2">
   <div class="panel card"><h3>오늘 반드시 끝내기</h3><p>미완료 항목은 다음 날 다시 오늘 목록으로 이월됩니다.</p><div id="todayTasks" class="list"></div></div>
@@ -220,7 +256,7 @@
   </div>
  </div>
  <div class="callout"><b>상환 로직</b><p><b>기한채무</b>는 금리보다 목표상환일을 우선해 이번 달 필요한 원금상환액을 자동 계산합니다. 일반 금융대출은 약정 납부액을 지키면서 추가상환은 금리·만기·중도상환수수료를 함께 봅니다.</p></div>
- <div class="tablecard card"><div class="tabletop"><div><b>대출 목록</b><div class="autosave-note">상환한 날에는 '상환 기록'만 누르면 남은 원금이 자동으로 바뀝니다.</div></div><span id="debtSummary" class="amt"></span></div><div class="tablewrap debt-table-wrap"><table class="debt-table"><thead><tr><th>대출 / 금융사</th><th>구분</th><th>잔액</th><th>금리</th><th>약정 / 상환</th><th>월납부</th><th>납부일</th><th>만기</th><th>목표상환</th><th>이번달 목표</th><th>이번달 납부</th><th>관리</th></tr></thead><tbody id="debtRows"></tbody></table></div></div>
+ <div class="tablecard card"><div class="tabletop"><div><b>대출 목록</b><div class="autosave-note">전부 보이되, 상환상태별 카드로 나눴습니다. ‘원금 낸다’를 체크하면 원금 시작일과 이후 월 부담을 계산합니다.</div></div><span id="debtSummary" class="amt"></span></div><div id="debtCards" class="debt-groups"></div></div>
  <div class="tablecard card"><div class="tabletop"><div><b>상환 이력</b><div class="autosave-note">납부총액을 이자와 원금으로 나눠 기록하고 잔액 변화를 남깁니다.</div></div><span id="debtPaymentSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>대출</th><th>납부액</th><th>이자</th><th>원금</th><th>상환 전</th><th>상환 후</th><th>이자기준</th><th>관리</th></tr></thead><tbody id="debtPaymentRows"></tbody></table></div></div>
 </section>
 
@@ -375,10 +411,10 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],jkStaff:[],jkSales:[],jkPayRates:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7)}
+function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7)
 function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',goals:'5년 목표',settings:'설정'})[p]||p}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
@@ -411,9 +447,12 @@ async function loadAll(){
   sb.from('pc_card_bills').select('*').order('due_date',{ascending:false}).limit(120),
   sb.from('pc_monthly_income_entries').select('*').order('income_month',{ascending:false}).limit(120),
   sb.from('pc_spending_patterns').select('*').order('avg_monthly_amount',{ascending:false}).limit(100),
-  sb.from('pc_spending_category_details').select('*').order('category').limit(100)
+  sb.from('pc_spending_category_details').select('*').order('category').limit(100),
+  sb.from('jk_staff').select('id,name,active'),
+  sb.from('jk_sales_ledger').select('activation_date,final_margin,salesperson_id,deal_type').gte('activation_date',String(now.getFullYear())+'-01-01').lte('activation_date',String(now.getFullYear())+'-12-31').limit(2000),
+  sb.from('jk_staff_pay_rates').select('staff_id,effective_month,rate_pct').order('effective_month')
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','jkStaff','jkSales','jkPayRates'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -426,27 +465,46 @@ function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness
 function monthRows(a,key){return a.filter(x=>x[key]>=monthStart&&x[key]<=monthEnd)}
 function personalDebts(){return state.debts.filter(d=>!d.is_business_debt&&Number(d.balance)>0)}
 function deadlineDebts(){return personalDebts().filter(d=>d.deadline_priority&&d.target_payoff_date)}
-function monthsInclusiveTo(target){
- if(!target)return null;const t=new Date(target+'T00:00:00');
- return Math.max(1,(t.getFullYear()-now.getFullYear())*12+(t.getMonth()-now.getMonth())+1)
+function monthDiffInclusive(a,b){
+ if(!a||!b)return 0;const aa=String(a).slice(0,7).split('-').map(Number),bb=String(b).slice(0,7).split('-').map(Number);
+ return Math.max(0,(bb[0]-aa[0])*12+(bb[1]-aa[1])+1)
+}
+function dateAddMonths(dateStr,n){
+ if(!dateStr)return '';const p=dateStr.split('-').map(Number),d=new Date(p[0],p[1]-1,p[2]);const day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return ymd(d)
 }
 function daysTo(target){
- if(!target)return null;const a=new Date(today+'T00:00:00'),b=new Date(target+'T00:00:00');
- return Math.ceil((b-a)/86400000)
+ if(!target)return null;const a=new Date(today+'T00:00:00'),b=new Date(target+'T00:00:00');return Math.ceil((b-a)/86400000)
+}
+function debtPlanForMonth(d,monthKey){
+ const balance=Number(d.balance||0),interest=Math.round(balance*(Number(d.apr||0)/100)/12),start=String(d.principal_start_date||'').slice(0,7),end=String(d.target_payoff_date||d.maturity_date||'').slice(0,7),mk=String(monthKey||today.slice(0,7)).slice(0,7);
+ if(d.principal_repayment_enabled&&start&&end){
+  const totalMonths=monthDiffInclusive(start,end);
+  const basePrincipal=Math.ceil(Number(d.original_principal||balance)/Math.max(1,totalMonths));
+  if(mk<start)return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest),status:'거치/이자만'};
+  if(mk>end)return {principal:0,interest:0,total:0,status:'상환기간 종료'};
+  const principal=Math.min(balance,basePrincipal);
+  return {principal,interest,total:principal+interest,status:'원금+이자'};
+ }
+ return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest),status:d.repayment_method==='bullet'?'이자/만기일시':'약정납부'}
+}
+function principalStatus(d){
+ if(!d.principal_repayment_enabled)return d.deadline_priority?'기한채무':'이자만/만기일시';
+ if(!d.principal_start_date)return '원금상환일 미입력';
+ if(today<d.principal_start_date)return '원금상환 예정';
+ return '원금상환 중'
 }
 function deadlineStats(d){
- const pm=state.debtPayments.filter(p=>p.debt_id===d.id&&p.payment_date>=monthStart&&p.payment_date<=monthEnd).sort((a,b)=>String(a.payment_date).localeCompare(String(b.payment_date)));
- const opening=pm.length?Number(pm[0].balance_before||d.balance||0):Number(d.balance||0);
- const paidPrincipal=pm.reduce((s,p)=>s+Number(p.principal_amount||0),0);
- const months=monthsInclusiveTo(d.target_payoff_date);
- const monthlyPrincipal=months?Math.ceil(opening/months):0;
- const duePrincipal=Math.max(0,monthlyPrincipal-paidPrincipal);
- const estInterest=Math.round(Number(d.balance||0)*(Number(d.apr||0)/100)/12);
- const original=Number(d.original_principal||opening||0);
- const progress=original>0?Math.max(0,Math.min(100,(original-Number(d.balance||0))/original*100)):0;
- return {opening,paidPrincipal,months,monthlyPrincipal,duePrincipal,estInterest,dday:daysTo(d.target_payoff_date),progress}
+ const start=d.principal_start_date||today,target=d.target_payoff_date,monthKey=today.slice(0,7),plan=debtPlanForMonth(d,monthKey);
+ const pm=state.debtPayments.filter(p=>p.debt_id===d.id&&p.payment_date>=monthStart&&p.payment_date<=monthEnd);
+ const paidPrincipal=pm.reduce((s,p)=>s+Number(p.principal_amount||0),0),duePrincipal=Math.max(0,plan.principal-paidPrincipal);
+ const original=Number(d.original_principal||d.balance||0),progress=original>0?Math.max(0,Math.min(100,(original-Number(d.balance||0))/original*100)):0;
+ return {opening:Number(d.balance||0),paidPrincipal,months:monthDiffInclusive(monthKey,target),monthlyPrincipal:plan.principal,duePrincipal,estInterest:plan.interest,dday:daysTo(target),progress,start}
 }
 function deadlineDueTotal(){return deadlineDebts().reduce((s,d)=>s+deadlineStats(d).duePrincipal,0)}
+function priorityDebtBalance(){return personalDebts().filter(d=>/비상금대출|안심통장|마이너스/.test(String(d.name))).reduce((s,d)=>s+Number(d.balance||0),0)}
+function personalCardSpendAverage(){const cp=cardPatternStats(),reimb=state.spendingPatterns.filter(x=>x.exclude_from_personal).reduce((s,x)=>s+Number(x.avg_monthly_amount||0),0);return Math.max(0,cp.avg-reimb)}
+function cashFixedAverage(){return state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&!isCardMethod(r.payment_method)).reduce((s,r)=>s+Number(r.amount||0),0)}
+function strategyDebtForMonth(monthKey){return personalDebts().reduce((s,d)=>s+debtPlanForMonth(d,monthKey).total,0)}
 function debtSimulation(extra=0){
  let ds=personalDebts().map(d=>({balance:+d.balance,apr:+d.apr,min:+d.min_payment,name:d.name}));if(!ds.length)return 0;
  let months=0;while(ds.some(d=>d.balance>1)&&months<600){months++;for(const d of ds){if(d.balance>0)d.balance+=d.balance*(d.apr/100)/12}
@@ -469,12 +527,10 @@ function lastDayStr(y,m){return y+'-'+String(m+1).padStart(2,'0')+'-'+String(new
 function metrics(){
  const cash=state.accounts.filter(a=>a.include_in_cash).reduce((s,a)=>s+Number(a.balance||0),0);
  const pdebts=personalDebts(), debt=pdebts.reduce((s,d)=>s+Number(d.balance||0),0);
- const contractualDebtMin=pdebts.reduce((s,d)=>s+Number(d.min_payment||0),0);
- const deadlinePrincipalDue=deadlineDueTotal();
- const deadlineTopup=deadlineDebts().reduce((s,d)=>{const st=deadlineStats(d);return s+Math.max(0,st.duePrincipal+st.estInterest-Number(d.min_payment||0))},0);
- const debtMin=contractualDebtMin+deadlineTopup;
+ const currentMonthKey=today.slice(0,7),contractualDebtMin=pdebts.reduce((s,d)=>s+debtPlanForMonth(d,currentMonthKey).total,0);
+ const deadlinePrincipalDue=deadlineDueTotal(),debtMin=contractualDebtMin;
  const extra=Number(state.profile?.monthly_debt_extra_target||0),debtNeed=debtMin+extra;
- const currentMonthKey=today.slice(0,7),cardBillCash=cardBillTotalForMonth(currentMonthKey),hasCardBill=cardBillCash>0;
+ const cardBillCash=cardBillTotalForMonth(currentMonthKey),hasCardBill=cardBillCash>0;
  const expectedCardReimbursement=hasCardBill?state.spendingPatterns.filter(x=>x.exclude_from_personal).reduce((s,x)=>s+Number(x.avg_monthly_amount||0),0):0;
  const cardBillNet=Math.max(0,cardBillCash-expectedCardReimbursement);
  const recurringExpense=state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&!(hasCardBill&&isCardMethod(r.payment_method))).reduce((s,r)=>s+Number(r.amount||0),0);
@@ -506,8 +562,45 @@ function renderDashboard(){
  $('heroDataWarning').textContent=!m.hasCardBill?'⚠ 이번 달 카드 결제금액이 아직 비어 있어 총 필요자금은 카드값을 제외한 금액입니다. 자산·지출 → 카드값 출금 관리에서 입력하세요.':'카드값까지 입력됨 · 총 필요자금 계산 완료';
  $('kDebtDue').textContent=won(m.debtNeed);$('kDebtDueSub').textContent='약정·기한채무 포함';
  $('kCardDue').textContent=won(m.cardBillNet);$('kCardDueSub').textContent=m.hasCardBill?('총 '+won(m.cardBillCash)+(m.expectedCardReimbursement?' · 환급 '+won(m.expectedCardReimbursement):'')):'카드값 미입력';
- $('kLivingDue').textContent=won(m.livingNeed);$('kEarned').textContent=won(m.earned);$('kDebtTotal').textContent=won(m.debt);$('kDebtTotalSub').textContent='현재 남은 원금';
- renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
+ $('kLivingDue').textContent=won(m.livingNeed);$('kEarned').textContent=won(m.earned);$('kDebtTotal').textContent='-'+won(m.debt);$('kDebtTotal').className='bad';$('kDebtTotalSub').textContent='현재 남은 원금 · 부채는 마이너스';
+ renderFinancialAlerts();renderStrategy();renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
+}
+function renderFinancialAlerts(){
+ if(!$('financeAlerts'))return;const alerts=[];
+ personalDebts().forEach(d=>{
+  if(d.principal_repayment_enabled&&d.principal_start_date){
+   const warn=dateAddMonths(d.principal_start_date,-3),days=daysTo(d.principal_start_date),plan=debtPlanForMonth(d,String(d.principal_start_date).slice(0,7));
+   if(today>=warn&&today<d.principal_start_date)alerts.push({level:'warn',icon:'⚠',title:d.name+' 원금상환 시작 임박',sub:d.principal_start_date+'부터 예상 월 '+won(plan.total)+' · 현재보다 고정비 증가',when:'D-'+days});
+   else if(today>=d.principal_start_date)alerts.push({level:'info',icon:'✓',title:d.name+' 원금상환 기간',sub:'현재 원금+이자 상환 구간 · 예상 월 '+won(plan.total),when:'진행중'});
+  }
+  const end=d.target_payoff_date||d.maturity_date,dd=daysTo(end);
+  if(end&&dd!=null&&dd>=0&&dd<=90)alerts.push({level:dd<=30?'danger':'warn',icon:'⏰',title:d.name+' '+(d.target_payoff_date?'목표상환':'만기')+' 임박',sub:end+' · 남은 원금 '+won(d.balance),when:'D-'+dd});
+ });
+ alerts.sort((a,b)=>a.level==='danger'?-1:b.level==='danger'?1:0);
+ $('financeAlertBadge').textContent=alerts.length+'건';
+ if(alerts.length)$('financeAlerts').innerHTML=alerts.map(a=>'<div class="finance-alert '+a.level+'"><span class="icon">'+a.icon+'</span><div><b>'+esc(a.title)+'</b><small>'+esc(a.sub)+'</small></div><span class="when">'+esc(a.when)+'</span></div>').join('');
+ else{
+  const next=personalDebts().filter(d=>d.principal_repayment_enabled&&d.principal_start_date&&d.principal_start_date>today).sort((a,b)=>a.principal_start_date.localeCompare(b.principal_start_date))[0];
+  $('financeAlerts').innerHTML=next?'<div class="finance-alert info"><span class="icon">📅</span><div><b>현재 즉시 경고 없음</b><small>다음 원금상환 경고는 '+esc(dateAddMonths(next.principal_start_date,-3))+'부터 · '+esc(next.name)+'</small></div><span class="when">예정</span></div>':'<div class="empty">현재 대출 경고가 없습니다.</div>'
+ }
+}
+function setStrategyIncome(v){if($('strategyIncome')){$('strategyIncome').value=v;renderStrategy()}}
+function renderStrategy(){
+ if(!$('strategyIncome'))return;if(!$('strategyMonth').value)$('strategyMonth').value=today.slice(0,7);
+ const mk=$('strategyMonth').value||today.slice(0,7),saved=incomeRowsForMonth(mk).reduce((s,x)=>s+Number(x.amount||0),0);
+ if(!$('strategyIncome').value&&saved)$('strategyIncome').value=Math.round(saved);
+ const income=Number($('strategyIncome').value||0),living=personalCardSpendAverage()+cashFixedAverage(),debt=strategyDebtForMonth(mk)+Number(state.profile?.monthly_tax_reserve||0);
+ const base=living+debt,surplus=Math.max(0,income-base),short=Math.max(0,base-income),priority=priorityDebtBalance(),extra=Math.min(surplus,priority),save=Math.max(0,surplus-extra);
+ $('strategyLiving').textContent=won(living);$('strategyDebt').textContent=won(debt);$('strategySurplus').textContent=short?'-'+won(short):won(surplus);$('strategySurplus').className=short?'bad':'good';$('strategyExtraDebt').textContent=won(extra);$('strategySave').textContent=won(save);
+ const brother=state.debts.find(d=>d.name==='친형 개인채무'),broPlan=brother?debtPlanForMonth(brother,mk):null;
+ const woori=personalDebts().filter(d=>d.lender==='우리은행'&&d.principal_repayment_enabled&&d.principal_start_date).filter(d=>String(d.principal_start_date).slice(0,7)===mk);
+ let notes='우선상환 잔액(비상금+마이너스통장) '+won(priority)+'. ';
+ if(short)notes+='이 소득이면 기본 생활·정규상환에 '+won(short)+' 부족합니다.';
+ else if(priority>0)notes+='기본비용을 내고 남는 '+won(surplus)+' 중 최대 '+won(extra)+'을 우선상환에 넣고, 우선상환 잔액이 끝난 뒤부터 같은 소득 기준 월 '+won(surplus)+'을 저축할 수 있습니다.';
+ else notes+='비상금·마통 정리 완료 기준이라 남는 '+won(surplus)+'을 저축으로 돌릴 수 있습니다.';
+ if(broPlan&&broPlan.principal>0)notes+=' · 형 채무 원금 '+won(broPlan.principal)+'/월 포함';
+ if(woori.length)notes+=' · 이 달부터 '+woori.map(d=>d.name+' 약 '+won(debtPlanForMonth(d,mk).total)).join(', ')+' 고정비 증가';
+ $('strategyPriority').textContent=notes
 }
 function renderTodayTasks(){
  const arr=state.tasks.filter(t=>t.due_date===today&&t.status!=='skipped').sort((a,b)=>({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority])));
@@ -530,7 +623,7 @@ function renderUpcoming(){
  const futureBills=state.cardBills.filter(b=>!b.paid).map(b=>({date:new Date(b.due_date+'T00:00:00'),name:b.card_name+' 카드값',amount:Number(b.amount||0),type:'카드대금'})).filter(x=>x.date>=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1));
  futureBills.forEach(x=>a.push(x));
  state.recurring.filter(r=>r.item_type==='expense'&&r.scope==='personal'&&r.due_day&&!isCardMethod(r.payment_method)).forEach(r=>a.push({date:nextOccurrence(r.due_day),name:r.name,amount:+r.amount,type:'고정비'}));
- personalDebts().filter(d=>d.payment_day).forEach(d=>{const dt=debtNextDate(d);if(dt){const st=d.deadline_priority&&d.target_payoff_date?deadlineStats(d):null;const amt=st?Math.max(Number(d.min_payment||0),st.duePrincipal+st.estInterest):Number(d.min_payment||0);a.push({date:dt,name:d.name,amount:amt,type:debtPaidThisMonth(d.id)?'대출 · 이번달 완료':(st?'기한채무':'대출')})}});
+ personalDebts().filter(d=>d.payment_day).forEach(d=>{const dt=debtNextDate(d);if(dt){const st=d.deadline_priority&&d.target_payoff_date?deadlineStats(d):null;const amt=debtPlanForMonth(d,today.slice(0,7)).total;a.push({date:dt,name:d.name,amount:amt,type:debtPaidThisMonth(d.id)?'대출 · 이번달 완료':(st?'기한채무':'대출')})}});
  deadlineDebts().filter(d=>!d.payment_day&&deadlineStats(d).duePrincipal>0).forEach(d=>a.push({date:new Date(now.getFullYear(),now.getMonth()+1,0),name:d.name,amount:deadlineStats(d).duePrincipal,type:'기한채무 월 목표'}));
  a.sort((x,y)=>x.date-y.date);a=a.slice(0,6);$('upcoming').innerHTML=a.length?a.map(x=>'<div class="row"><div><b>'+esc(x.name)+'</b><small>'+ymd(x.date)+' · '+x.type+'</small></div><span class="amt">'+won(x.amount)+'</span></div>').join(''):'<div class="empty">반복지출과 대출 납부일을 입력하면 표시됩니다.</div>'
 }
@@ -611,13 +704,25 @@ function openSpendingDetail(category){
 }
 function closeSpendingDetail(){const dlg=$('spendingDetailDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
 
+function jkMyStats(monthKey){
+ const staff=state.jkStaff.find(s=>String(s.name).trim()==='인성');if(!staff)return {margin:0,count:0,rate:0,expected:0,staff:null};
+ const rows=state.jkSales.filter(r=>r.salesperson_id===staff.id&&String(r.activation_date).slice(0,7)===monthKey),margin=rows.reduce((s,r)=>s+Number(r.final_margin||0),0);
+ const rates=state.jkPayRates.filter(r=>r.staff_id===staff.id&&String(r.effective_month).slice(0,7)<=monthKey).sort((a,b)=>String(b.effective_month).localeCompare(String(a.effective_month))),rate=Number(rates[0]?.rate_pct||0);
+ return {margin,count:rows.length,rate,expected:Math.round(margin*rate/100),staff}
+}
+function renderJkLink(){
+ if(!$('jkLinkBox'))return;const m=$('incomeMonthPicker')?.value||today.slice(0,7),x=jkMyStats(m);
+ $('jkMyMargin').textContent=won(x.margin);$('jkMyRate').textContent=x.staff?x.rate.toFixed(1)+'%':'연동대상 없음';$('jkMyExpected').textContent=won(x.expected);
+ $('jkLinkBox').style.opacity=x.staff?'1':'.55'
+}
+function applyJeongLedgerIncome(){const m=$('incomeMonthPicker')?.value||today.slice(0,7),x=jkMyStats(m);if(!x.staff){toast('정권장부에서 인성 판매자를 찾지 못했습니다.');return}$('incomeJeong').value=x.expected;const vals=['incomeHigh','incomeRay','incomeJeong','incomeDirect'].reduce((s,id)=>s+(Number($(id).value)||0),0);$('monthlyIncomeTotal').textContent=won(vals);toast('정권장부 예상 내 몫을 정권 칸에 가져왔습니다.')}
 function renderIncomePanel(){
  if(!$('incomeMonthPicker'))return;
  if(!$('incomeMonthPicker').value)$('incomeMonthPicker').value=today.slice(0,7);
  const m=$('incomeMonthPicker').value,rows=incomeRowsForMonth(m),map={};
  rows.forEach(x=>map[x.source]=Number(x.amount||0));
  $('incomeHigh').value=map['하이']||'';$('incomeRay').value=map['레이']||'';$('incomeJeong').value=map['정권']||'';$('incomeDirect').value=map['직접']||'';
- $('monthlyIncomeTotal').textContent=won((map['하이']||0)+(map['레이']||0)+(map['정권']||0)+(map['직접']||0))
+ $('monthlyIncomeTotal').textContent=won((map['하이']||0)+(map['레이']||0)+(map['정권']||0)+(map['직접']||0));renderJkLink()
 }
 async function saveMonthlyIncome(){
  const month=$('incomeMonthPicker').value||today.slice(0,7),income_month=monthKeyToDate(month);
@@ -689,30 +794,47 @@ function debtTermStatus(d){
  return debtMethodLabel(d.repayment_method)
 }
 function renderDebt(){
- const m=metrics();if($('debtDataStatus'))$('debtDataStatus').textContent=state.debts.length+'건 실자료 반영';$('dTotal').textContent=won(m.debt);$('dMin').textContent=won(m.debtMin);$('dExtra').textContent=won(m.extra);$('dDate').textContent=payoffText(0);$('dDeadlineDue').textContent=won(m.deadlinePrincipalDue);$('dDeadlineSub').textContent=deadlineDebts().length?deadlineDebts().length+'건 · 원금 기준':'등록된 기한채무 없음';$('debtSummary').textContent='개인 '+won(m.debt)+' / 사업 '+won(state.debts.filter(d=>d.is_business_debt).reduce((s,d)=>s+Number(d.balance||0),0));
- const scopeOpts=[['false','개인'],['true','사업']];
- $('debtRows').innerHTML=state.debts.length?state.debts.map(d=>{const st=d.target_payoff_date?deadlineStats(d):null;return '<tr>'+
-  '<td><div class="debt-name-stack"><input class="inlineedit" value="'+esc(d.name)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'name\',this.value,\'text\',this)"><input class="inlineedit" style="font-size:9px" value="'+esc(d.lender||'')+'" placeholder="금융사/채권자" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'lender\',this.value,\'text\',this)"></div></td>'+
-  '<td>'+inlineSelect(String(!!d.is_business_debt),scopeOpts,'onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'is_business_debt\',this.value===\'true\',\'bool\',this)"')+'</td>'+
-  '<td><input class="inlineedit amt" type="number" value="'+Number(d.balance||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'balance\',this.value,\'number\',this)"></td>'+
-  '<td><input class="inlineedit" style="width:85px" type="number" step="0.01" value="'+Number(d.apr||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'apr\',this.value,\'number\',this)"></td>'+
-  '<td><div style="font-size:9px;font-weight:900">'+esc(debtMethodLabel(d.repayment_method))+'</div><small>'+esc(debtTermStatus(d))+' · '+(d.contract_months?d.contract_months+'개월':'기간미입력')+'</small><br><small>'+esc(debtRateLabel(d.rate_type))+(d.rate_term_months?' '+d.rate_term_months+'개월':'')+'</small></td>'+
-  '<td><input class="inlineedit amt" type="number" value="'+Number(d.min_payment||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'min_payment\',this.value,\'number\',this)"></td>'+
-  '<td><input class="inlineedit" style="width:70px" type="number" min="1" max="31" value="'+(d.payment_day||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'payment_day\',this.value,\'nullableNumber\',this)"></td>'+
-  '<td><input class="inlineedit" type="date" value="'+(d.maturity_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'maturity_date\',this.value,\'text\',this)"></td>'+
-  '<td><input class="inlineedit" type="date" value="'+(d.target_payoff_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'target_payoff_date\',this.value,\'text\',this)"><label style="display:flex;gap:5px;align-items:center;font-size:8px"><input type="checkbox" '+(d.deadline_priority?'checked':'')+' onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'deadline_priority\',this.checked,\'bool\',this)">기한필수</label></td>'+
-  '<td>'+(st&&d.deadline_priority?'<b class="bad">'+won(st.duePrincipal)+'</b><br><small>'+st.months+'개월 남음 · '+(st.dday>=0?'D-'+st.dday:'기한초과')+'</small>':'-')+'</td>'+
-  '<td><span class="tag '+(debtPaidThisMonth(d.id)?'green':'orange')+'">'+(debtPaidThisMonth(d.id)?'납부완료':'미납/대기')+'</span></td>'+
-  '<td><button class="btn mini primary" onclick="openDebtPayment(\''+d.id+'\')">상환 기록</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>'}).join(''):'<tr><td colspan="12" class="empty">대출·개인채무를 추가하세요.</td></tr>';
- const rows=state.debtPayments.slice(0,50), paidMonth=monthRows(state.debtPayments,'payment_date').reduce((s,p)=>s+Number(p.total_payment||0),0);
- $('debtPaymentSummary').textContent='이번달 납부 '+won(paidMonth);
+ const m=metrics();if($('debtDataStatus'))$('debtDataStatus').textContent=state.debts.length+'건 실자료 반영';
+ $('dTotal').textContent='-'+won(m.debt);$('dTotal').className='bad';$('dMin').textContent=won(m.debtMin);$('dExtra').textContent=won(m.extra);$('dDate').textContent=payoffText(0);$('dDeadlineDue').textContent=won(m.deadlinePrincipalDue);$('dDeadlineSub').textContent=deadlineDebts().length?deadlineDebts().length+'건 · 해당 월 원금 기준':'등록된 기한채무 없음';
+ $('debtSummary').textContent='개인 -'+won(m.debt)+' / 사업 '+won(state.debts.filter(d=>d.is_business_debt).reduce((s,d)=>s+Number(d.balance||0),0));
+ const groups=[
+  ['기한채무',d=>d.deadline_priority],
+  ['원금상환 중',d=>!d.deadline_priority&&d.principal_repayment_enabled&&d.principal_start_date&&today>=d.principal_start_date],
+  ['원금상환 예정',d=>!d.deadline_priority&&d.principal_repayment_enabled&&d.principal_start_date&&today<d.principal_start_date],
+  ['이자만 · 만기일시',d=>!d.deadline_priority&&!d.principal_repayment_enabled]
+ ];
+ const debtCard=d=>{
+  const plan=debtPlanForMonth(d,today.slice(0,7)),futureMonth=d.principal_start_date?String(d.principal_start_date).slice(0,7):today.slice(0,7),future=debtPlanForMonth(d,futureMonth),status=principalStatus(d),cls=d.deadline_priority?'deadline':status==='원금상환 예정'?'principal-soon':status==='원금상환 중'?'principal-active':'';
+  const dueText=d.principal_start_date?(today<d.principal_start_date?'시작 '+d.principal_start_date:'진행중'):'미설정';
+  return '<div class="debt-card '+cls+'">'+
+   '<div class="debt-card-top"><div class="debt-title-block"><div class="debt-name-stack"><input class="inlineedit" value="'+esc(d.name)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'name\',this.value,\'text\',this)"><input class="inlineedit" style="font-size:9px" value="'+esc(d.lender||'')+'" placeholder="금융사/채권자" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'lender\',this.value,\'text\',this)"></div></div>'+
+   '<div class="debt-balance-big">-'+won(d.balance)+'</div><div class="debt-rate-big"><small>연 금리</small><b>'+Number(d.apr||0).toFixed(3)+'%</b></div>'+
+   '<label class="principal-check"><input type="checkbox" '+(d.principal_repayment_enabled?'checked':'')+' onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'principal_repayment_enabled\',this.checked,\'bool\',this)"> 원금 낸다</label></div>'+
+   '<div class="debt-card-grid">'+
+    '<div class="debt-info"><label>상환 상태</label><b>'+esc(status)+'</b><small>'+esc(debtMethodLabel(d.repayment_method))+'</small></div>'+
+    '<div class="debt-info"><label>현재 월 납부</label><b>'+won(plan.total)+'</b><small>원금 '+won(plan.principal)+' · 이자 '+won(plan.interest)+'</small></div>'+
+    '<div class="debt-info"><label>원금 시작일</label><input type="date" value="'+(d.principal_start_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'principal_start_date\',this.value,\'text\',this)"><small>'+esc(dueText)+'</small></div>'+
+    '<div class="debt-info"><label>시작 후 예상 월납부</label><b>'+won(future.total)+'</b><small>첫 달 단순 예상</small></div>'+
+    '<div class="debt-info"><label>납부일</label><input type="number" min="1" max="31" value="'+(d.payment_day||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'payment_day\',this.value,\'nullableNumber\',this)"><small>매월 '+(d.payment_day?d.payment_day+'일':'미입력')+'</small></div>'+
+    '<div class="debt-info"><label>만기</label><input type="date" value="'+(d.maturity_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'maturity_date\',this.value,\'text\',this)"></div>'+
+    '<div class="debt-info"><label>현재 원금</label><input class="amt" type="number" value="'+Number(d.balance||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'balance\',this.value,\'number\',this)"></div>'+
+    '<div class="debt-info"><label>금리</label><input type="number" step="0.001" value="'+Number(d.apr||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'apr\',this.value,\'number\',this)"></div>'+
+    '<div class="debt-info"><label>상환방식</label>'+inlineSelect(d.repayment_method,[['equal_payment','원리금균등'],['equal_principal','원금균등'],['bullet','만기일시'],['manual','직접/기타']],'onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'repayment_method\',this.value,\'text\',this)"')+'</div>'+
+    '<div class="debt-info"><label>약정기간</label><b>'+(d.contract_months?d.contract_months+'개월':'-')+'</b><small>거치 '+Number(d.grace_period_months||0)+'개월</small></div>'+
+    '<div class="debt-info"><label>목표 상환일</label><input type="date" value="'+(d.target_payoff_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'target_payoff_date\',this.value,\'text\',this)"><small>'+(d.deadline_priority?'기한채무':'일반채무')+'</small></div>'+
+    '<div class="debt-info"><label>이번 달 납부</label><b>'+(debtPaidThisMonth(d.id)?'✓ 납부완료':'○ 미납/대기')+'</b><small>'+(d.deadline_priority&&deadlineStats(d).duePrincipal?'필요 원금 '+won(deadlineStats(d).duePrincipal):'')+'</small></div>'+
+   '</div>'+
+   '<div class="debt-card-foot"><div class="debt-card-note">'+esc(d.debt_note||d.memo||'메모 없음')+'</div><div><button class="btn mini primary" onclick="openDebtPayment(\''+d.id+'\')">상환 기록</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></div></div></div>'
+ };
+ $('debtCards').innerHTML=groups.map(g=>{const arr=state.debts.filter(g[1]);if(!arr.length)return '';return '<div class="debt-group"><div class="debt-group-head"><h3>'+g[0]+'</h3><span>'+arr.length+'건</span></div>'+arr.map(debtCard).join('')+'</div>'}).join('')||'<div class="empty">대출·개인채무를 추가하세요.</div>';
+ const rows=state.debtPayments.slice(0,50),paidMonth=monthRows(state.debtPayments,'payment_date').reduce((s,p)=>s+Number(p.total_payment||0),0);$('debtPaymentSummary').textContent='이번달 납부 '+won(paidMonth);
  $('debtPaymentRows').innerHTML=rows.length?rows.map(p=>{const d=state.debts.find(x=>x.id===p.debt_id);return '<tr><td>'+p.payment_date+'</td><td><b>'+esc(d?.name||'삭제된 대출')+'</b></td><td class="amt">'+won(p.total_payment)+'</td><td class="amt">'+won(p.interest_amount)+'</td><td class="amt good">'+won(p.principal_amount)+'</td><td class="amt">'+won(p.balance_before)+'</td><td class="amt">'+won(p.balance_after)+'</td><td>'+(p.interest_estimated?'예상':'실제')+'</td><td><button class="btn mini danger" onclick="deleteDebtPayment(\''+p.id+'\')">기록삭제</button></td></tr>'}).join(''):'<tr><td colspan="9" class="empty">상환 기록을 남기면 잔액 변화가 여기에 쌓입니다.</td></tr>'
 }
 async function addDebt(){
  const balance=+$('debtBalance').value||0,start=$('debtStart').value||null,contract=+$('debtContract').value||null;
  let maturity=$('debtMaturity').value||null;if(!maturity&&start&&contract)maturity=addMonthsToDateStr(start,contract);
  const targetPayoff=$('debtTargetPayoff').value||null,deadline=$('debtDeadlinePriority').value==='true';
- const row={name:$('debtName').value.trim(),lender:$('debtLender').value.trim(),balance,original_principal:balance||null,loan_start_date:start,apr:+$('debtApr').value||0,rate_type:$('debtRateType').value,rate_term_months:+$('debtRateTerm').value||null,contract_months:contract,grace_period_months:+$('debtGrace').value||0,repayment_method:$('debtRepayment').value,min_payment:+$('debtMin').value||0,payment_day:+$('debtDay').value||null,maturity_date:maturity,target_payoff_date:targetPayoff,deadline_priority:deadline,is_business_debt:$('debtBusiness').value==='true',prepayment_fee_pct:+$('debtFee').value||0,debt_note:$('debtNote').value.trim()};
+ const row={name:$('debtName').value.trim(),lender:$('debtLender').value.trim(),balance,original_principal:balance||null,loan_start_date:start,apr:+$('debtApr').value||0,rate_type:$('debtRateType').value,rate_term_months:+$('debtRateTerm').value||null,contract_months:contract,grace_period_months:+$('debtGrace').value||0,repayment_method:$('debtRepayment').value,min_payment:+$('debtMin').value||0,payment_day:+$('debtDay').value||null,maturity_date:maturity,target_payoff_date:targetPayoff,deadline_priority:deadline,principal_repayment_enabled:false,principal_start_date:null,is_business_debt:$('debtBusiness').value==='true',prepayment_fee_pct:+$('debtFee').value||0,debt_note:$('debtNote').value.trim()};
  if(!row.name){toast('대출·채무명을 입력하세요.');return}
  if(deadline&&!targetPayoff){toast('기한채무는 목표 상환일을 입력하세요.');return}
  const {error}=await sb.from('pc_debts').insert(row);if(error)return alert(error.message);
@@ -724,9 +846,9 @@ function openDebtPayment(id){
  const d=state.debts.find(x=>x.id===id);if(!d)return;
  $('debtPayDebtId').value=d.id;$('debtPayName').textContent=(d.lender?d.lender+' · ':'')+d.name;
  $('debtPayDate').value=today;$('debtPayBefore').value=Math.round(Number(d.balance||0));$('debtPayApr').value=Number(d.apr||0).toFixed(2)+'%';
- const st=d.deadline_priority&&d.target_payoff_date?deadlineStats(d):null;
+ const st=d.deadline_priority&&d.target_payoff_date?deadlineStats(d):null,plan=debtPlanForMonth(d,today.slice(0,7));
  const estI=Math.round(Number(d.balance||0)*(Number(d.apr||0)/100)/12);
- $('debtPayTotal').value=Math.round(st?Math.max(Number(d.min_payment||0),st.duePrincipal+estI):Number(d.min_payment||0));
+ $('debtPayTotal').value=Math.round(Math.max(Number(plan.total||0),st?(st.duePrincipal+estI):0));
  $('debtPayInterest').value=estI;
  $('debtPayEstimated').checked=true;$('debtPayMemo').value='';recalcDebtPayment();
  const dlg=$('debtPaymentDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
@@ -840,6 +962,14 @@ function renderCalendar(){
  for(let d=1;d<=last;d++){const date=monthKey+'-'+String(d).padStart(2,'0');let items=[];
  if(d===1)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'money\')">💳 카드값 출금일'+(billTotal?' '+won(billTotal):' · 금액 미입력')+(billPaid?' ✓':'')+'</span>');
  if(d===last)items.push('<span class="calitem system-cal" onclick="event.stopPropagation();openMonthlyIncomeMonth(\''+monthKey+'\')">🏢 사업체 정산일'+(monthIncome?' · 내 수익 '+won(monthIncome):' · 수익 입력')+'</span>');
+ personalDebts().forEach(x=>{
+  if(x.principal_repayment_enabled&&x.principal_start_date){
+   const warn=dateAddMonths(x.principal_start_date,-3);
+   if(date===warn)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'debt\')">⚠ 3개월 뒤 원금상환 시작 · '+esc(x.name)+'</span>');
+   if(date===x.principal_start_date){const p=debtPlanForMonth(x,String(date).slice(0,7));items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'debt\')">🔴 원금상환 시작 · '+esc(x.name)+' · 약 '+won(p.total)+'</span>')}
+  }
+  const end=x.target_payoff_date||x.maturity_date;if(end&&date===end)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'debt\')">⏰ '+esc(x.name)+' '+(x.target_payoff_date?'목표상환일':'만기')+'</span>')
+ });
  state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'" onclick="event.stopPropagation()">'+(t.status==='done'?'✓ ':'')+esc(t.title)+'</span>'));
  state.events.filter(e=>e.event_date===date&&e.status!=='skipped').forEach(e=>items.push('<div class="calitem eventbtn '+(e.status==='done'?'done':'')+'" onclick="event.stopPropagation()"><span class="schedule-check" onclick="event.stopPropagation();toggleEvent(\''+e.id+'\','+(e.status!=='done')+')">'+(e.status==='done'?'✓':'')+'</span><button type="button" style="border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer" onclick="event.stopPropagation();openEventDetail(\''+e.id+'\')">'+esc(e.title)+(e.memo?' · 📝':'')+'</button></div>'));
  state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d&&!isCardMethod(r.payment_method)).forEach(r=>items.push('<span class="calitem money" onclick="event.stopPropagation()">-'+esc(r.name)+' '+won(r.amount)+'</span>'));

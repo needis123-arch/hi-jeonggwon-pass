@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V1.0.1</title>
+<title>PERSONAL CENTER V1.0.2</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -37,7 +37,7 @@
 .formcard{padding:18px;margin-bottom:16px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:9px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111}.field.full{grid-column:1/-1}.formactions{display:flex;gap:7px;align-items:end}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800}.tabs button.active{background:#15191f;color:#fff;border-color:#15191f}
 .meter{margin-top:10px}.meterline{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:5px}.bar{height:9px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar i{height:100%;display:block;background:#9bdc2e;border-radius:99px}
-.income-editor{display:grid;grid-template-columns:170px repeat(4,minmax(130px,1fr)) auto;gap:10px;align-items:end}.income-source{display:flex;flex-direction:column;gap:5px}.income-source label{font-size:9px;color:var(--muted);font-weight:900}.income-source input,.income-month,.card-bill-grid input,.card-bill-grid select{width:100%;border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111;line-height:1.35}.income-total{font-size:24px;font-weight:1000;white-space:nowrap}.card-bill-grid{display:grid;grid-template-columns:160px 1fr 1fr auto;gap:10px;align-items:end}.report-row{display:grid;grid-template-columns:110px 1fr 100px 70px;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #edf0f3}.report-row:last-child{border-bottom:0}.report-bar{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden}.report-bar i{display:block;height:100%;background:#9bdc2e;border-radius:99px}.system-cal{background:#eef8df!important;color:#365c00!important;font-weight:900}.system-cal.carddue{background:#fff1e4!important;color:#8b4e00!important}@media(max-width:1100px){.income-editor{grid-template-columns:1fr 1fr 1fr}.income-editor .income-month-wrap{grid-column:1/-1}.card-bill-grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.income-editor,.card-bill-grid{grid-template-columns:1fr}.report-row{grid-template-columns:90px 1fr 80px}.report-row .report-count{display:none}}.quick-task{padding:12px 14px;margin-bottom:12px;display:grid;grid-template-columns:auto minmax(220px,1fr) 120px auto;gap:9px;align-items:center}.quick-task-title{display:flex;flex-direction:column;min-width:140px}.quick-task-title b{font-size:12px}.quick-task-title span{font-size:8px;color:var(--muted);margin-top:2px}.quick-task input,.quick-task select{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111;min-width:0}.calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff;cursor:pointer}.day:hover{background:#fbfcfd}.calitem.done{text-decoration:line-through;opacity:.55}.schedule-check{display:inline-grid;place-items:center;width:14px;height:14px;border:1px solid #95a0ad;border-radius:4px;margin-right:4px;font-size:9px;vertical-align:-2px}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.eventbtn{width:100%;border:0;text-align:left;color:inherit;cursor:pointer}.calitem.eventbtn:hover{outline:1px solid #a9c76c;background:#f3f9e8}
+.income-editor{display:grid;grid-template-columns:170px repeat(4,minmax(130px,1fr)) auto;gap:10px;align-items:end}.income-source{display:flex;flex-direction:column;gap:5px}.income-source label{font-size:9px;color:var(--muted);font-weight:900}.income-source input,.income-month,.card-bill-grid input,.card-bill-grid select{width:100%;border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111;line-height:1.35}.income-total{font-size:24px;font-weight:1000;white-space:nowrap}.card-bill-grid{display:grid;grid-template-columns:160px 1fr 1fr auto;gap:10px;align-items:end}.report-row{display:grid;grid-template-columns:125px 1fr 105px 80px;gap:10px;align-items:center;padding:10px 8px;border-bottom:1px solid #edf0f3;border-radius:8px}.report-row.clickable{cursor:pointer}.report-row.clickable:hover{background:#f7faf4}.report-row.excluded{opacity:.62;background:#f7f8f9}.report-row .exclude-note{font-size:8px;color:#697586;display:block;margin-top:2px}.direct-income{padding:8px;border:1px solid #b7ec63;border-radius:12px;background:#f7ffe9}.direct-income label{color:#365c00!important}.need-main-note{font-size:9px;color:#cbd3dd;margin-top:8px;line-height:1.5}.detail-headline{display:flex;justify-content:space-between;gap:12px;align-items:flex-end}.detail-list .row{align-items:center}.detail-list .row small{margin-top:3px}.hero .need{line-height:1.05}.report-row:last-child{border-bottom:0}.report-bar{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden}.report-bar i{display:block;height:100%;background:#9bdc2e;border-radius:99px}.system-cal{background:#eef8df!important;color:#365c00!important;font-weight:900}.system-cal.carddue{background:#fff1e4!important;color:#8b4e00!important}@media(max-width:1100px){.income-editor{grid-template-columns:1fr 1fr 1fr}.income-editor .income-month-wrap{grid-column:1/-1}.card-bill-grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.income-editor,.card-bill-grid{grid-template-columns:1fr}.report-row{grid-template-columns:90px 1fr 80px}.report-row .report-count{display:none}}.quick-task{padding:12px 14px;margin-bottom:12px;display:grid;grid-template-columns:auto minmax(220px,1fr) 120px auto;gap:9px;align-items:center}.quick-task-title{display:flex;flex-direction:column;min-width:140px}.quick-task-title b{font-size:12px}.quick-task-title span{font-size:8px;color:var(--muted);margin-top:2px}.quick-task input,.quick-task select{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111;min-width:0}.calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff;cursor:pointer}.day:hover{background:#fbfcfd}.calitem.done{text-decoration:line-through;opacity:.55}.schedule-check{display:inline-grid;place-items:center;width:14px;height:14px;border:1px solid #95a0ad;border-radius:4px;margin-right:4px;font-size:9px;vertical-align:-2px}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.eventbtn{width:100%;border:0;text-align:left;color:inherit;cursor:pointer}.calitem.eventbtn:hover{outline:1px solid #a9c76c;background:#f3f9e8}
 .event-dialog{width:min(620px,calc(100% - 28px));border:1px solid var(--line);border-radius:20px;padding:0;box-shadow:0 28px 90px rgba(10,20,30,.25);color:var(--text)}.event-dialog::backdrop{background:rgba(17,24,32,.45)}.event-dialog-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.event-dialog-head h3{margin:0;font-size:17px}.event-dialog-body{padding:20px;display:grid;gap:12px}.event-dialog-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.event-dialog .field textarea{min-height:150px;resize:vertical;line-height:1.6}.event-task-box{border-top:1px solid var(--line);padding-top:14px}.event-task-add{display:grid;grid-template-columns:1fr 120px auto;gap:8px;margin-top:9px}.event-task-list{display:grid;gap:7px;margin-top:9px}.event-task-row{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:10px;padding:9px 10px}.event-task-row input[type=checkbox]{width:18px;height:18px;accent-color:#78ba0d}.event-task-row b{font-size:11px;flex:1}.biz-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.biz-edit-grid label{font-size:8px;color:var(--muted);font-weight:800}.biz-edit-grid input{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px;font-weight:800}@media(max-width:560px){.event-task-add{grid-template-columns:1fr}.biz-edit-grid{grid-template-columns:1fr 1fr}}.calitem.task{background:#f1fbe3}.calitem.money{background:#fff0e5}.calitem.must{background:#ffe9ed;color:#a72738}
 .callout{border:1px solid #dfe5ea;background:#fafcfd;border-radius:13px;padding:13px;margin-bottom:12px}.callout b{font-size:12px}.callout p{font-size:10px;color:var(--muted);line-height:1.6;margin:5px 0 0}
 .loginbg{position:fixed;inset:0;background:#f4f6f8;z-index:300;display:none;align-items:center;justify-content:center;padding:20px}.loginbg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 25px 80px rgba(10,20,30,.14)}.loginmark{width:52px;height:52px;border-radius:15px;background:#15191f;color:#b8ff35;display:grid;place-items:center;font-size:19px;font-weight:1000;margin-bottom:14px}.login h2{margin:0}.login p{font-size:11px;color:var(--muted);line-height:1.6}.login input{width:100%;border:1px solid #d6dde5;border-radius:11px;padding:11px;margin-top:8px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:var(--warn);margin-top:10px}.toast{position:fixed;right:22px;bottom:22px;background:#15191f;color:#fff;padding:11px 14px;border-radius:11px;display:none;z-index:500;font-size:11px}.toast.show{display:block}
@@ -50,7 +50,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.0.1</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.0.2</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -69,18 +69,18 @@
  <div class="head"><div><h2>오늘 정신 차릴 숫자</h2><p>사업과 개인 돈을 섞지 않고, 오늘 해야 할 행동까지 한 화면에서 봅니다.</p></div><button class="btn" onclick="loadAll()">새로고침</button></div>
  <div class="hero card">
   <div class="hero-grid">
-   <div><h2>이번 달 실제 현금부담선</h2><div class="need" id="heroNeed">0원</div><div class="remain">개인 목표까지 <b id="heroRemain">0원</b> · 남은 날짜 하루 평균 <b id="heroDaily">0원</b></div><div class="progress"><i id="incomeBar"></i></div><small id="heroCaption">데이터를 입력하면 이번 달 목표가 계산됩니다.</small></div>
+   <div><h2>이번 달 총 필요자금 <span style="font-size:10px;color:#a9b5c1">· 빚 상환 포함</span></h2><div class="need" id="heroNeed">0원</div><div class="remain">현재 내 수익 <b id="heroIncomeLine">0원</b> · 아직 부족 <b id="heroRemain">0원</b> · 하루 최소 <b id="heroDaily">0원</b></div><div class="progress"><i id="incomeBar"></i></div><small id="heroCaption">카드값과 월 수익을 넣으면 이번 달 필요한 돈이 한 번에 계산됩니다.</small><div id="heroDataWarning" class="need-main-note"></div></div>
    <div class="hero-side">
-    <div class="hero-box"><span>개인 생존선</span><b id="heroSurvival">0원</b></div>
-    <div class="hero-box"><span>이번 달 개인유입</span><b id="heroIncome">0원</b></div>
-    <div class="hero-box"><span>사업체 메꾼 돈</span><b id="heroSupport">0원</b></div>
-    <div class="hero-box"><span>빚 탈출 예상</span><b id="heroPayoff">-</b></div>
+    <div class="hero-box"><span>이번 달 빚 갚는 돈</span><b id="heroSurvival">0원</b></div>
+    <div class="hero-box"><span>이번 달 내 수익</span><b id="heroIncome">0원</b></div>
+    <div class="hero-box"><span>카드값 실부담</span><b id="heroSupport">0원</b></div>
+    <div class="hero-box"><span>생활 · 고정비</span><b id="heroPayoff">0원</b></div>
    </div>
   </div>
  </div>
  <div class="panel card" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-   <div><h3>이번 달 내 수익</h3><p style="margin:4px 0 0">말일 사업체 정산 후 하이·레이·정권에서 실제로 내 몫으로 남은 돈과 직접 번 돈을 입력합니다.</p></div>
+   <div><h3>월 수익 입력 — 내가 실제로 번 돈</h3><p style="margin:4px 0 0">여기에 입력하면 바로 위 ‘이번 달 내 수익’과 ‘아직 부족한 돈’이 바뀝니다. 사업체 정산금과 내가 직접 일해서 번 돈을 분리합니다.</p></div>
    <div style="text-align:right"><span class="autosave-note">월 합계</span><div class="income-total" id="monthlyIncomeTotal">0원</div></div>
   </div>
   <div class="income-editor">
@@ -88,16 +88,16 @@
    <div class="income-source"><label>하이에서 남은 돈</label><input id="incomeHigh" type="number" placeholder="0"></div>
    <div class="income-source"><label>레이에서 남은 돈</label><input id="incomeRay" type="number" placeholder="0"></div>
    <div class="income-source"><label>정권에서 남은 돈</label><input id="incomeJeong" type="number" placeholder="0"></div>
-   <div class="income-source"><label>내가 직접 번 돈</label><input id="incomeDirect" type="number" placeholder="0"></div>
+   <div class="income-source direct-income"><label>내가 직접 번 돈 (내 일 / 영업)</label><input id="incomeDirect" type="number" placeholder="직접 번 금액"></div>
    <button class="btn primary" type="button" onclick="saveMonthlyIncome()">월 수익 저장</button>
   </div>
  </div>
  <div class="kpis">
-  <div class="kpi card"><span>현재 현금성 자산</span><strong id="kCash">0원</strong><small>계좌/현금 직접 입력</small></div>
-  <div class="kpi card"><span>개인 총부채</span><strong id="kDebt">0원</strong><small id="kDebtSub">월 최소상환 0원</small></div>
-  <div class="kpi card"><span>순현금 포지션</span><strong id="kNet">0원</strong><small>현금성 자산 - 개인부채</small></div>
-  <div class="kpi card"><span>이번 달 실제 개인지출</span><strong id="kSpend">0원</strong><small>거래내역 기준</small></div>
-  <div class="kpi card"><span>이번 달 목표 달성률</span><strong id="kRate">0%</strong><small id="kRateSub">목표 0원</small></div>
+  <div class="kpi card"><span>이번 달 빚 상환</span><strong id="kDebtDue">0원</strong><small id="kDebtDueSub">대출 + 기한채무</small></div>
+  <div class="kpi card"><span>이번 달 카드값</span><strong id="kCardDue">0원</strong><small id="kCardDueSub">1일 출금 · 환급 반영</small></div>
+  <div class="kpi card"><span>생활 · 고정비</span><strong id="kLivingDue">0원</strong><small>현금고정 + 생활예산</small></div>
+  <div class="kpi card"><span>이번 달 내 수익</span><strong id="kEarned">0원</strong><small>하이 + 레이 + 정권 + 직접</small></div>
+  <div class="kpi card"><span>개인 총부채</span><strong id="kDebtTotal">0원</strong><small id="kDebtTotalSub">현재 남은 원금</small></div>
  </div>
  <div class="grid2">
   <div class="panel card"><h3>오늘 반드시 끝내기</h3><p>미완료 항목은 다음 날 다시 오늘 목록으로 이월됩니다.</p><div id="todayTasks" class="list"></div></div>
@@ -149,15 +149,15 @@
  <div class="panel card" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
    <div><h3>카드 지출 리포트</h3><p style="margin-bottom:0">삼성·롯데 개인카드 원자료를 가맹점/업종 기준으로 분류한 2026년 5~8월 월평균입니다.</p></div>
-   <div style="text-align:right"><span class="autosave-note">최근 4개 완전월 카드평균</span><div class="amt" id="spendReportAvg" style="font-size:18px">0원</div></div>
+   <div style="text-align:right"><span class="autosave-note">카드 총사용 평균</span><div class="amt" id="spendReportGross" style="font-size:18px">0원</div><small class="autosave-note">환급성 비용 포함</small></div>
   </div>
   <div class="grid3" style="margin:14px 0">
+   <div class="kpi card"><span>실질 개인소비 평균</span><strong id="spendReportAvg">0원</strong><small>사무실 환급성 비용 제외</small></div>
+   <div class="kpi card"><span>사무실 환급성 지출</span><strong id="reportReimbursed">0원</strong><small>차량 렌탈 등 · 개인소비 제외</small></div>
    <div class="kpi card"><span>식음료 반복소비</span><strong id="reportFood">0원</strong><small>외식+편의점+배달+카페</small></div>
-   <div class="kpi card"><span>차량 관련</span><strong id="reportCar">0원</strong><small>렌탈+주유</small></div>
-   <div class="kpi card"><span>1차 절약 목표</span><strong id="reportSavingTarget">500,000원</strong><small>월 추가상환 재원 목표</small></div>
   </div>
   <div id="spendingReportRows"></div>
-  <div class="callout" style="margin:14px 0 0"><b>리포트 해석</b><p id="spendingReportInsight">카드자료를 불러오는 중입니다.</p></div>
+  <div class="callout" style="margin:14px 0 0"><b>리포트 해석</b><p id="spendingReportInsight">카드자료를 불러오는 중입니다.</p><p style="margin-top:6px"><b>각 항목을 클릭하면 실제 가맹점별 세부 리스트를 볼 수 있습니다.</b></p></div>
  </div>
  <div class="formcard card">
   <h3>월 반복 수입 / 지출</h3><div class="formgrid">
@@ -301,6 +301,15 @@
  <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="business">사업</button>
 </nav>
 
+<dialog class="event-dialog" id="spendingDetailDialog">
+ <div class="event-dialog-head"><div><h3 id="spendingDetailTitle">지출 세부내역</h3><div class="autosave-note" id="spendingDetailPeriod">2026.05~08</div></div><button class="btn mini" type="button" onclick="closeSpendingDetail()">닫기</button></div>
+ <div class="event-dialog-body">
+  <div class="detail-headline"><div><span class="autosave-note">월평균</span><div class="amt" id="spendingDetailAvg" style="font-size:21px">0원</div></div><div style="text-align:right"><span class="autosave-note">4개월 총액</span><div class="amt" id="spendingDetailTotal">0원</div></div></div>
+  <div id="spendingDetailNote" class="callout" style="margin:0"></div>
+  <div id="spendingDetailRows" class="list detail-list"></div>
+ </div>
+ <div class="event-dialog-foot"><div class="autosave-note">원자료에서 같은 가맹점명을 합산한 상위 내역입니다.</div><button class="btn primary" type="button" onclick="closeSpendingDetail()">확인</button></div>
+</dialog>
 <dialog class="event-dialog" id="quickScheduleDialog">
  <div class="event-dialog-head"><div><h3>스케줄 추가</h3><div class="autosave-note" id="quickScheduleDateLabel">날짜</div></div><button class="btn mini" type="button" onclick="closeQuickSchedule()">닫기</button></div>
  <div class="event-dialog-body">
@@ -366,7 +375,7 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7)}
@@ -401,9 +410,10 @@ async function loadAll(){
   sb.from('pc_calendar_events').select('*').order('event_date').limit(300),
   sb.from('pc_card_bills').select('*').order('due_date',{ascending:false}).limit(120),
   sb.from('pc_monthly_income_entries').select('*').order('income_month',{ascending:false}).limit(120),
-  sb.from('pc_spending_patterns').select('*').order('avg_monthly_amount',{ascending:false}).limit(100)
+  sb.from('pc_spending_patterns').select('*').order('avg_monthly_amount',{ascending:false}).limit(100),
+  sb.from('pc_spending_category_details').select('*').order('category').limit(100)
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -463,32 +473,40 @@ function metrics(){
  const deadlinePrincipalDue=deadlineDueTotal();
  const deadlineTopup=deadlineDebts().reduce((s,d)=>{const st=deadlineStats(d);return s+Math.max(0,st.duePrincipal+st.estInterest-Number(d.min_payment||0))},0);
  const debtMin=contractualDebtMin+deadlineTopup;
+ const extra=Number(state.profile?.monthly_debt_extra_target||0),debtNeed=debtMin+extra;
  const currentMonthKey=today.slice(0,7),cardBillCash=cardBillTotalForMonth(currentMonthKey),hasCardBill=cardBillCash>0;
+ const expectedCardReimbursement=hasCardBill?state.spendingPatterns.filter(x=>x.exclude_from_personal).reduce((s,x)=>s+Number(x.avg_monthly_amount||0),0):0;
+ const cardBillNet=Math.max(0,cardBillCash-expectedCardReimbursement);
  const recurringExpense=state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&!(hasCardBill&&isCardMethod(r.payment_method))).reduce((s,r)=>s+Number(r.amount||0),0);
- const extra=Number(state.profile?.monthly_debt_extra_target||0);
- const variableBudget=Number(state.profile?.monthly_variable_budget||0);
- const savingsTarget=Number(state.profile?.monthly_savings_target||0);
- const taxReserve=Number(state.profile?.monthly_tax_reserve||0);
+ const variableBudget=Number(state.profile?.monthly_variable_budget||0),livingNeed=recurringExpense+variableBudget;
+ const savingsTarget=Number(state.profile?.monthly_savings_target||0),taxReserve=Number(state.profile?.monthly_tax_reserve||0);
  const survival=recurringExpense+cardBillCash+debtMin;
- const recommended=survival+variableBudget+savingsTarget+taxReserve+extra;
+ const recommended=recurringExpense+cardBillCash+debtNeed+variableBudget+savingsTarget+taxReserve;
  const mflows=monthRows(state.flows,'flow_date');
  const support=mflows.filter(f=>['personal_paid_business','capital_injection'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);
  const reimburse=mflows.filter(f=>f.flow_type==='reimbursement').reduce((s,f)=>s+Number(f.amount||0),0);
+ const reimbursementForPlan=Math.max(reimburse,expectedCardReimbursement);
  const bizIncome=mflows.filter(f=>['draw','profit_distribution'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);
  const mtx=monthRows(state.tx,'tx_date');
  const directIncome=mtx.filter(t=>t.scope==='personal'&&t.tx_type==='income').reduce((s,t)=>s+Number(t.amount||0),0);
  const actualSpend=mtx.filter(t=>t.scope==='personal'&&t.tx_type==='expense'&&t.source!=='card_bill_payment').reduce((s,t)=>s+Number(t.amount||0),0);
  const incomeEntries=incomeRowsForMonth(currentMonthKey),manualIncome=incomeEntries.reduce((s,x)=>s+Number(x.amount||0),0);
  const earned=incomeEntries.length?manualIncome:(directIncome+bizIncome);
- const cashBurden=Math.max(0,recommended+support-reimburse);
- const manualTarget=Number(state.profile?.monthly_personal_income_target||0), target=Math.max(manualTarget,cashBurden), remain=Math.max(0,target-earned);
- const last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(), left=Math.max(1,last-now.getDate()+1), daily=remain/left;
- return {cash,debt,debtMin,contractualDebtMin,deadlinePrincipalDue,recurringExpense,cardBillCash,extra,variableBudget,savingsTarget,taxReserve,survival,recommended,support,reimburse,bizIncome,directIncome,actualSpend,earned,cashBurden,target,remain,daily,left}
+ const cashBurden=Math.max(0,recommended+support-reimbursementForPlan);
+ const manualTarget=Number(state.profile?.monthly_personal_income_target||0),target=Math.max(manualTarget,cashBurden),remain=Math.max(0,target-earned);
+ const last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(),left=Math.max(1,last-now.getDate()+1),daily=remain/left;
+ return {cash,debt,debtMin,debtNeed,contractualDebtMin,deadlinePrincipalDue,recurringExpense,cardBillCash,cardBillNet,expectedCardReimbursement,hasCardBill,livingNeed,extra,variableBudget,savingsTarget,taxReserve,survival,recommended,support,reimburse,reimbursementForPlan,bizIncome,directIncome,actualSpend,earned,cashBurden,target,remain,daily,left}
 }
 function renderDashboard(){
  const m=metrics(),rate=m.target?Math.min(999,m.earned/m.target*100):0;
- $('heroNeed').textContent=won(m.cashBurden);$('heroRemain').textContent=won(m.remain);$('heroDaily').textContent=won(m.daily);$('heroSurvival').textContent=won(m.survival);$('heroIncome').textContent=won(m.earned);$('heroSupport').textContent=won(m.support);$('heroPayoff').textContent=payoffText(0);$('incomeBar').style.width=Math.min(100,rate)+'%';$('heroCaption').textContent='현금고정·카드값·대출 '+won(m.survival)+' + 생활예산 '+won(m.variableBudget)+' + 저축 '+won(m.savingsTarget)+' + 세금 '+won(m.taxReserve)+' + 추가상환 '+won(m.extra)+' · 목표 '+won(m.target);
- $('kCash').textContent=won(m.cash);$('kDebt').textContent=won(m.debt);$('kDebtSub').textContent='월 최소상환 '+won(m.debtMin);$('kNet').textContent=(m.cash-m.debt<0?'-':'')+won(Math.abs(m.cash-m.debt));$('kNet').className=m.cash-m.debt<0?'bad':'good';$('kSpend').textContent=won(m.actualSpend);$('kRate').textContent=rate.toFixed(1)+'%';$('kRateSub').textContent='목표 '+won(m.target);
+ $('heroNeed').textContent=won(m.cashBurden);$('heroIncomeLine').textContent=won(m.earned);$('heroRemain').textContent=won(m.remain);$('heroDaily').textContent=won(m.daily);
+ $('heroSurvival').textContent=won(m.debtNeed);$('heroIncome').textContent=won(m.earned);$('heroSupport').textContent=won(m.cardBillNet);$('heroPayoff').textContent=won(m.livingNeed);
+ $('incomeBar').style.width=Math.min(100,rate)+'%';
+ $('heroCaption').textContent='빚 '+won(m.debtNeed)+' + 카드 '+won(m.cardBillCash)+' + 생활·고정 '+won(m.livingNeed)+' + 저축·세금 '+won(m.savingsTarget+m.taxReserve)+(m.expectedCardReimbursement?' − 사무실 환급예정 '+won(m.expectedCardReimbursement):'')+' = 이번 달 필요자금';
+ $('heroDataWarning').textContent=!m.hasCardBill?'⚠ 이번 달 카드 결제금액이 아직 비어 있어 총 필요자금은 카드값을 제외한 금액입니다. 자산·지출 → 카드값 출금 관리에서 입력하세요.':'카드값까지 입력됨 · 총 필요자금 계산 완료';
+ $('kDebtDue').textContent=won(m.debtNeed);$('kDebtDueSub').textContent='약정·기한채무 포함';
+ $('kCardDue').textContent=won(m.cardBillNet);$('kCardDueSub').textContent=m.hasCardBill?('총 '+won(m.cardBillCash)+(m.expectedCardReimbursement?' · 환급 '+won(m.expectedCardReimbursement):'')):'카드값 미입력';
+ $('kLivingDue').textContent=won(m.livingNeed);$('kEarned').textContent=won(m.earned);$('kDebtTotal').textContent=won(m.debt);$('kDebtTotalSub').textContent='현재 남은 원금';
  renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
 }
 function renderTodayTasks(){
@@ -576,14 +594,23 @@ function renderSpendingReport(){
  if(!$('spendingReportRows'))return;
  const p=[...state.spendingPatterns].sort((a,b)=>Number(b.avg_monthly_amount)-Number(a.avg_monthly_amount)),cp=cardPatternStats();
  const max=p.length?Math.max(...p.map(x=>Number(x.avg_monthly_amount||0))):1;
- $('spendReportAvg').textContent=won(cp.avg);
- const pick=names=>p.filter(x=>names.includes(x.category)).reduce((s,x)=>s+Number(x.avg_monthly_amount||0),0);
- const food=pick(['외식','편의점','배달','카페/음료']),car=pick(['차량 렌탈','주유']);
- $('reportFood').textContent=won(food);$('reportCar').textContent=won(car);
- $('spendingReportRows').innerHTML=p.length?p.map(x=>'<div class="report-row"><b>'+esc(x.category)+'</b><div class="report-bar"><i style="width:'+Math.max(3,Number(x.avg_monthly_amount||0)/max*100)+'%"></i></div><span class="amt">'+won(x.avg_monthly_amount)+'</span><span class="report-count autosave-note">'+(x.avg_monthly_count?Number(x.avg_monthly_count).toFixed(1)+'회':'')+'</span></div>').join(''):'<div class="empty">분석 데이터가 없습니다.</div>';
- const foodRate=cp.avg?food/cp.avg*100:0;
- $('spendingReportInsight').textContent='최근 4개 완전월 카드 평균은 '+won(cp.avg)+'이고, 외식·편의점·배달·카페가 '+won(food)+'(약 '+foodRate.toFixed(1)+'%)입니다. 첫 절약 목표는 월 50만원으로 두고, 이 절약액을 비상금대출·마이너스통장 추가상환에 연결하는 구조가 현실적입니다.'
+ const reimb=p.filter(x=>x.exclude_from_personal).reduce((s,x)=>s+Number(x.avg_monthly_amount||0),0),personalAvg=Math.max(0,cp.avg-reimb);
+ $('spendReportGross').textContent=won(cp.avg);$('spendReportAvg').textContent=won(personalAvg);$('reportReimbursed').textContent=won(reimb);
+ const pick=names=>p.filter(x=>names.includes(x.category)&&!x.exclude_from_personal).reduce((s,x)=>s+Number(x.avg_monthly_amount||0),0);
+ const food=pick(['외식','편의점','배달','카페/음료']);$('reportFood').textContent=won(food);
+ $('spendingReportRows').innerHTML=p.length?p.map(x=>'<div class="report-row clickable '+(x.exclude_from_personal?'excluded':'')+'" onclick="openSpendingDetail(\''+esc(x.category).replace(/&#39;/g,"\\'")+'\')"><div><b>'+esc(x.category)+'</b>'+(x.exclude_from_personal?'<span class="exclude-note">사무실 환급 · 개인소비 제외</span>':'')+'</div><div class="report-bar"><i style="width:'+Math.max(3,Number(x.avg_monthly_amount||0)/max*100)+'%"></i></div><span class="amt">'+won(x.avg_monthly_amount)+'</span><span class="report-count autosave-note">'+(x.avg_monthly_count?Number(x.avg_monthly_count).toFixed(1)+'회':'')+' ›</span></div>').join(''):'<div class="empty">분석 데이터가 없습니다.</div>';
+ const foodRate=personalAvg?food/personalAvg*100:0;
+ $('spendingReportInsight').textContent='카드 총사용 월평균 '+won(cp.avg)+' 중 차량 렌탈 '+won(reimb)+'은 사무실 환급으로 개인소비에서 제외했습니다. 실질 개인소비 평균은 '+won(personalAvg)+'이며, 외식·편의점·배달·카페가 '+won(food)+'(실질 소비의 약 '+foodRate.toFixed(1)+'%)입니다.'
 }
+function openSpendingDetail(category){
+ const p=state.spendingPatterns.find(x=>x.category===category),d=state.spendingDetails.find(x=>x.category===category);if(!p)return;
+ $('spendingDetailTitle').textContent=category+' 세부 리스트';$('spendingDetailPeriod').textContent='2026년 5~8월 원자료 · 가맹점별 합산';$('spendingDetailAvg').textContent=won(p.avg_monthly_amount);$('spendingDetailTotal').textContent=won(Number(p.avg_monthly_amount||0)*4);
+ $('spendingDetailNote').innerHTML=p.exclude_from_personal?'<b>개인소비 제외</b><p>이 항목은 '+esc(p.reimbursement_source||'사업체')+'에서 환급받는 비용으로 분류했습니다.</p>':'<b>월평균 '+won(p.avg_monthly_amount)+'</b><p>아래는 4개월 동안 많이 결제한 가맹점 순입니다.</p>';
+ const rows=Array.isArray(d?.details)?d.details:[];$('spendingDetailRows').innerHTML=rows.length?rows.map((x,i)=>'<div class="row"><div><b>'+(i+1)+'. '+esc(x.merchant)+'</b><small>4개월 '+Number(x.count||0).toLocaleString('ko-KR')+'회 · 월평균 '+won(x.monthly_avg)+'</small></div><span class="amt">'+won(x.total)+'</span></div>').join(''):'<div class="empty">세부 가맹점 데이터가 없습니다.</div>';
+ const dlg=$('spendingDetailDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
+}
+function closeSpendingDetail(){const dlg=$('spendingDetailDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
+
 function renderIncomePanel(){
  if(!$('incomeMonthPicker'))return;
  if(!$('incomeMonthPicker').value)$('incomeMonthPicker').value=today.slice(0,7);

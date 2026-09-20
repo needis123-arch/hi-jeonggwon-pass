@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V0.4</title>
+<title>PERSONAL CENTER V0.5</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -32,7 +32,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.4</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.5</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -141,7 +141,8 @@
   </div>
  </div>
  <div class="callout"><b>상환 로직</b><p>개인 부채는 월 최소상환액을 낸 뒤 남는 추가상환금을 금리가 높은 대출부터 넣는 방식으로 계산합니다. 중도상환수수료가 있거나 금리 구조가 복잡한 상품은 실제 약관을 함께 확인해야 합니다.</p></div>
- <div class="tablecard card"><div class="tabletop"><b>대출 목록</b><span id="debtSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>대출</th><th>구분</th><th>잔액</th><th>금리</th><th>최소상환</th><th>납부일</th><th>만기</th><th>관리</th></tr></thead><tbody id="debtRows"></tbody></table></div></div>
+ <div class="tablecard card"><div class="tabletop"><div><b>대출 목록</b><div class="autosave-note">상환한 날에는 '상환 기록'만 누르면 남은 원금이 자동으로 바뀝니다.</div></div><span id="debtSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>대출</th><th>구분</th><th>잔액</th><th>금리</th><th>최소상환</th><th>납부일</th><th>만기</th><th>이번달</th><th>관리</th></tr></thead><tbody id="debtRows"></tbody></table></div></div>
+ <div class="tablecard card"><div class="tabletop"><div><b>상환 이력</b><div class="autosave-note">납부총액을 이자와 원금으로 나눠 기록하고 잔액 변화를 남깁니다.</div></div><span id="debtPaymentSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>대출</th><th>납부액</th><th>이자</th><th>원금</th><th>상환 전</th><th>상환 후</th><th>이자기준</th><th>관리</th></tr></thead><tbody id="debtPaymentRows"></tbody></table></div></div>
 </section>
 
 <section class="page" id="page-business">
@@ -233,6 +234,25 @@
  <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="business">사업</button>
 </nav>
 
+<dialog class="event-dialog" id="debtPaymentDialog">
+ <div class="event-dialog-head"><div><h3>대출 상환 기록</h3><div class="autosave-note" id="debtPayName">대출</div></div><button class="btn mini" type="button" onclick="closeDebtPayment()">닫기</button></div>
+ <div class="event-dialog-body">
+  <input id="debtPayDebtId" type="hidden">
+  <div class="formgrid" style="grid-template-columns:160px 1fr 1fr">
+   <div class="field"><label>납부일</label><input id="debtPayDate" type="date"></div>
+   <div class="field"><label>상환 전 원금</label><input id="debtPayBefore" type="number" readonly></div>
+   <div class="field"><label>연 금리</label><input id="debtPayApr" type="text" readonly></div>
+   <div class="field"><label>실제 빠져나간 총액</label><input id="debtPayTotal" type="number" placeholder="이번 달 실제 납부액"></div>
+   <div class="field"><label>이번 달 이자</label><input id="debtPayInterest" type="number" placeholder="은행 앱에 보이면 입력"></div>
+   <div class="field"><label>원금 상환액</label><input id="debtPayPrincipal" type="number" readonly></div>
+   <div class="field"><label>상환 후 남은 원금</label><input id="debtPayAfter" type="number" readonly></div>
+   <div class="field"><label>이자 계산</label><label style="display:flex;align-items:center;gap:8px;min-height:42px"><input id="debtPayEstimated" type="checkbox" checked> 금리로 예상한 이자</label></div>
+   <div class="field"><label>메모</label><input id="debtPayMemo" placeholder="선납/추가상환 등"></div>
+  </div>
+  <div class="callout" style="margin:0"><b id="debtPayPreview">계산 대기</b><p id="debtPayHint">은행 앱에 실제 이자금액이 표시되면 그 값을 넣는 것이 가장 정확합니다.</p></div>
+ </div>
+ <div class="event-dialog-foot"><div></div><div><button class="btn" type="button" onclick="closeDebtPayment()">취소</button> <button class="btn primary" type="button" onclick="saveDebtPayment()">상환 반영</button></div></div>
+</dialog>
 <dialog class="event-dialog" id="eventDialog">
  <div class="event-dialog-head"><div><h3>일정 상세</h3><div class="autosave-note">캘린더 제목을 눌러 열었습니다.</div></div><button class="btn mini" type="button" onclick="closeEventDetail()">닫기</button></div>
  <div class="event-dialog-body">
@@ -265,10 +285,10 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function setDefaults(){['txDate','flowDate','taskDate','eventDate'].forEach(id=>{if($(id))$(id).value=today})}
+function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today})}
 function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',goals:'5년 목표',settings:'설정'})[p]||p}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
@@ -290,6 +310,7 @@ async function loadAll(){
   sb.from('pc_businesses').select('*').order('created_at'),
   sb.from('pc_accounts').select('*').order('updated_at',{ascending:false}),
   sb.from('pc_debts').select('*').order('apr',{ascending:false}),
+  sb.from('pc_debt_payments').select('*').order('payment_date',{ascending:false}).limit(300),
   sb.from('pc_recurring_items').select('*').eq('active',true).order('due_day'),
   sb.from('pc_transactions').select('*').order('tx_date',{ascending:false}).limit(300),
   sb.from('pc_business_flows').select('*').order('flow_date',{ascending:false}).limit(300),
@@ -297,7 +318,7 @@ async function loadAll(){
   sb.from('pc_tasks').select('*').order('due_date').limit(300),
   sb.from('pc_calendar_events').select('*').order('event_date').limit(300)
  ]);
- const keys=['profile','businesses','accounts','debts','recurring','tx','flows','goals','tasks','events'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -359,9 +380,16 @@ function renderTodayTasks(){
 }
 async function toggleTask(id,done){const {error}=await sb.from('pc_tasks').update({status:done?'done':'pending',completed_at:done?new Date().toISOString():null}).eq('id',id);if(error)return alert(error.message);const t=state.tasks.find(x=>x.id===id);if(t){t.status=done?'done':'pending';t.completed_at=done?new Date().toISOString():null}renderTodayTasks();renderCalendar();toast(done?'완료 체크':'미완료로 변경')}
 function nextOccurrence(day){const y=now.getFullYear(),m=now.getMonth(),last=new Date(y,m+1,0).getDate(),d=Math.min(+day||1,last);let x=new Date(y,m,d);if(x<new Date(y,m,now.getDate())){const l2=new Date(y,m+2,0).getDate();x=new Date(y,m+1,Math.min(+day||1,l2))}return x}
+function debtPaidThisMonth(id){return state.debtPayments.some(p=>p.debt_id===id&&p.payment_date>=monthStart&&p.payment_date<=monthEnd)}
+function debtNextDate(d){
+ if(!d.payment_day)return null;
+ if(!debtPaidThisMonth(d.id))return nextOccurrence(d.payment_day);
+ const y=now.getFullYear(),m=now.getMonth()+1,last=new Date(y,m+1,0).getDate();
+ return new Date(y,m,Math.min(+d.payment_day,last))
+}
 function renderUpcoming(){
  let a=[];state.recurring.filter(r=>r.item_type==='expense'&&r.scope==='personal'&&r.due_day).forEach(r=>a.push({date:nextOccurrence(r.due_day),name:r.name,amount:+r.amount,type:'고정/카드'}));
- personalDebts().filter(d=>d.payment_day).forEach(d=>a.push({date:nextOccurrence(d.payment_day),name:d.name,amount:+d.min_payment,type:'대출'}));
+ personalDebts().filter(d=>d.payment_day).forEach(d=>{const dt=debtNextDate(d);if(dt)a.push({date:dt,name:d.name,amount:+d.min_payment,type:debtPaidThisMonth(d.id)?'대출 · 이번달 완료':'대출'})});
  a.sort((x,y)=>x.date-y.date);a=a.slice(0,6);$('upcoming').innerHTML=a.length?a.map(x=>'<div class="row"><div><b>'+esc(x.name)+'</b><small>'+ymd(x.date)+' · '+x.type+'</small></div><span class="amt">'+won(x.amount)+'</span></div>').join(''):'<div class="empty">반복지출과 대출 납부일을 입력하면 표시됩니다.</div>'
 }
 function renderBusinessPulse(){
@@ -444,10 +472,57 @@ function renderDebt(){
   '<td><input class="inlineedit amt" type="number" value="'+Number(d.min_payment||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'min_payment\',this.value,\'number\',this)"></td>'+
   '<td><input class="inlineedit" style="width:70px" type="number" min="1" max="31" value="'+(d.payment_day||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'payment_day\',this.value,\'nullableNumber\',this)"></td>'+
   '<td><input class="inlineedit" type="date" value="'+(d.maturity_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'maturity_date\',this.value,\'text\',this)"></td>'+
-  '<td><button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">대출을 추가하세요.</td></tr>'
+  '<td><span class="tag '+(debtPaidThisMonth(d.id)?'green':'orange')+'">'+(debtPaidThisMonth(d.id)?'납부완료':'미납/대기')+'</span></td>'+
+  '<td><button class="btn mini primary" onclick="openDebtPayment(\''+d.id+'\')">상환 기록</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="9" class="empty">대출을 추가하세요.</td></tr>';
+ const rows=state.debtPayments.slice(0,50), paidMonth=monthRows(state.debtPayments,'payment_date').reduce((s,p)=>s+Number(p.total_payment||0),0);
+ $('debtPaymentSummary').textContent='이번달 납부 '+won(paidMonth);
+ $('debtPaymentRows').innerHTML=rows.length?rows.map(p=>{const d=state.debts.find(x=>x.id===p.debt_id);return '<tr><td>'+p.payment_date+'</td><td><b>'+esc(d?.name||'삭제된 대출')+'</b></td><td class="amt">'+won(p.total_payment)+'</td><td class="amt">'+won(p.interest_amount)+'</td><td class="amt good">'+won(p.principal_amount)+'</td><td class="amt">'+won(p.balance_before)+'</td><td class="amt">'+won(p.balance_after)+'</td><td>'+(p.interest_estimated?'예상':'실제')+'</td><td><button class="btn mini danger" onclick="deleteDebtPayment(\''+p.id+'\')">기록삭제</button></td></tr>'}).join(''):'<tr><td colspan="9" class="empty">상환 기록을 남기면 잔액 변화가 여기에 쌓입니다.</td></tr>'
 }
 async function addDebt(){const row={name:$('debtName').value.trim(),lender:$('debtLender').value.trim(),balance:+$('debtBalance').value||0,apr:+$('debtApr').value||0,min_payment:+$('debtMin').value||0,payment_day:+$('debtDay').value||null,maturity_date:$('debtMaturity').value||null,is_business_debt:$('debtBusiness').value==='true',prepayment_fee_pct:+$('debtFee').value||0};if(!row.name)return;const {error}=await sb.from('pc_debts').insert(row);if(error)return alert(error.message);['debtName','debtLender','debtBalance','debtApr','debtMin','debtDay','debtMaturity','debtFee'].forEach(id=>$(id).value='');await loadAll();toast('대출 저장')}
 async function updateDebtBalance(id,current){const v=prompt('현재 남은 원금을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_debts').update({balance:n}).eq('id',id);await loadAll()}
+function openDebtPayment(id){
+ const d=state.debts.find(x=>x.id===id);if(!d)return;
+ $('debtPayDebtId').value=d.id;$('debtPayName').textContent=(d.lender?d.lender+' · ':'')+d.name;
+ $('debtPayDate').value=today;$('debtPayBefore').value=Math.round(Number(d.balance||0));$('debtPayApr').value=Number(d.apr||0).toFixed(2)+'%';
+ $('debtPayTotal').value=Math.round(Number(d.min_payment||0));
+ $('debtPayInterest').value=Math.round(Number(d.balance||0)*(Number(d.apr||0)/100)/12);
+ $('debtPayEstimated').checked=true;$('debtPayMemo').value='';recalcDebtPayment();
+ const dlg=$('debtPaymentDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
+}
+function closeDebtPayment(){const dlg=$('debtPaymentDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
+function recalcDebtPayment(){
+ const before=Math.max(0,Number($('debtPayBefore').value)||0),total=Math.max(0,Number($('debtPayTotal').value)||0),interest=Math.max(0,Number($('debtPayInterest').value)||0);
+ const principal=Math.max(0,Math.min(before,total-interest)),after=Math.max(0,before-principal);
+ $('debtPayPrincipal').value=Math.round(principal);$('debtPayAfter').value=Math.round(after);
+ $('debtPayPreview').textContent='이번 납부 '+won(total)+' = 이자 '+won(interest)+' + 원금 '+won(principal)+' → 남은 원금 '+won(after);
+ $('debtPayHint').textContent=total<interest?'주의: 납부액이 입력한 이자보다 작습니다. 미납이자/연체 구조는 이 계산에 반영되지 않습니다.':($('debtPayEstimated').checked?'현재 잔액 × 연금리 ÷ 12로 계산한 예상 이자입니다. 실제 은행 표시 이자가 있으면 그 금액으로 수정하세요.':'은행/대출 명세서의 실제 이자금액을 사용합니다.')
+}
+$('debtPayTotal').addEventListener('input',recalcDebtPayment);
+$('debtPayInterest').addEventListener('input',()=>{$('debtPayEstimated').checked=false;recalcDebtPayment()});
+$('debtPayEstimated').addEventListener('change',()=>{
+ const d=state.debts.find(x=>x.id===$('debtPayDebtId').value);
+ if($('debtPayEstimated').checked&&d)$('debtPayInterest').value=Math.round(Number(d.balance||0)*(Number(d.apr||0)/100)/12);
+ recalcDebtPayment()
+});
+async function saveDebtPayment(){
+ const debtId=$('debtPayDebtId').value,d=state.debts.find(x=>x.id===debtId);if(!d)return;
+ const total=Math.max(0,Number($('debtPayTotal').value)||0),interest=Math.max(0,Number($('debtPayInterest').value)||0),before=Math.max(0,Number(d.balance)||0);
+ if(total<=0){toast('실제 납부액을 입력하세요.');return}
+ if(interest>total){toast('이자가 총 납부액보다 큽니다. 실제 금액을 확인하세요.');return}
+ const principal=Math.max(0,Math.min(before,total-interest)),after=Math.max(0,before-principal);
+ const row={debt_id:debtId,payment_date:$('debtPayDate').value||today,total_payment:Math.round(total),interest_amount:Math.round(interest),principal_amount:Math.round(principal),balance_before:Math.round(before),balance_after:Math.round(after),interest_estimated:$('debtPayEstimated').checked,memo:$('debtPayMemo').value.trim()};
+ const {data,error}=await sb.from('pc_debt_payments').insert(row).select().single();if(error)return alert(error.message);
+ const up=await sb.from('pc_debts').update({balance:row.balance_after}).eq('id',debtId);if(up.error){await sb.from('pc_debt_payments').delete().eq('id',data.id);return alert(up.error.message)}
+ closeDebtPayment();await loadAll();toast('상환 반영 완료 · 남은 원금 '+won(row.balance_after))
+}
+async function deleteDebtPayment(id){
+ const p=state.debtPayments.find(x=>x.id===id);if(!p||!confirm('상환 기록을 삭제할까요?\n삭제하면 이 기록 이전 잔액으로 대출 원금을 되돌립니다.'))return;
+ const later=state.debtPayments.filter(x=>x.debt_id===p.debt_id&&x.id!==p.id&&x.payment_date>p.payment_date);
+ if(later.length){alert('이 기록 이후의 상환 기록이 있어 중간 기록은 바로 삭제할 수 없습니다. 가장 최근 기록부터 삭제하세요.');return}
+ const del=await sb.from('pc_debt_payments').delete().eq('id',id);if(del.error)return alert(del.error.message);
+ const up=await sb.from('pc_debts').update({balance:p.balance_before}).eq('id',p.debt_id);if(up.error)return alert(up.error.message);
+ await loadAll();toast('상환 기록 삭제 · 잔액 복원')
+}
 
 function bizName(id){return state.businesses.find(b=>b.id===id)?.name||'-'}
 function flowLabel(t){return({draw:'사업체→개인 인출',profit_distribution:'이익분배',reimbursement:'사업비 환급',personal_paid_business:'개인계좌로 사업비 결제',capital_injection:'사업 적자/운전자금 메꿈',business_paid_personal:'사업체가 개인비용 결제',other:'기타'})[t]||t}

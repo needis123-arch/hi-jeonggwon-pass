@@ -9,9 +9,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="정권통신">
+<link rel="manifest" href="./manifest.webmanifest?v=2">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
-<title>정권통신 Business Center V3.37</title>
+<title>정권통신 Business Center V3.38</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -58,6 +59,16 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
 .table-card{overflow:hidden}.table-top{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}.table-top b{font-size:13px}.table-wrap{overflow:auto;max-width:100%}table{border-collapse:collapse;width:100%;min-width:900px}th,td{padding:11px 13px;border-bottom:1px solid #edf0f3;text-align:left;font-size:11px;white-space:nowrap}th{background:#f7f9fb;color:#6e7888;font-size:9px;position:sticky;top:0;z-index:2}td strong{font-size:12px}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select{border:1px solid #d8dee6;background:#fff;border-radius:9px;padding:8px 10px;color:#111318}
+.seller-month-control{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.seller-month-control input{border:1px solid #d8dee6;background:#fff;border-radius:10px;padding:9px 11px;min-width:155px;color:#111318;font-weight:800}
+.seller-month-step{white-space:nowrap}
+@media(max-width:700px){
+ .seller-perf-head{align-items:stretch;flex-direction:column}
+ .seller-month-control{display:grid;grid-template-columns:auto 1fr auto;width:100%}
+ .seller-month-control input{min-width:0;width:100%}
+ .seller-month-step{padding:9px 10px;font-size:10px}
+}
+
 .summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.summary .box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px}.summary span{display:block;font-size:9px;color:var(--muted)}.summary strong{display:block;font-size:17px;margin-top:5px}
 .pill{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:900;background:#eef2f5;color:#5f6978}.pill.green{background:#eaf7ef;color:#137346}.pill.orange{background:#fff5e8;color:#9f6000}.pill.blue{background:#eef5ff;color:#3566a6}
 .source-list{display:grid;gap:9px;padding:14px}.source-row{display:grid;grid-template-columns:120px 1fr auto;align-items:center;gap:10px}.source-row span{font-size:11px}.source-bar{height:8px;background:#edf1f5;border-radius:99px;overflow:hidden}.source-bar i{display:block;height:100%;background:#9bdc2e;border-radius:99px}.source-row b{font-size:11px}
@@ -141,7 +152,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.37</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.38</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -280,9 +291,13 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <div class="chart card"><h3>연간 월별 성장 추이</h3><p>월별 매출과 전월 대비 성장 흐름</p><canvas id="annualChart"></canvas></div>
  </div>
  <div class="card table-card" style="margin-bottom:16px">
-  <div class="table-top">
-   <div><b id="sellerPerfTitle">판매자별 월 실적</b><div id="sellerPerfSub" style="font-size:9px;color:#6c7788;margin-top:3px">선택한 월의 장부·급여율 자동집계</div></div>
-   <div class="toolbar"><input id="sellerPerfMonth" type="month" onchange="loadSellerPerformanceMonth()"></div>
+  <div class="table-top seller-perf-head">
+   <div><b id="sellerPerfTitle">판매자별 월별 실적</b><div id="sellerPerfSub" style="font-size:9px;color:#6c7788;margin-top:3px">월을 바꾸면 해당 월 장부·급여율을 자동으로 다시 집계합니다.</div></div>
+   <div class="seller-month-control">
+    <button class="btn seller-month-step" type="button" onclick="shiftSellerPerfMonth(-1)">◀ 이전월</button>
+    <input id="sellerPerfMonth" type="month" onchange="loadSellerPerformanceMonth()">
+    <button class="btn seller-month-step" type="button" onclick="shiftSellerPerfMonth(1)">다음월 ▶</button>
+   </div>
   </div>
   <div class="table-wrap"><table><thead><tr><th>판매자</th><th>판매대수</th><th>유심단독</th><th>동판</th><th>약갱</th><th>번들</th><th>총매출</th><th>평균마진</th><th>급여율</th><th>예상급여</th><th>매출비중</th></tr></thead><tbody id="sellerPerfBody"></tbody></table></div>
  </div>
@@ -1272,6 +1287,14 @@ async function loadBreakEvenTimeline(){
  }).join('')||'<tr><td colspan="8" class="empty">월별 마지노선 데이터가 없습니다.</td></tr>';
 }
 
+function shiftSellerPerfMonth(delta){
+ const input=$('sellerPerfMonth');
+ if(!input)return;
+ const base=input.value?new Date(input.value+'-01T12:00:00'):new Date(now.getFullYear(),now.getMonth(),1,12,0,0);
+ base.setMonth(base.getMonth()+delta);
+ input.value=base.getFullYear()+'-'+String(base.getMonth()+1).padStart(2,'0');
+ loadSellerPerformanceMonth();
+}
 async function loadSellerPerformanceMonth(){
  if(!$('sellerPerfBody'))return;
  const input=$('sellerPerfMonth');
@@ -1284,7 +1307,7 @@ async function loadSellerPerformanceMonth(){
  if(salesQ.error||payQ.error){console.warn(salesQ.error||payQ.error);return}
  const label=key.replace('-','년 ')+'월';
  if($('sellerPerfTitle'))$('sellerPerfTitle').textContent='판매자별 '+label+' 실적';
- if($('sellerPerfSub'))$('sellerPerfSub').textContent='선택 월 장부 자동집계 · 급여율/예상급여 포함';
+ if($('sellerPerfSub'))$('sellerPerfSub').textContent=label+' 장부 자동집계 · 급여율/예상급여 포함 · 이전월/다음월 이동 가능';
  renderSellerPerformance(salesQ.data||[],payQ.data||[]);
 }
 function renderSellerPerformance(rows,payrollRows=[]){

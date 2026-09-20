@@ -495,6 +495,11 @@ function debtPlanForMonth(d,monthKey){
   const principal=Math.min(balance,basePrincipal);
   return {principal,interest,total:principal+interest,status:'원금+이자'};
  }
+ if(d.repayment_method==='bullet'&&d.maturity_date){
+  const endMonth=String(d.maturity_date).slice(0,7);
+  if(mk===endMonth)return {principal:balance,interest,total:balance+interest,status:'만기 원금상환'};
+  if(mk>endMonth)return {principal:balance,interest,total:balance+interest,status:'만기 경과'};
+ }
  return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest),status:d.repayment_method==='bullet'?'이자/만기일시':'약정납부'}
 }
 function principalStatus(d){
@@ -608,6 +613,10 @@ function simDebtPlan(d,mk){
   if(mk<start)return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest)};
   if(mk>end)return {principal:0,interest:0,total:0};
   const rem=monthDiffInclusive(mk,end),principal=Math.min(bal,Math.ceil(bal/Math.max(1,rem)));return {principal,interest,total:principal+interest}
+ }
+ if(d.repayment_method==='bullet'&&d.maturity_date){
+  const endMonth=String(d.maturity_date).slice(0,7);
+  if(mk>=endMonth)return {principal:bal,interest,total:bal+interest}
  }
  return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest)}
 }

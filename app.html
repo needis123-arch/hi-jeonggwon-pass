@@ -12,16 +12,17 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./pass-admin-icon.svg" type="image/svg+xml">
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#f6f6f3}
-iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#f6f6f3}
+html,body{margin:0;width:100%;height:100%;background:#f6f6f3;font-family:Arial,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.loading{min-height:100%;display:grid;place-items:center;color:#20211d;font-weight:800}
 </style>
 </head>
 <body>
-<iframe src="./admin.html" title="하이×정권 PASS 관리자" allow="clipboard-read; clipboard-write"></iframe>
+<div class="loading">PASS 관리자 여는 중...</div>
 <script>
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
+location.replace('./admin.html?app=1');
 </script>
 </body>
 </html>

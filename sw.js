@@ -1,56 +1,20 @@
-const CACHE_NAME='jk-business-pwa-v1';
-const APP_SHELL=[
-  '/hi-jeonggwon-pass/business-center.html',
-  '/hi-jeonggwon-pass/manifest.webmanifest',
-  '/hi-jeonggwon-pass/app-icon.svg'
-];
-
-self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache=>cache.addAll(APP_SHELL))
-      .catch(()=>{})
-      .then(()=>self.skipWaiting())
-  );
+const CACHE_NAME='pass-admin-app-v1';
+const SHELL=['./app.html','./manifest.webmanifest','./pass-admin-icon.svg'];
+self.addEventListener('install',e=>{
+ e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(SHELL)).catch(()=>{}));
+ self.skipWaiting();
 });
-
-self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k))))
-      .then(()=>self.clients.claim())
-  );
+self.addEventListener('activate',e=>{
+ e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));
+ self.clients.claim();
 });
-
-self.addEventListener('fetch',event=>{
-  const req=event.request;
-  if(req.method!=='GET')return;
-  const url=new URL(req.url);
-  if(url.origin!==self.location.origin)return;
-
-  if(req.mode==='navigate'){
-    event.respondWith(
-      fetch(req)
-        .then(res=>{
-          const copy=res.clone();
-          caches.open(CACHE_NAME).then(cache=>cache.put('/hi-jeonggwon-pass/business-center.html',copy)).catch(()=>{});
-          return res;
-        })
-        .catch(()=>caches.match('/hi-jeonggwon-pass/business-center.html'))
-    );
-    return;
-  }
-
-  if(url.pathname.endsWith('/manifest.webmanifest')||url.pathname.endsWith('/app-icon.svg')){
-    event.respondWith(
-      caches.match(req).then(cached=>{
-        const fresh=fetch(req).then(res=>{
-          const copy=res.clone();
-          caches.open(CACHE_NAME).then(cache=>cache.put(req,copy)).catch(()=>{});
-          return res;
-        }).catch(()=>cached);
-        return cached||fresh;
-      })
-    );
-  }
+self.addEventListener('fetch',e=>{
+ if(e.request.method!=='GET') return;
+ const u=new URL(e.request.url);
+ if(u.origin!==self.location.origin) return;
+ e.respondWith(fetch(e.request).then(r=>{
+   const copy=r.clone();
+   caches.open(CACHE_NAME).then(c=>c.put(e.request,copy)).catch(()=>{});
+   return r;
+ }).catch(()=>caches.match(e.request)));
 });

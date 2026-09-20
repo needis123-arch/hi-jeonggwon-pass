@@ -533,7 +533,10 @@ function cardPatternStats(){
  const sums={},byCard={};
  rows.forEach(t=>{const m=String(t.tx_date).slice(0,7);sums[m]=(sums[m]||0)+Number(t.amount||0);byCard[m]=byCard[m]||{};byCard[m][t.account_name]=(byCard[m][t.account_name]||0)+Number(t.amount||0)});
  const current=today.slice(0,7), complete=Object.keys(sums).filter(m=>m<current).sort().slice(-4);
- const avg=complete.length?complete.reduce((s,m)=>s+sums[m],0)/complete.lengtfunction renderCardBillEditor(){
+ const avg=complete.length?complete.reduce((s,m)=>s+sums[m],0)/complete.length:0;
+ return {rows,sums,byCard,current,complete,avg,currentTotal:sums[current]||0,samsung:byCard[current]?.['삼성카드']||0,lotte:byCard[current]?.['롯데카드']||0}
+}
+function renderCardBillEditor(){
  if(!$('cardBillMonth'))return;
  if(!$('cardBillMonth').value)$('cardBillMonth').value=today.slice(0,7);
  const m=$('cardBillMonth').value,rows=cardBillsForMonth(m),map={};rows.forEach(x=>map[x.card_name]=x);
@@ -562,9 +565,6 @@ function renderSpendingReport(){
  $('spendingReportRows').innerHTML=p.length?p.map(x=>'<div class="report-row"><b>'+esc(x.category)+'</b><div class="report-bar"><i style="width:'+Math.max(3,Number(x.avg_monthly_amount||0)/max*100)+'%"></i></div><span class="amt">'+won(x.avg_monthly_amount)+'</span><span class="report-count autosave-note">'+(x.avg_monthly_count?Number(x.avg_monthly_count).toFixed(1)+'회':'')+'</span></div>').join(''):'<div class="empty">분석 데이터가 없습니다.</div>';
  const foodRate=cp.avg?food/cp.avg*100:0;
  $('spendingReportInsight').textContent='최근 4개 완전월 카드 평균은 '+won(cp.avg)+'이고, 외식·편의점·배달·카페가 '+won(food)+'(약 '+foodRate.toFixed(1)+'%)입니다. 첫 절약 목표는 월 50만원으로 두고, 이 절약액을 비상금대출·마이너스통장 추가상환에 연결하는 구조가 현실적입니다.'
-}
-h:0;
- return {rows,sums,byCard,current,complete,avg,currentTotal:sums[current]||0,samsung:byCard[current]?.['삼성카드']||0,lotte:byCard[current]?.['롯데카드']||0}
 }
 function renderIncomePanel(){
  if(!$('incomeMonthPicker'))return;

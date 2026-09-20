@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="정권통신">
-<link rel="manifest" href="./manifest.webmanifest?v=1">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
 <title>정권통신 Business Center V3.36</title>
@@ -1894,37 +1893,22 @@ function syncInstallAppButton(){
  if(!b)return;
  b.classList.toggle('show',!isStandaloneApp());
 }
-window.addEventListener('beforeinstallprompt',e=>{
- e.preventDefault();
- deferredInstallPrompt=e;
- syncInstallAppButton();
-});
-window.addEventListener('appinstalled',()=>{
- deferredInstallPrompt=null;
- syncInstallAppButton();
- toast('정권통신 BUSINESS 앱 설치 완료');
-});
 async function installPWA(){
  if(isStandaloneApp()){
    toast('이미 앱으로 실행 중입니다.');
    return;
  }
- if(deferredInstallPrompt){
-   deferredInstallPrompt.prompt();
-   const choice=await deferredInstallPrompt.userChoice;
-   if(choice.outcome==='accepted'){
-     deferredInstallPrompt=null;
-     syncInstallAppButton();
-   }
+ if(window.top!==window.self){
+   window.parent.postMessage({type:'jk-business-install'},location.origin);
    return;
  }
- alert('앱 설치 메뉴가 바로 뜨지 않으면\n\nChrome 오른쪽 위 ⋮ → 앱 설치 또는 홈 화면에 추가\n\n를 눌러주세요. 설치 후에는 홈 화면의 정권통신 아이콘으로 바로 실행됩니다.');
+ location.href='./business-app/';
 }
 if('serviceWorker' in navigator){
  window.addEventListener('load',()=>{
-   navigator.serviceWorker.register('./sw.js?v=1',{scope:'./'})
-     .then(()=>syncInstallAppButton())
-     .catch(err=>console.warn('service worker',err));
+   // 기존 루트 범위 PWA 충돌을 없애기 위한 1회 정리 등록.
+   navigator.serviceWorker.register('./sw.js?v=cleanup-20260920',{scope:'./'}).catch(()=>{});
+   syncInstallAppButton();
  });
 }else{
  syncInstallAppButton();

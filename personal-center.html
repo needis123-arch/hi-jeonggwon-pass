@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V1.3</title>
+<title>PERSONAL CENTER V1.3.1</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -60,7 +60,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.3</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.3.1</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -95,7 +95,7 @@
  </div>
  <div class="panel card" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-   <div><h3>월 수익 입력 — 내가 실제로 번 돈</h3><p style="margin:4px 0 0">여기에 입력하면 바로 위 ‘이번 달 내 수익’과 ‘아직 부족한 돈’이 바뀝니다. 사업체 정산금과 내가 직접 일해서 번 돈을 분리합니다.</p></div>
+   <div><h3>월 수익 입력 — 내가 실제로 번 돈</h3><p style="margin:4px 0 0">사업체 정산 후 실제로 가져온 돈과 내가 직접 판매·영업해서 번 돈을 분리해 기록합니다.</p></div>
    <div style="text-align:right"><span class="autosave-note">월 합계</span><div class="income-total" id="monthlyIncomeTotal">0원</div></div>
   </div>
   <div class="income-editor">
@@ -103,16 +103,10 @@
    <div class="income-source"><label>하이에서 남은 돈</label><input id="incomeHigh" type="number" placeholder="0"></div>
    <div class="income-source"><label>레이에서 남은 돈</label><input id="incomeRay" type="number" placeholder="0"></div>
    <div class="income-source"><label>정권에서 남은 돈</label><input id="incomeJeong" type="number" placeholder="0"></div>
-   <div class="income-source direct-income"><label>내가 직접 번 돈 (내 일 / 영업)</label><input id="incomeDirect" type="number" placeholder="직접 번 금액"></div>
+   <div class="income-source direct-income"><label>내가 직접 번 돈 (판매 / 영업 포함)</label><input id="incomeDirect" type="number" placeholder="내가 직접 번 금액"></div>
    <button class="btn primary" type="button" onclick="saveMonthlyIncome()">월 수익 저장</button>
   </div>
-  <div class="jk-link" id="jkLinkBox">
-   <div><b style="font-size:11px">정권장부 자동연동</b><div class="autosave-note">정권통신 장부의 판매자 ‘인성’ 매출을 자동으로 읽습니다. 실제 정산 확정 전에는 예상치입니다.</div></div>
-   <div class="stat"><span>내 W매출</span><b id="jkMyMargin">0원</b></div>
-   <div class="stat"><span>적용 급여율</span><b id="jkMyRate">-</b></div>
-   <div class="stat"><span>예상 내 몫</span><b id="jkMyExpected">0원</b></div>
-   <button class="btn mini primary" type="button" onclick="applyJeongLedgerIncome()">정권 칸에 가져오기</button>
-  </div>
+  
  </div>
  <div class="kpis">
   <div class="kpi card"><span>이번 달 빚 상환</span><strong id="kDebtDue">0원</strong><small id="kDebtDueSub">대출 + 기한채무</small></div>
@@ -439,7 +433,7 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],jkStaff:[],jkSales:[],jkPayRates:[],cards:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7)}
@@ -476,12 +470,9 @@ async function loadAll(){
   sb.from('pc_monthly_income_entries').select('*').order('income_month',{ascending:false}).limit(120),
   sb.from('pc_spending_patterns').select('*').order('avg_monthly_amount',{ascending:false}).limit(100),
   sb.from('pc_spending_category_details').select('*').order('category').limit(100),
-  sb.from('jk_staff').select('id,name,active'),
-  sb.from('jk_sales_ledger').select('activation_date,final_margin,salesperson_id,deal_type').gte('activation_date',String(now.getFullYear())+'-01-01').lte('activation_date',String(now.getFullYear())+'-12-31').limit(2000),
-  sb.from('jk_staff_pay_rates').select('staff_id,effective_month,rate_pct').order('effective_month'),
   sb.from('pc_cards').select('*').eq('active',true).order('card_name')
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','jkStaff','jkSales','jkPayRates','cards'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -813,25 +804,13 @@ function openSpendingDetail(category){
 }
 function closeSpendingDetail(){const dlg=$('spendingDetailDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
 
-function jkMyStats(monthKey){
- const staff=state.jkStaff.find(s=>String(s.name).trim()==='인성');if(!staff)return {margin:0,count:0,rate:0,expected:0,staff:null};
- const rows=state.jkSales.filter(r=>r.salesperson_id===staff.id&&String(r.activation_date).slice(0,7)===monthKey),margin=rows.reduce((s,r)=>s+Number(r.final_margin||0),0);
- const rates=state.jkPayRates.filter(r=>r.staff_id===staff.id&&String(r.effective_month).slice(0,7)<=monthKey).sort((a,b)=>String(b.effective_month).localeCompare(String(a.effective_month))),rate=Number(rates[0]?.rate_pct||0);
- return {margin,count:rows.length,rate,expected:Math.round(margin*rate/100),staff}
-}
-function renderJkLink(){
- if(!$('jkLinkBox'))return;const m=$('incomeMonthPicker')?.value||today.slice(0,7),x=jkMyStats(m);
- $('jkMyMargin').textContent=won(x.margin);$('jkMyRate').textContent=x.staff?x.rate.toFixed(1)+'%':'연동대상 없음';$('jkMyExpected').textContent=won(x.expected);
- $('jkLinkBox').style.opacity=x.staff?'1':'.55'
-}
-function applyJeongLedgerIncome(){const m=$('incomeMonthPicker')?.value||today.slice(0,7),x=jkMyStats(m);if(!x.staff){toast('정권장부에서 인성 판매자를 찾지 못했습니다.');return}$('incomeJeong').value=x.expected;const vals=['incomeHigh','incomeRay','incomeJeong','incomeDirect'].reduce((s,id)=>s+(Number($(id).value)||0),0);$('monthlyIncomeTotal').textContent=won(vals);toast('정권장부 예상 내 몫을 정권 칸에 가져왔습니다.')}
 function renderIncomePanel(){
  if(!$('incomeMonthPicker'))return;
  if(!$('incomeMonthPicker').value)$('incomeMonthPicker').value=today.slice(0,7);
  const m=$('incomeMonthPicker').value,rows=incomeRowsForMonth(m),map={};
  rows.forEach(x=>map[x.source]=Number(x.amount||0));
  $('incomeHigh').value=map['하이']||'';$('incomeRay').value=map['레이']||'';$('incomeJeong').value=map['정권']||'';$('incomeDirect').value=map['직접']||'';
- $('monthlyIncomeTotal').textContent=won((map['하이']||0)+(map['레이']||0)+(map['정권']||0)+(map['직접']||0));renderJkLink()
+ $('monthlyIncomeTotal').textContent=won((map['하이']||0)+(map['레이']||0)+(map['정권']||0)+(map['직접']||0))
 }
 async function saveMonthlyIncome(){
  const month=$('incomeMonthPicker').value||today.slice(0,7),income_month=monthKeyToDate(month);

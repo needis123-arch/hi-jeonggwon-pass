@@ -1,18 +1,39 @@
 {
-  "name": "하이×정권 PASS 관리자",
-  "short_name": "PASS 관리자",
-  "description": "하이×정권 PASS 상담·고객·정산 관리자",
-  "start_url": "./app.html",
-  "scope": "./",
+  "name": "정권통신 BUSINESS CENTER",
+  "short_name": "정권통신",
+  "description": "정권통신 장부·손익·자금·유입 관리",
+  "lang": "ko-KR",
+  "start_url": "/hi-jeonggwon-pass/business-center.html?source=pwa",
+  "scope": "/hi-jeonggwon-pass/",
   "display": "standalone",
-  "background_color": "#f6f6f3",
-  "theme_color": "#20211d",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#f4f6f8",
+  "theme_color": "#111318",
+  "categories": ["business", "finance", "productivity"],
   "icons": [
     {
-      "src": "./pass-admin-icon.svg",
+      "src": "/hi-jeonggwon-pass/app-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "종합 대시보드",
+      "short_name": "대시보드",
+      "url": "/hi-jeonggwon-pass/business-center.html?source=pwa&page=dashboard"
+    },
+    {
+      "name": "장부 관리",
+      "short_name": "장부",
+      "url": "/hi-jeonggwon-pass/business-center.html?source=pwa&page=ledger"
+    },
+    {
+      "name": "자금 / 시재",
+      "short_name": "자금",
+      "url": "/hi-jeonggwon-pass/business-center.html?source=pwa&page=cash"
     }
   ]
 }

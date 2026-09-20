@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111318">
+<meta name="application-name" content="정권통신 BUSINESS">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="정권통신">
+<link rel="manifest" href="./manifest.webmanifest?v=3">
+<link rel="icon" href="../app-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../app-icon.svg">
+<title>정권통신 BUSINESS</title>
+<style>
+html,body{margin:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:#f4f6f8}
+iframe{position:fixed;inset:0;width:100%;height:100%;height:100dvh;border:0;background:#f4f6f8}
+.install{position:fixed;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:9999;border:0;border-radius:14px;background:#b8ff35;color:#111318;font:800 14px system-ui;padding:13px 17px;box-shadow:0 8px 28px rgba(0,0,0,.16);display:none}
+.install.show{display:block}
+@media(display-mode:standalone){.install{display:none!important}}
+</style>
+</head>
+<body>
+<iframe src="../business-center.html?source=pwa-shell" title="정권통신 BUSINESS"></iframe>
+<button class="install" id="installBtn" type="button">앱 설치</button>
+<script>
+let deferredPrompt=null;
+const btn=document.getElementById('installBtn');
+const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+function sync(){btn.classList.toggle('show',!standalone()&&!!deferredPrompt);}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;sync();});
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;sync();});
+btn.onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;sync();};
+window.addEventListener('message',async e=>{
+ if(e.origin!==location.origin||e.data?.type!=='jk-business-install')return;
+ if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;sync();}
+});
+if('serviceWorker' in navigator){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(()=>{}));
+}
+</script>
+</body>
+</html>

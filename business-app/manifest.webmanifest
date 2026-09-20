@@ -1,0 +1,19 @@
+{
+  "id": "/hi-jeonggwon-pass/business-app/",
+  "name": "정권통신 BUSINESS CENTER",
+  "short_name": "정권통신",
+  "description": "정권통신 장부·손익·자금·유입 관리",
+  "lang": "ko-KR",
+  "start_url": "/hi-jeonggwon-pass/business-app/",
+  "scope": "/hi-jeonggwon-pass/business-app/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4f6f8",
+  "theme_color": "#111318",
+  "icons": [{
+    "src": "/hi-jeonggwon-pass/app-icon.svg",
+    "sizes": "any",
+    "type": "image/svg+xml",
+    "purpose": "any maskable"
+  }]
+}

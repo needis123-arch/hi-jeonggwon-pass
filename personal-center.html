@@ -733,38 +733,40 @@ function simDebtPlan(d,mk){
  return {principal:0,interest:Number(d.min_payment||interest),total:Number(d.min_payment||interest)}
 }
 function simulateYearPlan(startMonth,income){
- const ds=personalDebts().map(d=>({...d,balance:Number(d.balance||0)})),livingBase=personalCardSpendAverage()+cashFixedAverage()+Number(state.profile?.monthly_tax_reserve||0);
- let savings=0,principalPaid=0,priorityExtra=0,clearMonth=null,totalIncome=0,totalLiving=0,totalDebtCash=0;
+ const ds=personalDebts().map(d=>({...d,balance:Number(d.balance||0)})),livingBase=plannedLivingMonthly()+Number(state.profile?.monthly_tax_reserve||0),startingCash=currentCashTotal();
+ let savings=0,principalPaid=0,priorityExtra=0,clearMonth=null,totalIncome=0,totalLiving=0,totalDebtCash=0,cash=startingCash,minCash=startingCash;
  for(let i=0;i<12;i++){
   const mk=addMonthKey(startMonth,i);totalIncome+=income;totalLiving+=livingBase;
   let debtCash=0,scheduledPrincipal=0;
   ds.forEach(d=>{if(d.balance<=0)return;const p=simDebtPlan(d,mk);debtCash+=p.total;scheduledPrincipal+=p.principal;d.balance=Math.max(0,d.balance-p.principal)});
   principalPaid+=scheduledPrincipal;totalDebtCash+=debtCash;
-  let free=Math.max(0,income-livingBase-debtCash);
+  let net=income-livingBase-debtCash;
+  if(net<0){cash+=net;minCash=Math.min(minCash,cash);continue}
+  let free=net;
   const priority=ds.filter(d=>d.balance>0&&/비상금대출/.test(String(d.name))).concat(ds.filter(d=>d.balance>0&&/안심통장|마이너스/.test(String(d.name))));
   for(const d of priority){if(free<=0)break;const pay=Math.min(free,d.balance);d.balance-=pay;free-=pay;priorityExtra+=pay;principalPaid+=pay}
   if(!clearMonth&&ds.filter(d=>d.balance>0&&/비상금대출|안심통장|마이너스/.test(String(d.name))).length===0)clearMonth=mk;
-  savings+=free;
+  savings+=free;cash+=free;minCash=Math.min(minCash,cash)
  }
- return {savings,principalPaid,priorityExtra,clearMonth,endDebt:ds.reduce((s,d)=>s+Math.max(0,Number(d.balance||0)),0),livingBase,totalIncome,totalLiving,totalDebtCash}
+ return {savings,principalPaid,priorityExtra,clearMonth,endDebt:ds.reduce((s,d)=>s+Math.max(0,Number(d.balance||0)),0),livingBase,totalIncome,totalLiving,totalDebtCash,startingCash,endCash:cash,minCash,liquidityGap:Math.max(0,-minCash)}
 }
 function renderStrategy(){
  if(!$('strategyIncome'))return;if(!$('strategyMonth').value)$('strategyMonth').value=today.slice(0,7);
  const mk=$('strategyMonth').value||today.slice(0,7),actualSaved=incomeRowsForMonth(mk).reduce((s,x)=>s+Number(x.amount||0),0),planSaved=Number(state.profile?.strategy_monthly_income_assumption||0);
  if(!$('strategyIncome').value&&(planSaved||actualSaved))$('strategyIncome').value=Math.round(planSaved||actualSaved);
  if($('strategySavedText'))$('strategySavedText').textContent=planSaved?'저장된 전략소득 '+won(planSaved)+' · 값 수정 후 다시 저장 가능':(actualSaved?'저장값 없음 · 이번 달 실제수익 '+won(actualSaved)+'을 임시로 불러옴':'저장된 전략소득 없음 · 직접 입력 후 저장');
- const income=Number($('strategyIncome').value||0),living=personalCardSpendAverage()+cashFixedAverage()+Number(state.profile?.monthly_tax_reserve||0),debt=strategyDebtForMonth(mk);
+ const income=Number($('strategyIncome').value||0),living=plannedLivingMonthly()+Number(state.profile?.monthly_tax_reserve||0),debt=strategyDebtForMonth(mk);
  const base=living+debt,surplus=Math.max(0,income-base),short=Math.max(0,base-income),priority=priorityDebtBalance(),extra=Math.min(surplus,priority),save=Math.max(0,surplus-extra),yr=simulateYearPlan(mk,income);
  $('strategyLiving').textContent=won(living);$('strategyDebt').textContent=won(debt);$('strategySurplus').textContent=short?'-'+won(short):won(surplus);$('strategySurplus').className=short?'bad':'good';$('strategyExtraDebt').textContent=won(extra);$('strategySave').textContent=won(save);
- $('strategyYearSave').textContent=won(yr.savings);$('strategyYearDebtPaid').textContent=won(yr.principalPaid);$('strategyPriorityClear').textContent=yr.clearMonth?yr.clearMonth.replace('-','년 ')+'월':'1년 내 미완료';$('strategyEndDebt').textContent='-'+won(yr.endDebt);$('strategyEndDebt').className='bad';
+ $('strategyYearSave').textContent=won(yr.savings);$('strategyYearDebtPaid').textContent=won(yr.principalPaid);$('strategyPriorityClear').textContent=yr.clearMonth?yr.clearMonth.replace('-','년 ')+'월':'1년 내 미완료';$('strategyEndCash').textContent=(yr.endCash<0?'-':'')+won(Math.abs(yr.endCash));$('strategyEndCash').className=yr.endCash<0?'bad':'good';$('strategyEndDebt').textContent='-'+won(yr.endDebt);$('strategyEndDebt').className='bad';
  if(income>0){
-  const incomeTxt=(income/10000).toLocaleString('ko-KR')+'만원',saveTxt=won(yr.savings),debtTxt=won(yr.principalPaid);
-  $('strategyHeadline').textContent='매월 '+incomeTxt+'을 유지하면, 1년 뒤 약 '+saveTxt+'을 모을 수 있어요.';
-  $('strategyProjectionNote').textContent='동시에 1년 동안 대출 원금 약 '+debtTxt+'을 줄이는 계산입니다.'+(yr.clearMonth?' 비상금대출·마이너스통장은 '+yr.clearMonth.replace('-','년 ')+'월경 정리 예상입니다.':' 우선상환 부채는 1년 안에 전부 정리되지 않는 시나리오입니다.');
- }else{$('strategyHeadline').textContent='월 소득을 입력하면 1년 뒤 저축액이 보입니다.';$('strategyProjectionNote').textContent='현재 소비패턴과 대출일정을 기준으로 계산합니다.'}
+  const incomeTxt=(income/10000).toLocaleString('ko-KR')+'만원',cashTxt=won(Math.abs(yr.endCash)),debtTxt=won(yr.principalPaid);
+  $('strategyHeadline').textContent=yr.endCash>=0?'현재 잔고까지 포함하면, 매월 '+incomeTxt+' 유지 시 1년 뒤 현금성 자산 약 '+cashTxt+' 예상입니다.':'매월 '+incomeTxt+'이어도 1년 안에 현금이 약 '+cashTxt+' 부족해지는 구간이 생깁니다.';
+  $('strategyProjectionNote').textContent='신용카드 월 '+won(plannedCreditCap())+' + 체크카드 주 '+won(plannedDebitWeekly())+' 계획, 현재 등록잔고 '+won(yr.startingCash)+'부터 시작해 계산했습니다. 1년 동안 대출 원금 약 '+debtTxt+'을 줄입니다.'+(yr.clearMonth?' 비상금대출·마이너스통장은 '+yr.clearMonth.replace('-','년 ')+'월경 정리 예상입니다.':' 우선상환 부채는 1년 안에 전부 정리되지 않습니다.');
+ }else{$('strategyHeadline').textContent='월 소득을 입력하면 현재 잔고를 포함한 1년 뒤 상태가 보입니다.';$('strategyProjectionNote').textContent='신용카드·체크카드 절약계획과 대출일정을 기준으로 계산합니다.'}
  const brother=state.debts.find(d=>d.name==='친형 개인채무'),broPlan=brother?debtPlanForMonth(brother,mk):null;
- let notes='계산 순서: 생활비·세금 → 그 달 정규 대출상환 → 남는 돈으로 비상금대출 → 마이너스통장 → 둘 다 끝난 뒤 전액 저축. ';
- if(short)notes+='현재 입력소득은 기본지출보다 '+won(short)+' 부족합니다.';
+ let notes='계산 순서: 현재 잔고는 생활 안전판으로 유지 → 월 소득에서 생활비·세금 → 정규 대출상환 → 남는 돈으로 비상금대출 → 마이너스통장 → 둘 다 끝난 뒤 현금저축. ';
+ if(short)notes+='현재 입력소득은 그 달 기본 필요금액보다 '+won(short)+' 부족해서 부족분은 현재 잔고에서 빠집니다.';
  else notes+='이번 달 기준 남는 '+won(surplus)+' 중 '+won(extra)+'은 우선빚, '+won(save)+'은 바로 저축 가능한 금액입니다.';
  if(broPlan&&broPlan.principal>0)notes+=' · 형 채무 원금 '+won(broPlan.principal)+'/월 포함';
  $('strategyPriority').textContent=notes

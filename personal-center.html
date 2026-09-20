@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V0.3</title>
+<title>PERSONAL CENTER V0.4</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -20,7 +20,7 @@
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800}.tabs button.active{background:#15191f;color:#fff;border-color:#15191f}
 .meter{margin-top:10px}.meterline{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:5px}.bar{height:9px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar i{height:100%;display:block;background:#9bdc2e;border-radius:99px}
 .calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.eventbtn{width:100%;border:0;text-align:left;color:inherit;cursor:pointer}.calitem.eventbtn:hover{outline:1px solid #a9c76c;background:#f3f9e8}
-.event-dialog{width:min(620px,calc(100% - 28px));border:1px solid var(--line);border-radius:20px;padding:0;box-shadow:0 28px 90px rgba(10,20,30,.25);color:var(--text)}.event-dialog::backdrop{background:rgba(17,24,32,.45)}.event-dialog-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.event-dialog-head h3{margin:0;font-size:17px}.event-dialog-body{padding:20px;display:grid;gap:12px}.event-dialog-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.event-dialog .field textarea{min-height:150px;resize:vertical;line-height:1.6}.calitem.task{background:#f1fbe3}.calitem.money{background:#fff0e5}.calitem.must{background:#ffe9ed;color:#a72738}
+.event-dialog{width:min(620px,calc(100% - 28px));border:1px solid var(--line);border-radius:20px;padding:0;box-shadow:0 28px 90px rgba(10,20,30,.25);color:var(--text)}.event-dialog::backdrop{background:rgba(17,24,32,.45)}.event-dialog-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.event-dialog-head h3{margin:0;font-size:17px}.event-dialog-body{padding:20px;display:grid;gap:12px}.event-dialog-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.event-dialog .field textarea{min-height:150px;resize:vertical;line-height:1.6}.event-task-box{border-top:1px solid var(--line);padding-top:14px}.event-task-add{display:grid;grid-template-columns:1fr 120px auto;gap:8px;margin-top:9px}.event-task-list{display:grid;gap:7px;margin-top:9px}.event-task-row{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:10px;padding:9px 10px}.event-task-row input[type=checkbox]{width:18px;height:18px;accent-color:#78ba0d}.event-task-row b{font-size:11px;flex:1}.biz-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.biz-edit-grid label{font-size:8px;color:var(--muted);font-weight:800}.biz-edit-grid input{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px;font-weight:800}@media(max-width:560px){.event-task-add{grid-template-columns:1fr}.biz-edit-grid{grid-template-columns:1fr 1fr}}.calitem.task{background:#f1fbe3}.calitem.money{background:#fff0e5}.calitem.must{background:#ffe9ed;color:#a72738}
 .callout{border:1px solid #dfe5ea;background:#fafcfd;border-radius:13px;padding:13px;margin-bottom:12px}.callout b{font-size:12px}.callout p{font-size:10px;color:var(--muted);line-height:1.6;margin:5px 0 0}
 .loginbg{position:fixed;inset:0;background:#f4f6f8;z-index:300;display:none;align-items:center;justify-content:center;padding:20px}.loginbg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 25px 80px rgba(10,20,30,.14)}.loginmark{width:52px;height:52px;border-radius:15px;background:#15191f;color:#b8ff35;display:grid;place-items:center;font-size:19px;font-weight:1000;margin-bottom:14px}.login h2{margin:0}.login p{font-size:11px;color:var(--muted);line-height:1.6}.login input{width:100%;border:1px solid #d6dde5;border-radius:11px;padding:11px;margin-top:8px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:var(--warn);margin-top:10px}.toast{position:fixed;right:22px;bottom:22px;background:#15191f;color:#fff;padding:11px 14px;border-radius:11px;display:none;z-index:500;font-size:11px}.toast.show{display:block}
 .mobile{display:none}
@@ -32,7 +32,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.3</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.4</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -211,8 +211,11 @@
  <div class="head"><div><h2>설정</h2><p>월 목표는 매출이 아니라 개인적으로 확보해야 할 금액을 뜻합니다.</p></div></div>
  <div class="formcard card">
   <h3>개인 재무 기준</h3><div class="formgrid">
-   <div class="field"><label>월 개인 확보 목표</label><input id="setIncomeTarget" type="number" placeholder="예: 8,000,000"></div>
+   <div class="field"><label>월 개인 확보 목표</label><input id="setIncomeTarget" type="number" placeholder="내가 최소 가져오고 싶은 금액"></div>
+   <div class="field"><label>월 변동생활비 예산</label><input id="setVariableBudget" type="number" placeholder="식비·주유·쇼핑 등"></div>
    <div class="field"><label>월 추가 빚 상환 목표</label><input id="setDebtExtra" type="number" placeholder="예: 1,000,000"></div>
+   <div class="field"><label>월 저축·투자 목표</label><input id="setSavingsTarget" type="number" placeholder="예: 1,000,000"></div>
+   <div class="field"><label>월 세금 적립 목표</label><input id="setTaxReserve" type="number" placeholder="개인 세금 대비 적립액"></div>
    <div class="field"><label>비상자금 목표</label><input id="setEmergency" type="number" placeholder="예: 20,000,000"></div>
    <div class="field"><label>5년 자산 목표</label><input id="setFiveYear" type="number" placeholder="0"></div>
    <div class="field full"><label>5년 목표 메모</label><textarea id="setNote" rows="3" placeholder="왜 돈을 모으는지, 5년 뒤 원하는 상태"></textarea></div>
@@ -240,6 +243,12 @@
    <div class="field"><label>종류</label><select id="detailEventType"><option value="schedule">일정</option><option value="memo">메모</option><option value="money_in">돈 들어옴</option><option value="money_out">돈 나감</option><option value="goal">목표</option></select></div>
   </div>
   <div class="field"><label>상세 메모</label><textarea id="detailEventMemo" placeholder="상세 메모"></textarea></div>
+  <div class="event-task-box">
+   <b style="font-size:12px">이 일정의 체크리스트</b>
+   <div class="autosave-note">미완료 항목은 날짜가 지나면 자동으로 오늘 할 일로 이월됩니다.</div>
+   <div id="eventTaskList" class="event-task-list"></div>
+   <div class="event-task-add"><input id="eventTaskTitle" class="inlineedit" placeholder="예: 계약서 출력 / 담당자 전화"><select id="eventTaskPriority" class="inlineedit"><option value="normal">보통</option><option value="high">중요</option><option value="must">무조건</option><option value="low">낮음</option></select><button class="btn primary" type="button" onclick="addEventTask()">+ 체크리스트</button></div>
+  </div>
  </div>
  <div class="event-dialog-foot"><button class="btn danger" type="button" onclick="deleteEventDetail()">이 일정 삭제</button><div><button class="btn" type="button" onclick="closeEventDetail()">취소</button> <button class="btn primary" type="button" onclick="saveEventDetail()">수정 저장</button></div></div>
 </dialog>
@@ -316,7 +325,12 @@ function metrics(){
  const cash=state.accounts.filter(a=>a.include_in_cash).reduce((s,a)=>s+Number(a.balance||0),0);
  const pdebts=personalDebts(), debt=pdebts.reduce((s,d)=>s+Number(d.balance||0),0), debtMin=pdebts.reduce((s,d)=>s+Number(d.min_payment||0),0);
  const recurringExpense=state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense').reduce((s,r)=>s+Number(r.amount||0),0);
- const extra=Number(state.profile?.monthly_debt_extra_target||0), survival=recurringExpense+debtMin+extra;
+ const extra=Number(state.profile?.monthly_debt_extra_target||0);
+ const variableBudget=Number(state.profile?.monthly_variable_budget||0);
+ const savingsTarget=Number(state.profile?.monthly_savings_target||0);
+ const taxReserve=Number(state.profile?.monthly_tax_reserve||0);
+ const survival=recurringExpense+debtMin;
+ const recommended=survival+variableBudget+savingsTarget+taxReserve+extra;
  const mflows=monthRows(state.flows,'flow_date');
  const support=mflows.filter(f=>['personal_paid_business','capital_injection'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);
  const reimburse=mflows.filter(f=>f.flow_type==='reimbursement').reduce((s,f)=>s+Number(f.amount||0),0);
@@ -325,20 +339,23 @@ function metrics(){
  const directIncome=mtx.filter(t=>t.scope==='personal'&&t.tx_type==='income').reduce((s,t)=>s+Number(t.amount||0),0);
  const actualSpend=mtx.filter(t=>t.scope==='personal'&&t.tx_type==='expense').reduce((s,t)=>s+Number(t.amount||0),0);
  const earned=directIncome+bizIncome;
- const cashBurden=Math.max(0,survival+support-reimburse);
+ const cashBurden=Math.max(0,recommended+support-reimburse);
  const manualTarget=Number(state.profile?.monthly_personal_income_target||0), target=Math.max(manualTarget,cashBurden), remain=Math.max(0,target-earned);
  const last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(), left=Math.max(1,last-now.getDate()+1), daily=remain/left;
- return {cash,debt,debtMin,recurringExpense,extra,survival,support,reimburse,bizIncome,directIncome,actualSpend,earned,cashBurden,target,remain,daily,left}
+ return {cash,debt,debtMin,recurringExpense,extra,variableBudget,savingsTarget,taxReserve,survival,recommended,support,reimburse,bizIncome,directIncome,actualSpend,earned,cashBurden,target,remain,daily,left}
 }
 function renderDashboard(){
  const m=metrics(),rate=m.target?Math.min(999,m.earned/m.target*100):0;
- $('heroNeed').textContent=won(m.cashBurden);$('heroRemain').textContent=won(m.remain);$('heroDaily').textContent=won(m.daily);$('heroSurvival').textContent=won(m.survival);$('heroIncome').textContent=won(m.earned);$('heroSupport').textContent=won(m.support);$('heroPayoff').textContent=payoffText(0);$('incomeBar').style.width=Math.min(100,rate)+'%';$('heroCaption').textContent='목표 '+won(m.target)+' · 달성 '+rate.toFixed(1)+'% · 사업비 환급 '+won(m.reimburse);
+ $('heroNeed').textContent=won(m.cashBurden);$('heroRemain').textContent=won(m.remain);$('heroDaily').textContent=won(m.daily);$('heroSurvival').textContent=won(m.survival);$('heroIncome').textContent=won(m.earned);$('heroSupport').textContent=won(m.support);$('heroPayoff').textContent=payoffText(0);$('incomeBar').style.width=Math.min(100,rate)+'%';$('heroCaption').textContent='고정·대출 '+won(m.survival)+' + 생활 '+won(m.variableBudget)+' + 저축 '+won(m.savingsTarget)+' + 세금 '+won(m.taxReserve)+' + 추가상환 '+won(m.extra)+' · 목표 '+won(m.target);
  $('kCash').textContent=won(m.cash);$('kDebt').textContent=won(m.debt);$('kDebtSub').textContent='월 최소상환 '+won(m.debtMin);$('kNet').textContent=(m.cash-m.debt<0?'-':'')+won(Math.abs(m.cash-m.debt));$('kNet').className=m.cash-m.debt<0?'bad':'good';$('kSpend').textContent=won(m.actualSpend);$('kRate').textContent=rate.toFixed(1)+'%';$('kRateSub').textContent='목표 '+won(m.target);
  renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
 }
 function renderTodayTasks(){
  const arr=state.tasks.filter(t=>t.due_date===today&&t.status!=='skipped').sort((a,b)=>({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority])));
- $('todayTasks').innerHTML=arr.length?arr.map(t=>'<div class="row"><label class="todo '+(t.status==='done'?'done':'')+'"><input type="checkbox" '+(t.status==='done'?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><div><b>'+esc(t.title)+'</b><small>'+(t.priority==='must'?'무조건 · ':'')+(t.rollover_count?'이월 '+t.rollover_count+'회':'오늘')+'</small></div></label><span class="tag '+(t.priority==='must'?'red':'')+'">'+t.priority+'</span></div>').join(''):'<div class="empty">오늘 할 일을 추가하세요. 오늘 화면의 핵심입니다.</div>'
+ const events=state.events.filter(e=>e.event_date===today);
+ const eventHtml=events.map(e=>'<div class="row" style="cursor:pointer" onclick="openEventDetail(\''+e.id+'\')"><div><b>📅 '+esc(e.title)+'</b><small>오늘 일정'+(e.memo?' · 메모 있음':'')+'</small></div><span class="tag">일정</span></div>').join('');
+ const taskHtml=arr.map(t=>'<div class="row"><label class="todo '+(t.status==='done'?'done':'')+'"><input type="checkbox" '+(t.status==='done'?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><div><b>'+esc(t.title)+'</b><small>'+(t.priority==='must'?'무조건 · ':'')+(t.rollover_count?'이월 '+t.rollover_count+'회':'오늘')+(t.event_id?' · 일정 연결':'')+'</small></div></label><span class="tag '+(t.priority==='must'?'red':'')+'">'+t.priority+'</span></div>').join('');
+ $('todayTasks').innerHTML=(eventHtml+taskHtml)||'<div class="empty">오늘 일정이나 할 일을 추가하세요. 오늘 화면의 핵심입니다.</div>'
 }
 async function toggleTask(id,done){const {error}=await sb.from('pc_tasks').update({status:done?'done':'pending',completed_at:done?new Date().toISOString():null}).eq('id',id);if(error)return alert(error.message);const t=state.tasks.find(x=>x.id===id);if(t){t.status=done?'done':'pending';t.completed_at=done?new Date().toISOString():null}renderTodayTasks();renderCalendar();toast(done?'완료 체크':'미완료로 변경')}
 function nextOccurrence(day){const y=now.getFullYear(),m=now.getMonth(),last=new Date(y,m+1,0).getDate(),d=Math.min(+day||1,last);let x=new Date(y,m,d);if(x<new Date(y,m,now.getDate())){const l2=new Date(y,m+2,0).getDate();x=new Date(y,m+1,Math.min(+day||1,l2))}return x}
@@ -410,21 +427,32 @@ function renderMoney(){
   '<td><button class="btn mini danger" onclick="delRow(\'pc_transactions\',\''+t.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">실제 거래를 기록하면 여기에 표시됩니다.</td></tr>';
  const mm=metrics();$('txSummary').textContent='이번달 지출 '+won(mm.actualSpend)+' / 수입 '+won(mm.directIncome)
 }
-async function addAccount(){const row={name:$('accName').value.trim(),account_type:$('accType').value,balance:+$('accBalance').value||0};if(!row.name){toast('계좌 이름을 입력하세요.');return}const {error}=await sb.from('pc_accounts').insert(row);if(error)return alert(error.message);$('accName').value='';$('accBalance').value='';await loadAll();toast('저장됨 · 아래 현재 자산에서 바로 수정 가능')}
+async function addAccount(){const row={name:$('accName').value.trim(),account_type:$('accType').value,balance:+$('accBalance').value||0};if(!row.name){toast('계좌 이름을 입력하세요.');return}const dup=state.accounts.find(a=>String(a.name).trim().toLowerCase()===row.name.toLowerCase());if(dup){toast('같은 이름 계좌가 이미 있습니다. 아래 표에서 바로 수정하세요.');return}const {error}=await sb.from('pc_accounts').insert(row);if(error)return alert(error.message);$('accName').value='';$('accBalance').value='';await loadAll();toast('저장됨 · 아래 현재 자산에서 바로 수정 가능')}
 async function updateBalance(id,current){const v=prompt('현재 잔액을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return alert('숫자로 입력하세요.');const {error}=await sb.from('pc_accounts').update({balance:n,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);await loadAll()}
 async function addRecurring(){const row={name:$('recName').value.trim(),item_type:$('recType').value,category:$('recCat').value,amount:+$('recAmount').value||0,due_day:+$('recDay').value||null,scope:$('recScope').value,payment_method:$('recMethod').value.trim()};if(!row.name){toast('항목명을 입력하세요.');return}const {error}=await sb.from('pc_recurring_items').insert(row);if(error)return alert(error.message);['recName','recAmount','recDay','recMethod'].forEach(id=>$(id).value='');await loadAll();toast('저장됨 · 아래 반복 항목에서 바로 수정 가능')}
 async function deactivateRecurring(id){if(!confirm('이 반복항목을 삭제할까요?'))return;await sb.from('pc_recurring_items').update({active:false}).eq('id',id);await loadAll()}
 async function addTransaction(){const row={tx_date:$('txDate').value||today,tx_type:$('txType').value,amount:+$('txAmount').value||0,category:$('txCategory').value.trim()||'기타',merchant:$('txMerchant').value.trim(),account_name:$('txAccount').value.trim(),scope:$('txScope').value};if(!row.amount){toast('금액을 입력하세요.');return}const {error}=await sb.from('pc_transactions').insert(row);if(error)return alert(error.message);['txAmount','txCategory','txMerchant','txAccount'].forEach(id=>$(id).value='');await loadAll();toast('거래 저장 · 아래 최근 거래에서 바로 수정 가능')}
 
-function renderDebt(){const m=metrics();$('dTotal').textContent=won(m.debt);$('dMin').textContent=won(m.debtMin);$('dExtra').textContent=won(m.extra);$('dDate').textContent=payoffText(0);$('dDate100').textContent=payoffText(1000000);$('debtSummary').textContent='개인 '+won(m.debt)+' / 사업 '+won(state.debts.filter(d=>d.is_business_debt).reduce((s,d)=>s+Number(d.balance||0),0));
- $('debtRows').innerHTML=state.debts.length?state.debts.map(d=>'<tr><td><b>'+esc(d.name)+'</b><br><small>'+esc(d.lender||'-')+'</small></td><td><span class="tag '+(d.is_business_debt?'orange':'green')+'">'+(d.is_business_debt?'사업':'개인')+'</span></td><td class="amt">'+won(d.balance)+'</td><td>'+Number(d.apr||0).toFixed(2)+'%</td><td class="amt">'+won(d.min_payment)+'</td><td>'+(d.payment_day?d.payment_day+'일':'-')+'</td><td>'+(d.maturity_date||'-')+'</td><td><button class="btn mini" onclick="updateDebtBalance(\''+d.id+'\','+Number(d.balance||0)+')">잔액수정</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">대출을 추가하세요.</td></tr>'}
+function renderDebt(){
+ const m=metrics();$('dTotal').textContent=won(m.debt);$('dMin').textContent=won(m.debtMin);$('dExtra').textContent=won(m.extra);$('dDate').textContent=payoffText(0);$('dDate100').textContent=payoffText(1000000);$('debtSummary').textContent='개인 '+won(m.debt)+' / 사업 '+won(state.debts.filter(d=>d.is_business_debt).reduce((s,d)=>s+Number(d.balance||0),0));
+ const scopeOpts=[['false','개인'],['true','사업']];
+ $('debtRows').innerHTML=state.debts.length?state.debts.map(d=>'<tr>'+
+  '<td><input class="inlineedit" value="'+esc(d.name)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'name\',this.value,\'text\',this)"><input class="inlineedit" style="font-size:9px" value="'+esc(d.lender||'')+'" placeholder="금융사" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'lender\',this.value,\'text\',this)"></td>'+
+  '<td>'+inlineSelect(String(!!d.is_business_debt),scopeOpts,'onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'is_business_debt\',this.value===\'true\',\'bool\',this)"')+'</td>'+
+  '<td><input class="inlineedit amt" type="number" value="'+Number(d.balance||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'balance\',this.value,\'number\',this)"></td>'+
+  '<td><input class="inlineedit" style="width:85px" type="number" step="0.01" value="'+Number(d.apr||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'apr\',this.value,\'number\',this)"></td>'+
+  '<td><input class="inlineedit amt" type="number" value="'+Number(d.min_payment||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'min_payment\',this.value,\'number\',this)"></td>'+
+  '<td><input class="inlineedit" style="width:70px" type="number" min="1" max="31" value="'+(d.payment_day||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'payment_day\',this.value,\'nullableNumber\',this)"></td>'+
+  '<td><input class="inlineedit" type="date" value="'+(d.maturity_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'maturity_date\',this.value,\'text\',this)"></td>'+
+  '<td><button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="8" class="empty">대출을 추가하세요.</td></tr>'
+}
 async function addDebt(){const row={name:$('debtName').value.trim(),lender:$('debtLender').value.trim(),balance:+$('debtBalance').value||0,apr:+$('debtApr').value||0,min_payment:+$('debtMin').value||0,payment_day:+$('debtDay').value||null,maturity_date:$('debtMaturity').value||null,is_business_debt:$('debtBusiness').value==='true',prepayment_fee_pct:+$('debtFee').value||0};if(!row.name)return;const {error}=await sb.from('pc_debts').insert(row);if(error)return alert(error.message);['debtName','debtLender','debtBalance','debtApr','debtMin','debtDay','debtMaturity','debtFee'].forEach(id=>$(id).value='');await loadAll();toast('대출 저장')}
 async function updateDebtBalance(id,current){const v=prompt('현재 남은 원금을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_debts').update({balance:n}).eq('id',id);await loadAll()}
 
 function bizName(id){return state.businesses.find(b=>b.id===id)?.name||'-'}
 function flowLabel(t){return({draw:'사업체→개인 인출',profit_distribution:'이익분배',reimbursement:'사업비 환급',personal_paid_business:'개인계좌로 사업비 결제',capital_injection:'사업 적자/운전자금 메꿈',business_paid_personal:'사업체가 개인비용 결제',other:'기타'})[t]||t}
 function renderBusiness(){
- $('bizCards').innerHTML=state.businesses.length?state.businesses.map(b=>{const fs=monthRows(state.flows,'flow_date').filter(f=>f.business_id===b.id),inn=fs.filter(f=>['draw','profit_distribution','reimbursement'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0),out=fs.filter(f=>['personal_paid_business','capital_injection'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);return '<div class="panel card"><h3>'+esc(b.name)+'</h3><p>지분 '+Number(b.ownership_pct||0)+'% · 손익분배 '+Number(b.profit_share_pct||0)+'%</p><div class="row"><div><b>이번달 받은 돈</b></div><span class="amt good">'+won(inn)+'</span></div><div class="row"><div><b>이번달 넣은 돈</b></div><span class="amt bad">'+won(out)+'</span></div><div class="row"><div><b>월 인출 목표</b></div><span class="amt">'+won(b.target_monthly_draw)+'</span></div></div>'}).join(''):'<div class="panel card"><div class="empty">공동사업체 3개를 각각 등록하세요.</div></div>';
+ $('bizCards').innerHTML=state.businesses.length?state.businesses.map(b=>{const fs=monthRows(state.flows,'flow_date').filter(f=>f.business_id===b.id),inn=fs.filter(f=>['draw','profit_distribution','reimbursement'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0),out=fs.filter(f=>['personal_paid_business','capital_injection'].includes(f.flow_type)).reduce((s,f)=>s+Number(f.amount||0),0);return '<div class="panel card"><input class="inlineedit" style="font-size:14px;font-weight:1000" value="'+esc(b.name)+'" onchange="inlineUpdate(\'pc_businesses\',\''+b.id+'\',\'name\',this.value,\'text\',this)"><div class="biz-edit-grid"><label>내 지분 %<input type="number" step="0.01" value="'+Number(b.ownership_pct||0)+'" onchange="inlineUpdate(\'pc_businesses\',\''+b.id+'\',\'ownership_pct\',this.value,\'number\',this)"></label><label>손익분배 %<input type="number" step="0.01" value="'+Number(b.profit_share_pct||0)+'" onchange="inlineUpdate(\'pc_businesses\',\''+b.id+'\',\'profit_share_pct\',this.value,\'number\',this)"></label><label style="grid-column:1/-1">월 개인 인출 목표<input type="number" value="'+Number(b.target_monthly_draw||0)+'" onchange="inlineUpdate(\'pc_businesses\',\''+b.id+'\',\'target_monthly_draw\',this.value,\'number\',this)"></label></div><div class="row"><div><b>이번달 받은 돈</b></div><span class="amt good">'+won(inn)+'</span></div><div class="row"><div><b>이번달 넣은 돈</b></div><span class="amt bad">'+won(out)+'</span></div></div>'}).join(''):'<div class="panel card"><div class="empty">공동사업체 3개를 각각 등록하세요.</div></div>';
  $('flowRows').innerHTML=state.flows.slice(0,50).map(f=>'<tr><td>'+f.flow_date+'</td><td><b>'+esc(bizName(f.business_id))+'</b></td><td>'+flowLabel(f.flow_type)+'</td><td class="amt">'+won(f.amount)+'</td><td>'+esc(f.memo||'-')+'</td><td><button class="btn mini danger" onclick="delRow(\'pc_business_flows\',\''+f.id+'\')">삭제</button></td></tr>').join('')||'<tr><td colspan="6" class="empty">사업체와 개인 사이 돈 이동을 기록하세요.</td></tr>';
  const m=metrics();$('flowSummary').textContent='이번달 받은 '+won(m.bizIncome+m.reimburse)+' / 넣은 '+won(m.support)
 }
@@ -444,15 +472,27 @@ async function addEvent(){
 }
 function openEventDetail(id){
  const e=state.events.find(x=>x.id===id);if(!e)return;
- $('detailEventId').value=e.id;$('detailEventDate').value=e.event_date;$('detailEventTitle').value=e.title||'';$('detailEventType').value=e.event_type||'schedule';$('detailEventMemo').value=e.memo||'';
+ $('detailEventId').value=e.id;$('detailEventDate').value=e.event_date;$('detailEventTitle').value=e.title||'';$('detailEventType').value=e.event_type||'schedule';$('detailEventMemo').value=e.memo||'';$('eventTaskTitle').value='';renderEventTasks(e.id);
  const dlg=$('eventDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
 }
 function closeEventDetail(){const dlg=$('eventDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
+function renderEventTasks(eventId){
+ const arr=state.tasks.filter(t=>t.event_id===eventId&&t.status!=='skipped');
+ $('eventTaskList').innerHTML=arr.length?arr.map(t=>'<div class="event-task-row"><input type="checkbox" '+(t.status==='done'?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked);renderEventTasks(\''+eventId+'\')"><b style="'+(t.status==='done'?'text-decoration:line-through;color:#929aa5':'')+'">'+esc(t.title)+'</b><span class="tag '+(t.priority==='must'?'red':'')+'">'+t.priority+'</span><button class="btn mini danger" type="button" onclick="deleteEventTask(\''+t.id+'\',\''+eventId+'\')">삭제</button></div>').join(''):'<div class="empty" style="padding:12px">연결된 할 일이 없습니다.</div>'
+}
+async function addEventTask(){
+ const eventId=$('detailEventId').value,e=state.events.find(x=>x.id===eventId),title=$('eventTaskTitle').value.trim();if(!eventId||!e||!title)return;
+ const {error}=await sb.from('pc_tasks').insert({title,due_date:e.event_date,priority:$('eventTaskPriority').value,auto_rollover:true,event_id:eventId});
+ if(error)return alert(error.message);$('eventTaskTitle').value='';await loadAll();renderEventTasks(eventId);toast('일정 체크리스트 추가')
+}
+async function deleteEventTask(id,eventId){if(!confirm('이 할 일을 삭제할까요?'))return;const {error}=await sb.from('pc_tasks').delete().eq('id',id);if(error)return alert(error.message);await loadAll();renderEventTasks(eventId)}
+
 async function saveEventDetail(){
  const id=$('detailEventId').value,title=$('detailEventTitle').value.trim();if(!id||!title){toast('제목을 입력하세요.');return}
  const patch={event_date:$('detailEventDate').value||today,title,event_type:$('detailEventType').value,memo:$('detailEventMemo').value.trim()};
  const {error}=await sb.from('pc_calendar_events').update(patch).eq('id',id);if(error)return alert(error.message);
- closeEventDetail();await loadAll();toast('일정 수정 저장')
+ await sb.from('pc_tasks').update({due_date:patch.event_date}).eq('event_id',id).eq('status','pending');
+ closeEventDetail();await loadAll();toast('일정과 연결 할 일 날짜까지 수정 저장')
 }
 async function deleteEventDetail(){
  const id=$('detailEventId').value;if(!id||!confirm('이 일정과 메모를 삭제할까요?'))return;
@@ -479,8 +519,8 @@ function renderGoals(){
 async function addGoal(){const row={title:$('goalTitle').value.trim(),target_value:+$('goalTarget').value||0,current_value:+$('goalCurrent').value||0,target_date:$('goalDate').value||null};if(!row.title)return;const {error}=await sb.from('pc_goals').insert(row);if(error)return alert(error.message);['goalTitle','goalTarget','goalCurrent','goalDate'].forEach(id=>$(id).value='');await loadAll();toast('목표 저장')}
 async function updateGoal(id,current){const v=prompt('현재 달성값을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_goals').update({current_value:n}).eq('id',id);await loadAll()}
 async function disableGoal(id){await sb.from('pc_goals').update({active:false}).eq('id',id);await loadAll()}
-function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p.monthly_personal_income_target||'';$('setDebtExtra').value=p.monthly_debt_extra_target||'';$('setEmergency').value=p.emergency_fund_target||'';$('setFiveYear').value=p.five_year_asset_target||'';$('setNote').value=p.five_year_note||''}
-async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장')}
+function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p.monthly_personal_income_target||'';$('setVariableBudget').value=p.monthly_variable_budget||'';$('setDebtExtra').value=p.monthly_debt_extra_target||'';$('setSavingsTarget').value=p.monthly_savings_target||'';$('setTaxReserve').value=p.monthly_tax_reserve||'';$('setEmergency').value=p.emergency_fund_target||'';$('setFiveYear').value=p.five_year_asset_target||'';$('setNote').value=p.five_year_note||''}
+async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_variable_budget:+$('setVariableBudget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,monthly_savings_target:+$('setSavingsTarget').value||0,monthly_tax_reserve:+$('setTaxReserve').value||0,emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장 · 월 필요수입 재계산 완료')}
 
 async function delRow(table,id){if(!confirm('삭제할까요?'))return;const {error}=await sb.from(table).delete().eq('id',id);if(error)return alert(error.message);await loadAll()}
 setDefaults();

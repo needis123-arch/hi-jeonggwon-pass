@@ -1,0 +1,21 @@
+{
+  "id": "/hi-jeonggwon-pass/pass-admin/",
+  "name": "하이×정권 PASS 관리자",
+  "short_name": "PASS 관리자",
+  "description": "하이×정권 제휴 상담 관리자",
+  "lang": "ko-KR",
+  "start_url": "/hi-jeonggwon-pass/pass-admin/",
+  "scope": "/hi-jeonggwon-pass/pass-admin/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f6f6f3",
+  "theme_color": "#20211d",
+  "icons": [
+    {
+      "src": "/hi-jeonggwon-pass/pass-admin/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

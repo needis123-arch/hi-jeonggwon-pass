@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V0.5</title>
+<title>PERSONAL CENTER V0.6</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -19,7 +19,7 @@
 .formcard{padding:18px;margin-bottom:16px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:9px;color:#657083;font-weight:800}.field input,.field select,.field textarea{border:1px solid #d7dde5;border-radius:10px;padding:10px 11px;background:#fff;color:#111}.field.full{grid-column:1/-1}.formactions{display:flex;gap:7px;align-items:end}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.tabs button{border:1px solid var(--line);background:#fff;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:800}.tabs button.active{background:#15191f;color:#fff;border-color:#15191f}
 .meter{margin-top:10px}.meterline{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:5px}.bar{height:9px;background:#edf1f5;border-radius:99px;overflow:hidden}.bar i{height:100%;display:block;background:#9bdc2e;border-radius:99px}
-.calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.eventbtn{width:100%;border:0;text-align:left;color:inherit;cursor:pointer}.calitem.eventbtn:hover{outline:1px solid #a9c76c;background:#f3f9e8}
+.calendar{padding:15px}.calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.calhead b{font-size:15px}.calgrid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}.dow,.day{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.dow{padding:8px;text-align:center;font-size:9px;color:var(--muted);background:#f8fafb}.day{min-height:115px;padding:7px;background:#fff;cursor:pointer}.day:hover{background:#fbfcfd}.calitem.done{text-decoration:line-through;opacity:.55}.schedule-check{display:inline-grid;place-items:center;width:14px;height:14px;border:1px solid #95a0ad;border-radius:4px;margin-right:4px;font-size:9px;vertical-align:-2px}.day.off{background:#fafbfc}.daynum{font-size:10px;font-weight:900;margin-bottom:5px}.day.today{box-shadow:inset 0 0 0 2px var(--accent2)}.calitem{display:block;border-radius:6px;padding:3px 5px;margin-top:3px;font-size:8px;line-height:1.3;background:#eef2f5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calitem.eventbtn{width:100%;border:0;text-align:left;color:inherit;cursor:pointer}.calitem.eventbtn:hover{outline:1px solid #a9c76c;background:#f3f9e8}
 .event-dialog{width:min(620px,calc(100% - 28px));border:1px solid var(--line);border-radius:20px;padding:0;box-shadow:0 28px 90px rgba(10,20,30,.25);color:var(--text)}.event-dialog::backdrop{background:rgba(17,24,32,.45)}.event-dialog-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}.event-dialog-head h3{margin:0;font-size:17px}.event-dialog-body{padding:20px;display:grid;gap:12px}.event-dialog-foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.event-dialog .field textarea{min-height:150px;resize:vertical;line-height:1.6}.event-task-box{border-top:1px solid var(--line);padding-top:14px}.event-task-add{display:grid;grid-template-columns:1fr 120px auto;gap:8px;margin-top:9px}.event-task-list{display:grid;gap:7px;margin-top:9px}.event-task-row{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:10px;padding:9px 10px}.event-task-row input[type=checkbox]{width:18px;height:18px;accent-color:#78ba0d}.event-task-row b{font-size:11px;flex:1}.biz-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.biz-edit-grid label{font-size:8px;color:var(--muted);font-weight:800}.biz-edit-grid input{width:100%;border:1px solid var(--line);border-radius:9px;padding:8px;font-weight:800}@media(max-width:560px){.event-task-add{grid-template-columns:1fr}.biz-edit-grid{grid-template-columns:1fr 1fr}}.calitem.task{background:#f1fbe3}.calitem.money{background:#fff0e5}.calitem.must{background:#ffe9ed;color:#a72738}
 .callout{border:1px solid #dfe5ea;background:#fafcfd;border-radius:13px;padding:13px;margin-bottom:12px}.callout b{font-size:12px}.callout p{font-size:10px;color:var(--muted);line-height:1.6;margin:5px 0 0}
 .loginbg{position:fixed;inset:0;background:#f4f6f8;z-index:300;display:none;align-items:center;justify-content:center;padding:20px}.loginbg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 25px 80px rgba(10,20,30,.14)}.loginmark{width:52px;height:52px;border-radius:15px;background:#15191f;color:#b8ff35;display:grid;place-items:center;font-size:19px;font-weight:1000;margin-bottom:14px}.login h2{margin:0}.login p{font-size:11px;color:var(--muted);line-height:1.6}.login input{width:100%;border:1px solid #d6dde5;border-radius:11px;padding:11px;margin-top:8px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:var(--warn);margin-top:10px}.toast{position:fixed;right:22px;bottom:22px;background:#15191f;color:#fff;padding:11px 14px;border-radius:11px;display:none;z-index:500;font-size:11px}.toast.show{display:block}
@@ -32,7 +32,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.5</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V0.6</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -130,9 +130,15 @@
   <h3>대출 추가</h3><div class="formgrid">
    <div class="field"><label>대출명</label><input id="debtName" placeholder="신용대출"></div>
    <div class="field"><label>금융사</label><input id="debtLender" placeholder="은행/카드사"></div>
-   <div class="field"><label>남은 원금</label><input id="debtBalance" type="number" placeholder="0"></div>
+   <div class="field"><label>현재 남은 원금</label><input id="debtBalance" type="number" placeholder="0"></div>
+   <div class="field"><label>대출 실행일</label><input id="debtStart" type="date"></div>
    <div class="field"><label>연 금리 %</label><input id="debtApr" type="number" step="0.01" placeholder="6.5"></div>
-   <div class="field"><label>월 최소상환</label><input id="debtMin" type="number" placeholder="0"></div>
+   <div class="field"><label>금리 유형</label><select id="debtRateType"><option value="fixed">고정금리</option><option value="variable">변동금리</option><option value="mixed">혼합금리</option></select></div>
+   <div class="field"><label>금리 약정기간 (개월)</label><input id="debtRateTerm" type="number" min="1" placeholder="예: 12 / 60"></div>
+   <div class="field"><label>전체 약정기간 (개월)</label><input id="debtContract" type="number" min="1" placeholder="예: 60"></div>
+   <div class="field"><label>거치기간 (개월)</label><input id="debtGrace" type="number" min="0" value="0" placeholder="예: 12"></div>
+   <div class="field"><label>상환방식</label><select id="debtRepayment"><option value="equal_payment">원리금균등</option><option value="equal_principal">원금균등</option><option value="bullet">만기일시</option><option value="manual">직접입력/기타</option></select></div>
+   <div class="field"><label>월 납부 예정액</label><input id="debtMin" type="number" placeholder="모르면 비워도 됨"></div>
    <div class="field"><label>납부일</label><input id="debtDay" type="number" min="1" max="31" placeholder="25"></div>
    <div class="field"><label>만기</label><input id="debtMaturity" type="date"></div>
    <div class="field"><label>성격</label><select id="debtBusiness"><option value="false">개인 부채</option><option value="true">사업 부채</option></select></div>
@@ -141,7 +147,7 @@
   </div>
  </div>
  <div class="callout"><b>상환 로직</b><p>개인 부채는 월 최소상환액을 낸 뒤 남는 추가상환금을 금리가 높은 대출부터 넣는 방식으로 계산합니다. 중도상환수수료가 있거나 금리 구조가 복잡한 상품은 실제 약관을 함께 확인해야 합니다.</p></div>
- <div class="tablecard card"><div class="tabletop"><div><b>대출 목록</b><div class="autosave-note">상환한 날에는 '상환 기록'만 누르면 남은 원금이 자동으로 바뀝니다.</div></div><span id="debtSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>대출</th><th>구분</th><th>잔액</th><th>금리</th><th>최소상환</th><th>납부일</th><th>만기</th><th>이번달</th><th>관리</th></tr></thead><tbody id="debtRows"></tbody></table></div></div>
+ <div class="tablecard card"><div class="tabletop"><div><b>대출 목록</b><div class="autosave-note">상환한 날에는 '상환 기록'만 누르면 남은 원금이 자동으로 바뀝니다.</div></div><span id="debtSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>대출</th><th>구분</th><th>잔액</th><th>금리</th><th>약정/상환</th><th>월납부</th><th>납부일</th><th>만기</th><th>이번달</th><th>관리</th></tr></thead><tbody id="debtRows"></tbody></table></div></div>
  <div class="tablecard card"><div class="tabletop"><div><b>상환 이력</b><div class="autosave-note">납부총액을 이자와 원금으로 나눠 기록하고 잔액 변화를 남깁니다.</div></div><span id="debtPaymentSummary" class="amt"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>대출</th><th>납부액</th><th>이자</th><th>원금</th><th>상환 전</th><th>상환 후</th><th>이자기준</th><th>관리</th></tr></thead><tbody id="debtPaymentRows"></tbody></table></div></div>
 </section>
 
@@ -182,12 +188,12 @@
    </div>
   </div>
   <div class="formcard card">
-   <h3>일정 / 메모 추가</h3><div class="formgrid" style="grid-template-columns:150px 1fr 150px auto">
+   <h3>스케줄 빠른 추가</h3><div class="formgrid" style="grid-template-columns:150px 1fr 150px auto">
     <div class="field"><label>날짜</label><input id="eventDate" type="date"></div>
     <div class="field"><label>제목</label><input id="eventTitle" placeholder="캘린더에 보일 제목"></div>
     <div class="field"><label>종류</label><select id="eventType"><option value="schedule">일정</option><option value="memo">메모</option><option value="money_in">돈 들어옴</option><option value="money_out">돈 나감</option><option value="goal">목표</option></select></div>
     <div class="formactions"><button class="btn primary" onclick="addEvent()">저장</button></div>
-    <div class="field full"><label>상세 메모</label><textarea id="eventMemo" rows="4" placeholder="준비물, 해야 할 내용, 사람/장소, 생각난 내용 등을 자유롭게 적으세요. 캘린더의 제목을 누르면 다시 열어볼 수 있습니다."></textarea></div>
+    <div class="field full"><label>추가내용 (선택)</label><textarea id="eventMemo" rows="3" placeholder="없으면 비워두세요. 필요한 경우에만 준비물·장소·추가 설명 등을 적습니다."></textarea></div>
    </div>
   </div>
  </div>
@@ -234,6 +240,19 @@
  <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="business">사업</button>
 </nav>
 
+<dialog class="event-dialog" id="quickScheduleDialog">
+ <div class="event-dialog-head"><div><h3>스케줄 추가</h3><div class="autosave-note" id="quickScheduleDateLabel">날짜</div></div><button class="btn mini" type="button" onclick="closeQuickSchedule()">닫기</button></div>
+ <div class="event-dialog-body">
+  <input id="quickScheduleDate" type="hidden">
+  <div class="field"><label>해야 할 일 / 일정</label><input id="quickScheduleTitle" placeholder="예: 운동 / 세금 납부 / 미팅 / 전화"></div>
+  <div class="formgrid" style="grid-template-columns:1fr 1fr">
+   <div class="field"><label>종류</label><select id="quickScheduleType"><option value="schedule">스케줄</option><option value="money_out">돈 나감</option><option value="money_in">돈 들어옴</option><option value="goal">목표</option></select></div>
+   <div class="field"><label>추가내용</label><input id="quickScheduleMemo" placeholder="선택 · 없으면 비워두기"></div>
+  </div>
+  <div class="callout" style="margin:0"><b>등록 후 체크해서 완료</b><p>추가내용을 비워두면 상세창에는 ‘메모 없음’으로 표시됩니다.</p></div>
+ </div>
+ <div class="event-dialog-foot"><div></div><div><button class="btn" type="button" onclick="closeQuickSchedule()">취소</button> <button class="btn primary" type="button" onclick="saveQuickSchedule()">추가</button></div></div>
+</dialog>
 <dialog class="event-dialog" id="debtPaymentDialog">
  <div class="event-dialog-head"><div><h3>대출 상환 기록</h3><div class="autosave-note" id="debtPayName">대출</div></div><button class="btn mini" type="button" onclick="closeDebtPayment()">닫기</button></div>
  <div class="event-dialog-body">
@@ -262,7 +281,8 @@
    <div class="field"><label>제목</label><input id="detailEventTitle"></div>
    <div class="field"><label>종류</label><select id="detailEventType"><option value="schedule">일정</option><option value="memo">메모</option><option value="money_in">돈 들어옴</option><option value="money_out">돈 나감</option><option value="goal">목표</option></select></div>
   </div>
-  <div class="field"><label>상세 메모</label><textarea id="detailEventMemo" placeholder="상세 메모"></textarea></div>
+  <div class="field"><label>완료 체크</label><label style="display:flex;align-items:center;gap:9px;min-height:42px"><input id="detailEventDone" type="checkbox" style="width:19px;height:19px;accent-color:#78ba0d"> 이 스케줄 완료</label></div>
+  <div class="field"><label>추가내용 (선택)</label><textarea id="detailEventMemo" placeholder="필요한 내용이 있을 때만 작성"></textarea><div id="detailMemoState" class="autosave-note">메모 없음</div></div>
   <div class="event-task-box">
    <b style="font-size:12px">이 일정의 체크리스트</b>
    <div class="autosave-note">미완료 항목은 날짜가 지나면 자동으로 오늘 할 일로 이월됩니다.</div>
@@ -374,7 +394,7 @@ function renderDashboard(){
 function renderTodayTasks(){
  const arr=state.tasks.filter(t=>t.due_date===today&&t.status!=='skipped').sort((a,b)=>({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority])));
  const events=state.events.filter(e=>e.event_date===today);
- const eventHtml=events.map(e=>'<div class="row" style="cursor:pointer" onclick="openEventDetail(\''+e.id+'\')"><div><b>📅 '+esc(e.title)+'</b><small>오늘 일정'+(e.memo?' · 메모 있음':'')+'</small></div><span class="tag">일정</span></div>').join('');
+ const eventHtml=events.map(e=>'<div class="row"><label class="todo '+(e.status==='done'?'done':'')+'"><input type="checkbox" '+(e.status==='done'?'checked':'')+' onchange="toggleEvent(\''+e.id+'\',this.checked)"><div style="cursor:pointer" onclick="openEventDetail(\''+e.id+'\')"><b>📅 '+esc(e.title)+'</b><small>'+(e.memo?'추가내용 있음':'메모 없음')+'</small></div></label><span class="tag">스케줄</span></div>').join('');
  const taskHtml=arr.map(t=>'<div class="row"><label class="todo '+(t.status==='done'?'done':'')+'"><input type="checkbox" '+(t.status==='done'?'checked':'')+' onchange="toggleTask(\''+t.id+'\',this.checked)"><div><b>'+esc(t.title)+'</b><small>'+(t.priority==='must'?'무조건 · ':'')+(t.rollover_count?'이월 '+t.rollover_count+'회':'오늘')+(t.event_id?' · 일정 연결':'')+'</small></div></label><span class="tag '+(t.priority==='must'?'red':'')+'">'+t.priority+'</span></div>').join('');
  $('todayTasks').innerHTML=(eventHtml+taskHtml)||'<div class="empty">오늘 일정이나 할 일을 추가하세요. 오늘 화면의 핵심입니다.</div>'
 }
@@ -461,6 +481,21 @@ async function addRecurring(){const row={name:$('recName').value.trim(),item_typ
 async function deactivateRecurring(id){if(!confirm('이 반복항목을 삭제할까요?'))return;await sb.from('pc_recurring_items').update({active:false}).eq('id',id);await loadAll()}
 async function addTransaction(){const row={tx_date:$('txDate').value||today,tx_type:$('txType').value,amount:+$('txAmount').value||0,category:$('txCategory').value.trim()||'기타',merchant:$('txMerchant').value.trim(),account_name:$('txAccount').value.trim(),scope:$('txScope').value};if(!row.amount){toast('금액을 입력하세요.');return}const {error}=await sb.from('pc_transactions').insert(row);if(error)return alert(error.message);['txAmount','txCategory','txMerchant','txAccount'].forEach(id=>$(id).value='');await loadAll();toast('거래 저장 · 아래 최근 거래에서 바로 수정 가능')}
 
+function addMonthsToDateStr(dateStr,months){
+ if(!dateStr||!Number.isFinite(Number(months)))return '';
+ const p=dateStr.split('-').map(Number);if(p.length!==3)return '';
+ const d=new Date(p[0],p[1]-1,p[2]);d.setMonth(d.getMonth()+Number(months));
+ return ymd(d)
+}
+function debtMethodLabel(v){return({equal_payment:'원리금균등',equal_principal:'원금균등',bullet:'만기일시',manual:'직접입력/기타'})[v]||'기타'}
+function debtRateLabel(v){return({fixed:'고정',variable:'변동',mixed:'혼합'})[v]||'-'}
+function debtGraceEnd(d){return d.loan_start_date&&Number(d.grace_period_months)>0?addMonthsToDateStr(d.loan_start_date,d.grace_period_months):''}
+function debtTermStatus(d){
+ const ge=debtGraceEnd(d);
+ if(ge&&today<ge)return '거치중 · '+ge+' 종료';
+ if(Number(d.grace_period_months)>0&&ge)return '거치종료 · 원금상환중';
+ return debtMethodLabel(d.repayment_method)
+}
 function renderDebt(){
  const m=metrics();$('dTotal').textContent=won(m.debt);$('dMin').textContent=won(m.debtMin);$('dExtra').textContent=won(m.extra);$('dDate').textContent=payoffText(0);$('dDate100').textContent=payoffText(1000000);$('debtSummary').textContent='개인 '+won(m.debt)+' / 사업 '+won(state.debts.filter(d=>d.is_business_debt).reduce((s,d)=>s+Number(d.balance||0),0));
  const scopeOpts=[['false','개인'],['true','사업']];
@@ -469,16 +504,25 @@ function renderDebt(){
   '<td>'+inlineSelect(String(!!d.is_business_debt),scopeOpts,'onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'is_business_debt\',this.value===\'true\',\'bool\',this)"')+'</td>'+
   '<td><input class="inlineedit amt" type="number" value="'+Number(d.balance||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'balance\',this.value,\'number\',this)"></td>'+
   '<td><input class="inlineedit" style="width:85px" type="number" step="0.01" value="'+Number(d.apr||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'apr\',this.value,\'number\',this)"></td>'+
+  '<td><div style="font-size:9px;font-weight:900">'+esc(debtMethodLabel(d.repayment_method))+'</div><small>'+esc(debtTermStatus(d))+' · '+(d.contract_months?d.contract_months+'개월':'기간미입력')+'</small><br><small>'+esc(debtRateLabel(d.rate_type))+(d.rate_term_months?' '+d.rate_term_months+'개월':'')+'</small></td>'+
   '<td><input class="inlineedit amt" type="number" value="'+Number(d.min_payment||0)+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'min_payment\',this.value,\'number\',this)"></td>'+
   '<td><input class="inlineedit" style="width:70px" type="number" min="1" max="31" value="'+(d.payment_day||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'payment_day\',this.value,\'nullableNumber\',this)"></td>'+
   '<td><input class="inlineedit" type="date" value="'+(d.maturity_date||'')+'" onchange="inlineUpdate(\'pc_debts\',\''+d.id+'\',\'maturity_date\',this.value,\'text\',this)"></td>'+
   '<td><span class="tag '+(debtPaidThisMonth(d.id)?'green':'orange')+'">'+(debtPaidThisMonth(d.id)?'납부완료':'미납/대기')+'</span></td>'+
-  '<td><button class="btn mini primary" onclick="openDebtPayment(\''+d.id+'\')">상환 기록</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="9" class="empty">대출을 추가하세요.</td></tr>';
+  '<td><button class="btn mini primary" onclick="openDebtPayment(\''+d.id+'\')">상환 기록</button> <button class="btn mini danger" onclick="delRow(\'pc_debts\',\''+d.id+'\')">삭제</button></td></tr>').join(''):'<tr><td colspan="10" class="empty">대출을 추가하세요.</td></tr>';
  const rows=state.debtPayments.slice(0,50), paidMonth=monthRows(state.debtPayments,'payment_date').reduce((s,p)=>s+Number(p.total_payment||0),0);
  $('debtPaymentSummary').textContent='이번달 납부 '+won(paidMonth);
  $('debtPaymentRows').innerHTML=rows.length?rows.map(p=>{const d=state.debts.find(x=>x.id===p.debt_id);return '<tr><td>'+p.payment_date+'</td><td><b>'+esc(d?.name||'삭제된 대출')+'</b></td><td class="amt">'+won(p.total_payment)+'</td><td class="amt">'+won(p.interest_amount)+'</td><td class="amt good">'+won(p.principal_amount)+'</td><td class="amt">'+won(p.balance_before)+'</td><td class="amt">'+won(p.balance_after)+'</td><td>'+(p.interest_estimated?'예상':'실제')+'</td><td><button class="btn mini danger" onclick="deleteDebtPayment(\''+p.id+'\')">기록삭제</button></td></tr>'}).join(''):'<tr><td colspan="9" class="empty">상환 기록을 남기면 잔액 변화가 여기에 쌓입니다.</td></tr>'
 }
-async function addDebt(){const row={name:$('debtName').value.trim(),lender:$('debtLender').value.trim(),balance:+$('debtBalance').value||0,apr:+$('debtApr').value||0,min_payment:+$('debtMin').value||0,payment_day:+$('debtDay').value||null,maturity_date:$('debtMaturity').value||null,is_business_debt:$('debtBusiness').value==='true',prepayment_fee_pct:+$('debtFee').value||0};if(!row.name)return;const {error}=await sb.from('pc_debts').insert(row);if(error)return alert(error.message);['debtName','debtLender','debtBalance','debtApr','debtMin','debtDay','debtMaturity','debtFee'].forEach(id=>$(id).value='');await loadAll();toast('대출 저장')}
+async function addDebt(){
+ const balance=+$('debtBalance').value||0,start=$('debtStart').value||null,contract=+$('debtContract').value||null;
+ let maturity=$('debtMaturity').value||null;if(!maturity&&start&&contract)maturity=addMonthsToDateStr(start,contract);
+ const row={name:$('debtName').value.trim(),lender:$('debtLender').value.trim(),balance,original_principal:balance||null,loan_start_date:start,apr:+$('debtApr').value||0,rate_type:$('debtRateType').value,rate_term_months:+$('debtRateTerm').value||null,contract_months:contract,grace_period_months:+$('debtGrace').value||0,repayment_method:$('debtRepayment').value,min_payment:+$('debtMin').value||0,payment_day:+$('debtDay').value||null,maturity_date:maturity,is_business_debt:$('debtBusiness').value==='true',prepayment_fee_pct:+$('debtFee').value||0};
+ if(!row.name){toast('대출명을 입력하세요.');return}
+ const {error}=await sb.from('pc_debts').insert(row);if(error)return alert(error.message);
+ ['debtName','debtLender','debtBalance','debtStart','debtApr','debtRateTerm','debtContract','debtGrace','debtMin','debtDay','debtMaturity','debtFee'].forEach(id=>{if($(id))$(id).value=''});
+ $('debtGrace').value='0';await loadAll();toast('대출 조건 저장')
+}
 async function updateDebtBalance(id,current){const v=prompt('현재 남은 원금을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_debts').update({balance:n}).eq('id',id);await loadAll()}
 function openDebtPayment(id){
  const d=state.debts.find(x=>x.id===id);if(!d)return;
@@ -538,16 +582,16 @@ async function addFlow(){const row={flow_date:$('flowDate').value||today,busines
 function renderTasks(){renderTodayTasks()}
 async function addTask(){const row={title:$('taskTitle').value.trim(),due_date:$('taskDate').value||today,priority:$('taskPriority').value,auto_rollover:true};if(!row.title)return;const {error}=await sb.from('pc_tasks').insert(row);if(error)return alert(error.message);$('taskTitle').value='';await loadAll();toast('할 일 저장')}
 async function addEvent(){
- const row={event_date:$('eventDate').value||today,title:$('eventTitle').value.trim(),event_type:$('eventType').value,memo:$('eventMemo').value.trim()};
- if(!row.title){toast('일정 제목을 입력하세요.');return}
+ const row={event_date:$('eventDate').value||today,title:$('eventTitle').value.trim(),event_type:$('eventType').value,memo:$('eventMemo').value.trim(),status:'pending'};
+ if(!row.title){toast('스케줄 제목을 입력하세요.');return}
  const {error}=await sb.from('pc_calendar_events').insert(row);
  if(error)return alert(error.message);
  $('eventTitle').value='';$('eventMemo').value='';
- await loadAll();toast('일정 저장 · 제목을 누르면 메모를 볼 수 있습니다.')
+ await loadAll();toast('스케줄 저장')
 }
 function openEventDetail(id){
  const e=state.events.find(x=>x.id===id);if(!e)return;
- $('detailEventId').value=e.id;$('detailEventDate').value=e.event_date;$('detailEventTitle').value=e.title||'';$('detailEventType').value=e.event_type||'schedule';$('detailEventMemo').value=e.memo||'';$('eventTaskTitle').value='';renderEventTasks(e.id);
+ $('detailEventId').value=e.id;$('detailEventDate').value=e.event_date;$('detailEventTitle').value=e.title||'';$('detailEventType').value=e.event_type||'schedule';$('detailEventMemo').value=e.memo||'';$('detailEventDone').checked=e.status==='done';$('detailMemoState').textContent=e.memo?'추가내용 있음':'메모 없음';$('eventTaskTitle').value='';renderEventTasks(e.id);
  const dlg=$('eventDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','')
 }
 function closeEventDetail(){const dlg=$('eventDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
@@ -564,7 +608,7 @@ async function deleteEventTask(id,eventId){if(!confirm('이 할 일을 삭제할
 
 async function saveEventDetail(){
  const id=$('detailEventId').value,title=$('detailEventTitle').value.trim();if(!id||!title){toast('제목을 입력하세요.');return}
- const patch={event_date:$('detailEventDate').value||today,title,event_type:$('detailEventType').value,memo:$('detailEventMemo').value.trim()};
+ const done=$('detailEventDone').checked;const patch={event_date:$('detailEventDate').value||today,title,event_type:$('detailEventType').value,memo:$('detailEventMemo').value.trim(),status:done?'done':'pending',completed_at:done?new Date().toISOString():null};
  const {error}=await sb.from('pc_calendar_events').update(patch).eq('id',id);if(error)return alert(error.message);
  await sb.from('pc_tasks').update({due_date:patch.event_date}).eq('event_id',id).eq('status','pending');
  closeEventDetail();await loadAll();toast('일정과 연결 할 일 날짜까지 수정 저장')
@@ -574,20 +618,35 @@ async function deleteEventDetail(){
  const {error}=await sb.from('pc_calendar_events').delete().eq('id',id);if(error)return alert(error.message);
  closeEventDetail();await loadAll();toast('일정 삭제')
 }
+async function toggleEvent(id,done){
+ const {error}=await sb.from('pc_calendar_events').update({status:done?'done':'pending',completed_at:done?new Date().toISOString():null}).eq('id',id);
+ if(error)return alert(error.message);const e=state.events.find(x=>x.id===id);if(e){e.status=done?'done':'pending';e.completed_at=done?new Date().toISOString():null}renderDashboard();renderCalendar();toast(done?'스케줄 완료':'미완료로 변경')
+}
+function openQuickSchedule(date){
+ $('quickScheduleDate').value=date;$('quickScheduleDateLabel').textContent=date;$('quickScheduleTitle').value='';$('quickScheduleMemo').value='';$('quickScheduleType').value='schedule';
+ const dlg=$('quickScheduleDialog');if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');
+ setTimeout(()=>$('quickScheduleTitle').focus(),50)
+}
+function closeQuickSchedule(){const dlg=$('quickScheduleDialog');if(dlg.open&&typeof dlg.close==='function')dlg.close();else dlg.removeAttribute('open')}
+async function saveQuickSchedule(){
+ const title=$('quickScheduleTitle').value.trim();if(!title){toast('해야 할 일을 입력하세요.');return}
+ const row={event_date:$('quickScheduleDate').value||today,title,event_type:$('quickScheduleType').value,memo:$('quickScheduleMemo').value.trim(),status:'pending'};
+ const {error}=await sb.from('pc_calendar_events').insert(row);if(error)return alert(error.message);
+ closeQuickSchedule();await loadAll();toast('스케줄 추가')
+}
 function moveCal(n){calDate=new Date(calDate.getFullYear(),calDate.getMonth()+n,1);renderCalendar()}
 function renderCalendar(){
  if(!$('calendarGrid'))return;const y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate();$('calTitle').textContent=y+'년 '+(m+1)+'월';
  let h=['일','월','화','수','목','금','토'].map(x=>'<div class="dow">'+x+'</div>').join('');
  for(let i=0;i<first;i++)h+='<div class="day off"></div>';
  for(let d=1;d<=last;d++){const date=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');let items=[];
- state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'">'+(t.status==='done'?'✓ ':'')+esc(t.title)+'</span>'));
- state.events.filter(e=>e.event_date===date).forEach(e=>items.push('<button type="button" class="calitem eventbtn" title="'+esc(e.memo||e.title)+'" onclick="openEventDetail(\''+e.id+'\')">'+esc(e.title)+(e.memo?' · 📝':'')+'</button>'));
- state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d).forEach(r=>items.push('<span class="calitem money">-'+esc(r.name)+' '+won(r.amount)+'</span>'));
- personalDebts().filter(x=>+x.payment_day===d).forEach(x=>items.push('<span class="calitem money">대출 '+esc(x.name)+' '+won(x.min_payment)+'</span>'));
- h+='<div class="day '+(date===today?'today':'')+'"><div class="daynum">'+d+'</div>'+items.slice(0,5).join('')+(items.length>5?'<span class="calitem">+'+(items.length-5)+'개</span>':'')+'</div>'}
+ state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'" onclick="event.stopPropagation()">'+(t.status==='done'?'✓ ':'')+esc(t.title)+'</span>'));
+ state.events.filter(e=>e.event_date===date&&e.status!=='skipped').forEach(e=>items.push('<div class="calitem eventbtn '+(e.status==='done'?'done':'')+'" onclick="event.stopPropagation()"><span class="schedule-check" onclick="event.stopPropagation();toggleEvent(\''+e.id+'\','+(e.status!=='done')+')">'+(e.status==='done'?'✓':'')+'</span><button type="button" style="border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer" onclick="event.stopPropagation();openEventDetail(\''+e.id+'\')">'+esc(e.title)+(e.memo?' · 📝':'')+'</button></div>'));
+ state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d).forEach(r=>items.push('<span class="calitem money" onclick="event.stopPropagation()">-'+esc(r.name)+' '+won(r.amount)+'</span>'));
+ personalDebts().filter(x=>+x.payment_day===d).forEach(x=>items.push('<span class="calitem money" onclick="event.stopPropagation()">대출 '+esc(x.name)+' '+won(x.min_payment)+'</span>'));
+ h+='<div class="day '+(date===today?'today':'')+'" onclick="openQuickSchedule(\''+date+'\')"><div class="daynum">'+d+' <span style="color:#9aa4b1;font-weight:500">＋</span></div>'+items.slice(0,5).join('')+(items.length>5?'<span class="calitem" onclick="event.stopPropagation()">+'+(items.length-5)+'개</span>':'')+'</div>'}
  $('calendarGrid').innerHTML=h
 }
-
 function renderGoals(){
  $('goalCards').innerHTML=state.goals.length?state.goals.map(g=>{const p=+g.target_value?Math.min(100,+g.current_value/+g.target_value*100):0;return '<div class="panel card"><h3>'+esc(g.title)+'</h3><p>'+(g.target_date?'목표일 '+g.target_date:'목표일 미정')+'</p><div style="font-size:24px;font-weight:1000">'+won(g.current_value)+'</div><small style="color:var(--muted)">/ '+won(g.target_value)+'</small><div class="meter"><div class="meterline"><span>진행률</span><b>'+p.toFixed(1)+'%</b></div><div class="bar"><i style="width:'+p+'%"></i></div></div><div style="margin-top:12px"><button class="btn mini" onclick="updateGoal(\''+g.id+'\','+Number(g.current_value||0)+')">현재값 수정</button> <button class="btn mini danger" onclick="disableGoal(\''+g.id+'\')">삭제</button></div></div>'}).join(''):'<div class="panel card"><div class="empty">첫 5년 목표를 추가하세요.</div></div>'
 }

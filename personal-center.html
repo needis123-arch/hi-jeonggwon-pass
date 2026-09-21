@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V1.4</title>
+<title>PERSONAL CENTER V2.0</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -41,7 +41,14 @@
 .finance-alerts{display:grid;gap:8px}.finance-alert{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid #e3e8ed;border-radius:12px;padding:11px 12px}.finance-alert.warn{background:#fff9ee;border-color:#ffd89a}.finance-alert.danger{background:#fff3f5;border-color:#ffc3cd}.finance-alert.info{background:#f5f9ff;border-color:#ccdcf5}.finance-alert .icon{font-size:16px}.finance-alert b{font-size:11px}.finance-alert small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.finance-alert .when{font-size:9px;font-weight:1000;white-space:nowrap}
 .strategy-tools{display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end}.strategy-result{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:12px}.strategy-result .box{border:1px solid #e5e9ed;border-radius:12px;padding:11px;background:#fbfcfd}.strategy-result span{font-size:8px;color:var(--muted)}.strategy-result b{display:block;font-size:16px;margin-top:5px}.strategy-priority{margin-top:12px;padding:12px 13px;border-radius:12px;background:#f6f9f2;border:1px solid #dfead0;font-size:10px;line-height:1.6}.strategy-hero{margin-top:12px;border:1px solid #d8e8bd;background:linear-gradient(135deg,#fbfff5,#f4fbea);border-radius:16px;padding:18px}.strategy-hero span{font-size:9px;color:#61704f;font-weight:900}.strategy-hero strong{display:block;font-size:25px;line-height:1.28;margin-top:6px;letter-spacing:-.7px}.strategy-hero p{font-size:10px;color:#657083;line-height:1.65;margin:8px 0 0}.strategy-year{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:11px}.strategy-year .box{border:1px solid #dfe7d6;background:#fff;border-radius:12px;padding:11px}.strategy-year span{font-size:8px;color:var(--muted)}.strategy-year b{display:block;font-size:15px;margin-top:5px}.card-cycle-list{display:grid;gap:9px;margin-top:12px}.card-cycle-row{display:grid;grid-template-columns:130px 1.6fr 110px 110px auto;gap:9px;align-items:end;border:1px solid #e2e7eb;border-radius:12px;padding:11px;background:#fbfcfd}.card-cycle-row .name{align-self:center}.card-cycle-row .name b{font-size:11px}.card-cycle-row .name small{display:block;font-size:8px;color:var(--muted);margin-top:3px}.card-cycle-row input{width:100%;border:1px solid #d7dde5;border-radius:9px;padding:8px 9px;background:#fff;font-size:10px}.card-cycle-help{margin-top:8px;font-size:9px;color:var(--muted);line-height:1.5}.card-confirm-alert{background:#fff5e9!important;color:#854d00!important;font-weight:900}
 .priority-strip{display:flex;align-items:center;gap:10px;padding:8px 11px;margin-bottom:12px;min-height:46px;border-color:#dce6d2;background:#fbfff7;overflow:hidden}.priority-strip-title{display:flex;align-items:center;gap:7px;white-space:nowrap;font-size:10px;font-weight:1000}.priority-strip-title .dot{width:8px;height:8px;border-radius:50%;background:#91e71d}.priority-strip-items{display:flex;align-items:center;gap:7px;overflow-x:auto;flex:1;scrollbar-width:thin}.priority-pill{display:flex;align-items:center;gap:6px;border:1px solid #dfe5e9;border-radius:999px;background:#fff;padding:5px 9px;white-space:nowrap;font-size:9px}.priority-pill.must{border-color:#ffb8c2;background:#fff6f7}.priority-pill.high{border-color:#ffd69a;background:#fffaf2}.priority-pill input{width:15px;height:15px;accent-color:#78ba0d}.priority-pill button{border:0;background:transparent;padding:0;cursor:pointer;font:inherit;font-weight:900;color:var(--text)}.priority-pill .pbadge{font-size:7px;font-weight:1000;color:#75808d}.priority-strip-more{white-space:nowrap}.strategy-saved{font-size:8px;color:var(--muted);margin-top:5px}
-.secretary-card{border-color:#d9e6c7;background:linear-gradient(135deg,#fff,#fbfff6)}.secretary-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.secretary-head h3{margin:0;font-size:14px}.secretary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:13px}.secretary-box{border:1px solid #e2e8dd;background:#fff;border-radius:13px;padding:11px}.secretary-box span{font-size:8px;color:var(--muted);font-weight:900}.secretary-box b{display:block;font-size:17px;margin-top:5px;line-height:1.25}.secretary-brief{margin-top:11px;padding:12px 13px;border-radius:12px;background:#f5f9ef;border:1px solid #dfead2;font-size:10px;line-height:1.65}.secretary-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.cash-stale{color:var(--bad)!important}.cash-ok{color:#249018!important}
+.secretary-card{border-color:#d9e6c7;background:linear-gradient(135deg,#fff,#fbfff6)}
+.ai-secretary{border:1px solid #cfe5ac;background:linear-gradient(135deg,#fcfff8,#f5fbe9);box-shadow:0 10px 30px rgba(87,125,38,.08)}
+.ai-sec-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.ai-sec-title{display:flex;align-items:center;gap:9px}.ai-sec-orb{width:34px;height:34px;border-radius:11px;background:#9ef229;display:grid;place-items:center;font-size:17px;font-weight:1000}.ai-sec-head h3{margin:0;font-size:15px}.ai-sec-head p{margin:3px 0 0;font-size:9px;color:var(--muted)}
+.ai-status{border-radius:999px;padding:6px 10px;font-size:8px;font-weight:1000}.ai-status.danger{background:#ffe9ed;color:#c4293d}.ai-status.warn{background:#fff4df;color:#9a6200}.ai-status.good{background:#eefaDC;color:#347800}
+.ai-sec-message{margin-top:12px;background:#111;color:#fff;border-radius:15px;padding:15px 16px;font-size:13px;font-weight:900;line-height:1.55}.ai-sec-message small{display:block;color:#aeb7c2;font-size:8px;font-weight:700;margin-top:6px}
+.ai-action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.ai-action{border:1px solid #dfe6d8;background:#fff;border-radius:12px;padding:10px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:start}.ai-action .num{width:22px;height:22px;border-radius:7px;background:#eef7df;display:grid;place-items:center;font-size:9px;font-weight:1000}.ai-action b{font-size:9px;line-height:1.4}.ai-action small{display:block;font-size:8px;color:var(--muted);margin-top:3px;line-height:1.4}.ai-action button{border:0;background:transparent;cursor:pointer;font-size:9px;font-weight:1000;color:#4c740e;padding:2px}
+.ai-chat{margin-top:11px;border-top:1px solid #dfe7d7;padding-top:11px}.ai-chat-history{max-height:210px;overflow:auto;display:grid;gap:7px;margin-bottom:8px}.ai-msg{max-width:88%;border-radius:12px;padding:9px 11px;font-size:9px;line-height:1.55}.ai-msg.user{justify-self:end;background:#111;color:#fff}.ai-msg.assistant{justify-self:start;background:#fff;border:1px solid #dde5d7}.ai-chat-row{display:grid;grid-template-columns:1fr auto;gap:7px}.ai-chat-row input{width:100%;border:1px solid #d5ddd0;border-radius:11px;padding:10px 11px;background:#fff}.ai-quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.ai-quick button{border:1px solid #dbe3d4;background:#fff;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:900;cursor:pointer}
+@media(max-width:900px){.ai-action-grid{grid-template-columns:1fr}.ai-sec-message{font-size:12px}}.secretary-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.secretary-head h3{margin:0;font-size:14px}.secretary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:13px}.secretary-box{border:1px solid #e2e8dd;background:#fff;border-radius:13px;padding:11px}.secretary-box span{font-size:8px;color:var(--muted);font-weight:900}.secretary-box b{display:block;font-size:17px;margin-top:5px;line-height:1.25}.secretary-brief{margin-top:11px;padding:12px 13px;border-radius:12px;background:#f5f9ef;border:1px solid #dfead2;font-size:10px;line-height:1.65}.secretary-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.cash-stale{color:var(--bad)!important}.cash-ok{color:#249018!important}
 .receivable-list{display:grid;gap:8px;margin-top:12px}.receivable-row{display:grid;grid-template-columns:1.6fr 120px 130px 130px auto;gap:9px;align-items:center;border:1px solid #e2e7eb;border-radius:12px;padding:10px;background:#fbfcfd}.receivable-row.received{opacity:.62}.receivable-row .source b{font-size:10px}.receivable-row .source small{display:block;font-size:8px;color:var(--muted);margin-top:3px}.receivable-row input,.receivable-row select{width:100%;border:1px solid #d7dde5;border-radius:9px;padding:8px 9px;background:#fff;font-size:10px}.receivable-form{display:grid;grid-template-columns:120px 1.5fr 140px 120px 140px auto;gap:8px;align-items:end;margin-top:12px}.balance-check-card{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.balance-check-card .big{font-size:22px;font-weight:1000}.balance-check-meta{font-size:9px;color:var(--muted);margin-top:4px}
 @media(max-width:1000px){.secretary-grid{grid-template-columns:1fr 1fr}.receivable-row{grid-template-columns:1fr 1fr}.receivable-row .source{grid-column:1/-1}.receivable-form{grid-template-columns:1fr 1fr 1fr}.receivable-form .wide{grid-column:1/-1}}
 @media(max-width:620px){.secretary-grid{grid-template-columns:1fr 1fr}.receivable-row,.receivable-form{grid-template-columns:1fr}.receivable-row .source,.receivable-form .wide{grid-column:auto}}.task-detail-grid{display:grid;grid-template-columns:150px 1fr 150px;gap:10px}@media(max-width:700px){.priority-strip{align-items:flex-start;flex-wrap:wrap}.priority-strip-items{width:100%;order:3}.task-detail-grid{grid-template-columns:1fr}.priority-strip-more{margin-left:auto}}@media(max-width:900px){.strategy-year{grid-template-columns:1fr 1fr}.card-cycle-row{grid-template-columns:1fr 1fr}.card-cycle-row .name{grid-column:1/-1}}
@@ -64,7 +71,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V1.4</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.0</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -97,17 +104,27 @@
    </div>
   </div>
  </div>
- <div class="panel card secretary-card" style="margin-bottom:16px">
-  <div class="secretary-head"><div><h3>전략 비서 브리핑</h3><p style="margin:4px 0 0;color:var(--muted);font-size:9px">잔고·소비·빚·받을 돈을 보고 지금 해야 할 행동을 자동으로 정리합니다.</p></div><span class="tag green">MONEY SECRETARY</span></div>
+ <div class="panel card ai-secretary" style="margin-bottom:16px">
+  <div class="ai-sec-head">
+   <div class="ai-sec-title"><div class="ai-sec-orb">AI</div><div><h3>인성 재무 관리비서</h3><p>잔고·카드·대출·받을 돈을 보고 오늘 해야 할 일을 우선순위로 지시합니다.</p></div></div>
+   <div style="display:flex;gap:6px;align-items:center"><select id="secretaryMode" class="inlineedit" style="width:95px;min-width:95px" onchange="saveSecretaryMode(this.value)"><option value="strict">타이트</option><option value="normal">보통</option><option value="soft">부드럽게</option></select><span id="aiSecretaryStatus" class="ai-status warn">분석중</span></div>
+  </div>
+  <div id="aiSecretaryMessage" class="ai-sec-message">재무상태를 확인하는 중입니다.<small>숫자 계산은 저장된 실제 데이터 기준입니다.</small></div>
+  <div id="aiSecretaryActions" class="ai-action-grid"></div>
   <div class="secretary-grid">
    <div class="secretary-box"><span>현재 등록 잔고</span><b id="secCash">0원</b><small id="secCashDate" class="balance-check-meta">확인일 -</small></div>
    <div class="secretary-box"><span>현재 패턴 최소 월소득</span><b id="secCurrentNeed">0원</b><small class="balance-check-meta">지금 소비습관 기준</small></div>
-   <div class="secretary-box"><span>카드 절약계획 최소 월소득</span><b id="secPlanNeed">0원</b><small id="secPlanNeedSub" class="balance-check-meta">신용→체크 전환 기준</small></div>
-   <div class="secretary-box"><span>현재 잔고 버티는 기간</span><b id="secRunway">-</b><small class="balance-check-meta">수입 0원 가정</small></div>
+   <div class="secretary-box"><span>절약계획 최소 월소득</span><b id="secPlanNeed">0원</b><small id="secPlanNeedSub" class="balance-check-meta">신용→체크 전환 기준</small></div>
+   <div class="secretary-box"><span>잔고 버티는 기간</span><b id="secRunway">-</b><small class="balance-check-meta">수입 0원 가정</small></div>
    <div class="secretary-box"><span>이번 주 체크카드 예산</span><b id="secWeekDebit">0원</b><small class="balance-check-meta">현금 없으면 소비 중단선</small></div>
   </div>
   <div id="secretaryBrief" class="secretary-brief">재무상태를 계산하는 중입니다.</div>
-  <div class="secretary-actions"><button class="btn mini primary" type="button" onclick="go('money')">잔고 업데이트</button><button class="btn mini" type="button" onclick="confirmBalanceCheck()">잔고 맞음 · 확인완료</button><button class="btn mini" type="button" onclick="go('settings')">카드·저축 계획 수정</button></div>
+  <div class="ai-chat">
+   <div id="aiChatHistory" class="ai-chat-history"></div>
+   <div class="ai-chat-row"><input id="aiSecretaryInput" placeholder="예: 이번 달 얼마 벌어야 돼? / 카드 더 써도 돼? / 뭐부터 갚아?"><button class="btn primary" type="button" onclick="askSecretary()">물어보기</button></div>
+   <div class="ai-quick"><button type="button" onclick="askSecretaryPreset('오늘 뭐 해야 해?')">오늘 뭐 해야 해?</button><button type="button" onclick="askSecretaryPreset('이번 달 얼마 벌어야 해?')">얼마 벌어야 해?</button><button type="button" onclick="askSecretaryPreset('카드 더 써도 돼?')">카드 써도 돼?</button><button type="button" onclick="askSecretaryPreset('빚 뭐부터 갚아?')">빚 뭐부터?</button><button type="button" onclick="askSecretaryPreset('1년 뒤 얼마 모여?')">1년 뒤?</button></div>
+  </div>
+ </div>
  </div>
  <div class="panel card" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">
@@ -360,6 +377,7 @@
    <div class="field"><label>월 세금 적립 목표</label><input id="setTaxReserve" type="number" placeholder="개인 세금 대비 적립액"></div>
    <div class="field"><label>신용카드 월 사용 상한</label><input id="setCreditCap" type="number" placeholder="고정결제 위주"></div>
    <div class="field"><label>체크카드 주간 생활비</label><input id="setDebitWeekly" type="number" placeholder="주 단위 예산"></div>
+   <div class="field"><label>AI 비서 강도</label><select id="setSecretaryMode"><option value="strict">타이트하게</option><option value="normal">보통</option><option value="soft">부드럽게</option></select></div>
    <div class="field"><label>비상자금 목표</label><input id="setEmergency" type="number" placeholder="예: 20,000,000"></div>
    <div class="field"><label>5년 자산 목표</label><input id="setFiveYear" type="number" placeholder="0"></div>
    <div class="field full"><label>5년 목표 메모</label><textarea id="setNote" rows="3" placeholder="왜 돈을 모으는지, 5년 뒤 원하는 상태"></textarea></div>
@@ -467,7 +485,7 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[],receivables:[],balanceCheckins:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[],receivables:[],balanceCheckins:[],secretaryMessages:[],secretaryActionLog:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('recvEarnedMonth'))$('recvEarnedMonth').value=today.slice(0,7);if($('recvDate'))$('recvDate').value=lastDayStr(now.getFullYear(),now.getMonth()+1)}
@@ -479,6 +497,7 @@ $('logoutBtn').onclick=()=>sb.auth.signOut();
 $('loginBtn').onclick=login;$('signupBtn').onclick=signup;
 $('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 document.addEventListener('change',e=>{if(e.target?.id==='incomeMonthPicker')renderIncomePanel();if(e.target?.id==='cardBillMonth')renderCardBillEditor()});
+document.addEventListener('keydown',e=>{if(e.target?.id==='aiSecretaryInput'&&e.key==='Enter'){e.preventDefault();askSecretary()}});
 
 async function login(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});$('loginMsg').textContent=error?error.message:''}
 async function signup(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value;if(!email||password.length<6){$('loginMsg').textContent='이메일과 6자 이상 비밀번호를 입력하세요.';return}const {error}=await sb.auth.signUp({email,password});$('loginMsg').textContent=error?error.message:'계정 생성 요청 완료. 이메일 확인이 필요하면 메일을 확인하세요.'}
@@ -506,9 +525,11 @@ async function loadAll(){
   sb.from('pc_spending_category_details').select('*').order('category').limit(100),
   sb.from('pc_cards').select('*').eq('active',true).order('card_name'),
   sb.from('pc_income_receivables').select('*').order('expected_receive_date').limit(200),
-  sb.from('pc_balance_checkins').select('*').order('check_date',{ascending:false}).limit(100)
+  sb.from('pc_balance_checkins').select('*').order('check_date',{ascending:false}).limit(100),
+  sb.from('pc_secretary_messages').select('*').order('created_at',{ascending:false}).limit(30),
+  sb.from('pc_secretary_action_log').select('*').eq('action_date',today).limit(50)
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards','receivables','balanceCheckins'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards','receivables','balanceCheckins','secretaryMessages','secretaryActionLog'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -517,7 +538,7 @@ async function rolloverTasks(){
  const overdue=state.tasks.filter(t=>t.status==='pending'&&t.auto_rollover&&t.due_date<today);
  for(const t of overdue){await sb.from('pc_tasks').update({due_date:today,original_due_date:t.original_due_date||t.due_date,rollover_count:(t.rollover_count||0)+1}).eq('id',t.id);t.original_due_date=t.original_due_date||t.due_date;t.due_date=today;t.rollover_count=(t.rollover_count||0)+1}
 }
-function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderReceivables();renderBalanceCheck();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
+function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderReceivables();renderBalanceCheck();renderAiSecretary();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
 function monthRows(a,key){return a.filter(x=>x[key]>=monthStart&&x[key]<=monthEnd)}
 function personalDebts(){return state.debts.filter(d=>!d.is_business_debt&&Number(d.balance)>0)}
 function deadlineDebts(){return personalDebts().filter(d=>d.deadline_priority&&d.target_payoff_date)}
@@ -650,7 +671,71 @@ function renderDashboard(){
  $('kDebtDue').textContent=won(m.debtNeed);$('kDebtDueSub').textContent='약정·기한채무 포함';
  $('kCardDue').textContent=won(m.cardBillNet);$('kCardDueSub').textContent=m.hasCardBill?('총 '+won(m.cardBillCash)+(m.expectedCardReimbursement?' · 환급 '+won(m.expectedCardReimbursement):'')):'카드값 미입력';
  $('kLivingDue').textContent=won(m.livingNeed);$('kEarned').textContent=won(m.earned);$('kDebtTotal').textContent='-'+won(m.debt);$('kDebtTotal').className='bad';$('kDebtTotalSub').textContent='현재 남은 원금 · 부채는 마이너스';
- renderFinanceSecretary();renderFinancialAlerts();renderStrategy();renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
+ renderFinanceSecretary();renderAiSecretary();renderFinancialAlerts();renderStrategy();renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
+}
+function secretarySnapshot(){
+ const m=metrics(),cash=currentCashTotal(),planNeed=plannedBaselineMonthlyNeed(),currentNeed=currentBaselineMonthlyNeed(),runway=currentNeed>0?cash/currentNeed*30:999,cap=plannedCreditCap(),cardUsed=currentPersonalCardSpend(),priorityDebt=priorityDebtBalance(),ref=balanceReferenceDate(),nextBal=nextBalanceCheckDate(),balanceDue=!ref||today>=nextBal;
+ const pendingReceivables=state.receivables.filter(r=>r.status==='expected'),unknownReceivables=pendingReceivables.filter(r=>Number(r.amount||0)<=0);
+ const nearDebt=personalDebts().map(d=>({d,days:daysTo(d.target_payoff_date||d.maturity_date)})).filter(x=>x.days!=null&&x.days>=0&&x.days<=90).sort((a,b)=>a.days-b.days);
+ return {m,cash,planNeed,currentNeed,runway,cap,cardUsed,priorityDebt,balanceDue,nextBal,pendingReceivables,unknownReceivables,nearDebt}
+}
+function secretaryActions(){
+ const s=secretarySnapshot(),out=[];
+ const push=(key,title,detail,page,severity='normal')=>out.push({key,title,detail,page,severity});
+ if(s.balanceDue)push('balance_check','계좌 잔고 지금 확인','7일 잔고 점검이 필요합니다. 등록 잔고 '+won(s.cash)+'이 실제와 맞는지 확인하세요.','money','must');
+ state.cards.filter(x=>!x.confirmation_day).forEach(card=>push('card_cycle_'+card.id,card.card_name+' 확정일 설정','카드값 확정일이 없으면 월말 현금계획이 틀어집니다.','money','high'));
+ if(s.cardUsed>s.cap&&s.cap>0)push('card_stop','신용카드 신규사용 중단','현재 개인카드 '+won(s.cardUsed)+' / 목표 '+won(s.cap)+'. 생활비는 체크카드로 전환하세요.','money','must');
+ const noBill=cardBillTotalForMonth(today.slice(0,7))<=0;if(noBill)push('card_bill','이번 달 카드 확정액 입력','다음 출금액을 모르면 이번 달 총 필요자금 계산이 완성되지 않습니다.','money','high');
+ if(s.unknownReceivables.length)push('receivable_amount','받을 돈 예상금액 입력',s.unknownReceivables[0].source+' 등 '+s.unknownReceivables.length+'건의 금액이 비어 있습니다.','dashboard','high');
+ if(s.nearDebt.length)push('debt_due_'+s.nearDebt[0].d.id,s.nearDebt[0].d.name+' 만기자금 확인','D-'+s.nearDebt[0].days+' · 남은 원금 '+won(s.nearDebt[0].d.balance),'debt',s.nearDebt[0].days<=30?'must':'high');
+ if(s.m.remain>0)push('income_gap','이번 달 부족수입 '+won(s.m.remain)+' 확보','남은 '+s.m.left+'일 기준 하루 '+won(s.m.daily)+' 추가 확보가 필요합니다.','dashboard','must');
+ if(s.priorityDebt>0)push('priority_debt','남는 돈은 비상금·마통으로','우선상환 대상 잔액 '+won(s.priorityDebt)+'. 두 건 끝나기 전 큰 선택소비는 미룹니다.','debt','normal');
+ return out
+}
+function secretaryStatus(){
+ const s=secretarySnapshot();
+ if(s.runway<14||s.nearDebt.some(x=>x.days<=30)||s.cardUsed>s.cap*1.2&&s.cap>0)return {level:'danger',text:'위험'};
+ if(s.runway<30||s.balanceDue||s.cardUsed>s.cap&&s.cap>0||s.m.remain>0)return {level:'warn',text:'주의'};
+ return {level:'good',text:'안정'}
+}
+function secretaryMainMessage(){
+ const s=secretarySnapshot(),mode=state.profile?.secretary_mode||'strict',status=secretaryStatus(),a=secretaryActions(),top=a[0];
+ const min=won(s.planNeed),cash=won(s.cash),gap=won(s.m.remain);
+ if(mode==='soft')return '현재 잔고는 '+cash+'이고 절약계획 기준 최소 월소득은 '+min+'입니다.'+(top?' 오늘은 '+top.title+'부터 처리하면 됩니다.':' 현재 급한 재무 작업은 없습니다.');
+ if(mode==='normal')return '현재 잔고 '+cash+' · 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 아직 '+gap+' 부족합니다. ':'')+(top?'우선순위 1번: '+top.title+'.':'오늘 즉시 처리할 경고는 없습니다.');
+ return (status.level==='danger'?'지금 돈 관리 우선순위부터 바로 처리하세요. ':status.level==='warn'?'오늘 돈 관련 미완료를 남기지 마세요. ':'현재 흐름은 괜찮습니다. ')+'잔고 '+cash+', 절약계획 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 '+gap+' 부족. ':'')+(top?'지금 1순위는 “'+top.title+'”입니다.':'급한 조치 없음.')
+}
+function renderAiSecretary(){
+ if(!$('aiSecretaryMessage'))return;
+ const st=secretaryStatus(),actions=secretaryActions(),done=new Set(state.secretaryActionLog.filter(x=>x.status==='done').map(x=>x.action_key));
+ $('secretaryMode').value=state.profile?.secretary_mode||'strict';$('aiSecretaryStatus').className='ai-status '+st.level;$('aiSecretaryStatus').textContent=st.text;
+ $('aiSecretaryMessage').innerHTML=esc(secretaryMainMessage())+'<small>저장된 잔고·카드·대출·수입 데이터를 기준으로 계산합니다.</small>';
+ const visible=actions.filter(a=>!done.has(a.key)).slice(0,3);
+ $('aiSecretaryActions').innerHTML=visible.length?visible.map((a,i)=>'<div class="ai-action"><span class="num">'+(i+1)+'</span><div><b>'+esc(a.title)+'</b><small>'+esc(a.detail)+'</small></div><div><button onclick="go(\''+a.page+'\')">열기</button><br><button onclick="completeSecretaryAction(\''+a.key+'\',\''+esc(a.title).replace(/&#39;/g,"\\'")+'\')">완료</button></div></div>').join(''):'<div class="empty" style="grid-column:1/-1">오늘 급한 재무 작업을 모두 처리했습니다.</div>';
+ const msgs=[...state.secretaryMessages].sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))).slice(-10);
+ $('aiChatHistory').innerHTML=msgs.length?msgs.map(m=>'<div class="ai-msg '+m.role+'">'+esc(m.message)+'</div>').join(''):'<div class="autosave-note">아래 질문 버튼을 누르거나 직접 물어보세요.</div>';
+ $('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight
+}
+async function saveSecretaryMode(v){const {error}=await sb.from('pc_profiles').update({secretary_mode:v,updated_at:new Date().toISOString()}).eq('user_id',state.user.id);if(error)return alert(error.message);state.profile.secretary_mode=v;renderAiSecretary();toast('비서 말투 변경')}
+async function completeSecretaryAction(key,title){const {error}=await sb.from('pc_secretary_action_log').upsert({user_id:state.user.id,action_date:today,action_key:key,title,status:'done'},{onConflict:'user_id,action_date,action_key'});if(error)return alert(error.message);await loadAll();toast('오늘 비서 할 일 완료')}
+function askSecretaryPreset(q){$('aiSecretaryInput').value=q;askSecretary()}
+function secretaryAnswer(q){
+ const s=secretarySnapshot(),text=String(q||'').toLowerCase(),mode=state.profile?.secretary_mode||'strict',prefix=mode==='strict'?'':'';
+ if(/오늘|뭐.*해|해야/.test(text)){const a=secretaryActions().slice(0,3);return a.length?'오늘은 '+a.map((x,i)=>(i+1)+'번 '+x.title).join(', ')+' 순서로 처리하세요.':'오늘 급한 재무 작업은 없습니다. 신용카드는 계획상한 안에서만 쓰세요.'}
+ if(/얼마.*벌|월소득|소득/.test(text)){return '절약계획 기준 최소 월소득은 '+won(s.planNeed)+'입니다. 월 200만원을 추가로 모으려면 약 '+won(s.planNeed+2000000)+', 월 300만원이면 약 '+won(s.planNeed+3000000)+'이 필요합니다.'}
+ if(/카드|써도/.test(text)){const left=Math.max(0,s.cap-s.cardUsed);return s.cardUsed>=s.cap?'이번 달 개인카드가 목표 '+won(s.cap)+'을 이미 넘었습니다. 신규 신용카드 사용은 중단하고 생활비는 체크카드로 쓰세요.':'현재 개인카드 '+won(s.cardUsed)+' / 목표 '+won(s.cap)+'. 신용카드 여유는 약 '+won(left)+'이지만 고정결제 외 소비는 체크카드를 우선하세요.'}
+ if(/빚|대출|갚/.test(text)){return '우선순위는 비상금대출 → 마이너스통장입니다. 두 건 잔액은 합계 '+won(s.priorityDebt)+'. 형 채무는 2027년 1~12월 계획상환, 우리은행 원금상환은 약정 시작일부터 정규납부로 봅니다.'}
+ if(/1년|모여|모을|저축/.test(text)){const income=Number(state.profile?.strategy_monthly_income_assumption||0)||s.planNeed,yr=simulateYearPlan(today.slice(0,7),income);return '월 '+won(income)+'을 유지하고 현재 절약계획을 지키면 1년 뒤 예상 현금성 자산은 약 '+won(Math.max(0,yr.endCash))+', 1년간 줄이는 대출 원금은 약 '+won(yr.principalPaid)+'입니다.'}
+ if(/잔고|현금|버텨/.test(text)){return '현재 등록 잔고는 '+won(s.cash)+'이고 지금 소비패턴 기준 수입 없이 약 '+s.runway.toFixed(1)+'일 버틸 수 있습니다. 다음 잔고 점검일은 '+s.nextBal+'입니다.'}
+ if(/받을|급여|입금/.test(text)){const p=s.pendingReceivables;return p.length?'예정수입 '+p.length+'건이 있습니다. '+p.slice(0,3).map(x=>x.source+' '+(Number(x.amount)>0?won(x.amount):'금액 미정')+' / '+x.expected_receive_date).join(', ')+'.':'현재 등록된 예정수입이 없습니다.'}
+ return '지금 핵심은 잔고 '+won(s.cash)+', 절약계획 최소 월소득 '+won(s.planNeed)+', 우선상환 부채 '+won(s.priorityDebt)+'입니다. “이번 달 얼마 벌어야 해?”, “카드 더 써도 돼?”, “빚 뭐부터 갚아?”처럼 물어보면 현재 데이터로 바로 계산해드릴게요.'
+}
+async function askSecretary(){
+ const input=$('aiSecretaryInput'),q=input.value.trim();if(!q)return;
+ const answer=secretaryAnswer(q);input.value='';
+ const u=await sb.from('pc_secretary_messages').insert({user_id:state.user.id,role:'user',message:q});if(u.error)return alert(u.error.message);
+ const a=await sb.from('pc_secretary_messages').insert({user_id:state.user.id,role:'assistant',message:answer});if(a.error)return alert(a.error.message);
+ state.secretaryMessages.push({role:'user',message:q,created_at:new Date().toISOString()},{role:'assistant',message:answer,created_at:new Date(Date.now()+1).toISOString()});renderAiSecretary()
 }
 function renderFinanceSecretary(){
  if(!$('secretaryBrief'))return;
@@ -1197,8 +1282,8 @@ function renderGoals(){
 async function addGoal(){const row={title:$('goalTitle').value.trim(),target_value:+$('goalTarget').value||0,current_value:+$('goalCurrent').value||0,target_date:$('goalDate').value||null};if(!row.title)return;const {error}=await sb.from('pc_goals').insert(row);if(error)return alert(error.message);['goalTitle','goalTarget','goalCurrent','goalDate'].forEach(id=>$(id).value='');await loadAll();toast('목표 저장')}
 async function updateGoal(id,current){const v=prompt('현재 달성값을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_goals').update({current_value:n}).eq('id',id);await loadAll()}
 async function disableGoal(id){await sb.from('pc_goals').update({active:false}).eq('id',id);await loadAll()}
-function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p.monthly_personal_income_target||'';$('setVariableBudget').value=p.monthly_variable_budget||'';$('setDebtExtra').value=p.monthly_debt_extra_target||'';$('setSavingsTarget').value=p.monthly_savings_target||'';$('setTaxReserve').value=p.monthly_tax_reserve||'';$('setCreditCap').value=p.credit_card_monthly_cap||'';$('setDebitWeekly').value=p.debit_card_weekly_budget||'';$('setEmergency').value=p.emergency_fund_target||'';$('setFiveYear').value=p.five_year_asset_target||'';$('setNote').value=p.five_year_note||''}
-async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_variable_budget:+$('setVariableBudget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,monthly_savings_target:+$('setSavingsTarget').value||0,monthly_tax_reserve:+$('setTaxReserve').value||0,credit_card_monthly_cap:+$('setCreditCap').value||0,debit_card_weekly_budget:+$('setDebitWeekly').value||0,emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장 · 월 필요수입 재계산 완료')}
+function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p.monthly_personal_income_target||'';$('setVariableBudget').value=p.monthly_variable_budget||'';$('setDebtExtra').value=p.monthly_debt_extra_target||'';$('setSavingsTarget').value=p.monthly_savings_target||'';$('setTaxReserve').value=p.monthly_tax_reserve||'';$('setCreditCap').value=p.credit_card_monthly_cap||'';$('setDebitWeekly').value=p.debit_card_weekly_budget||'';$('setSecretaryMode').value=p.secretary_mode||'strict';$('setEmergency').value=p.emergency_fund_target||'';$('setFiveYear').value=p.five_year_asset_target||'';$('setNote').value=p.five_year_note||''}
+async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_variable_budget:+$('setVariableBudget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,monthly_savings_target:+$('setSavingsTarget').value||0,monthly_tax_reserve:+$('setTaxReserve').value||0,credit_card_monthly_cap:+$('setCreditCap').value||0,debit_card_weekly_budget:+$('setDebitWeekly').value||0,secretary_mode:$('setSecretaryMode').value,emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장 · 월 필요수입 재계산 완료')}
 
 async function delRow(table,id){if(!confirm('삭제할까요?'))return;const {error}=await sb.from(table).delete().eq('id',id);if(error)return alert(error.message);await loadAll()}
 setDefaults();

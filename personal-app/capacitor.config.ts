@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'kr.co.hirealty.personalcenter.app',
-  appName: 'PERSONAL CENTER+',
+  appId: 'kr.co.hirealty.personalcenter.stable',
+  appName: 'PERSONAL CENTER',
   webDir: 'www',
   server: {
     url: 'https://needis123-arch.github.io/hi-jeonggwon-pass/personal-center.html?app=android&v=2.13',

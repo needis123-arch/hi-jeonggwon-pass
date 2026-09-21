@@ -150,6 +150,12 @@ public final class TodayBoardManager {
         );
     }
 
+    private static String actionLabel(JSONObject item) {
+        String label = item.optString("label", "완료");
+        if (label.length() > 12) label = label.substring(0, 12) + "…";
+        return "✓ " + label;
+    }
+
     public static void showBoard(Context context, boolean alert) {
         createChannels(context);
         List<JSONObject> items = itemsForDate(context, today());
@@ -206,8 +212,18 @@ public final class TodayBoardManager {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setPriority(alert ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_DEFAULT)
-            .setOnlyAlertOnce(!alert)
-            .addAction(android.R.drawable.checkbox_on_background, "완료", completePendingIntent(context, top, "action"));
+            .setOnlyAlertOnce(!alert);
+
+        // Samsung/lock-screen compatibility: native Android actions are kept in addition
+        // to the custom compact "완료" button. This gives us two independent tap paths.
+        for (int i = 0; i < Math.min(3, items.size()); i++) {
+            JSONObject item = items.get(i);
+            b.addAction(
+                android.R.drawable.checkbox_on_background,
+                actionLabel(item),
+                completePendingIntent(context, item, "native-action-" + i)
+            );
+        }
 
         if (alert) {
             b.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);

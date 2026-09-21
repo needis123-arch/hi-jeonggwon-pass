@@ -8,6 +8,7 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
 import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
@@ -116,6 +117,29 @@ public class TodayBoardPlugin extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("알림 설정을 열 수 없습니다.", e);
+        }
+    }
+
+    @PluginMethod
+    public void widgetStatus(PluginCall call) {
+        try {
+            AppWidgetManager manager = AppWidgetManager.getInstance(getContext());
+            ComponentName provider = new ComponentName(getContext(), TodayBoardWidgetProvider.class);
+            boolean found = false;
+            for (AppWidgetProviderInfo info : manager.getInstalledProviders()) {
+                if (provider.equals(info.provider)) {
+                    found = true;
+                    break;
+                }
+            }
+            int[] ids = manager.getAppWidgetIds(provider);
+            JSObject ret = new JSObject();
+            ret.put("providerFound", found);
+            ret.put("instanceCount", ids == null ? 0 : ids.length);
+            ret.put("pinSupported", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && manager.isRequestPinAppWidgetSupported());
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("위젯 상태 확인 실패", e);
         }
     }
 

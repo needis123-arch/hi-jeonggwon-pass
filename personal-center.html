@@ -787,7 +787,7 @@ function renderRoutines(){
  const todayArr=todayRoutines(),done=todayArr.filter(r=>routineDone(r.id)).length,remain=todayArr.length-done,rate=todayArr.length?Math.round(done/todayArr.length*100):100;
  $('routineTodayTotal').textContent=todayArr.length+'개';$('routineTodayDone').textContent=done+'개';$('routineTodayRate').textContent=rate+'%';$('routineTodayRemain').textContent=remain+'개';$('routineTodayRemain').className=remain?'bad':'good';$('routineCount').textContent=state.routines.length+'개';
  if($('routineDashProgress'))$('routineDashProgress').textContent=done+'/'+todayArr.length;
- if($('routineDashList'))$('routineDashList').innerHTML=todayArr.length?todayArr.map(r=>'<label class="routine-dash-item '+(routineDone(r.id)?'done':'')+'"><input type="checkbox" '+(routineDone(r.id)?'checked':'')+' onchange="toggleRoutine(\''+r.id+'\',this.checked)"><span>'+(r.priority==='must'?'‼ ':r.priority==='high'?'! ':'')+esc(r.title)+'</span></label>').join(''):'<span class="autosave-note">오늘 대상 루틴 없음</span>';
+ if($('routineDashList'))$('routineDashList').innerHTML=todayArr.length?todayArr.map(r=>'<label class="routine-dash-item '+(routineDone(r.id)?'done':'')+'"><input type="checkbox" '+(routineDone(r.id)?'checked':'')+' onchange="toggleRoutine(\''+r.id+'\',this.checked)"><span>'+esc(r.title)+'</span></label>').join(''):'<span class="autosave-note">오늘 대상 루틴 없음</span>';
  const arr=[...state.routines].sort((a,b)=>(Number(b.active)-Number(a.active))||({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority])));
  $('routineCards').innerHTML=arr.length?arr.map(r=>{
   const applies=routineApplies(r,today),doneToday=routineDone(r.id),streak=routineStreak(r),days=weekdayText(r);

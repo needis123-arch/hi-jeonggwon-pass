@@ -36,70 +36,95 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <TextView
+    <Button
         android:id="@+id/notif_row1"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center_vertical"
-        android:text="☐ 할 일"
+        android:text="✓ 완료 · 할 일"
         android:textColor="#FF222222"
-        android:textSize="13sp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
         android:maxLines="1"
         android:ellipsize="end"
-        android:paddingStart="2dp"
-        android:paddingEnd="2dp" />
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp" />
 
-    <TextView
+    <Button
         android:id="@+id/notif_row2"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center_vertical"
-        android:text="☐ 할 일"
+        android:text="✓ 완료 · 할 일"
         android:textColor="#FF222222"
-        android:textSize="13sp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
         android:maxLines="1"
         android:ellipsize="end"
-        android:paddingStart="2dp"
-        android:paddingEnd="2dp" />
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp" />
 
-    <TextView
+    <Button
         android:id="@+id/notif_row3"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center_vertical"
-        android:text="☐ 할 일"
+        android:text="✓ 완료 · 할 일"
         android:textColor="#FF222222"
-        android:textSize="13sp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
         android:maxLines="1"
         android:ellipsize="end"
-        android:paddingStart="2dp"
-        android:paddingEnd="2dp" />
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp" />
 
-    <TextView
+    <Button
         android:id="@+id/notif_row4"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center_vertical"
-        android:text="☐ 할 일"
+        android:text="✓ 완료 · 할 일"
         android:textColor="#FF222222"
-        android:textSize="13sp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
         android:maxLines="1"
         android:ellipsize="end"
-        android:paddingStart="2dp"
-        android:paddingEnd="2dp" />
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp" />
 
-    <TextView
+    <Button
         android:id="@+id/notif_row5"
         android:layout_width="match_parent"
         android:layout_height="34dp"
         android:gravity="center_vertical"
-        android:text="☐ 할 일"
+        android:text="✓ 완료 · 할 일"
         android:textColor="#FF222222"
-        android:textSize="13sp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
         android:maxLines="1"
         android:ellipsize="end"
-        android:paddingStart="2dp"
-        android:paddingEnd="2dp" />
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp" />
 
     <TextView
         android:layout_width="match_parent"

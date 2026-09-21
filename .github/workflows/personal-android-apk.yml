@@ -9,6 +9,10 @@ on:
       - 'personal-center.html'
       - '.github/workflows/personal-android-apk.yml'
 
+concurrency:
+  group: personal-center-android-build
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,6 +35,27 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+
+      - name: Restore stable Android debug signing key
+        id: debug-key-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: personal-center-android-debug-keystore-v1
+
+      - name: Create stable Android debug signing key
+        if: steps.debug-key-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -v \
+            -keystore "$HOME/.android/debug.keystore" \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Install dependencies
         run: npm install

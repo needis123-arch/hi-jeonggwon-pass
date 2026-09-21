@@ -1,4 +1,4 @@
-package kr.co.hirealty.personalcenter;
+package kr.co.hirealty.personalcenter.app;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -34,9 +34,9 @@ public final class TodayBoardManager {
     public static final String BOARD_CHANNEL_ID = "pc_today_board_v2";
     public static final String REMIND_CHANNEL_ID = "pc_today_remind_v2";
     public static final int NOTIFICATION_ID = 240921;
-    public static final String ACTION_REMIND = "kr.co.hirealty.personalcenter.TODAY_REMIND";
-    public static final String ACTION_REFRESH = "kr.co.hirealty.personalcenter.TODAY_REFRESH";
-    public static final String ACTION_COMPLETE = "kr.co.hirealty.personalcenter.TODAY_COMPLETE";
+    public static final String ACTION_REMIND = "kr.co.hirealty.personalcenter.app.TODAY_REMIND";
+    public static final String ACTION_REFRESH = "kr.co.hirealty.personalcenter.app.TODAY_REFRESH";
+    public static final String ACTION_COMPLETE = "kr.co.hirealty.personalcenter.app.TODAY_COMPLETE";
 
     private TodayBoardManager() {}
 

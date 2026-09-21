@@ -446,7 +446,7 @@ const TRACKING=(()=>{
 })();
 function applyCampusBranding(logoData={}){
   const defaults={
-    cau:{logoText:'HI × 중앙대',logoImageUrl:''},
+    cau:{logoText:'HI x 중앙대',logoImageUrl:''},
     ssu:{logoText:'HI × 숭실대',logoImageUrl:''},
     snu:{logoText:'HI × 서울대',logoImageUrl:''},
     general:{logoText:String(logoData.logoText||'하이부동산'),logoImageUrl:String(logoData.logoImageUrl||'')},
@@ -456,7 +456,9 @@ function applyCampusBranding(logoData={}){
   const cfg=(logoData.campusBrands&&logoData.campusBrands[key])||{};
   const fallback=defaults[key];
   const logoUrl=String(cfg.logoImageUrl||fallback.logoImageUrl||'').trim();
-  const logoText=String(cfg.logoText||fallback.logoText||'하이부동산').trim();
+  let logoText=String(cfg.logoText||fallback.logoText||'하이부동산').trim();
+  // 과거 공통 브랜딩 값이 중앙대 링크에 남아 있으면 학교 기본값으로 자동 교정
+  if(key==='cau' && ['HI × 정권','HI×정권','HI x 정권','HIx정권'].includes(logoText)) logoText='HI x 중앙대';
 
   const img=document.getElementById('brandLogo');
   const stamp=document.getElementById('brandStamp');

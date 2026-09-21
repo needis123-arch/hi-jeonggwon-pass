@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TodayBoardWidgetProvider extends AppWidgetProvider {
     private static final int[] ROW_IDS = {
-        R.id.widget_row1, R.id.widget_row2, R.id.widget_row3, R.id.widget_row4
+        R.id.widget_row1, R.id.widget_row2, R.id.widget_row3
     };
 
     @Override

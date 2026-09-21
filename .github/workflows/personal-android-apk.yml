@@ -83,11 +83,16 @@ jobs:
 
       - name: Verify merged manifest components
         run: |
-          AAPT2="$(find "$ANDROID_HOME/build-tools" -type f -name aapt2 | sort -V | tail -1)"
-          "$AAPT2" dump xmltree android/app/build/outputs/apk/debug/app-debug.apk AndroidManifest.xml > /tmp/manifest.txt
-          grep -n "TodayBoardReceiver" /tmp/manifest.txt
-          grep -n "TodayBoardWidgetProvider" /tmp/manifest.txt
-          grep -n "android.appwidget.action.APPWIDGET_UPDATE" /tmp/manifest.txt
+          APKANALYZER="$(find "$ANDROID_HOME" -type f -name apkanalyzer | head -1)"
+          if [ -z "$APKANALYZER" ]; then
+            echo "apkanalyzer not found"
+            exit 1
+          fi
+          "$APKANALYZER" manifest print android/app/build/outputs/apk/debug/app-debug.apk > /tmp/manifest.xml
+          grep -n "TodayBoardReceiver" /tmp/manifest.xml
+          grep -n "TodayBoardWidgetProvider" /tmp/manifest.xml
+          grep -n "android.appwidget.action.APPWIDGET_UPDATE" /tmp/manifest.xml
+          grep -n "today_board_widget_info" /tmp/manifest.xml
 
       - name: Verify APK signer
         run: |

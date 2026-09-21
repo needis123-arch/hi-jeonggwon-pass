@@ -12,7 +12,7 @@
 <link rel="manifest" href="./manifest.webmanifest?v=2">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
-<title>정권통신 Business Center V3.38</title>
+<title>정권통신 Business Center V3.39</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -31,6 +31,15 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .btn{border:1px solid #d8dee6;background:#fff;color:#111318;padding:9px 13px;border-radius:11px;font-weight:800}.btn.primary{background:var(--accent);border-color:#a7ec27}.btn.danger{color:#c43846}
 .install-app-btn{display:none;align-items:center;gap:6px}
 .install-app-btn.show{display:inline-flex}
+.detail-back-btn{display:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;font-weight:900;white-space:nowrap}
+.detail-back-btn.show{display:inline-flex;align-items:center;gap:4px}
+.drill-card{position:relative;cursor:pointer;transition:transform .14s ease,border-color .14s ease,box-shadow .14s ease;padding-right:30px!important}
+.drill-card:hover{transform:translateY(-1px);border-color:#bdc8d3;box-shadow:0 7px 20px rgba(18,31,45,.08)}
+.drill-card:active{transform:translateY(0)}
+.drill-card:after{content:'›';position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:900;color:#a0a9b5}
+.drill-card:focus-visible{outline:2px solid #9ee22f;outline-offset:2px}
+@media(max-width:900px){.detail-back-btn{padding:8px 9px;font-size:11px}.drill-card:hover{transform:none}}
+
 @media(display-mode:standalone){.install-app-btn{display:none!important}body{overscroll-behavior-y:none}}
 
 .content{padding:24px;max-width:1700px;margin:0 auto}.page{display:none}.page.active{display:block}
@@ -152,7 +161,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.38</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.39</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -172,7 +181,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 </aside>
 <main class="main">
  <header class="topbar">
-  <button class="mobile-home-btn" onclick="go('dashboard')" aria-label="종합 대시보드로 이동">홈</button>
+  <button class="detail-back-btn" id="detailBackBtn" onclick="navigateBack()" aria-label="이전 화면으로 이동">← 뒤로</button>
+  <button class="mobile-home-btn" id="mobileHomeBtn" onclick="go('dashboard')" aria-label="종합 대시보드로 이동">홈</button>
   <div><h1 id="pageTitle">종합 대시보드</h1><p id="todayText"></p></div>
   <div class="actions"><button class="btn install-app-btn" id="installAppBtn" onclick="installPWA()">앱 설치</button><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
  </header>
@@ -183,10 +193,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  <div class="alert-center card">
   <div class="alert-head"><div><h3>기간 도래 알림</h3><small>월말 페이백 · 중고반납 · 제휴카드 · 유지조건을 자동 추적합니다.</small></div><button class="btn" onclick="loadAlerts()">알림 새로고침</button></div>
   <div class="alert-summary">
-   <div class="alert-sum"><span>월말 페이백 예정</span><b id="alertPayback">0원</b></div>
-   <div class="alert-sum"><span>중고 반납 14일 초과</span><b id="alertUsed">0건</b></div>
-   <div class="alert-sum"><span>제휴카드 도래/초과</span><b id="alertCard">0건</b></div>
-   <div class="alert-sum"><span>요금제·보험·부가 도래</span><b id="alertMaintenance">0건</b></div>
+   <div class="alert-sum drill-card" data-route="payback" tabindex="0"><span>월말 페이백 예정</span><b id="alertPayback">0원</b></div>
+   <div class="alert-sum drill-card" data-route="used" tabindex="0"><span>중고 반납 14일 초과</span><b id="alertUsed">0건</b></div>
+   <div class="alert-sum drill-card" data-route="affiliate" tabindex="0"><span>제휴카드 도래/초과</span><b id="alertCard">0건</b></div>
+   <div class="alert-sum drill-card" data-route="alerts" tabindex="0"><span>요금제·보험·부가 도래</span><b id="alertMaintenance">0건</b></div>
   </div>
   <div class="alert-list" id="opsAlertList"><div class="alert-empty">도래한 알림이 없습니다.</div></div>
  </div>
@@ -194,11 +204,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  <div class="card" style="padding:16px;margin-bottom:16px">
   <div class="table-top"><div><b>자금 방어 현황</b><div style="font-size:9px;color:#6c7788;margin-top:3px">장부상 이익과 실제 현금잔고를 분리해서 봅니다.</div></div><button class="btn" onclick="go('cash')">자금관리 열기</button></div>
   <div class="summary" style="margin:0">
-   <div class="box"><span>현재 가용자금</span><strong id="dCashAvailable">0원</strong></div>
-   <div class="box"><span>이번달 말 정산입금</span><strong id="dCashSettlement">0원</strong></div>
-   <div class="box"><span>남은 비용원장 지출</span><strong id="dCashExpenses">0원</strong><small id="dCashExpensesDetail" style="display:block;color:#6c7788;margin-top:4px">고정·유동·카드 포함</small></div>
-   <div class="box"><span>월말 예상잔고</span><strong id="dCashProjected">0원</strong></div>
-   <div class="box"><span>추가 확보 필요</span><strong id="dCashGap">0원</strong></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>현재 가용자금</span><strong id="dCashAvailable">0원</strong></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>이번달 말 정산입금</span><strong id="dCashSettlement">0원</strong></div>
+   <div class="box drill-card" data-route="expenses" tabindex="0"><span>남은 비용원장 지출</span><strong id="dCashExpenses">0원</strong><small id="dCashExpensesDetail" style="display:block;color:#6c7788;margin-top:4px">고정·유동·카드 포함</small></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>월말 예상잔고</span><strong id="dCashProjected">0원</strong></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>추가 확보 필요</span><strong id="dCashGap">0원</strong></div>
   </div>
  </div>
 
@@ -211,12 +221,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
    <button class="btn" onclick="go('cash')">자금 상세보기</button>
   </div>
   <div class="summary" style="margin:0">
-   <div class="box"><span>이번달 현재 W매출</span><strong id="survivalCurrent">0원</strong></div>
-   <div class="box"><span>이번달 목표매출</span><strong id="survivalTarget">0원</strong></div>
-   <div class="box"><span>생존 마감매출</span><strong id="survivalRequired">0원</strong><small id="survivalRate" style="display:block;color:#6c7788;margin-top:4px">급여율 반영</small></div>
-   <div class="box"><span>앞으로 더 필요한 W매출</span><strong id="survivalAdditional">0원</strong></div>
-   <div class="box"><span>보수적 안전 마감선</span><strong id="survivalSafe">0원</strong><small id="survivalSafeRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>현재 목표의 안전여유</span><strong id="survivalHeadroom">0원</strong></div>
+   <div class="box drill-card" data-route="ledger" tabindex="0"><span>이번달 현재 W매출</span><strong id="survivalCurrent">0원</strong></div>
+   <div class="box drill-card" data-route="targets" tabindex="0"><span>이번달 목표매출</span><strong id="survivalTarget">0원</strong></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>생존 마감매출</span><strong id="survivalRequired">0원</strong><small id="survivalRate" style="display:block;color:#6c7788;margin-top:4px">급여율 반영</small></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>앞으로 더 필요한 W매출</span><strong id="survivalAdditional">0원</strong></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>보수적 안전 마감선</span><strong id="survivalSafe">0원</strong><small id="survivalSafeRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box drill-card" data-route="targets" tabindex="0"><span>현재 목표의 안전여유</span><strong id="survivalHeadroom">0원</strong></div>
   </div>
   <div id="survivalMessage" style="margin-top:12px;padding:12px 14px;border-radius:12px;background:#f5f7f9;font-size:10px;line-height:1.6;color:#4f5d6b"></div>
  </div>
@@ -227,13 +237,13 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
    <div class="toolbar"><input id="survivalPlanSalesMonth" type="month" onchange="loadBreakEven()"><button class="btn" onclick="go('targets')">목표 설정</button></div>
   </div>
   <div class="summary" style="margin:0">
-   <div class="box"><span>기준 매출월 W매출</span><strong id="bepBooked">0원</strong></div>
-   <div class="box"><span>기준 매출월 목표</span><strong id="bepTarget">미설정</strong><small id="bepTargetNote" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>다음달 비용 + 광고</span><strong id="bepCost">0원</strong><small id="bepCostNote" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>다음달 생존 최소 W매출</span><strong id="bepExpected">0원</strong><small id="bepRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>보수적 안전선</span><strong id="bepSafe">0원</strong><small id="bepSafeRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
-   <div class="box"><span>마지노선까지 부족</span><strong id="bepGap">0원</strong></div>
-   <div class="box"><span>목표까지 부족</span><strong id="bepTargetGap">-</strong></div>
+   <div class="box drill-card" data-route="ledger" tabindex="0"><span>기준 매출월 W매출</span><strong id="bepBooked">0원</strong></div>
+   <div class="box drill-card" data-route="targets" tabindex="0"><span>기준 매출월 목표</span><strong id="bepTarget">미설정</strong><small id="bepTargetNote" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box drill-card" data-route="expenses" tabindex="0"><span>다음달 비용 + 광고</span><strong id="bepCost">0원</strong><small id="bepCostNote" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>다음달 생존 최소 W매출</span><strong id="bepExpected">0원</strong><small id="bepRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>보수적 안전선</span><strong id="bepSafe">0원</strong><small id="bepSafeRate" style="display:block;color:#6c7788;margin-top:4px"></small></div>
+   <div class="box drill-card" data-route="cash" tabindex="0"><span>마지노선까지 부족</span><strong id="bepGap">0원</strong></div>
+   <div class="box drill-card" data-route="targets" tabindex="0"><span>목표까지 부족</span><strong id="bepTargetGap">-</strong></div>
   </div>
   <div id="bepMessage" style="margin-top:12px;padding:11px 13px;border-radius:12px;background:#f5f7f9;font-size:10px;line-height:1.55;color:#5d6978"></div>
   <div class="table-card" style="margin-top:12px;border:1px solid var(--line);box-shadow:none">
@@ -276,15 +286,15 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   </div>
  </div>
  <div class="kpis">
-  <div class="kpi"><span>월 누적 매출</span><strong id="dMargin">0원</strong><small id="dUnits">판매 0대</small></div>
-  <div class="kpi" id="samePeriodCard"><span>지난달 이맘때 대비</span><strong id="dSameDelta">-</strong><small id="dPrevSame">지난달 동일기간 0원</small></div>
-  <div class="kpi good"><span>월 순손익</span><strong id="dNet">0원</strong><small>매출 - 광고비 - 기타비용 - 자동급여</small></div>
-  <div class="kpi"><span>월 총지출</span><strong id="dExpense">0원</strong><small id="dExpenseDetail">광고 0원 · 비용 0원</small></div>
-  <div class="kpi"><span>자동계산 급여</span><strong id="dPayroll">0원</strong><small id="dPayrollDetail">담당자별 급여율 기준</small></div>
-  <div class="kpi"><span>연간 누적 매출</span><strong id="dYearMargin">0원</strong><small id="dYearGoalText">연간 목표 미설정</small></div>
-  <div class="kpi"><span>연간 목표 달성률</span><strong id="dYearPct">0.0%</strong><small>올해 누적 기준</small></div>
-  <div class="kpi"><span>전월 대비 성장률</span><strong id="dMoMGrowth">-</strong><small id="dPrevMonth">전월 0원</small></div>
-  <div class="kpi"><span>광고비</span><strong id="dAds">0원</strong><small id="dRoas">ROAS 계산 대기</small></div>
+  <div class="kpi drill-card" data-route="ledger" tabindex="0"><span>월 누적 매출</span><strong id="dMargin">0원</strong><small id="dUnits">판매 0대</small></div>
+  <div class="kpi drill-card" data-route="report" tabindex="0" id="samePeriodCard"><span>지난달 이맘때 대비</span><strong id="dSameDelta">-</strong><small id="dPrevSame">지난달 동일기간 0원</small></div>
+  <div class="kpi good drill-card" data-route="cash" tabindex="0"><span>월 순손익</span><strong id="dNet">0원</strong><small>매출 - 광고비 - 기타비용 - 자동급여</small></div>
+  <div class="kpi drill-card" data-route="expenses" tabindex="0"><span>월 총지출</span><strong id="dExpense">0원</strong><small id="dExpenseDetail">광고 0원 · 비용 0원</small></div>
+  <div class="kpi drill-card" data-route="settings" tabindex="0"><span>자동계산 급여</span><strong id="dPayroll">0원</strong><small id="dPayrollDetail">담당자별 급여율 기준</small></div>
+  <div class="kpi drill-card" data-route="report" tabindex="0"><span>연간 누적 매출</span><strong id="dYearMargin">0원</strong><small id="dYearGoalText">연간 목표 미설정</small></div>
+  <div class="kpi drill-card" data-route="targets" tabindex="0"><span>연간 목표 달성률</span><strong id="dYearPct">0.0%</strong><small>올해 누적 기준</small></div>
+  <div class="kpi drill-card" data-route="report" tabindex="0"><span>전월 대비 성장률</span><strong id="dMoMGrowth">-</strong><small id="dPrevMonth">전월 0원</small></div>
+  <div class="kpi drill-card" data-route="ads" tabindex="0"><span>광고비</span><strong id="dAds">0원</strong><small id="dRoas">ROAS 계산 대기</small></div>
  </div>
  <div class="grid2">
   <div class="chart card"><h3>이번 달 누적 실적 vs 목표</h3><p>일별 누적 최종마진과 목표 페이스</p><canvas id="goalChart"></canvas></div>
@@ -297,6 +307,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
     <button class="btn seller-month-step" type="button" onclick="shiftSellerPerfMonth(-1)">◀ 이전월</button>
     <input id="sellerPerfMonth" type="month" onchange="loadSellerPerformanceMonth()">
     <button class="btn seller-month-step" type="button" onclick="shiftSellerPerfMonth(1)">다음월 ▶</button>
+    <button class="btn" type="button" onclick="openSellerLedgerDetail()">상세 장부보기</button>
    </div>
   </div>
   <div class="table-wrap"><table><thead><tr><th>판매자</th><th>판매대수</th><th>유심단독</th><th>동판</th><th>약갱</th><th>번들</th><th>총매출</th><th>평균마진</th><th>급여율</th><th>예상급여</th><th>매출비중</th></tr></thead><tbody id="sellerPerfBody"></tbody></table></div>
@@ -603,7 +614,74 @@ function closeMobileMenu(){
  $('mobileMenuBackdrop')?.classList.remove('show');
 }
 
-function go(p){closeMobileMenu();localStorage.setItem('jk-active-page',p);document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p).classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=titles[p]||'정권통신';window.scrollTo({top:0,behavior:'smooth'});if(p==='alerts')loadAlertCenter();if(p==='report')loadReport();if(p==='used')loadUsed();if(p==='payback')loadPayback();if(p==='affiliate')loadAffiliate();if(p==='ads')loadAds();if(p==='expenses')loadExpenses();if(p==='cash')loadCashflow();if(p==='sources')loadSources();if(p==='settings')loadSettings();if(p==='targets')loadDashboard()}
+function updateNavigationChrome(p){
+ const back=$('detailBackBtn'),home=$('mobileHomeBtn');
+ if(back)back.classList.toggle('show',p!=='dashboard');
+ if(home)home.style.display=p==='dashboard'?'inline-flex':'none';
+}
+function routeUrl(p){
+ const u=new URL(location.href);
+ u.searchParams.set('page',p);
+ return u.pathname+u.search+u.hash;
+}
+function go(p,opts={}){
+ closeMobileMenu();
+ if(!$('page-'+p))return;
+ const push=opts.push!==false;
+ const current=document.querySelector('.page.active')?.id?.replace('page-','')||'dashboard';
+ if(push&&current!==p){
+   const depth=Number(history.state?.jkDepth||0)+1;
+   history.pushState({jk:true,page:p,jkDepth:depth},'',routeUrl(p));
+ }else if(opts.replace){
+   history.replaceState({jk:true,page:p,jkDepth:Number(history.state?.jkDepth||0)},'',routeUrl(p));
+ }
+ localStorage.setItem('jk-active-page',p);
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+ $('page-'+p).classList.add('active');
+ document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));
+ $('pageTitle').textContent=titles[p]||'정권통신';
+ updateNavigationChrome(p);
+ window.scrollTo({top:0,behavior:opts.instant?'auto':'smooth'});
+ if(p==='alerts')loadAlertCenter();
+ if(p==='report')loadReport();
+ if(p==='used')loadUsed();
+ if(p==='payback')loadPayback();
+ if(p==='affiliate')loadAffiliate();
+ if(p==='ads')loadAds();
+ if(p==='expenses')loadExpenses();
+ if(p==='cash')loadCashflow();
+ if(p==='sources')loadSources();
+ if(p==='settings')loadSettings();
+ if(p==='targets')loadDashboard();
+}
+function navigateBack(){
+ const p=document.querySelector('.page.active')?.id?.replace('page-','')||'dashboard';
+ if(p==='dashboard')return;
+ if(Number(history.state?.jkDepth||0)>0)history.back();
+ else go('dashboard',{push:false,replace:true});
+}
+window.addEventListener('popstate',e=>{
+ const p=e.state?.page||new URLSearchParams(location.search).get('page')||'dashboard';
+ if($('page-'+p))go(p,{push:false,instant:true});
+});
+document.addEventListener('click',e=>{
+ const card=e.target.closest('[data-route]');
+ if(!card)return;
+ if(e.target.closest('button,input,select,textarea,a'))return;
+ go(card.dataset.route);
+});
+document.addEventListener('keydown',e=>{
+ if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-route]')){
+   e.preventDefault();
+   go(e.target.dataset.route);
+ }
+});
+function openSellerLedgerDetail(){
+ const m=$('sellerPerfMonth')?.value||mk(now);
+ if($('ledgerMonth'))$('ledgerMonth').value=m;
+ go('ledger');
+ setTimeout(()=>{if($('ledgerMonth')){$('ledgerMonth').value=m;loadLedger()}},0);
+}
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function showLogin(){$('loginBg').classList.add('show')}
@@ -619,7 +697,7 @@ window.addEventListener('beforeunload',e=>{
  }
 });
 async function resetPasswordPrompt(){const p1=prompt('새 비밀번호를 입력하세요.');if(!p1)return;const p2=prompt('새 비밀번호를 다시 입력하세요.');if(p1!==p2){alert('비밀번호가 다릅니다.');return}const {error}=await sb.auth.updateUser({password:p1});alert(error?error.message:'비밀번호 변경 완료');if(!error)hideLogin()}
-async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){showLogin();return}await loadAll();const requested=new URLSearchParams(location.search).get('page');const saved=(requested&&$('page-'+requested))?requested:(localStorage.getItem('jk-active-page')||'dashboard');if($('page-'+saved))go(saved);if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
+async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){showLogin();return}await loadAll();const requested=new URLSearchParams(location.search).get('page');const saved=(requested&&$('page-'+requested))?requested:(localStorage.getItem('jk-active-page')||'dashboard');if(!history.state?.jk){history.replaceState({jk:true,page:'dashboard',jkDepth:0},'',routeUrl('dashboard'));if(saved!=='dashboard')go(saved,{push:true,instant:true});else go('dashboard',{push:false,instant:true})}else{go(saved,{push:false,instant:true})}if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
 
 function opt(type){return state.options.filter(x=>x.option_type===type&&x.active).sort((a,b)=>a.sort_order-b.sort_order)}
 function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">${esc(x.label)}</option>`).join('')}

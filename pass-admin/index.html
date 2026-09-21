@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PASS 관리자">
-<link rel="manifest" href="./manifest.webmanifest?v=4">
+<link rel="manifest" href="./manifest.webmanifest?v=5">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./icon.svg">
 <title>하이×정권 PASS 관리자</title>
@@ -22,54 +22,9 @@ iframe{position:fixed;inset:0;width:100%;height:100%;height:100dvh;border:0;back
 <iframe id="adminFrame" title="하이×정권 PASS 관리자" allow="clipboard-read; clipboard-write"></iframe>
 <script>
 const ADMIN_URL='../admin.html?app=1';
-const LOCK_AFTER_BACKGROUND_MS=10*60*1000;
-const AUTH_LOCAL_KEYS=[
-  'hiJeonggwonAdminSessionV8',
-  'hiJeonggwonAdminPwBackupV8'
-];
-const AUTH_SESSION_KEYS=[
-  'hiJeonggwonAdminPw',
-  'hiJeonggwonRole',
-  'hiJeonggwonStaff'
-];
-let hiddenAt=0;
-
-function clearAdminAuth(){
-  try{AUTH_LOCAL_KEYS.forEach(k=>localStorage.removeItem(k));}catch(e){}
-  try{AUTH_SESSION_KEYS.forEach(k=>sessionStorage.removeItem(k));}catch(e){}
-  try{
-    const w=document.getElementById('adminFrame').contentWindow;
-    if(w){
-      AUTH_LOCAL_KEYS.forEach(k=>w.localStorage.removeItem(k));
-      AUTH_SESSION_KEYS.forEach(k=>w.sessionStorage.removeItem(k));
-    }
-  }catch(e){}
-}
-
-function lockAndReload(){
-  clearAdminAuth();
-  document.getElementById('adminFrame').src=ADMIN_URL+'&lock='+Date.now();
-}
-
-// 앱을 새로 실행하거나 페이지 자체를 다시 열면 인증은 새로 받는다.
-clearAdminAuth();
-document.getElementById('adminFrame').src=ADMIN_URL+'&start='+Date.now();
-
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){
-    hiddenAt=Date.now();
-    return;
-  }
-  if(hiddenAt && Date.now()-hiddenAt>=LOCK_AFTER_BACKGROUND_MS){
-    lockAndReload();
-  }
-  hiddenAt=0;
-});
-
-window.addEventListener('pagehide',()=>{
-  // 앱/탭이 실제로 종료되는 경우 다음 실행 때 자동로그인 정보가 남지 않도록 제거
-  clearAdminAuth();
-});
+// PWA 세션이 살아 있는 동안 로그인 유지.
+// 새로고침은 sessionStorage를 유지하므로 다시 비밀번호를 묻지 않는다.
+document.getElementById('adminFrame').src=ADMIN_URL;
 
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{

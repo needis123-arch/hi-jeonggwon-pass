@@ -1,0 +1,19 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'kr.co.hirealty.personalcenter',
+  appName: 'PERSONAL CENTER',
+  webDir: 'www',
+  server: {
+    url: 'https://needis123-arch.github.io/hi-jeonggwon-pass/personal-center.html?app=android',
+    cleartext: false,
+    allowNavigation: [
+      'needis123-arch.github.io'
+    ]
+  },
+  android: {
+    backgroundColor: '#f4f6f8'
+  }
+};
+
+export default config;

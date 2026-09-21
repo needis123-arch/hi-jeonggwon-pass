@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.10</title>
+<title>PERSONAL CENTER V2.11</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -104,12 +104,57 @@
 .toss-preview{display:grid;gap:7px;margin-top:10px}.toss-preview-row{display:grid;grid-template-columns:135px 1fr 100px auto;gap:8px;align-items:center;border:1px solid #e2e7df;background:#fff;border-radius:11px;padding:8px}.toss-preview-row input{width:100%;border:1px solid #d8dfe2;border-radius:8px;padding:7px 8px}.toss-preview-row small{font-size:8px;color:var(--muted)}
 .daily-spend-cal{font-weight:1000!important}.daily-spend-cal.good{background:#edf9df!important;color:#39790c!important;border-color:#cde7aa!important}.daily-spend-cal.warn{background:#fff5df!important;color:#946000!important;border-color:#f3d18b!important}.daily-spend-cal.bad{background:#fff0f2!important;color:#b12239!important;border-color:#f1b8c1!important}
 @media(max-width:800px){.toss-summary{grid-template-columns:1fr 1fr}.toss-preview-row{grid-template-columns:1fr 1fr}.toss-preview-row small{grid-column:1/-1}}
+
+/* V2.11 fold/mobile width hardening */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body,.app,.content,.page{min-width:0;max-width:100%}
+.page>*{min-width:0;max-width:100%}
+.calendar,.calgrid{min-width:0;max-width:100%;width:100%}
+.event-dialog{
+ width:min(620px,calc(100vw - 16px))!important;
+ max-width:calc(100vw - 16px)!important;
+ max-height:calc(100dvh - 16px);
+ margin:auto!important;
+ padding:0;
+ overflow:auto;
+ box-sizing:border-box;
+}
+.event-dialog *{box-sizing:border-box;min-width:0}
+.event-dialog input,.event-dialog select,.event-dialog textarea{max-width:100%;min-width:0}
+@media(max-width:900px){
+ .content{min-width:0;max-width:100%;overflow-x:hidden;padding-left:8px;padding-right:8px}
+ .quick-task{grid-template-columns:minmax(0,1fr) 120px auto;gap:7px;padding:10px}
+ .quick-task-title{grid-column:1/-1;min-width:0}
+ .quick-task input,.quick-task select,.quick-task .btn{min-width:0;max-width:100%}
+ .calendar{overflow:hidden;padding:10px 6px}
+ .calhead{margin-bottom:8px}
+ .calgrid{grid-template-columns:repeat(7,minmax(0,1fr))!important}
+ .dow,.day{min-width:0;overflow:hidden}
+ .dow{padding:6px 1px;font-size:7px}
+ .day{min-height:82px;padding:3px 2px}
+ .daynum{font-size:8px;margin-bottom:2px}
+ .calitem{max-width:100%;padding:2px 3px;margin-top:2px;font-size:6.5px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .calitem.eventbtn{display:block}
+ .schedule-check{width:10px;height:10px;margin-right:2px;font-size:6px;border-radius:3px}
+ .calitem.eventbtn button{max-width:calc(100% - 13px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+ .event-dialog-head{padding:14px 12px}.event-dialog-head h3{font-size:15px}
+ .event-dialog-body{padding:14px 12px;gap:10px}
+ .event-dialog-foot{padding:12px;gap:7px}
+ .event-dialog .formgrid,#quickScheduleDialog .formgrid,#debtPaymentDialog .formgrid,#eventDialog .formgrid{grid-template-columns:1fr!important}
+ .event-task-add{grid-template-columns:1fr!important}
+}
+@media(max-width:620px){
+ .quick-task{grid-template-columns:1fr 105px auto}
+ .quick-task #taskTitle{grid-column:1/-1}
+ .event-dialog{width:calc(100vw - 10px)!important;max-width:calc(100vw - 10px)!important;border-radius:16px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.10</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.11</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -1562,7 +1607,7 @@ function renderCalendar(){
  state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d&&!isCardMethod(r.payment_method)).forEach(r=>items.push('<span class="calitem money" onclick="event.stopPropagation()">-'+esc(r.name)+' '+won(r.amount)+'</span>'));
  personalDebts().filter(x=>+x.payment_day===d).forEach(x=>items.push('<span class="calitem money" onclick="event.stopPropagation()">대출 '+esc(x.name)+' '+won(x.min_payment)+'</span>'));
  h+='<div class="day '+(date===today?'today':'')+'" onclick="openQuickSchedule(\''+date+'\')"><div class="daynum">'+d+' <span style="color:#9aa4b1;font-weight:500">＋</span></div>'+items.slice(0,6).join('')+(items.length>6?'<span class="calitem" onclick="event.stopPropagation()">+'+(items.length-6)+'개</span>':'')+'</div>'}
- $('calendarGrid').innerHTML=h
+ $('calendarGrid').innerHTML=h;renderNativeBoardStatus()
 }
 function renderGoals(){
  $('goalCards').innerHTML=state.goals.length?state.goals.map(g=>{const p=+g.target_value?Math.min(100,+g.current_value/+g.target_value*100):0;return '<div class="panel card"><h3>'+esc(g.title)+'</h3><p>'+(g.target_date?'목표일 '+g.target_date:'목표일 미정')+'</p><div style="font-size:24px;font-weight:1000">'+won(g.current_value)+'</div><small style="color:var(--muted)">/ '+won(g.target_value)+'</small><div class="meter"><div class="meterline"><span>진행률</span><b>'+p.toFixed(1)+'%</b></div><div class="bar"><i style="width:'+p+'%"></i></div></div><div style="margin-top:12px"><button class="btn mini" onclick="updateGoal(\''+g.id+'\','+Number(g.current_value||0)+')">현재값 수정</button> <button class="btn mini danger" onclick="disableGoal(\''+g.id+'\')">삭제</button></div></div>'}).join(''):'<div class="panel card"><div class="empty">첫 5년 목표를 추가하세요.</div></div>'
@@ -1585,11 +1630,13 @@ function nativeNotifications(){
   return window.Capacitor?.Plugins?.LocalNotifications||null
  }catch{return null}
 }
+function isAndroidAppShell(){
+ try{return !!window.Capacitor?.isNativePlatform?.()||new URLSearchParams(location.search).get('app')==='android'}catch{return false}
+}
 function nativeTodayBoard(){
  try{
-  if(!window.Capacitor?.isNativePlatform?.())return null;
-  if(window.Capacitor?.isPluginAvailable&&!window.Capacitor.isPluginAvailable('TodayBoard'))return null;
-  if(!nativeTodayBoardProxy&&window.Capacitor?.registerPlugin)nativeTodayBoardProxy=window.Capacitor.registerPlugin('TodayBoard');
+  if(!window.Capacitor?.isNativePlatform?.()||!window.Capacitor?.registerPlugin)return null;
+  if(!nativeTodayBoardProxy)nativeTodayBoardProxy=window.Capacitor.registerPlugin('TodayBoard');
   return nativeTodayBoardProxy
  }catch{return null}
 }
@@ -1651,7 +1698,7 @@ async function applyNativeBoardCompletions(board){
  }catch(e){console.warn('native completed queue',e)}
 }
 async function syncNativeNotifications(){
- if(nativeNotifSyncBusy||!state.user)return;const board=nativeTodayBoard();if(!board)return;
+ if(nativeNotifSyncBusy||!state.user)return;const board=nativeTodayBoard();if(!board){renderNativeBoardStatus({error:'bridge_missing'});return}
  nativeNotifSyncBusy=true;
  try{
   const ok=await ensureNativeNotificationPermission();if(!ok)return;
@@ -1663,8 +1710,9 @@ async function syncNativeNotifications(){
 }
 function renderNativeBoardStatus(info={}){
  const panel=$('nativeBoardPanel'),el=$('nativeBoardStatus');if(!panel||!el)return;
- const board=nativeTodayBoard();panel.style.display=board?'block':'none';if(!board)return;
- if(info.error){el.textContent='고정판 연결 오류 · 앱 업데이트 필요';el.style.color='var(--bad)';return}
+ const appShell=isAndroidAppShell(),board=nativeTodayBoard();panel.style.display=appShell?'block':'none';if(!appShell)return;
+ if(!board){el.textContent='네이티브 고정판 미연결 · 최신 APK로 업데이트 필요';el.style.color='var(--bad)';return}
+ if(info.error){el.textContent='고정판 연결 오류 · 최신 APK로 업데이트 필요';el.style.color='var(--bad)';return}
  const enabled=info.notificationsEnabled!==false,count=Number(info.count??nativeBoardItems().filter(x=>x.date===today).length);
  el.textContent=(enabled?'알림 허용':'알림 권한 꺼짐')+' · 오늘 고정판 '+count+'개 항목 · 10:30 / 13:00 / 17:00 / 20:00 / 22:00';
  el.style.color=enabled?'':'var(--bad)'

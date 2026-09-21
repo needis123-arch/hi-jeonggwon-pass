@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.7</title>
+<title>PERSONAL CENTER V2.8</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -68,7 +68,13 @@
 .mobile{display:none}
 @media(max-width:1150px){.kpis{grid-template-columns:repeat(3,1fr)}.formgrid{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}.hero-grid{grid-template-columns:1fr}}
 @media(max-width:900px){body{padding-bottom:72px}.app{grid-template-columns:1fr}.side{display:none}.content{padding:15px 15px 88px}.top{height:66px;padding:0 13px}.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.hero .need{font-size:32px}.formgrid{grid-template-columns:1fr 1fr}.mobile{position:fixed;bottom:0;left:0;right:0;height:68px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);z-index:100;display:grid;grid-template-columns:repeat(6,1fr);padding:5px 6px}.mobile button{border:0;background:transparent;font-size:9px;font-weight:900;color:#687382;border-radius:10px}.mobile button.active{background:#f2f5f7;color:#111}.day{min-height:90px}.toast{bottom:82px}}
-@media(max-width:560px){.quick-task{grid-template-columns:1fr 110px auto}.quick-task-title{grid-column:1/-1}.kpis{grid-template-columns:1fr 1fr}.hero-side{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}.actions .btn.hide-sm{display:none}.calgrid{min-width:730px}.calendar{overflow:auto}.content{padding-left:10px;padding-right:10px}}
+@media(max-width:560px){
+ .quick-task{grid-template-columns:1fr 110px auto}.quick-task-title{grid-column:1/-1}.kpis{grid-template-columns:1fr 1fr}.hero-side{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}.actions .btn.hide-sm{display:none}.content{padding-left:8px;padding-right:8px;min-width:0}
+ .calendar{overflow:hidden;padding:10px 7px}.calhead{margin-bottom:8px}.calhead b{font-size:13px}.calgrid{width:100%;min-width:0;grid-template-columns:repeat(7,minmax(0,1fr))}
+ .dow,.day{min-width:0}.dow{padding:6px 1px;font-size:7px}.day{min-height:78px;padding:3px 2px;overflow:hidden}.daynum{font-size:8px;margin-bottom:2px}.daynum span{font-size:7px!important}
+ .calitem{max-width:100%;padding:2px 3px;margin-top:2px;border-radius:5px;font-size:6.4px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .calitem.eventbtn{display:block}.schedule-check{width:10px;height:10px;margin-right:2px;font-size:6px;border-radius:3px}.calitem.eventbtn button{max-width:calc(100% - 13px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+}
 
 /* V2.4 navigation + priority + floating AI */
 .priority-strip{background:linear-gradient(90deg,#f7ffea,#fff);border:1px solid #d9e8bd;box-shadow:0 7px 20px rgba(92,130,42,.07)}
@@ -103,7 +109,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.7</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.8</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -1577,31 +1583,38 @@ function nativeNotificationId(key){
  let h=2166136261;for(let i=0;i<key.length;i++){h^=key.charCodeAt(i);h=Math.imul(h,16777619)}
  return Math.abs(h%1900000000)+100000
 }
-function nativeDateTime(dateStr,time='08:00',stagger=0){
- const [y,m,d]=dateStr.split('-').map(Number),[hh,mm]=String(time||'08:00').slice(0,5).split(':').map(Number);
- let dt=new Date(y,m-1,d,Number.isFinite(hh)?hh:8,Number.isFinite(mm)?mm:0,0,0);
- if(dt.getTime()<=Date.now()+2000&&dateStr===ymd(new Date()))dt=new Date(Date.now()+3500+stagger*900);
+function nativeDateTime(dateStr,time='10:30',stagger=0){
+ const [y,m,d]=dateStr.split('-').map(Number),[hh,mm]=String(time||'10:30').slice(0,5).split(':').map(Number);
+ const dt=new Date(y,m-1,d,Number.isFinite(hh)?hh:10,Number.isFinite(mm)?mm:30,0,0);
+ if(stagger)dt.setSeconds(Math.min(50,stagger*4));
  return dt
 }
 function nativeRangeDays(days=7){
  const out=[];for(let i=0;i<days;i++){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+i);out.push(ymd(d))}return out
 }
+const NATIVE_REMINDER_TIMES=['10:30','13:00','17:00','20:00','22:00'];
+function nativeActionItem(base){
+ return NATIVE_REMINDER_TIMES.map((time,slot)=>({...base,time,slot,key:base.key+':'+time.replace(':','')}));
+}
 function nativeReminderItems(){
  const dates=nativeRangeDays(7),from=dates[0],to=dates[dates.length-1],items=[];
- state.tasks.filter(x=>x.status==='pending'&&x.due_date>=from&&x.due_date<=to).forEach(x=>items.push({key:'task:'+x.id,date:x.due_date,time:'08:00',title:'오늘 할 일',body:x.title,kind:'task',itemId:x.id,page:'calendar',check:true,priority:x.priority||'normal'}));
- state.events.filter(x=>x.status==='pending'&&x.event_date>=from&&x.event_date<=to).forEach(x=>items.push({key:'event:'+x.id,date:x.event_date,time:'08:05',title:'오늘 일정',body:x.title,kind:'event',itemId:x.id,page:'calendar',check:true,priority:x.priority||'normal'}));
- dates.forEach(ds=>state.routines.filter(r=>r.active&&routineApplies(r,ds)&&!(ds===today&&routineDone(r.id,ds))).forEach(r=>items.push({key:'routine:'+r.id+':'+ds,date:ds,time:r.target_time?String(r.target_time).slice(0,5):'09:00',title:'업무 루틴',body:r.title,kind:'routine',itemId:r.id,page:'routines',check:true,priority:r.priority||'normal'})));
- // Card confirmation input reminders
- dates.forEach(ds=>{
-  const dd=new Date(ds+'T00:00:00').getDate(),last=new Date(new Date(ds+'T00:00:00').getFullYear(),new Date(ds+'T00:00:00').getMonth()+1,0).getDate();
-  state.cards.forEach(card=>{if(card.confirmation_day&&Math.min(Number(card.confirmation_day),last)===dd)items.push({key:'card-confirm:'+card.id+':'+ds,date:ds,time:'19:00',title:'카드 확정금액 입력',body:card.card_name+' 확정금액을 PERSONAL CENTER에 입력하세요.',kind:'reminder',page:'money',check:false})})
+ state.tasks.filter(x=>x.status==='pending'&&x.due_date>=from&&x.due_date<=to).forEach(x=>{
+  items.push(...nativeActionItem({key:'task:'+x.id+':'+x.due_date,date:x.due_date,title:'오늘 할 일 · 미완료',body:x.title+' · 완료하면 이후 알림은 멈춥니다.',kind:'task',itemId:x.id,page:'calendar',check:true,priority:x.priority||'normal',completionKey:'task:'+x.id+':'+x.due_date}))
  });
- // Balance check reminder
+ state.events.filter(x=>x.status==='pending'&&x.event_date>=from&&x.event_date<=to).forEach(x=>{
+  items.push(...nativeActionItem({key:'event:'+x.id+':'+x.event_date,date:x.event_date,title:'오늘 일정 · 미완료',body:x.title+' · 완료하면 이후 알림은 멈춥니다.',kind:'event',itemId:x.id,page:'calendar',check:true,priority:x.priority||'normal',completionKey:'event:'+x.id+':'+x.event_date}))
+ });
+ dates.forEach(ds=>state.routines.filter(r=>r.active&&routineApplies(r,ds)&&!(ds===today&&routineDone(r.id,ds))).forEach(r=>{
+  items.push(...nativeActionItem({key:'routine:'+r.id+':'+ds,date:ds,title:'업무 루틴 · 미완료',body:r.title+' · 완료하면 이후 알림은 멈춥니다.',kind:'routine',itemId:r.id,page:'routines',check:true,priority:r.priority||'normal',completionKey:'routine:'+r.id+':'+ds}))
+ }));
+ // 입력형 알림은 고정 시간대 중 저녁 8시에 1회만 띄웁니다.
+ dates.forEach(ds=>{
+  const dt=new Date(ds+'T00:00:00'),dd=dt.getDate(),last=new Date(dt.getFullYear(),dt.getMonth()+1,0).getDate();
+  state.cards.forEach(card=>{if(card.confirmation_day&&Math.min(Number(card.confirmation_day),last)===dd)items.push({key:'card-confirm:'+card.id+':'+ds,date:ds,time:'20:00',title:'카드 확정금액 입력',body:card.card_name+' 확정금액을 PERSONAL CENTER에 입력하세요.',kind:'reminder',page:'money',check:false})});
+  if(dt.getDay()===0)items.push({key:'toss-week:'+ds,date:ds,time:'20:00',title:'토스 주간 소비 입력',body:'지난 7일 토스 소비 캡처를 올리고 인식 결과를 저장하세요.',kind:'reminder',page:'money',check:false});
+  if(dd===last)items.push({key:'month-income:'+ds,date:ds,time:'20:00',title:'이번 달 실제 수익 입력',body:'하이·레이·정권·직접 수익을 확정해서 입력하세요.',kind:'reminder',page:'dashboard',check:false})
+ });
  const bal=nextBalanceCheckDate();if(bal&&bal>=from&&bal<=to)items.push({key:'balance:'+bal,date:bal,time:'20:00',title:'7일 잔고 점검',body:'계좌 실제 잔고를 확인하고 PERSONAL CENTER 잔고를 업데이트하세요.',kind:'reminder',page:'money',check:false});
- // Weekly Toss capture: Sunday 19:00
- dates.forEach(ds=>{if(new Date(ds+'T00:00:00').getDay()===0)items.push({key:'toss-week:'+ds,date:ds,time:'19:00',title:'토스 주간 소비 입력',body:'지난 7일 토스 소비 캡처를 올리고 인식 결과를 저장하세요.',kind:'reminder',page:'money',check:false})});
- // Month-end income entry
- dates.forEach(ds=>{const dt=new Date(ds+'T00:00:00');if(dt.getDate()===new Date(dt.getFullYear(),dt.getMonth()+1,0).getDate())items.push({key:'month-income:'+ds,date:ds,time:'19:30',title:'이번 달 실제 수익 입력',body:'하이·레이·정권·직접 수익을 확정해서 입력하세요.',kind:'reminder',page:'dashboard',check:false})});
  return items
 }
 async function initNativeNotifications(){
@@ -1620,8 +1633,17 @@ async function initNativeNotifications(){
   nativeNotifListenerReady=true;return true
  }catch(e){console.warn('native notification init',e);return false}
 }
+async function cancelNativeItemNotifications(kind,id,dateStr){
+ const n=nativeNotifications();if(!n)return;
+ try{
+  const target=kind+':'+id+':'+dateStr,pending=await n.getPending();
+  const hits=(pending.notifications||[]).filter(x=>x.extra?.pcCompletionKey===target);
+  if(hits.length)await n.cancel({notifications:hits.map(x=>({id:x.id}))})
+ }catch(e){console.warn('native item cancel',e)}
+}
 async function completeNativeNotificationItem(kind,id,dateStr){
  try{
+  await cancelNativeItemNotifications(kind,id,dateStr);
   if(kind==='task'){const {error}=await sb.from('pc_tasks').update({status:'done',completed_at:new Date().toISOString()}).eq('id',id);if(error)throw error}
   else if(kind==='event'){const {error}=await sb.from('pc_calendar_events').update({status:'done',completed_at:new Date().toISOString()}).eq('id',id);if(error)throw error}
   else if(kind==='routine'){const {error}=await sb.from('pc_routine_logs').upsert({user_id:state.user.id,routine_id:id,log_date:dateStr,status:'done',completed_at:new Date().toISOString()},{onConflict:'user_id,routine_id,log_date'});if(error)throw error}
@@ -1637,13 +1659,14 @@ async function syncNativeNotifications(){
   const pending=await n.getPending().catch(()=>({notifications:[]}));
   const ours=(pending.notifications||[]).filter(x=>String(x.extra?.pcKey||'').startsWith(minePrefix));
   if(ours.length)await n.cancel({notifications:ours.map(x=>({id:x.id}))});
-  const notifications=items.map((x,i)=>({
+  const futureItems=items.map((x,i)=>({x,i,at:nativeDateTime(x.date,x.time,i%10)})).filter(v=>v.at.getTime()>Date.now()+5000);
+  const notifications=futureItems.map(({x,i,at})=>({
    id:nativeNotificationId(x.key),
    title:x.title,
    body:x.body,
-   schedule:{at:nativeDateTime(x.date,x.time,i)},
+   schedule:{at},
    actionTypeId:x.check?'PC_CHECK':'PC_OPEN',
-   extra:{pcKey:minePrefix+x.key,pcKind:x.kind,pcItemId:x.itemId||'',pcDate:x.date,pcPage:x.page||'dashboard'},
+   extra:{pcKey:minePrefix+x.key,pcKind:x.kind,pcItemId:x.itemId||'',pcDate:x.date,pcPage:x.page||'dashboard',pcCompletionKey:x.completionKey||''},
    group:'personal-center',
    iconColor:'#111318'
   }));

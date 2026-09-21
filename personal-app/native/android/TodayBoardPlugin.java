@@ -22,6 +22,31 @@ import java.util.Set;
 @CapacitorPlugin(name = "TodayBoard")
 public class TodayBoardPlugin extends Plugin {
 
+    private void ensureWidgetPromptOnce() {
+        try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
+            AppWidgetManager manager = AppWidgetManager.getInstance(getContext());
+            ComponentName provider = new ComponentName(getContext(), TodayBoardWidgetProvider.class);
+            int[] ids = manager.getAppWidgetIds(provider);
+            if (ids != null && ids.length > 0) return;
+
+            boolean prompted = getContext()
+                .getSharedPreferences("pc_today_board", android.content.Context.MODE_PRIVATE)
+                .getBoolean("widget_prompted_v1", false);
+
+            if (!prompted && manager.isRequestPinAppWidgetSupported()) {
+                boolean requested = manager.requestPinAppWidget(provider, null, null);
+                if (requested) {
+                    getContext()
+                        .getSharedPreferences("pc_today_board", android.content.Context.MODE_PRIVATE)
+                        .edit()
+                        .putBoolean("widget_prompted_v1", true)
+                        .apply();
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
     @PluginMethod
     public void sync(PluginCall call) {
         try {
@@ -32,6 +57,7 @@ public class TodayBoardPlugin extends Plugin {
             TodayBoardManager.savePayload(getContext(), itemJson, timeJson);
             TodayBoardManager.reschedule(getContext());
             TodayBoardManager.showBoard(getContext(), false);
+            ensureWidgetPromptOnce();
             JSObject ret = new JSObject();
             ret.put("ok", true);
             ret.put("count", itemJson.length());
@@ -110,11 +136,19 @@ public class TodayBoardPlugin extends Plugin {
             boolean requested = false;
             if (supported) {
                 requested = manager.requestPinAppWidget(provider, null, null);
+                if (requested) {
+                    getContext()
+                        .getSharedPreferences("pc_today_board", android.content.Context.MODE_PRIVATE)
+                        .edit()
+                        .putBoolean("widget_prompted_v1", true)
+                        .apply();
+                }
             }
 
             JSObject ret = new JSObject();
             ret.put("supported", supported);
             ret.put("requested", requested);
+            ret.put("installedCount", manager.getAppWidgetIds(provider).length);
             call.resolve(ret);
         } catch (Exception e) {
             call.reject("홈화면 위젯 추가 요청 실패", e);

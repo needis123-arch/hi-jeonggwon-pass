@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.0</title>
+<title>PERSONAL CENTER V2.1</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -48,6 +48,9 @@
 .ai-sec-message{margin-top:12px;background:#111;color:#fff;border-radius:15px;padding:15px 16px;font-size:13px;font-weight:900;line-height:1.55}.ai-sec-message small{display:block;color:#aeb7c2;font-size:8px;font-weight:700;margin-top:6px}
 .ai-action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.ai-action{border:1px solid #dfe6d8;background:#fff;border-radius:12px;padding:10px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:start}.ai-action .num{width:22px;height:22px;border-radius:7px;background:#eef7df;display:grid;place-items:center;font-size:9px;font-weight:1000}.ai-action b{font-size:9px;line-height:1.4}.ai-action small{display:block;font-size:8px;color:var(--muted);margin-top:3px;line-height:1.4}.ai-action button{border:0;background:transparent;cursor:pointer;font-size:9px;font-weight:1000;color:#4c740e;padding:2px}
 .ai-chat{margin-top:11px;border-top:1px solid #dfe7d7;padding-top:11px}.ai-chat-history{max-height:210px;overflow:auto;display:grid;gap:7px;margin-bottom:8px}.ai-msg{max-width:88%;border-radius:12px;padding:9px 11px;font-size:9px;line-height:1.55}.ai-msg.user{justify-self:end;background:#111;color:#fff}.ai-msg.assistant{justify-self:start;background:#fff;border:1px solid #dde5d7}.ai-chat-row{display:grid;grid-template-columns:1fr auto;gap:7px}.ai-chat-row input{width:100%;border:1px solid #d5ddd0;border-radius:11px;padding:10px 11px;background:#fff}.ai-quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.ai-quick button{border:1px solid #dbe3d4;background:#fff;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:900;cursor:pointer}
+.routine-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}.routine-summary .box{border:1px solid #e1e7dc;background:#fbfef8;border-radius:13px;padding:12px}.routine-summary span{font-size:8px;color:var(--muted);font-weight:900}.routine-summary b{display:block;font-size:19px;margin-top:5px}.routine-form{display:grid;grid-template-columns:1.5fr 120px 130px 120px 120px auto;gap:9px;align-items:end}.routine-days{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}.routine-days label{border:1px solid #dfe5e9;border-radius:999px;padding:5px 8px;font-size:8px;font-weight:900;display:flex;align-items:center;gap:4px;background:#fff}.routine-list{display:grid;gap:9px}.routine-card{border:1px solid #e1e6ea;border-radius:14px;padding:12px;background:#fff}.routine-card.done{background:#f8fbf5;opacity:.72}.routine-card-top{display:grid;grid-template-columns:auto 1fr auto auto;gap:9px;align-items:center}.routine-check{width:20px;height:20px;accent-color:#78ba0d}.routine-card-title input{width:100%;border:0;background:transparent;font-size:11px;font-weight:1000;padding:3px 0}.routine-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.routine-meta span{font-size:8px;color:var(--muted);border:1px solid #e4e8eb;border-radius:999px;padding:3px 6px}.routine-edit-grid{display:grid;grid-template-columns:120px 110px 110px 1fr;gap:8px;margin-top:9px;padding-top:9px;border-top:1px solid #edf0f3}.routine-edit-grid input,.routine-edit-grid select{width:100%;border:1px solid #d7dde5;border-radius:9px;padding:7px 8px;background:#fff;font-size:9px}.routine-dashboard{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.routine-dashboard-list{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.routine-dash-item{display:flex;align-items:center;gap:6px;border:1px solid #e0e6dc;border-radius:999px;padding:6px 9px;background:#fff;font-size:9px;font-weight:900}.routine-dash-item.done{text-decoration:line-through;opacity:.55}.routine-dash-item input{width:15px;height:15px;accent-color:#78ba0d}.skill-list{display:grid;gap:7px}.skill-row{display:grid;grid-template-columns:auto 160px 1fr;gap:9px;align-items:start;border:1px solid #e2e7eb;border-radius:11px;padding:9px;background:#fbfcfd}.skill-row input{margin-top:2px}.skill-row b{font-size:9px}.skill-row p{font-size:8px;color:var(--muted);line-height:1.5;margin:0}
+@media(max-width:1000px){.routine-form{grid-template-columns:1fr 1fr 1fr}.routine-summary{grid-template-columns:1fr 1fr}.routine-edit-grid{grid-template-columns:1fr 1fr}.skill-row{grid-template-columns:auto 1fr}.skill-row p{grid-column:2}}
+@media(max-width:620px){.routine-form,.routine-edit-grid{grid-template-columns:1fr}.routine-summary{grid-template-columns:1fr 1fr}.routine-card-top{grid-template-columns:auto 1fr}.routine-card-top .btn{grid-column:auto}.skill-row{grid-template-columns:auto 1fr}}
 @media(max-width:900px){.ai-action-grid{grid-template-columns:1fr}.ai-sec-message{font-size:12px}}.secretary-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.secretary-head h3{margin:0;font-size:14px}.secretary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-top:13px}.secretary-box{border:1px solid #e2e8dd;background:#fff;border-radius:13px;padding:11px}.secretary-box span{font-size:8px;color:var(--muted);font-weight:900}.secretary-box b{display:block;font-size:17px;margin-top:5px;line-height:1.25}.secretary-brief{margin-top:11px;padding:12px 13px;border-radius:12px;background:#f5f9ef;border:1px solid #dfead2;font-size:10px;line-height:1.65}.secretary-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.cash-stale{color:var(--bad)!important}.cash-ok{color:#249018!important}
 .receivable-list{display:grid;gap:8px;margin-top:12px}.receivable-row{display:grid;grid-template-columns:1.6fr 120px 130px 130px auto;gap:9px;align-items:center;border:1px solid #e2e7eb;border-radius:12px;padding:10px;background:#fbfcfd}.receivable-row.received{opacity:.62}.receivable-row .source b{font-size:10px}.receivable-row .source small{display:block;font-size:8px;color:var(--muted);margin-top:3px}.receivable-row input,.receivable-row select{width:100%;border:1px solid #d7dde5;border-radius:9px;padding:8px 9px;background:#fff;font-size:10px}.receivable-form{display:grid;grid-template-columns:120px 1.5fr 140px 120px 140px auto;gap:8px;align-items:end;margin-top:12px}.balance-check-card{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.balance-check-card .big{font-size:22px;font-weight:1000}.balance-check-meta{font-size:9px;color:var(--muted);margin-top:4px}
 @media(max-width:1000px){.secretary-grid{grid-template-columns:1fr 1fr}.receivable-row{grid-template-columns:1fr 1fr}.receivable-row .source{grid-column:1/-1}.receivable-form{grid-template-columns:1fr 1fr 1fr}.receivable-form .wide{grid-column:1/-1}}
@@ -64,20 +67,21 @@
 .loginbg{position:fixed;inset:0;background:#f4f6f8;z-index:300;display:none;align-items:center;justify-content:center;padding:20px}.loginbg.show{display:flex}.login{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 25px 80px rgba(10,20,30,.14)}.loginmark{width:52px;height:52px;border-radius:15px;background:#15191f;color:#b8ff35;display:grid;place-items:center;font-size:19px;font-weight:1000;margin-bottom:14px}.login h2{margin:0}.login p{font-size:11px;color:var(--muted);line-height:1.6}.login input{width:100%;border:1px solid #d6dde5;border-radius:11px;padding:11px;margin-top:8px}.login .btn{width:100%;margin-top:8px}.msg{font-size:10px;color:var(--warn);margin-top:10px}.toast{position:fixed;right:22px;bottom:22px;background:#15191f;color:#fff;padding:11px 14px;border-radius:11px;display:none;z-index:500;font-size:11px}.toast.show{display:block}
 .mobile{display:none}
 @media(max-width:1150px){.kpis{grid-template-columns:repeat(3,1fr)}.formgrid{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}.hero-grid{grid-template-columns:1fr}}
-@media(max-width:900px){body{padding-bottom:72px}.app{grid-template-columns:1fr}.side{display:none}.content{padding:15px 15px 88px}.top{height:66px;padding:0 13px}.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.hero .need{font-size:32px}.formgrid{grid-template-columns:1fr 1fr}.mobile{position:fixed;bottom:0;left:0;right:0;height:68px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);z-index:100;display:grid;grid-template-columns:repeat(5,1fr);padding:5px 6px}.mobile button{border:0;background:transparent;font-size:9px;font-weight:900;color:#687382;border-radius:10px}.mobile button.active{background:#f2f5f7;color:#111}.day{min-height:90px}.toast{bottom:82px}}
+@media(max-width:900px){body{padding-bottom:72px}.app{grid-template-columns:1fr}.side{display:none}.content{padding:15px 15px 88px}.top{height:66px;padding:0 13px}.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.hero .need{font-size:32px}.formgrid{grid-template-columns:1fr 1fr}.mobile{position:fixed;bottom:0;left:0;right:0;height:68px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);z-index:100;display:grid;grid-template-columns:repeat(6,1fr);padding:5px 6px}.mobile button{border:0;background:transparent;font-size:9px;font-weight:900;color:#687382;border-radius:10px}.mobile button.active{background:#f2f5f7;color:#111}.day{min-height:90px}.toast{bottom:82px}}
 @media(max-width:560px){.quick-task{grid-template-columns:1fr 110px auto}.quick-task-title{grid-column:1/-1}.kpis{grid-template-columns:1fr 1fr}.hero-side{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}.actions .btn.hide-sm{display:none}.calgrid{min-width:730px}.calendar{overflow:auto}.content{padding-left:10px;padding-right:10px}}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.0</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.1</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
   <button data-page="debt">빚 상환</button>
   <button data-page="business">사업체 ↔ 개인</button>
   <button data-page="calendar">캘린더 · 할 일</button>
+  <button data-page="routines">업무 루틴</button>
   <button data-page="goals">5년 목표</button>
   <button data-page="settings">설정</button>
  </nav>
@@ -125,6 +129,9 @@
    <div class="ai-quick"><button type="button" onclick="askSecretaryPreset('오늘 뭐 해야 해?')">오늘 뭐 해야 해?</button><button type="button" onclick="askSecretaryPreset('이번 달 얼마 벌어야 해?')">얼마 벌어야 해?</button><button type="button" onclick="askSecretaryPreset('카드 더 써도 돼?')">카드 써도 돼?</button><button type="button" onclick="askSecretaryPreset('빚 뭐부터 갚아?')">빚 뭐부터?</button><button type="button" onclick="askSecretaryPreset('1년 뒤 얼마 모여?')">1년 뒤?</button></div>
   </div>
  </div>
+ <div class="panel card" style="margin-bottom:16px">
+  <div class="routine-dashboard"><div><b>오늘 업무 루틴</b><div class="autosave-note">스케줄과 별개 · 매일 반복해야 하는 운영업무</div></div><div><b id="routineDashProgress">0/0</b> <button class="btn mini" type="button" onclick="go('routines')">관리 ›</button></div></div>
+  <div id="routineDashList" class="routine-dashboard-list"></div>
  </div>
  <div class="panel card" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">
@@ -352,6 +359,35 @@
  <div class="calendar card"><div class="calhead"><button class="btn mini" onclick="moveCal(-1)">←</button><div style="text-align:center"><b id="calTitle"></b><div class="autosave-note">날짜 칸을 클릭하면 그날 스케줄을 바로 추가할 수 있습니다.</div></div><button class="btn mini" onclick="moveCal(1)">→</button></div><div id="calendarGrid" class="calgrid"></div></div>
 </section>
 
+<section class="page" id="page-routines">
+ <div class="head"><div><h2>업무 루틴</h2><p>캘린더 일정과 별개로 매일 반복하는 업무를 관리합니다. 안 하면 AI 비서가 오늘 행동목록에 올립니다.</p></div></div>
+ <div class="routine-summary">
+  <div class="box"><span>오늘 대상</span><b id="routineTodayTotal">0개</b></div>
+  <div class="box"><span>오늘 완료</span><b id="routineTodayDone">0개</b></div>
+  <div class="box"><span>오늘 완료율</span><b id="routineTodayRate">0%</b></div>
+  <div class="box"><span>미완료</span><b id="routineTodayRemain">0개</b></div>
+ </div>
+ <div class="formcard card">
+  <h3>반복 업무 추가</h3>
+  <div class="routine-form">
+   <div class="field"><label>업무명</label><input id="routineTitle" placeholder="예: 릴스 업로드 / 블로그 포스팅"></div>
+   <div class="field"><label>반복</label><select id="routineRecurrence" onchange="toggleRoutineCustomDays()"><option value="daily">매일</option><option value="weekdays">평일</option><option value="weekends">주말</option><option value="custom">요일 지정</option></select></div>
+   <div class="field"><label>중요도</label><select id="routinePriority"><option value="normal">보통</option><option value="high">중요</option><option value="must">무조건</option><option value="low">낮음</option></select></div>
+   <div class="field"><label>목표시간</label><input id="routineTime" type="time"></div>
+   <div class="field"><label>분류</label><select id="routineCategory"><option value="work">업무</option><option value="personal">개인</option><option value="finance">재무</option><option value="health">건강</option><option value="other">기타</option></select></div>
+   <button class="btn primary" type="button" onclick="addRoutine()">+ 루틴 추가</button>
+  </div>
+  <div id="routineCustomDays" class="routine-days" style="display:none">
+   <label><input type="checkbox" value="1">월</label><label><input type="checkbox" value="2">화</label><label><input type="checkbox" value="3">수</label><label><input type="checkbox" value="4">목</label><label><input type="checkbox" value="5">금</label><label><input type="checkbox" value="6">토</label><label><input type="checkbox" value="0">일</label>
+  </div>
+  <div class="field" style="margin-top:9px"><label>메모</label><input id="routineMemo" placeholder="선택 · 예: 최소 1개 업로드"></div>
+ </div>
+ <div class="panel card">
+  <div class="tabletop" style="padding:0;margin-bottom:10px"><div><b>등록된 업무 루틴</b><div class="autosave-note">오늘 체크는 하루가 바뀌면 자동 초기화됩니다. 과거 완료기록은 남습니다.</div></div><span id="routineCount" class="amt">0개</span></div>
+  <div id="routineCards" class="routine-list"></div>
+ </div>
+</section>
+
 <section class="page" id="page-goals">
  <div class="head"><div><h2>5년 목표</h2><p>건물·차량 같은 큰 목표는 숫자로, 행동 목표는 체크 가능한 형태로 관리합니다.</p></div></div>
  <div class="formcard card">
@@ -384,6 +420,10 @@
    <div class="formactions"><button class="btn primary" onclick="saveSettings()">저장</button></div>
   </div>
  </div>
+ <div class="panel card" style="margin-bottom:16px">
+  <div class="tabletop" style="padding:0;margin-bottom:10px"><div><b>AI 비서 운영원칙 · 스킬</b><div class="autosave-note">실제 생성형 AI를 서버에 붙일 때 이 원칙들이 시스템 프롬프트로 들어갑니다.</div></div><span id="secretaryRuleCount" class="tag green">0개</span></div>
+  <div id="secretaryRulesList" class="skill-list"></div>
+ </div>
  <div class="callout"><b>사업비를 개인계좌에서 냈다면?</b><p>개인지출에 넣지 말고 ‘사업체 ↔ 개인’ 메뉴에서 <b>개인계좌로 사업비 대신 결제</b>로 기록하세요. 나중에 사업체에서 돌려받으면 <b>돌려받음</b>으로 기록하면 개인 현금부담과 실제 생활소비가 섞이지 않습니다.</p></div>
  <div class="callout"><b>은행·카드 자동연동</b><p>V0.1은 직접입력 중심입니다. 다음 버전에서 은행/카드 CSV 업로드 → 자동분류 → 월 소비분석 순으로 붙이고, 금융 API 직접연동은 인증·계약 구조를 별도 검토해 연결합니다.</p></div>
 </section>
@@ -392,7 +432,7 @@
 </div>
 
 <nav class="mobile">
- <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="business">사업</button>
+ <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="routines">루틴</button><button data-page="business">사업</button>
 </nav>
 
 <dialog class="event-dialog" id="spendingDetailDialog">
@@ -485,11 +525,11 @@ const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+Stri
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
 let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[],receivables:[],balanceCheckins:[],secretaryMessages:[],secretaryActionLog:[]};
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[],receivables:[],balanceCheckins:[],secretaryMessages:[],secretaryActionLog:[],routines:[],routineLogs:[],secretaryRules:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('recvEarnedMonth'))$('recvEarnedMonth').value=today.slice(0,7);if($('recvDate'))$('recvDate').value=lastDayStr(now.getFullYear(),now.getMonth()+1)}
-function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',goals:'5년 목표',settings:'설정'})[p]||p}
+function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',routines:'업무 루틴',goals:'5년 목표',settings:'설정'})[p]||p}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
 $('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{dateStyle:'full'}).format(now);
@@ -527,9 +567,12 @@ async function loadAll(){
   sb.from('pc_income_receivables').select('*').order('expected_receive_date').limit(200),
   sb.from('pc_balance_checkins').select('*').order('check_date',{ascending:false}).limit(100),
   sb.from('pc_secretary_messages').select('*').order('created_at',{ascending:false}).limit(30),
-  sb.from('pc_secretary_action_log').select('*').eq('action_date',today).limit(50)
+  sb.from('pc_secretary_action_log').select('*').eq('action_date',today).limit(50),
+  sb.from('pc_daily_routines').select('*').order('created_at'),
+  sb.from('pc_routine_logs').select('*').gte('log_date',addDaysStr(today,-90)).lte('log_date',today).limit(1000),
+  sb.from('pc_secretary_rules').select('*').order('priority')
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards','receivables','balanceCheckins','secretaryMessages','secretaryActionLog'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards','receivables','balanceCheckins','secretaryMessages','secretaryActionLog','routines','routineLogs','secretaryRules'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -538,7 +581,7 @@ async function rolloverTasks(){
  const overdue=state.tasks.filter(t=>t.status==='pending'&&t.auto_rollover&&t.due_date<today);
  for(const t of overdue){await sb.from('pc_tasks').update({due_date:today,original_due_date:t.original_due_date||t.due_date,rollover_count:(t.rollover_count||0)+1}).eq('id',t.id);t.original_due_date=t.original_due_date||t.due_date;t.due_date=today;t.rollover_count=(t.rollover_count||0)+1}
 }
-function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderReceivables();renderBalanceCheck();renderAiSecretary();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
+function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderReceivables();renderBalanceCheck();renderAiSecretary();renderRoutines();renderSecretaryRules();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
 function monthRows(a,key){return a.filter(x=>x[key]>=monthStart&&x[key]<=monthEnd)}
 function personalDebts(){return state.debts.filter(d=>!d.is_business_debt&&Number(d.balance)>0)}
 function deadlineDebts(){return personalDebts().filter(d=>d.deadline_priority&&d.target_payoff_date)}

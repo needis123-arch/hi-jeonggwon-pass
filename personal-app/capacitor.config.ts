@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'PERSONAL CENTER',
   webDir: 'www',
   server: {
-    url: 'https://needis123-arch.github.io/hi-jeonggwon-pass/personal-center.html?app=android&v=2.13',
+    url: 'https://needis123-arch.github.io/hi-jeonggwon-pass/personal-center.html?app=android&v=2.14',
     cleartext: false,
     allowNavigation: [
       'needis123-arch.github.io'

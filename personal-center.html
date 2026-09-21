@@ -716,15 +716,91 @@ function renderDashboard(){
  $('kLivingDue').textContent=won(m.livingNeed);$('kEarned').textContent=won(m.earned);$('kDebtTotal').textContent='-'+won(m.debt);$('kDebtTotal').className='bad';$('kDebtTotalSub').textContent='현재 남은 원금 · 부채는 마이너스';
  renderFinanceSecretary();renderAiSecretary();renderFinancialAlerts();renderStrategy();renderTodayTasks();renderUpcoming();renderBusinessPulse();renderPayoffPulse();renderGoalPulse();
 }
+function routineRecurrenceLabel(v){return ({daily:'매일',weekdays:'평일',weekends:'주말',custom:'요일 지정'})[v]||v}
+function routineCategoryLabel(v){return ({work:'업무',personal:'개인',finance:'재무',health:'건강',other:'기타'})[v]||v}
+function routineApplies(r,dateStr=today){
+ const dow=new Date(dateStr+'T00:00:00').getDay();
+ if(r.recurrence_type==='daily')return true;
+ if(r.recurrence_type==='weekdays')return dow>=1&&dow<=5;
+ if(r.recurrence_type==='weekends')return dow===0||dow===6;
+ if(r.recurrence_type==='custom')return Array.isArray(r.weekdays)&&r.weekdays.map(Number).includes(dow);
+ return true
+}
+function routineLog(routineId,date=today){return state.routineLogs.find(x=>x.routine_id===routineId&&x.log_date===date&&x.status==='done')}
+function routineDone(routineId,date=today){return !!routineLog(routineId,date)}
+function todayRoutines(){return state.routines.filter(r=>r.active&&routineApplies(r,today))}
+function routineStreak(r){
+ let d=new Date(today+'T00:00:00'),count=0,checked=0;
+ if(routineApplies(r,today)&&!routineDone(r.id,today))d.setDate(d.getDate()-1);
+ while(checked<120){
+  const ds=ymd(d);
+  if(routineApplies(r,ds)){checked++;if(routineDone(r.id,ds))count++;else break}
+  d.setDate(d.getDate()-1)
+ }
+ return count
+}
+function routineTimePassed(r){
+ if(!r.target_time)return false;const parts=String(r.target_time).slice(0,5).split(':').map(Number);return now.getHours()*60+now.getMinutes()>=parts[0]*60+parts[1]
+}
+function weekdayText(r){
+ if(r.recurrence_type!=='custom'||!Array.isArray(r.weekdays))return '';
+ const names=['일','월','화','수','목','금','토'];return r.weekdays.map(Number).sort((a,b)=>a-b).map(x=>names[x]).join('·')
+}
+function toggleRoutineCustomDays(){$('routineCustomDays').style.display=$('routineRecurrence').value==='custom'?'flex':'none'}
+async function addRoutine(){
+ const title=$('routineTitle').value.trim();if(!title){toast('반복 업무명을 입력하세요.');return}
+ const recurrence_type=$('routineRecurrence').value,weekdays=recurrence_type==='custom'?[...document.querySelectorAll('#routineCustomDays input:checked')].map(x=>Number(x.value)):[];
+ if(recurrence_type==='custom'&&!weekdays.length){toast('반복할 요일을 선택하세요.');return}
+ const row={title,category:$('routineCategory').value,recurrence_type,weekdays,priority:$('routinePriority').value,target_time:$('routineTime').value||null,active:true,memo:$('routineMemo').value.trim()};
+ const {error}=await sb.from('pc_daily_routines').insert(row);if(error)return alert(error.message);
+ $('routineTitle').value='';$('routineTime').value='';$('routineMemo').value='';$('routinePriority').value='normal';$('routineRecurrence').value='daily';document.querySelectorAll('#routineCustomDays input').forEach(x=>x.checked=false);toggleRoutineCustomDays();await loadAll();toast('업무 루틴 추가')
+}
+async function toggleRoutine(id,done){
+ if(done){const {error}=await sb.from('pc_routine_logs').upsert({user_id:state.user.id,routine_id:id,log_date:today,status:'done',completed_at:new Date().toISOString()},{onConflict:'user_id,routine_id,log_date'});if(error)return alert(error.message)}
+ else{const {error}=await sb.from('pc_routine_logs').delete().eq('routine_id',id).eq('log_date',today);if(error)return alert(error.message)}
+ await loadAll();toast(done?'루틴 완료':'루틴 미완료로 변경')
+}
+async function updateRoutine(id,field,value,type='text'){
+ let v=value;if(type==='bool')v=!!value;if(type==='number')v=value===''?null:Number(value);if(type==='time')v=value||null;
+ const {error}=await sb.from('pc_daily_routines').update({[field]:v,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);await loadAll();toast('루틴 수정')
+}
+async function deleteRoutine(id){if(!confirm('이 반복 업무를 삭제할까요? 완료기록도 함께 삭제됩니다.'))return;const {error}=await sb.from('pc_daily_routines').delete().eq('id',id);if(error)return alert(error.message);await loadAll();toast('루틴 삭제')}
+function renderRoutines(){
+ if(!$('routineCards'))return;
+ const todayArr=todayRoutines(),done=todayArr.filter(r=>routineDone(r.id)).length,remain=todayArr.length-done,rate=todayArr.length?Math.round(done/todayArr.length*100):100;
+ $('routineTodayTotal').textContent=todayArr.length+'개';$('routineTodayDone').textContent=done+'개';$('routineTodayRate').textContent=rate+'%';$('routineTodayRemain').textContent=remain+'개';$('routineTodayRemain').className=remain?'bad':'good';$('routineCount').textContent=state.routines.length+'개';
+ if($('routineDashProgress'))$('routineDashProgress').textContent=done+'/'+todayArr.length;
+ if($('routineDashList'))$('routineDashList').innerHTML=todayArr.length?todayArr.map(r=>'<label class="routine-dash-item '+(routineDone(r.id)?'done':'')+'"><input type="checkbox" '+(routineDone(r.id)?'checked':'')+' onchange="toggleRoutine(\''+r.id+'\',this.checked)"><span>'+(r.priority==='must'?'‼ ':r.priority==='high'?'! ':'')+esc(r.title)+'</span></label>').join(''):'<span class="autosave-note">오늘 대상 루틴 없음</span>';
+ const arr=[...state.routines].sort((a,b)=>(Number(b.active)-Number(a.active))||({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority])));
+ $('routineCards').innerHTML=arr.length?arr.map(r=>{
+  const applies=routineApplies(r,today),doneToday=routineDone(r.id),streak=routineStreak(r),days=weekdayText(r);
+  return '<div class="routine-card '+(doneToday?'done':'')+'"><div class="routine-card-top">'+
+   (applies?'<input class="routine-check" type="checkbox" '+(doneToday?'checked':'')+' onchange="toggleRoutine(\''+r.id+'\',this.checked)">':'<span class="routine-check" style="display:grid;place-items:center;color:#b1bac4">–</span>')+
+   '<div class="routine-card-title"><input value="'+esc(r.title)+'" onchange="updateRoutine(\''+r.id+'\',\'title\',this.value)"><div class="routine-meta"><span>'+routineCategoryLabel(r.category)+'</span><span>'+routineRecurrenceLabel(r.recurrence_type)+(days?' · '+days:'')+'</span><span>연속 '+streak+'회</span>'+(r.target_time?'<span>목표 '+String(r.target_time).slice(0,5)+'</span>':'')+(applies?'<span>'+(doneToday?'오늘 완료':'오늘 미완료')+'</span>':'<span>오늘 대상 아님</span>')+'</div></div>'+
+   '<span class="tag '+(r.priority==='must'?'red':r.priority==='high'?'orange':'')+'">'+r.priority+'</span><button class="btn mini danger" onclick="deleteRoutine(\''+r.id+'\')">삭제</button></div>'+
+   '<div class="routine-edit-grid"><select onchange="updateRoutine(\''+r.id+'\',\'recurrence_type\',this.value)"><option value="daily" '+(r.recurrence_type==='daily'?'selected':'')+'>매일</option><option value="weekdays" '+(r.recurrence_type==='weekdays'?'selected':'')+'>평일</option><option value="weekends" '+(r.recurrence_type==='weekends'?'selected':'')+'>주말</option><option value="custom" '+(r.recurrence_type==='custom'?'selected':'')+'>요일지정</option></select><select onchange="updateRoutine(\''+r.id+'\',\'priority\',this.value)"><option value="must" '+(r.priority==='must'?'selected':'')+'>무조건</option><option value="high" '+(r.priority==='high'?'selected':'')+'>중요</option><option value="normal" '+(r.priority==='normal'?'selected':'')+'>보통</option><option value="low" '+(r.priority==='low'?'selected':'')+'>낮음</option></select><input type="time" value="'+(r.target_time?String(r.target_time).slice(0,5):'')+'" onchange="updateRoutine(\''+r.id+'\',\'target_time\',this.value,\'time\')"><input value="'+esc(r.memo||'')+'" placeholder="메모" onchange="updateRoutine(\''+r.id+'\',\'memo\',this.value)"></div></div>'
+ }).join(''):'<div class="empty">반복 업무를 등록하세요.</div>'
+}
+function secretarySystemPrompt(){
+ const rules=state.secretaryRules.filter(x=>x.enabled).sort((a,b)=>Number(a.priority)-Number(b.priority)).map(x=>'- '+x.title+': '+x.instruction).join('\n');
+ const s=secretarySnapshot(),routines=todayRoutines().map(r=>({title:r.title,priority:r.priority,done:routineDone(r.id),target_time:r.target_time||null}));
+ return '너는 사용자의 전략 관리비서다. 숫자를 임의로 만들지 말고 제공된 데이터와 규칙을 우선한다.\n\n[운영원칙]\n'+rules+'\n\n[현재 재무상태]\n잔고 '+s.cash+', 최소월소득 '+s.planNeed+', 카드사용 '+s.cardUsed+', 우선상환부채 '+s.priorityDebt+'.\n\n[오늘 업무루틴]\n'+JSON.stringify(routines)
+}
+function renderSecretaryRules(){
+ if(!$('secretaryRulesList'))return;const arr=[...state.secretaryRules].sort((a,b)=>Number(a.priority)-Number(b.priority));$('secretaryRuleCount').textContent=arr.filter(x=>x.enabled).length+'개 적용';
+ $('secretaryRulesList').innerHTML=arr.length?arr.map(r=>'<div class="skill-row"><input type="checkbox" '+(r.enabled?'checked':'')+' onchange="updateSecretaryRule(\''+r.id+'\',\'enabled\',this.checked,\'bool\')"><b>'+esc(r.title)+'</b><textarea class="inlineedit" style="min-height:54px" onchange="updateSecretaryRule(\''+r.id+'\',\'instruction\',this.value)">'+esc(r.instruction)+'</textarea></div>').join(''):'<div class="empty">비서 운영원칙이 없습니다.</div>'
+}
+async function updateSecretaryRule(id,field,value,type='text'){const v=type==='bool'?!!value:value;const {error}=await sb.from('pc_secretary_rules').update({[field]:v,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);await loadAll();toast('AI 비서 운영원칙 수정')}
 function secretarySnapshot(){
  const m=metrics(),cash=currentCashTotal(),planNeed=plannedBaselineMonthlyNeed(),currentNeed=currentBaselineMonthlyNeed(),runway=currentNeed>0?cash/currentNeed*30:999,cap=plannedCreditCap(),cardUsed=currentPersonalCardSpend(),priorityDebt=priorityDebtBalance(),ref=balanceReferenceDate(),nextBal=nextBalanceCheckDate(),balanceDue=!ref||today>=nextBal;
  const pendingReceivables=state.receivables.filter(r=>r.status==='expected'),unknownReceivables=pendingReceivables.filter(r=>Number(r.amount||0)<=0);
  const nearDebt=personalDebts().map(d=>({d,days:daysTo(d.target_payoff_date||d.maturity_date)})).filter(x=>x.days!=null&&x.days>=0&&x.days<=90).sort((a,b)=>a.days-b.days);
- return {m,cash,planNeed,currentNeed,runway,cap,cardUsed,priorityDebt,balanceDue,nextBal,pendingReceivables,unknownReceivables,nearDebt}
+ const routines=todayRoutines(),routineIncomplete=routines.filter(r=>!routineDone(r.id));
+ return {m,cash,planNeed,currentNeed,runway,cap,cardUsed,priorityDebt,balanceDue,nextBal,pendingReceivables,unknownReceivables,nearDebt,routines,routineIncomplete}
 }
 function secretaryActions(){
  const s=secretarySnapshot(),out=[];
- const push=(key,title,detail,page,severity='normal')=>out.push({key,title,detail,page,severity});
+ const push=(key,title,detail,page,severity='normal',routineId=null)=>out.push({key,title,detail,page,severity,routineId});
  if(s.balanceDue)push('balance_check','계좌 잔고 지금 확인','7일 잔고 점검이 필요합니다. 등록 잔고 '+won(s.cash)+'이 실제와 맞는지 확인하세요.','money','must');
  state.cards.filter(x=>!x.confirmation_day).forEach(card=>push('card_cycle_'+card.id,card.card_name+' 확정일 설정','카드값 확정일이 없으면 월말 현금계획이 틀어집니다.','money','high'));
  if(s.cardUsed>s.cap&&s.cap>0)push('card_stop','신용카드 신규사용 중단','현재 개인카드 '+won(s.cardUsed)+' / 목표 '+won(s.cap)+'. 생활비는 체크카드로 전환하세요.','money','must');
@@ -732,6 +808,7 @@ function secretaryActions(){
  if(s.unknownReceivables.length)push('receivable_amount','받을 돈 예상금액 입력',s.unknownReceivables[0].source+' 등 '+s.unknownReceivables.length+'건의 금액이 비어 있습니다.','dashboard','high');
  if(s.nearDebt.length)push('debt_due_'+s.nearDebt[0].d.id,s.nearDebt[0].d.name+' 만기자금 확인','D-'+s.nearDebt[0].days+' · 남은 원금 '+won(s.nearDebt[0].d.balance),'debt',s.nearDebt[0].days<=30?'must':'high');
  if(s.m.remain>0)push('income_gap','이번 달 부족수입 '+won(s.m.remain)+' 확보','남은 '+s.m.left+'일 기준 하루 '+won(s.m.daily)+' 추가 확보가 필요합니다.','dashboard','must');
+ s.routineIncomplete.sort((a,b)=>({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority]))).forEach(r=>push('routine_'+r.id,'업무 루틴 · '+r.title,(r.target_time?'목표 '+String(r.target_time).slice(0,5)+' · ':'')+(routineTimePassed(r)?'목표시간 지남 · 바로 처리':'오늘 완료 필요'),'routines',r.priority==='must'||routineTimePassed(r)?'must':r.priority==='high'?'high':'normal',r.id));
  if(s.priorityDebt>0)push('priority_debt','남는 돈은 비상금·마통으로','우선상환 대상 잔액 '+won(s.priorityDebt)+'. 두 건 끝나기 전 큰 선택소비는 미룹니다.','debt','normal');
  return out
 }
@@ -744,9 +821,9 @@ function secretaryStatus(){
 function secretaryMainMessage(){
  const s=secretarySnapshot(),mode=state.profile?.secretary_mode||'strict',status=secretaryStatus(),a=secretaryActions(),top=a[0];
  const min=won(s.planNeed),cash=won(s.cash),gap=won(s.m.remain);
- if(mode==='soft')return '현재 잔고는 '+cash+'이고 절약계획 기준 최소 월소득은 '+min+'입니다.'+(top?' 오늘은 '+top.title+'부터 처리하면 됩니다.':' 현재 급한 재무 작업은 없습니다.');
- if(mode==='normal')return '현재 잔고 '+cash+' · 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 아직 '+gap+' 부족합니다. ':'')+(top?'우선순위 1번: '+top.title+'.':'오늘 즉시 처리할 경고는 없습니다.');
- return (status.level==='danger'?'지금 돈 관리 우선순위부터 바로 처리하세요. ':status.level==='warn'?'오늘 돈 관련 미완료를 남기지 마세요. ':'현재 흐름은 괜찮습니다. ')+'잔고 '+cash+', 절약계획 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 '+gap+' 부족. ':'')+(top?'지금 1순위는 “'+top.title+'”입니다.':'급한 조치 없음.')
+ if(mode==='soft')return '현재 잔고는 '+cash+'이고 절약계획 기준 최소 월소득은 '+min+'입니다.'+(s.routineIncomplete.length?' 오늘 업무 루틴 '+s.routineIncomplete.length+'개가 남아 있습니다.':'')+(top?' 오늘은 '+top.title+'부터 처리하면 됩니다.':' 현재 급한 작업은 없습니다.');
+ if(mode==='normal')return '현재 잔고 '+cash+' · 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 아직 '+gap+' 부족합니다. ':'')+(s.routineIncomplete.length?'업무 루틴 '+s.routineIncomplete.length+'개 미완료. ':'')+(top?'우선순위 1번: '+top.title+'.':'오늘 즉시 처리할 경고는 없습니다.');
+ return (status.level==='danger'?'지금 우선순위부터 바로 처리하세요. ':status.level==='warn'?'오늘 미완료를 남기지 마세요. ':'현재 흐름은 괜찮습니다. ')+'잔고 '+cash+', 절약계획 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 '+gap+' 부족. ':'')+(s.routineIncomplete.length?'업무 루틴 '+s.routineIncomplete.length+'개 남음. ':'')+(top?'지금 1순위는 “'+top.title+'”입니다.':'급한 조치 없음.')
 }
 function renderAiSecretary(){
  if(!$('aiSecretaryMessage'))return;
@@ -754,7 +831,7 @@ function renderAiSecretary(){
  $('secretaryMode').value=state.profile?.secretary_mode||'strict';$('aiSecretaryStatus').className='ai-status '+st.level;$('aiSecretaryStatus').textContent=st.text;
  $('aiSecretaryMessage').innerHTML=esc(secretaryMainMessage())+'<small>저장된 잔고·카드·대출·수입 데이터를 기준으로 계산합니다.</small>';
  const visible=actions.filter(a=>!done.has(a.key)).slice(0,3);
- $('aiSecretaryActions').innerHTML=visible.length?visible.map((a,i)=>'<div class="ai-action"><span class="num">'+(i+1)+'</span><div><b>'+esc(a.title)+'</b><small>'+esc(a.detail)+'</small></div><div><button onclick="go(\''+a.page+'\')">열기</button><br><button onclick="completeSecretaryAction(\''+a.key+'\',\''+esc(a.title).replace(/&#39;/g,"\\'")+'\')">완료</button></div></div>').join(''):'<div class="empty" style="grid-column:1/-1">오늘 급한 재무 작업을 모두 처리했습니다.</div>';
+ $('aiSecretaryActions').innerHTML=visible.length?visible.map((a,i)=>'<div class="ai-action"><span class="num">'+(i+1)+'</span><div><b>'+esc(a.title)+'</b><small>'+esc(a.detail)+'</small></div><div><button onclick="go(\''+a.page+'\')">열기</button><br><button onclick="'+(a.routineId?'toggleRoutine(\''+a.routineId+'\',true)':'completeSecretaryAction(\''+a.key+'\',\''+esc(a.title).replace(/&#39;/g,"\\'")+'\')')+'">완료</button></div></div>').join(''):'<div class="empty" style="grid-column:1/-1">오늘 비서가 요구한 작업을 모두 처리했습니다.</div>';
  const msgs=[...state.secretaryMessages].sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))).slice(-10);
  $('aiChatHistory').innerHTML=msgs.length?msgs.map(m=>'<div class="ai-msg '+m.role+'">'+esc(m.message)+'</div>').join(''):'<div class="autosave-note">아래 질문 버튼을 누르거나 직접 물어보세요.</div>';
  $('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight
@@ -771,6 +848,7 @@ function secretaryAnswer(q){
  if(/1년|모여|모을|저축/.test(text)){const income=Number(state.profile?.strategy_monthly_income_assumption||0)||s.planNeed,yr=simulateYearPlan(today.slice(0,7),income);return '월 '+won(income)+'을 유지하고 현재 절약계획을 지키면 1년 뒤 예상 현금성 자산은 약 '+won(Math.max(0,yr.endCash))+', 1년간 줄이는 대출 원금은 약 '+won(yr.principalPaid)+'입니다.'}
  if(/잔고|현금|버텨/.test(text)){return '현재 등록 잔고는 '+won(s.cash)+'이고 지금 소비패턴 기준 수입 없이 약 '+s.runway.toFixed(1)+'일 버틸 수 있습니다. 다음 잔고 점검일은 '+s.nextBal+'입니다.'}
  if(/받을|급여|입금/.test(text)){const p=s.pendingReceivables;return p.length?'예정수입 '+p.length+'건이 있습니다. '+p.slice(0,3).map(x=>x.source+' '+(Number(x.amount)>0?won(x.amount):'금액 미정')+' / '+x.expected_receive_date).join(', ')+'.':'현재 등록된 예정수입이 없습니다.'}
+ if(/루틴|릴스|블로그|업무/.test(text)){const p=s.routineIncomplete;return p.length?'오늘 업무 루틴 '+s.routines.length+'개 중 '+p.length+'개 남았습니다. 미완료: '+p.map(x=>x.title+(x.target_time?'('+String(x.target_time).slice(0,5)+')':'')).join(', ')+'. 끝낸 뒤 체크하세요.':'오늘 대상 업무 루틴은 전부 완료했습니다.'}
  return '지금 핵심은 잔고 '+won(s.cash)+', 절약계획 최소 월소득 '+won(s.planNeed)+', 우선상환 부채 '+won(s.priorityDebt)+'입니다. “이번 달 얼마 벌어야 해?”, “카드 더 써도 돼?”, “빚 뭐부터 갚아?”처럼 물어보면 현재 데이터로 바로 계산해드릴게요.'
 }
 async function askSecretary(){

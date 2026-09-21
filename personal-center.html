@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.15</title>
+<title>PERSONAL CENTER V2.16</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -154,7 +154,7 @@ body,.app,.content,.page{min-width:0;max-width:100%}
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.15</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.16</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -1662,27 +1662,27 @@ function nativeTodayBoard(){
 function nativeRangeDays(days=7){
  const out=[];for(let i=0;i<days;i++){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+i);out.push(ymd(d))}return out
 }
-const NATIVE_REMINDER_TIMES=['10:30','13:00','17:00','20:00','22:00'];
+const NATIVE_REMINDER_TIMES=[];
 function nativeBoardItems(){
  const dates=nativeRangeDays(7),from=dates[0],to=dates[dates.length-1],items=[],rank={must:0,high:1,normal:2,low:3};
  state.tasks.filter(x=>x.status==='pending'&&x.due_date>=from&&x.due_date<=to).forEach(x=>items.push({
-  key:'task:'+x.id+':'+x.due_date,date:x.due_date,label:x.title,kind:'task',itemId:x.id,page:'calendar',priority:x.priority||'normal',sort:10+(rank[x.priority]??2)
+  key:'task:'+x.id+':'+x.due_date,date:x.due_date,label:x.title,kind:'task',itemId:x.id,page:'calendar',priority:x.priority||'normal',notifyTime:'10:30',sort:10+(rank[x.priority]??2)
  }));
  state.events.filter(x=>x.status==='pending'&&x.event_date>=from&&x.event_date<=to).forEach(x=>items.push({
-  key:'event:'+x.id+':'+x.event_date,date:x.event_date,label:x.title,kind:'event',itemId:x.id,page:'calendar',priority:x.priority||'normal',sort:20+(rank[x.priority]??2)
+  key:'event:'+x.id+':'+x.event_date,date:x.event_date,label:x.title,kind:'event',itemId:x.id,page:'calendar',priority:x.priority||'normal',notifyTime:'10:30',sort:20+(rank[x.priority]??2)
  }));
  dates.forEach(ds=>state.routines.filter(r=>r.active&&routineApplies(r,ds)&&!(ds===today&&routineDone(r.id,ds))).forEach(r=>items.push({
-  key:'routine:'+r.id+':'+ds,date:ds,label:r.title,kind:'routine',itemId:r.id,page:'routines',priority:r.priority||'normal',sort:30+(rank[r.priority]??2)
+  key:'routine:'+r.id+':'+ds,date:ds,label:r.title,kind:'routine',itemId:r.id,page:'routines',priority:r.priority||'normal',notifyTime:r.target_time?String(r.target_time).slice(0,5):'10:30',sort:30+(rank[r.priority]??2)
  })));
  dates.forEach(ds=>{
   const dt=new Date(ds+'T00:00:00'),dd=dt.getDate(),last=new Date(dt.getFullYear(),dt.getMonth()+1,0).getDate();
   state.cards.forEach(card=>{if(card.confirmation_day&&Math.min(Number(card.confirmation_day),last)===dd)items.push({
-   key:'reminder:card:'+card.id+':'+ds,date:ds,label:card.card_name+' 확정금액 입력',kind:'reminder',itemId:'',page:'money',priority:'high',sort:40
+   key:'reminder:card:'+card.id+':'+ds,date:ds,label:card.card_name+' 확정금액 입력',kind:'reminder',itemId:'',page:'money',priority:'high',notifyTime:'20:00',sort:40
   })});
-  if(dt.getDay()===0)items.push({key:'reminder:toss:'+ds,date:ds,label:'토스 지난 7일 소비 캡처 업로드',kind:'reminder',itemId:'',page:'money',priority:'normal',sort:50});
-  if(dd===last)items.push({key:'reminder:income:'+ds,date:ds,label:'이번 달 실제 수익 입력',kind:'reminder',itemId:'',page:'dashboard',priority:'high',sort:45})
+  if(dt.getDay()===0)items.push({key:'reminder:toss:'+ds,date:ds,label:'토스 지난 7일 소비 캡처 업로드',kind:'reminder',itemId:'',page:'money',priority:'normal',notifyTime:'20:00',sort:50});
+  if(dd===last)items.push({key:'reminder:income:'+ds,date:ds,label:'이번 달 실제 수익 입력',kind:'reminder',itemId:'',page:'dashboard',priority:'high',notifyTime:'20:00',sort:45})
  });
- const bal=nextBalanceCheckDate();if(bal&&bal>=from&&bal<=to)items.push({key:'reminder:balance:'+bal,date:bal,label:'7일 잔고 점검 · 실제 잔고 업데이트',kind:'reminder',itemId:'',page:'money',priority:'high',sort:42});
+ const bal=nextBalanceCheckDate();if(bal&&bal>=from&&bal<=to)items.push({key:'reminder:balance:'+bal,date:bal,label:'7일 잔고 점검 · 실제 잔고 업데이트',kind:'reminder',itemId:'',page:'money',priority:'high',notifyTime:'20:00',sort:42});
  return items.sort((a,b)=>a.date.localeCompare(b.date)||(a.sort-b.sort)||a.label.localeCompare(b.label)).map(({sort,...x})=>x)
 }
 async function ensureNativeNotificationPermission(){
@@ -1733,7 +1733,7 @@ function renderNativeBoardStatus(info={}){
  if(!board){el.textContent='네이티브 고정판 브리지 미연결 · 앱 연결 재설정 필요';el.style.color='var(--bad)';return}
  if(info.error){el.textContent='고정판 연결 오류 · 최신 APK로 업데이트 필요';el.style.color='var(--bad)';return}
  const enabled=info.notificationsEnabled!==false,count=Number(info.count??nativeBoardItems().filter(x=>x.date===today).length);
- el.textContent=(enabled?'알림 허용':'알림 권한 꺼짐')+' · 오늘 고정판 '+count+'개 항목 · 10:30 / 13:00 / 17:00 / 20:00 / 22:00';
+ el.textContent=(enabled?'알림 허용':'알림 권한 꺼짐')+' · 오늘 고정판 '+count+'개 항목 · 항목별 일회성 알림';
  el.style.color=enabled?'':'var(--bad)'
 }
 async function refreshNativeBoardNow(){

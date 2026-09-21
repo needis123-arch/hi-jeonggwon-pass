@@ -57,13 +57,6 @@ jobs:
             -validity 10000 \
             -dname "CN=PERSONAL CENTER,O=HI REALTY,C=KR"
 
-      - name: Show signing certificate
-        run: |
-          keytool -list -v \
-            -keystore .signing/debug.keystore \
-            -storepass android \
-            -alias androiddebugkey | grep -E "SHA256:|Owner:|Valid from:"
-
       - name: Install dependencies
         run: npm install
 
@@ -73,77 +66,8 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
-      - name: Install native today board
-        run: |
-          TARGET="android/app/src/main/java/kr/co/hirealty/personalcenter/stable"
-          mkdir -p "$TARGET"
-          cp native/android/TodayBoardManager.java "$TARGET/TodayBoardManager.java"
-          cp native/android/TodayBoardReceiver.java "$TARGET/TodayBoardReceiver.java"
-          cp native/android/TodayBoardPlugin.java "$TARGET/TodayBoardPlugin.java"
-          cp native/android/TodayBoardWidgetProvider.java "$TARGET/TodayBoardWidgetProvider.java"
-          cp native/android/MainActivity.java "$TARGET/MainActivity.java"
-          cp -R native/android/res/. android/app/src/main/res/
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("android/app/src/main/AndroidManifest.xml")
-          s=p.read_text()
-          receiver='''        <receiver
-              android:name=".TodayBoardReceiver"
-              android:enabled="true"
-              android:exported="false" />
-        <receiver
-              android:name=".TodayBoardWidgetProvider"
-              android:enabled="true"
-              android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/today_board_widget_info" />
-        </receiver>\n'''
-          if '.TodayBoardReceiver' not in s:
-              s=s.replace('    </application>', receiver+'    </application>')
-          elif '.TodayBoardWidgetProvider' not in s:
-              widget='''        <receiver
-              android:name=".TodayBoardWidgetProvider"
-              android:enabled="true"
-              android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/today_board_widget_info" />
-        </receiver>\n'''
-              s=s.replace('    </application>', widget+'    </application>')
-          p.write_text(s)
-          PY
-
-      - name: Force stable signing config
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path("android/app/build.gradle")
-          s=p.read_text()
-          if "pcStableDebug" not in s:
-              s=s.replace("android {", """android {
-              signingConfigs {
-                  pcStableDebug {
-                      storeFile file("../../.signing/debug.keystore")
-                      storePassword "android"
-                      keyAlias "androiddebugkey"
-                      keyPassword "android"
-                  }
-              }
-          """, 1)
-              s=s.replace("buildTypes {", """buildTypes {
-                  debug {
-                      signingConfig signingConfigs.pcStableDebug
-                  }
-          """, 1)
-          p.write_text(s)
-          PY
+      - name: Install native board and widget
+        run: python native/android/install_native.py
 
       - name: Build debug APK
         run: |

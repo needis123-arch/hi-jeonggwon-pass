@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.9</title>
+<title>PERSONAL CENTER V2.10</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -109,7 +109,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.9</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.10</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -404,6 +404,12 @@
   <select id="taskPriority"><option value="normal">보통</option><option value="high">중요</option><option value="must">무조건</option><option value="low">낮음</option></select>
   <button class="btn primary" onclick="addTask()">+ 추가</button>
   <input id="taskDate" type="hidden">
+ </div>
+ <div id="nativeBoardPanel" class="panel card" style="display:none;margin-bottom:12px;padding:12px 14px">
+  <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
+   <div><b style="font-size:11px">잠금화면 오늘 할 일 고정판</b><div id="nativeBoardStatus" class="autosave-note" style="margin-top:3px">상태 확인 중</div></div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn mini primary" type="button" onclick="refreshNativeBoardNow()">지금 띄우기</button><button class="btn mini" type="button" onclick="openNativeNotificationSettings()">알림 설정</button></div>
+  </div>
  </div>
  <div class="calendar card"><div class="calhead"><button class="btn mini" onclick="moveCal(-1)">←</button><div style="text-align:center"><b id="calTitle"></b><div class="autosave-note">날짜 칸을 클릭하면 그날 스케줄을 바로 추가할 수 있습니다.</div></div><button class="btn mini" onclick="moveCal(1)">→</button></div><div id="calendarGrid" class="calgrid"></div></div>
 </section>
@@ -1650,9 +1656,26 @@ async function syncNativeNotifications(){
  try{
   const ok=await ensureNativeNotificationPermission();if(!ok)return;
   await applyNativeBoardCompletions(board);
-  await board.sync({items:nativeBoardItems(),reminderTimes:NATIVE_REMINDER_TIMES})
- }catch(e){console.warn('today board sync',e)}
+  const result=await board.sync({items:nativeBoardItems(),reminderTimes:NATIVE_REMINDER_TIMES});
+  renderNativeBoardStatus(result)
+ }catch(e){console.warn('today board sync',e);renderNativeBoardStatus({error:String(e)})}
  finally{nativeNotifSyncBusy=false}
+}
+function renderNativeBoardStatus(info={}){
+ const panel=$('nativeBoardPanel'),el=$('nativeBoardStatus');if(!panel||!el)return;
+ const board=nativeTodayBoard();panel.style.display=board?'block':'none';if(!board)return;
+ if(info.error){el.textContent='고정판 연결 오류 · 앱 업데이트 필요';el.style.color='var(--bad)';return}
+ const enabled=info.notificationsEnabled!==false,count=Number(info.count??nativeBoardItems().filter(x=>x.date===today).length);
+ el.textContent=(enabled?'알림 허용':'알림 권한 꺼짐')+' · 오늘 고정판 '+count+'개 항목 · 10:30 / 13:00 / 17:00 / 20:00 / 22:00';
+ el.style.color=enabled?'':'var(--bad)'
+}
+async function refreshNativeBoardNow(){
+ const board=nativeTodayBoard();if(!board)return toast('Android 앱에서만 사용할 수 있습니다.');
+ try{const ok=await ensureNativeNotificationPermission();if(!ok){renderNativeBoardStatus({notificationsEnabled:false,count:0});return toast('알림 권한을 허용해주세요.')}const r=await board.sync({items:nativeBoardItems(),reminderTimes:NATIVE_REMINDER_TIMES});await board.refresh();renderNativeBoardStatus(r);toast('오늘 할 일 고정판을 다시 띄웠습니다.')}catch(e){console.error(e);toast('고정판 실행 실패 · 새 APK인지 확인해주세요.')}
+}
+async function openNativeNotificationSettings(){
+ const board=nativeTodayBoard();if(!board)return toast('Android 앱에서만 사용할 수 있습니다.');
+ try{await board.openNotificationSettings()}catch(e){toast('휴대폰 설정에서 PERSONAL CENTER 알림을 확인해주세요.')}
 }
 setDefaults();
 </script>

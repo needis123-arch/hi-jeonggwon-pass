@@ -7,7 +7,10 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.os.Build;
 import android.provider.Settings;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -87,6 +90,34 @@ public class TodayBoardPlugin extends Plugin {
             call.resolve();
         } catch (Exception e) {
             call.reject("알림 설정을 열 수 없습니다.", e);
+        }
+    }
+
+    @PluginMethod
+    public void requestWidget(PluginCall call) {
+        try {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                JSObject ret = new JSObject();
+                ret.put("supported", false);
+                ret.put("requested", false);
+                call.resolve(ret);
+                return;
+            }
+
+            AppWidgetManager manager = AppWidgetManager.getInstance(getContext());
+            ComponentName provider = new ComponentName(getContext(), TodayBoardWidgetProvider.class);
+            boolean supported = manager.isRequestPinAppWidgetSupported();
+            boolean requested = false;
+            if (supported) {
+                requested = manager.requestPinAppWidget(provider, null, null);
+            }
+
+            JSObject ret = new JSObject();
+            ret.put("supported", supported);
+            ret.put("requested", requested);
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("홈화면 위젯 추가 요청 실패", e);
         }
     }
 

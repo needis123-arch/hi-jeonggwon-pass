@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.14</title>
+<title>PERSONAL CENTER V2.15</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -154,7 +154,7 @@ body,.app,.content,.page{min-width:0;max-width:100%}
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.14</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.15</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -1651,7 +1651,8 @@ function nativeTodayBoard(){
     refresh:(o={})=>cap.nativePromise('TodayBoard','refresh',o),
     status:(o={})=>cap.nativePromise('TodayBoard','status',o),
     openNotificationSettings:(o={})=>cap.nativePromise('TodayBoard','openNotificationSettings',o),
-    requestWidget:(o={})=>cap.nativePromise('TodayBoard','requestWidget',o)
+    requestWidget:(o={})=>cap.nativePromise('TodayBoard','requestWidget',o),
+    widgetStatus:(o={})=>cap.nativePromise('TodayBoard','widgetStatus',o)
    };
    return nativeTodayBoardProxy
   }
@@ -1742,10 +1743,13 @@ async function refreshNativeBoardNow(){
 async function addHomeWidget(){
  const board=nativeTodayBoard();if(!board)return toast('Android 앱에서만 사용할 수 있습니다.');
  try{
+  const before=board.widgetStatus?await board.widgetStatus():null;
+  if(before&&before.providerFound===false)return toast('위젯 Provider가 앱에 등록되지 않았습니다. 새 APK가 필요합니다.');
   const r=await board.requestWidget();
-  if(r?.requested)toast('홈화면에 4×2 오늘 할 일 위젯을 추가하세요.');
-  else toast('홈화면을 길게 눌러 위젯 → PERSONAL CENTER에서 추가해주세요.')
- }catch(e){console.error(e);toast('위젯 추가 요청 실패 · 홈화면 위젯 목록에서 추가해주세요.')}
+  if(r?.requested)toast('삼성 홈화면의 위젯 추가 확인창에서 PERSONAL CENTER를 추가하세요.');
+  else if(before?.pinSupported===false)toast('홈화면 길게 누르기 → 위젯 → PERSONAL CENTER → 오늘 할 일 4×2');
+  else toast('위젯 요청을 보냈습니다. 홈화면 위젯 목록에서 PERSONAL CENTER를 확인하세요.')
+ }catch(e){console.error(e);toast('위젯 추가 실패 · 홈화면 위젯 목록에서 PERSONAL CENTER를 확인해주세요.')}
 }
 async function openNativeNotificationSettings(){
  const board=nativeTodayBoard();if(!board)return toast('Android 앱에서만 사용할 수 있습니다.');

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.11</title>
+<title>PERSONAL CENTER V2.12</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -154,7 +154,7 @@ body,.app,.content,.page{min-width:0;max-width:100%}
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.11</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.12</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -1635,10 +1635,15 @@ function isAndroidAppShell(){
 }
 function nativeTodayBoard(){
  try{
-  if(!window.Capacitor?.isNativePlatform?.()||!window.Capacitor?.registerPlugin)return null;
-  if(!nativeTodayBoardProxy)nativeTodayBoardProxy=window.Capacitor.registerPlugin('TodayBoard');
-  return nativeTodayBoardProxy
- }catch{return null}
+  if(!isAndroidAppShell())return null;
+  if(window.Capacitor?.Plugins?.TodayBoard)return window.Capacitor.Plugins.TodayBoard;
+  if(nativeTodayBoardProxy)return nativeTodayBoardProxy;
+  if(window.Capacitor?.registerPlugin){
+   nativeTodayBoardProxy=window.Capacitor.registerPlugin('TodayBoard');
+   return nativeTodayBoardProxy
+  }
+  return null
+ }catch(e){console.warn('TodayBoard bridge detect',e);return null}
 }
 function nativeRangeDays(days=7){
  const out=[];for(let i=0;i<days;i++){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+i);out.push(ymd(d))}return out
@@ -1711,7 +1716,7 @@ async function syncNativeNotifications(){
 function renderNativeBoardStatus(info={}){
  const panel=$('nativeBoardPanel'),el=$('nativeBoardStatus');if(!panel||!el)return;
  const appShell=isAndroidAppShell(),board=nativeTodayBoard();panel.style.display=appShell?'block':'none';if(!appShell)return;
- if(!board){el.textContent='네이티브 고정판 미연결 · 최신 APK로 업데이트 필요';el.style.color='var(--bad)';return}
+ if(!board){el.textContent='네이티브 고정판 브리지 미연결 · 앱 연결 재설정 필요';el.style.color='var(--bad)';return}
  if(info.error){el.textContent='고정판 연결 오류 · 최신 APK로 업데이트 필요';el.style.color='var(--bad)';return}
  const enabled=info.notificationsEnabled!==false,count=Number(info.count??nativeBoardItems().filter(x=>x.date===today).length);
  el.textContent=(enabled?'알림 허용':'알림 권한 꺼짐')+' · 오늘 고정판 '+count+'개 항목 · 10:30 / 13:00 / 17:00 / 20:00 / 22:00';

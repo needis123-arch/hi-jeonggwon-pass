@@ -883,7 +883,7 @@ function renderFinanceSecretary(){
  parts.push('현재 등록잔고 '+won(cash)+'으로 지금 소비패턴을 유지하면 수입 없이 약 '+runway.toFixed(1)+'일 버틸 수 있습니다.');
  parts.push('신용카드는 월 '+won(cardCap)+'까지만 두고, 생활비는 체크카드 주 '+won(debitWeek)+'로 옮기면 카드 소비를 월 약 '+won(cardSave)+' 줄이는 계획입니다.');
  parts.push('이 기준에서 최소 월소득은 약 '+won(planNeed)+', 월 200만원을 모으려면 약 '+won(save2)+', 월 300만원이면 약 '+won(save3)+'이 필요합니다.');
- if(priority>0)parts.push('여유자금은 비상금대출·마이너스통장 '+won(priority)+'부터 메우고, 끝난 뒤 현금저축으로 전환합니다.');const ce=cardExitSurplusInfo();parts.push(!ce.complete?'신용카드 완전중단은 전월 데이터가 확정될 때까지 보류합니다. 그 전에는 고정결제·불가피한 항목만 최소사용하고 생활비는 체크카드로 옮깁니다.':ce.ready?'전월 여유자금 '+won(ce.surplus)+'으로 신용카드 완전중단 기준 '+won(ce.target)+'을 충족했습니다.':'전월 여유자금 '+won(Math.max(0,ce.surplus))+'으로 신용카드 완전중단 기준 '+won(ce.target)+'에 못 미칩니다. '+won(ce.gap)+'을 더 확보할 때까지 최소사용을 유지합니다.');
+ if(priority>0)parts.push('여유자금은 비상금대출·마이너스통장 '+won(priority)+'부터 메우고, 끝난 뒤 현금저축으로 전환합니다.');parts.push(!ce.complete?'신용카드 완전중단은 전월 데이터가 확정될 때까지 보류합니다. 그 전에는 고정결제·불가피한 항목만 최소사용하고 생활비는 체크카드로 옮깁니다.':ce.ready?'전월 여유자금 '+won(ce.surplus)+'으로 신용카드 완전중단 기준 '+won(ce.target)+'을 충족했습니다.':'전월 여유자금 '+won(Math.max(0,ce.surplus))+'으로 신용카드 완전중단 기준 '+won(ce.target)+'에 못 미칩니다. '+won(ce.gap)+'을 더 확보할 때까지 최소사용을 유지합니다.');
  if(saveTarget>0)parts.push('현재 저장된 월 저축목표는 '+won(saveTarget)+'입니다.');
  $('secretaryBrief').textContent=parts.join(' ');
 }

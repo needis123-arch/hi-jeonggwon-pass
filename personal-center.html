@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.6</title>
+<title>PERSONAL CENTER V2.7</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -103,7 +103,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.6</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.7</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -639,6 +639,7 @@ async function loadAll(){
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
+ setTimeout(()=>syncNativeNotifications(),120);
 }
 async function rolloverTasks(){
  const overdue=state.tasks.filter(t=>t.status==='pending'&&t.auto_rollover&&t.due_date<today);
@@ -1561,6 +1562,95 @@ function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p
 async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_variable_budget:+$('setVariableBudget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,monthly_savings_target:+$('setSavingsTarget').value||0,monthly_tax_reserve:+$('setTaxReserve').value||0,credit_card_monthly_cap:+$('setCreditCap').value||0,debit_card_weekly_budget:+$('setDebitWeekly').value||0,credit_card_exit_buffer:+$('setCreditExitBuffer').value||3000000,secretary_mode:'strict',emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장 · 월 필요수입 재계산 완료')}
 
 async function delRow(table,id){if(!confirm('삭제할까요?'))return;const {error}=await sb.from(table).delete().eq('id',id);if(error)return alert(error.message);await loadAll()}
+
+// Android app / Capacitor local notification bridge
+let nativeNotifListenerReady=false,nativeNotifSyncBusy=false;
+function nativeNotifications(){
+ try{
+  if(!window.Capacitor?.isNativePlatform?.())return null;
+  if(window.Capacitor?.isPluginAvailable&&!window.Capacitor.isPluginAvailable('LocalNotifications'))return null;
+  return window.Capacitor?.Plugins?.LocalNotifications||null
+ }catch{return null}
+}
+function nativeNotificationId(key){
+ let h=2166136261;for(let i=0;i<key.length;i++){h^=key.charCodeAt(i);h=Math.imul(h,16777619)}
+ return Math.abs(h%1900000000)+100000
+}
+function nativeDateTime(dateStr,time='08:00',stagger=0){
+ const [y,m,d]=dateStr.split('-').map(Number),[hh,mm]=String(time||'08:00').slice(0,5).split(':').map(Number);
+ let dt=new Date(y,m-1,d,Number.isFinite(hh)?hh:8,Number.isFinite(mm)?mm:0,0,0);
+ if(dt.getTime()<=Date.now()+2000&&dateStr===ymd(new Date()))dt=new Date(Date.now()+3500+stagger*900);
+ return dt
+}
+function nativeRangeDays(days=7){
+ const out=[];for(let i=0;i<days;i++){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()+i);out.push(ymd(d))}return out
+}
+function nativeReminderItems(){
+ const dates=nativeRangeDays(7),from=dates[0],to=dates[dates.length-1],items=[];
+ state.tasks.filter(x=>x.status==='pending'&&x.due_date>=from&&x.due_date<=to).forEach(x=>items.push({key:'task:'+x.id,date:x.due_date,time:'08:00',title:'오늘 할 일',body:x.title,kind:'task',itemId:x.id,page:'calendar',check:true,priority:x.priority||'normal'}));
+ state.events.filter(x=>x.status==='pending'&&x.event_date>=from&&x.event_date<=to).forEach(x=>items.push({key:'event:'+x.id,date:x.event_date,time:'08:05',title:'오늘 일정',body:x.title,kind:'event',itemId:x.id,page:'calendar',check:true,priority:x.priority||'normal'}));
+ dates.forEach(ds=>state.routines.filter(r=>r.active&&routineApplies(r,ds)&&!(ds===today&&routineDone(r.id,ds))).forEach(r=>items.push({key:'routine:'+r.id+':'+ds,date:ds,time:r.target_time?String(r.target_time).slice(0,5):'09:00',title:'업무 루틴',body:r.title,kind:'routine',itemId:r.id,page:'routines',check:true,priority:r.priority||'normal'})));
+ // Card confirmation input reminders
+ dates.forEach(ds=>{
+  const dd=new Date(ds+'T00:00:00').getDate(),last=new Date(new Date(ds+'T00:00:00').getFullYear(),new Date(ds+'T00:00:00').getMonth()+1,0).getDate();
+  state.cards.forEach(card=>{if(card.confirmation_day&&Math.min(Number(card.confirmation_day),last)===dd)items.push({key:'card-confirm:'+card.id+':'+ds,date:ds,time:'19:00',title:'카드 확정금액 입력',body:card.card_name+' 확정금액을 PERSONAL CENTER에 입력하세요.',kind:'reminder',page:'money',check:false})})
+ });
+ // Balance check reminder
+ const bal=nextBalanceCheckDate();if(bal&&bal>=from&&bal<=to)items.push({key:'balance:'+bal,date:bal,time:'20:00',title:'7일 잔고 점검',body:'계좌 실제 잔고를 확인하고 PERSONAL CENTER 잔고를 업데이트하세요.',kind:'reminder',page:'money',check:false});
+ // Weekly Toss capture: Sunday 19:00
+ dates.forEach(ds=>{if(new Date(ds+'T00:00:00').getDay()===0)items.push({key:'toss-week:'+ds,date:ds,time:'19:00',title:'토스 주간 소비 입력',body:'지난 7일 토스 소비 캡처를 올리고 인식 결과를 저장하세요.',kind:'reminder',page:'money',check:false})});
+ // Month-end income entry
+ dates.forEach(ds=>{const dt=new Date(ds+'T00:00:00');if(dt.getDate()===new Date(dt.getFullYear(),dt.getMonth()+1,0).getDate())items.push({key:'month-income:'+ds,date:ds,time:'19:30',title:'이번 달 실제 수익 입력',body:'하이·레이·정권·직접 수익을 확정해서 입력하세요.',kind:'reminder',page:'dashboard',check:false})});
+ return items
+}
+async function initNativeNotifications(){
+ const n=nativeNotifications();if(!n||nativeNotifListenerReady)return !!n;
+ try{
+  const perm=await n.checkPermissions();if(perm.display!=='granted'){const p=await n.requestPermissions();if(p.display!=='granted')return false}
+  await n.registerActionTypes({types:[
+   {id:'PC_CHECK',actions:[{id:'complete',title:'완료'},{id:'open',title:'열기'}]},
+   {id:'PC_OPEN',actions:[{id:'open',title:'열기'}]}
+  ]});
+  await n.addListener('localNotificationActionPerformed',async action=>{
+   const ex=action?.notification?.extra||{};
+   if(action.actionId==='complete'&&ex.pcKind&&ex.pcItemId)await completeNativeNotificationItem(ex.pcKind,ex.pcItemId,ex.pcDate||today);
+   else if(ex.pcPage)go(ex.pcPage);
+  });
+  nativeNotifListenerReady=true;return true
+ }catch(e){console.warn('native notification init',e);return false}
+}
+async function completeNativeNotificationItem(kind,id,dateStr){
+ try{
+  if(kind==='task'){const {error}=await sb.from('pc_tasks').update({status:'done',completed_at:new Date().toISOString()}).eq('id',id);if(error)throw error}
+  else if(kind==='event'){const {error}=await sb.from('pc_calendar_events').update({status:'done',completed_at:new Date().toISOString()}).eq('id',id);if(error)throw error}
+  else if(kind==='routine'){const {error}=await sb.from('pc_routine_logs').upsert({user_id:state.user.id,routine_id:id,log_date:dateStr,status:'done',completed_at:new Date().toISOString()},{onConflict:'user_id,routine_id,log_date'});if(error)throw error}
+  await loadAll();toast('잠금화면에서 완료 처리됨')
+ }catch(e){console.error(e);toast('완료 처리 실패 · 앱에서 확인해주세요')}
+}
+async function syncNativeNotifications(){
+ if(nativeNotifSyncBusy)return;const n=nativeNotifications();if(!n||!state.user)return;
+ nativeNotifSyncBusy=true;
+ try{
+  const ok=await initNativeNotifications();if(!ok)return;
+  const items=nativeReminderItems(),minePrefix='pc:';
+  const pending=await n.getPending().catch(()=>({notifications:[]}));
+  const ours=(pending.notifications||[]).filter(x=>String(x.extra?.pcKey||'').startsWith(minePrefix));
+  if(ours.length)await n.cancel({notifications:ours.map(x=>({id:x.id}))});
+  const notifications=items.map((x,i)=>({
+   id:nativeNotificationId(x.key),
+   title:x.title,
+   body:x.body,
+   schedule:{at:nativeDateTime(x.date,x.time,i)},
+   actionTypeId:x.check?'PC_CHECK':'PC_OPEN',
+   extra:{pcKey:minePrefix+x.key,pcKind:x.kind,pcItemId:x.itemId||'',pcDate:x.date,pcPage:x.page||'dashboard'},
+   group:'personal-center',
+   smallIcon:'ic_stat_pc',
+   iconColor:'#111318'
+  }));
+  if(notifications.length)await n.schedule({notifications});
+ }catch(e){console.warn('native notification sync',e)}
+ finally{nativeNotifSyncBusy=false}
+}
 setDefaults();
 </script>
 </body>

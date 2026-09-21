@@ -1569,6 +1569,7 @@ function nativeNotifications(){
  try{
   if(!window.Capacitor?.isNativePlatform?.())return null;
   if(window.Capacitor?.isPluginAvailable&&!window.Capacitor.isPluginAvailable('LocalNotifications'))return null;
+  if(!window.Capacitor?.Plugins?.LocalNotifications&&window.Capacitor?.registerPlugin)window.Capacitor.registerPlugin('LocalNotifications');
   return window.Capacitor?.Plugins?.LocalNotifications||null
  }catch{return null}
 }
@@ -1644,7 +1645,6 @@ async function syncNativeNotifications(){
    actionTypeId:x.check?'PC_CHECK':'PC_OPEN',
    extra:{pcKey:minePrefix+x.key,pcKind:x.kind,pcItemId:x.itemId||'',pcDate:x.date,pcPage:x.page||'dashboard'},
    group:'personal-center',
-   smallIcon:'ic_stat_pc',
    iconColor:'#111318'
   }));
   if(notifications.length)await n.schedule({notifications});

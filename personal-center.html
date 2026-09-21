@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.5</title>
+<title>PERSONAL CENTER V2.6</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -89,12 +89,21 @@
 .ai-chat-compose{border-top:1px solid #dce6d2;padding:11px;background:#fff}.ai-chat-compose .ai-quick{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 9px}.ai-chat-compose .ai-quick button{background:#f4f9ec;border:1px solid #d4e5ba;color:#3e610a;padding:6px 9px}.ai-chat-compose .ai-chat-row{display:grid;grid-template-columns:1fr auto;gap:7px}.ai-chat-compose .ai-chat-row input{min-width:0;border:1px solid #cfd8c8;border-radius:12px;padding:11px 12px;outline:none}.ai-chat-compose .ai-chat-row input:focus{border-color:#92cf2e;box-shadow:0 0 0 3px rgba(146,207,46,.14)}
 @media(max-width:760px){.ai-chat-fab{right:14px;bottom:78px;min-width:128px;height:54px}.ai-chat-fab .orb{width:35px;height:35px}.ai-chat-drawer{left:8px;right:8px;bottom:72px;width:auto;height:calc(100vh - 88px);border-radius:20px}}
 
+/* V2.6 Toss daily spend capture */
+.toss-capture{border:1px solid #d9e7c7;background:linear-gradient(135deg,#fff,#fbfff6)}
+.toss-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}.toss-head h3{margin:0}.toss-head p{margin:4px 0 0;font-size:9px;color:var(--muted)}
+.toss-upload{margin-top:12px;border:1.5px dashed #b9ce98;border-radius:14px;padding:18px;text-align:center;background:#f8fdf2;cursor:pointer}.toss-upload:hover{background:#f3faea}.toss-upload b{display:block;font-size:11px}.toss-upload small{display:block;margin-top:5px;color:var(--muted);font-size:8px}.toss-upload input{display:none}
+.toss-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.toss-summary .box{border:1px solid #e1e8dc;background:#fff;border-radius:12px;padding:10px}.toss-summary span{font-size:8px;color:var(--muted)}.toss-summary b{display:block;font-size:15px;margin-top:4px}
+.toss-status{margin-top:9px;font-size:9px;color:var(--muted);line-height:1.5}.toss-status.bad{color:var(--bad);font-weight:900}.toss-status.good{color:#397d0c;font-weight:900}
+.toss-preview{display:grid;gap:7px;margin-top:10px}.toss-preview-row{display:grid;grid-template-columns:135px 1fr 100px auto;gap:8px;align-items:center;border:1px solid #e2e7df;background:#fff;border-radius:11px;padding:8px}.toss-preview-row input{width:100%;border:1px solid #d8dfe2;border-radius:8px;padding:7px 8px}.toss-preview-row small{font-size:8px;color:var(--muted)}
+.daily-spend-cal{font-weight:1000!important}.daily-spend-cal.good{background:#edf9df!important;color:#39790c!important;border-color:#cde7aa!important}.daily-spend-cal.warn{background:#fff5df!important;color:#946000!important;border-color:#f3d18b!important}.daily-spend-cal.bad{background:#fff0f2!important;color:#b12239!important;border-color:#f1b8c1!important}
+@media(max-width:800px){.toss-summary{grid-template-columns:1fr 1fr}.toss-preview-row{grid-template-columns:1fr 1fr}.toss-preview-row small{grid-column:1/-1}}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.5</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.6</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -229,6 +238,19 @@
  <div class="panel card balance-check-card" style="margin-bottom:16px">
   <div><span class="autosave-note">7일 잔고 점검</span><div id="balanceCheckCash" class="big">0원</div><div id="balanceCheckMeta" class="balance-check-meta">마지막 확인 -</div></div>
   <div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn mini" type="button" onclick="confirmBalanceCheck()">현재 잔고 확인 완료</button><button class="btn mini primary" type="button" onclick="document.getElementById('accountRows')?.scrollIntoView({behavior:'smooth'})">계좌 잔고 수정</button></div>
+ </div>
+ <div class="panel card toss-capture" id="tossSpendPanel" style="margin-bottom:16px">
+  <div class="toss-head"><div><h3>토스 소비 캡처 자동입력</h3><p>토스에서 오늘/주간 쓴 금액을 캡처해서 올리면 날짜별 소비액을 자동으로 읽습니다. 카드명세서와는 중복 합산하지 않습니다.</p></div><span class="tag green">캘린더 자동반영</span></div>
+  <label class="toss-upload" for="tossSpendFiles"><b>📷 토스 캡처 선택</b><small>하루 캡처 또는 일주일치 화면 · 여러 장 한 번에 가능</small><input id="tossSpendFiles" type="file" accept="image/png,image/jpeg,image/webp" multiple onchange="analyzeTossScreenshots(this.files)"></label>
+  <div class="toss-summary">
+   <div class="box"><span>최근 7일</span><b id="tossWeekSpend">0원</b></div>
+   <div class="box"><span>7일 일평균</span><b id="tossDailyAvg">0원</b></div>
+   <div class="box"><span>이번 달 누적</span><b id="tossMonthSpend">0원</b></div>
+   <div class="box"><span>주간 예산 대비</span><b id="tossWeekVsBudget">-</b></div>
+  </div>
+  <div id="tossSpendStatus" class="toss-status">캡처를 올리면 AI가 날짜와 금액을 읽고, 저장 전에 한 번 확인시켜드립니다.</div>
+  <div id="tossSpendPreview" class="toss-preview"></div>
+  <div id="tossSpendSaveBar" style="display:none;margin-top:10px;text-align:right"><button class="btn" type="button" onclick="clearTossSpendPreview()">취소</button> <button class="btn primary" type="button" onclick="saveTossSpendPreview()">인식 결과 저장</button></div>
  </div>
  <div class="formcard card">
   <h3>계좌 / 현금 추가</h3><div class="formgrid">
@@ -557,8 +579,8 @@ const $=id=>document.getElementById(id), won=n=>Math.round(Number(n||0)).toLocal
 const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const now=new Date(), today=ymd(now), monthStart=ymd(new Date(now.getFullYear(),now.getMonth(),1)), monthEnd=ymd(new Date(now.getFullYear(),now.getMonth()+1,0));
-let calDate=new Date(now.getFullYear(),now.getMonth(),1);
-let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[],receivables:[],balanceCheckins:[],secretaryMessages:[],secretaryActionLog:[],routines:[],routineLogs:[],secretaryRules:[]};
+let calDate=new Date(now.getFullYear(),now.getMonth(),1);let tossSpendPreview=[];
+let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayments:[],recurring:[],tx:[],flows:[],goals:[],tasks:[],events:[],cardBills:[],monthlyIncome:[],spendingPatterns:[],spendingDetails:[],cards:[],receivables:[],balanceCheckins:[],secretaryMessages:[],secretaryActionLog:[],routines:[],routineLogs:[],secretaryRules:[],dailySpend:[]};
 
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('recvEarnedMonth'))$('recvEarnedMonth').value=today.slice(0,7);if($('recvDate'))$('recvDate').value=lastDayStr(now.getFullYear(),now.getMonth()+1)}
@@ -566,7 +588,7 @@ function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 
 function showPage(p,scroll=true){if(!$('page-'+p))p='dashboard';document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();if(scroll)window.scrollTo({top:0,behavior:'smooth'});return p}
 function go(p,opts={}){const page=showPage(p,opts.scroll!==false);toggleAiChat(false);if(opts.history!==false){const hash='#'+page;if(location.hash!==hash)history.pushState({pcPage:page},'',hash)}}
 function scrollAfterGo(page,id){go(page);setTimeout(()=>{const el=$(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.animate([{boxShadow:'0 0 0 0 rgba(158,242,41,0)'},{boxShadow:'0 0 0 4px rgba(158,242,41,.32)'},{boxShadow:'0 0 0 0 rgba(158,242,41,0)'}],{duration:1100})}},140)}
-function goDetail(type){if(type==='debt')return go('debt');if(type==='income')return scrollAfterGo('dashboard','incomePanel');if(type==='card')return scrollAfterGo('money','cardBillPanel');if(type==='living')return scrollAfterGo('money','recurringPanel')}
+function goDetail(type){if(type==='debt')return go('debt');if(type==='income')return scrollAfterGo('dashboard','incomePanel');if(type==='card')return scrollAfterGo('money','cardBillPanel');if(type==='living')return scrollAfterGo('money','recurringPanel');if(type==='dailySpend')return scrollAfterGo('money','tossSpendPanel')}
 function toggleAiChat(force){const drawer=$('aiChatDrawer'),backdrop=$('aiChatBackdrop'),fab=$('aiChatFab');if(!drawer)return;const open=typeof force==='boolean'?force:!drawer.classList.contains('show');drawer.classList.toggle('show',open);backdrop?.classList.toggle('show',open);fab?.setAttribute('aria-expanded',String(open));if(open){setTimeout(()=>$('aiSecretaryInput')?.focus(),80);if($('aiChatHistory'))$('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight}}
 
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
@@ -610,9 +632,10 @@ async function loadAll(){
   sb.from('pc_secretary_action_log').select('*').eq('action_date',today).limit(50),
   sb.from('pc_daily_routines').select('*').order('created_at'),
   sb.from('pc_routine_logs').select('*').gte('log_date',addDaysStr(today,-90)).lte('log_date',today).limit(1000),
-  sb.from('pc_secretary_rules').select('*').order('priority')
+  sb.from('pc_secretary_rules').select('*').order('priority'),
+  sb.from('pc_daily_spend').select('*').order('spend_date',{ascending:false}).limit(400)
  ]);
- const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards','receivables','balanceCheckins','secretaryMessages','secretaryActionLog','routines','routineLogs','secretaryRules'];
+ const keys=['profile','businesses','accounts','debts','debtPayments','recurring','tx','flows','goals','tasks','events','cardBills','monthlyIncome','spendingPatterns','spendingDetails','cards','receivables','balanceCheckins','secretaryMessages','secretaryActionLog','routines','routineLogs','secretaryRules','dailySpend'];
  qs.forEach((r,i)=>{if(r.error)console.error(keys[i],r.error);else state[keys[i]]=i===0?(r.data||state.profile):(r.data||[])});
  await rolloverTasks();
  renderAll();
@@ -621,7 +644,7 @@ async function rolloverTasks(){
  const overdue=state.tasks.filter(t=>t.status==='pending'&&t.auto_rollover&&t.due_date<today);
  for(const t of overdue){await sb.from('pc_tasks').update({due_date:today,original_due_date:t.original_due_date||t.due_date,rollover_count:(t.rollover_count||0)+1}).eq('id',t.id);t.original_due_date=t.original_due_date||t.due_date;t.due_date=today;t.rollover_count=(t.rollover_count||0)+1}
 }
-function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderReceivables();renderBalanceCheck();renderAiSecretary();renderRoutines();renderSecretaryRules();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
+function renderAll(){renderDashboard();renderMoney();renderDebt();renderBusiness();renderTasks();renderGoals();renderSettings();renderCalendar();renderBizSelects();renderIncomePanel();renderReceivables();renderBalanceCheck();renderAiSecretary();renderRoutines();renderSecretaryRules();renderDailySpend();renderCardCycleEditor();renderCardBillEditor();renderSpendingReport()}
 function monthRows(a,key){return a.filter(x=>x[key]>=monthStart&&x[key]<=monthEnd)}
 function personalDebts(){return state.debts.filter(d=>!d.is_business_debt&&Number(d.balance)>0)}
 function deadlineDebts(){return personalDebts().filter(d=>d.deadline_priority&&d.target_payoff_date)}
@@ -840,12 +863,55 @@ function cardExitSurplusInfo(){
  const need=Math.max(0,cashFixed+bill+debt+tax+support-reimburse),surplus=income-need,target=Number(state.profile?.credit_card_exit_buffer||3000000),complete=hasIncome&&hasBill;
  return {month:mk,income,bill,cashFixed,debt,tax,support,reimburse,need,surplus,target,complete,ready:complete&&surplus>=target,gap:Math.max(0,target-surplus)}
 }
+function dailySpendForDate(date){return state.dailySpend.find(x=>x.spend_date===date)}
+function dailySpendBudget(){return Math.max(1,Math.round(plannedDebitWeekly()/7))}
+function spendDateRange(days=7,end=today){const d=new Date(end+'T00:00:00');d.setDate(d.getDate()-(days-1));return {start:ymd(d),end}}
+function spendSum(start,end){return state.dailySpend.filter(x=>x.spend_date>=start&&x.spend_date<=end).reduce((s,x)=>s+Number(x.amount||0),0)}
+function recentSpendStats(){
+ const r=spendDateRange(7),week=spendSum(r.start,r.end),rows=state.dailySpend.filter(x=>x.spend_date>=r.start&&x.spend_date<=r.end),avg=rows.length?Math.round(week/rows.length):0,month=spendSum(monthStart,monthEnd),budget=plannedDebitWeekly();
+ return {week,avg,month,budget,over:week-budget,days:rows.length,today:dailySpendForDate(today)}
+}
+function dailySpendLevel(amount){const b=dailySpendBudget();return amount<=b?'good':amount<=b*1.5?'warn':'bad'}
+function renderDailySpend(){
+ if(!$('tossWeekSpend'))return;const s=recentSpendStats();
+ $('tossWeekSpend').textContent=won(s.week);$('tossDailyAvg').textContent=won(s.avg);$('tossMonthSpend').textContent=won(s.month);
+ $('tossWeekVsBudget').textContent=s.over>0?'+'+won(s.over):won(Math.abs(s.over))+' 여유';$('tossWeekVsBudget').className=s.over>0?'bad':'good';
+}
+function fileToDataUrlCompressed(file){
+ return new Promise(async(resolve,reject)=>{try{const bmp=await createImageBitmap(file),max=1600,scale=Math.min(1,max/Math.max(bmp.width,bmp.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bmp.width*scale));canvas.height=Math.max(1,Math.round(bmp.height*scale));const ctx=canvas.getContext('2d');ctx.drawImage(bmp,0,0,canvas.width,canvas.height);canvas.toBlob(blob=>{if(!blob)return reject(new Error('이미지 변환 실패'));const fr=new FileReader();fr.onload=()=>{const s=String(fr.result),comma=s.indexOf(',');resolve({base64:s.slice(comma+1),mime:'image/jpeg'})};fr.onerror=()=>reject(fr.error);fr.readAsDataURL(blob)},'image/jpeg',.84)}catch(e){reject(e)}})
+}
+async function analyzeTossScreenshots(files){
+ const arr=[...(files||[])];if(!arr.length)return;const st=$('tossSpendStatus');tossSpendPreview=[];$('tossSpendPreview').innerHTML='';$('tossSpendSaveBar').style.display='none';st.className='toss-status';st.textContent='캡처 '+arr.length+'장 분석 중...';
+ let warnings=[];
+ for(let i=0;i<arr.length;i++){
+  try{
+   st.textContent='캡처 '+(i+1)+'/'+arr.length+' 분석 중...';
+   const img=await fileToDataUrlCompressed(arr[i]);
+   const {data,error}=await sb.functions.invoke('pc-toss-spend-parse',{body:{image_base64:img.base64,mime_type:img.mime,current_date:today}});
+   if(error)throw error;if(data?.error){if(data.error==='ai_not_configured')throw new Error('AI 자동인식 서버키가 아직 연결되지 않았습니다.');throw new Error(data.message||data.detail||data.error)}
+   (data.entries||[]).forEach(x=>{const entry={date:String(x.date).slice(0,10),amount:Number(x.amount||0),confidence:Number(x.confidence||0),label:String(x.label||'')};const old=tossSpendPreview.findIndex(y=>y.date===entry.date);if(old>=0){if(entry.confidence>=tossSpendPreview[old].confidence)tossSpendPreview[old]=entry}else tossSpendPreview.push(entry)});
+   warnings.push(...(data.warnings||[]))
+  }catch(e){warnings.push(arr[i].name+': '+(e?.message||String(e)))}
+ }
+ tossSpendPreview.sort((a,b)=>a.date.localeCompare(b.date));renderTossSpendPreview();
+ if(tossSpendPreview.length){st.className='toss-status good';st.textContent=tossSpendPreview.length+'일치 인식 완료. 날짜·금액 확인 후 저장하세요.'+(warnings.length?' · 확인사항: '+warnings.join(' / '):'');$('tossSpendSaveBar').style.display='block'}
+ else{st.className='toss-status bad';st.textContent='자동인식 결과가 없습니다.'+(warnings.length?' '+warnings.join(' / '):' 토스 화면에서 날짜와 사용금액이 보이는 캡처를 올려주세요.')}
+ $('tossSpendFiles').value=''
+}
+function renderTossSpendPreview(){
+ if(!$('tossSpendPreview'))return;$('tossSpendPreview').innerHTML=tossSpendPreview.map((x,i)=>'<div class="toss-preview-row"><input type="date" value="'+x.date+'" onchange="tossSpendPreview['+i+'].date=this.value"><input type="number" value="'+Math.round(x.amount)+'" onchange="tossSpendPreview['+i+'].amount=Number(this.value||0)"><small>인식 '+Math.round((x.confidence||0)*100)+'%'+(x.label?' · '+esc(x.label):'')+'</small><button class="btn mini danger" type="button" onclick="tossSpendPreview.splice('+i+',1);renderTossSpendPreview();if(!tossSpendPreview.length)$(\'tossSpendSaveBar\').style.display=\'none\'">제외</button></div>').join('')
+}
+function clearTossSpendPreview(){tossSpendPreview=[];$('tossSpendPreview').innerHTML='';$('tossSpendSaveBar').style.display='none';$('tossSpendStatus').className='toss-status';$('tossSpendStatus').textContent='캡처를 올리면 AI가 날짜와 금액을 읽고, 저장 전에 한 번 확인시켜드립니다.'}
+async function saveTossSpendPreview(){
+ if(!tossSpendPreview.length)return;const rows=tossSpendPreview.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&Number.isFinite(Number(x.amount))&&Number(x.amount)>=0).map(x=>({user_id:state.user.id,spend_date:x.date,amount:Math.round(Number(x.amount)),source:'toss_capture',confidence:x.confidence||null,note:x.label||'',updated_at:new Date().toISOString()}));if(!rows.length)return;
+ const {error}=await sb.from('pc_daily_spend').upsert(rows,{onConflict:'user_id,spend_date'});if(error)return alert(error.message);clearTossSpendPreview();await loadAll();toast(rows.length+'일 소비금액 저장 완료')
+}
 function secretarySnapshot(){
  const m=metrics(),cash=currentCashTotal(),planNeed=plannedBaselineMonthlyNeed(),currentNeed=currentBaselineMonthlyNeed(),runway=currentNeed>0?cash/currentNeed*30:999,cap=plannedCreditCap(),cardUsed=currentPersonalCardSpend(),priorityDebt=priorityDebtBalance(),ref=balanceReferenceDate(),nextBal=nextBalanceCheckDate(),balanceDue=!ref||today>=nextBal;
  const pendingReceivables=state.receivables.filter(r=>r.status==='expected'),unknownReceivables=pendingReceivables.filter(r=>Number(r.amount||0)<=0);
  const nearDebt=personalDebts().map(d=>({d,days:daysTo(d.target_payoff_date||d.maturity_date)})).filter(x=>x.days!=null&&x.days>=0&&x.days<=90).sort((a,b)=>a.days-b.days);
- const routines=todayRoutines(),routineIncomplete=routines.filter(r=>!routineDone(r.id)),cardExit=cardExitSurplusInfo();
- return {m,cash,planNeed,currentNeed,runway,cap,cardUsed,priorityDebt,balanceDue,nextBal,pendingReceivables,unknownReceivables,nearDebt,routines,routineIncomplete,cardExit}
+ const routines=todayRoutines(),routineIncomplete=routines.filter(r=>!routineDone(r.id)),cardExit=cardExitSurplusInfo(),spend=recentSpendStats();
+ return {m,cash,planNeed,currentNeed,runway,cap,cardUsed,priorityDebt,balanceDue,nextBal,pendingReceivables,unknownReceivables,nearDebt,routines,routineIncomplete,cardExit,spend}
 }
 function secretaryActions(){
  const s=secretarySnapshot(),out=[];
@@ -861,6 +927,8 @@ function secretaryActions(){
  if(s.nearDebt.length)push('debt_due_'+s.nearDebt[0].d.id,s.nearDebt[0].d.name+' 만기자금 확인','D-'+s.nearDebt[0].days+' · 남은 원금 '+won(s.nearDebt[0].d.balance),'debt',s.nearDebt[0].days<=30?'must':'high');
  if(s.m.remain>0)push('income_gap','이번 달 부족수입 '+won(s.m.remain)+' 확보','남은 '+s.m.left+'일 기준 하루 '+won(s.m.daily)+' 추가 확보가 필요합니다.','dashboard','must');
  s.routineIncomplete.sort((a,b)=>({must:0,high:1,normal:2,low:3}[a.priority]-({must:0,high:1,normal:2,low:3}[b.priority]))).forEach(r=>push('routine_'+r.id,'업무 루틴 · '+r.title,(r.target_time?'목표 '+String(r.target_time).slice(0,5)+' · ':'')+(routineTimePassed(r)?'목표시간 지남 · 바로 처리':'오늘 완료 필요'),'routines',r.priority==='must'||routineTimePassed(r)?'must':r.priority==='high'?'high':'normal',r.id));
+ if(!s.spend.today&&now.getHours()>=18)push('daily_spend_capture','오늘 토스 소비 캡처 올리기','오늘 소비기록이 없습니다. 토스 화면 캡처 한 장 올리고 오늘 쓴 금액을 확정하세요.','money','high');
+ if(s.spend.over>0)push('weekly_spend_over','최근 7일 소비 '+won(s.spend.over)+' 초과','최근 7일 '+won(s.spend.week)+' / 주간 생활비 목표 '+won(s.spend.budget)+'. 선택소비를 멈추세요.','money','must');
  if(s.priorityDebt>0)push('priority_debt','남는 돈은 비상금·마통으로','우선상환 대상 잔액 '+won(s.priorityDebt)+'. 두 건 끝나기 전 큰 선택소비는 미룹니다.','debt','normal');
  return out
 }
@@ -891,7 +959,7 @@ async function completeSecretaryAction(key,title){const {error}=await sb.from('p
 function askSecretaryPreset(q){toggleAiChat(true);$('aiSecretaryInput').value=q;askSecretary()}
 function normalizeSecretaryText(q){return String(q||'').toLowerCase().replace(/[?!.,~ㅋㅋㅎㅎㅠㅜ]/g,' ').replace(/\s+/g,' ').trim()}
 function secretaryIntentScores(q){
- const t=normalizeSecretaryText(q),score={income:0,card:0,debt:0,year:0,balance:0,receivable:0,routine:0,today:0};
+ const t=normalizeSecretaryText(q),score={income:0,card:0,debt:0,year:0,balance:0,receivable:0,routine:0,spend:0,today:0};
  const hit=(name,re,w)=>{if(re.test(t))score[name]+=w};
  hit('income',/(벌|수입|소득|매출|급여|월급|돈.*벌)/,6);hit('income',/(얼마|최소|필요)/,3);hit('income',/(이번달|이번 달|오늘|하루)/,1);
  hit('card',/(카드|신용|체크카드|체크 카드)/,7);hit('card',/(써|사용|긁|결제|끊|해지|줄)/,3);
@@ -900,6 +968,7 @@ function secretaryIntentScores(q){
  hit('balance',/(잔고|잔액|현금|통장|계좌)/,7);hit('balance',/(버텨|몇일|며칠|방어|확인)/,3);
  hit('receivable',/(받을 돈|입금|들어올|들어 오는|미수|정산금|지분|급여 예정)/,7);hit('receivable',/(언제|얼마|예정)/,2);
  hit('routine',/(루틴|릴스|블로그|포스팅|업무|운동|책읽기|책 읽기)/,7);hit('routine',/(했|안했|남았|완료|해야)/,2);
+ hit('spend',/(얼마.*썼|얼마썼|썼어|썼냐|소비|지출|과소비)/,7);hit('spend',/(이번주|이번 주|오늘|최근|일주일|7일)/,3);
  hit('today',/(오늘|지금)/,3);hit('today',/(뭐 해야|뭐해야|할 일|할일|우선순위|먼저 뭐|뭐부터)/,7);
  return {text:t,score}
 }
@@ -925,12 +994,13 @@ function secretaryAnswerByIntent(intent,s,q){
  if(intent==='balance')return '현재 등록 잔고는 '+won(s.cash)+'이고 지금 소비패턴 기준 수입 없이 약 '+s.runway.toFixed(1)+'일 버틸 수 있습니다. 다음 잔고 점검일은 '+s.nextBal+'입니다.';
  if(intent==='receivable'){const p=s.pendingReceivables;return p.length?'예정수입 '+p.length+'건이 있습니다. '+p.slice(0,4).map(x=>x.source+' '+(Number(x.amount)>0?won(x.amount):'금액 미정')+' / '+x.expected_receive_date).join(', ')+'.':'현재 등록된 예정수입이 없습니다.'}
  if(intent==='routine'){const p=s.routineIncomplete;return p.length?'오늘 업무 루틴 '+s.routines.length+'개 중 '+p.length+'개 남았습니다. 미완료: '+p.map(x=>x.title+(x.target_time?'('+String(x.target_time).slice(0,5)+')':'')).join(', ')+'. 끝낸 뒤 체크하세요.':'오늘 대상 업무 루틴은 전부 완료했습니다.'}
+ if(intent==='spend'){const x=s.spend;return '최근 7일 기록 소비는 '+won(x.week)+'이고, 기록된 날 기준 일평균 '+won(x.avg)+'입니다. 주간 생활비 목표 '+won(x.budget)+(x.over>0?'을 '+won(x.over)+' 초과했습니다. 선택소비 중단하세요.':'보다 '+won(Math.abs(x.over))+' 남았습니다.')+' 이번 달 누적 기록은 '+won(x.month)+'입니다.'}
  if(intent==='today'){const a=secretaryActions().slice(0,3);return a.length?'오늘은 '+a.map((x,i)=>(i+1)+'번 '+x.title).join(', ')+' 순서로 처리하세요.':'오늘 급한 재무·업무 작업은 없습니다. 신용카드는 계획상한 안에서만 쓰세요.'}
  return '지금 핵심은 잔고 '+won(s.cash)+', 절약계획 최소 월소득 '+won(s.planNeed)+', 우선상환 부채 '+won(s.priorityDebt)+'입니다. 자연스럽게 말해도 됩니다. 예: “나 오늘 얼마 벌어야 돼?”, “이번 달 카드 더 써도 됨?”, “돈 생기면 뭐부터 갚냐?”'
 }
 function secretaryAnswer(q){
  const s=secretarySnapshot(),intent=secretaryIntent(q),primary=secretaryAnswerByIntent(intent.primary,s,q);
- if(intent.secondary&&intent.secondary!==intent.primary&&['income','card','debt','year','balance','receivable','routine'].includes(intent.secondary)){
+ if(intent.secondary&&intent.secondary!==intent.primary&&['income','card','debt','year','balance','receivable','routine','spend'].includes(intent.secondary)){
   const second=secretaryAnswerByIntent(intent.secondary,s,q);
   return primary+'\n\n추가로, '+second
  }
@@ -1457,7 +1527,7 @@ function renderCalendar(){
  if(!$('calendarGrid'))return;const y=calDate.getFullYear(),m=calDate.getMonth(),first=new Date(y,m,1).getDay(),last=new Date(y,m+1,0).getDate(),monthKey=y+'-'+String(m+1).padStart(2,'0'),bills=cardBillsForMonth(monthKey),billTotal=bills.reduce((s,x)=>s+Number(x.amount||0),0),billPaid=bills.length&&bills.every(x=>x.paid),monthIncome=incomeRowsForMonth(monthKey).reduce((s,x)=>s+Number(x.amount||0),0);$('calTitle').textContent=y+'년 '+(m+1)+'월';
  let h=['일','월','화','수','목','금','토'].map(x=>'<div class="dow">'+x+'</div>').join('');
  for(let i=0;i<first;i++)h+='<div class="day off"></div>';
- for(let d=1;d<=last;d++){const date=monthKey+'-'+String(d).padStart(2,'0');let items=[];
+ for(let d=1;d<=last;d++){const date=monthKey+'-'+String(d).padStart(2,'0');let items=[];const ds=dailySpendForDate(date);if(ds){const level=dailySpendLevel(Number(ds.amount||0));items.push('<span class="calitem daily-spend-cal '+level+'" onclick="event.stopPropagation();goDetail(\'dailySpend\')">💸 '+won(ds.amount)+'</span>')}
  state.cards.forEach(card=>{
   const bill=bills.find(b=>b.card_name===card.card_name),payDay=Math.min(Number(card.payment_day||1),last),confirmDay=card.confirmation_day?Math.min(Number(card.confirmation_day),last):null;
   if(confirmDay===d)items.push('<span class="calitem system-cal card-confirm-alert" onclick="event.stopPropagation();go(\'money\')">📣 '+esc(card.card_name)+' 확정금액 입력'+(card.period_label?' · '+esc(card.period_label):'')+'</span>');

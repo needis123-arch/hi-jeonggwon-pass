@@ -7,6 +7,10 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
+import android.content.Intent;
+import android.provider.Settings;
+import androidx.core.app.NotificationManagerCompat;
+
 import org.json.JSONArray;
 
 import java.util.HashSet;
@@ -28,6 +32,7 @@ public class TodayBoardPlugin extends Plugin {
             JSObject ret = new JSObject();
             ret.put("ok", true);
             ret.put("count", itemJson.length());
+            ret.put("notificationsEnabled", NotificationManagerCompat.from(getContext()).areNotificationsEnabled());
             call.resolve(ret);
         } catch (Exception e) {
             call.reject("오늘 할 일 고정판 동기화 실패", e);
@@ -64,4 +69,25 @@ public class TodayBoardPlugin extends Plugin {
         TodayBoardManager.showBoard(getContext(), false);
         call.resolve();
     }
+    @PluginMethod
+    public void status(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("notificationsEnabled", NotificationManagerCompat.from(getContext()).areNotificationsEnabled());
+        ret.put("todayCount", TodayBoardManager.itemsForDate(getContext(), TodayBoardManager.today()).size());
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void openNotificationSettings(PluginCall call) {
+        try {
+            Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, getContext().getPackageName());
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(intent);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("알림 설정을 열 수 없습니다.", e);
+        }
+    }
+
 }

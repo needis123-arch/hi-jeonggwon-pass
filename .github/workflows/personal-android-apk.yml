@@ -80,7 +80,9 @@ jobs:
           cp native/android/TodayBoardManager.java "$TARGET/TodayBoardManager.java"
           cp native/android/TodayBoardReceiver.java "$TARGET/TodayBoardReceiver.java"
           cp native/android/TodayBoardPlugin.java "$TARGET/TodayBoardPlugin.java"
+          cp native/android/TodayBoardWidgetProvider.java "$TARGET/TodayBoardWidgetProvider.java"
           cp native/android/MainActivity.java "$TARGET/MainActivity.java"
+          cp -R native/android/res/. android/app/src/main/res/
           python - <<'PY'
           from pathlib import Path
           p=Path("android/app/src/main/AndroidManifest.xml")
@@ -88,9 +90,33 @@ jobs:
           receiver='''        <receiver
               android:name=".TodayBoardReceiver"
               android:enabled="true"
-              android:exported="false" />\n'''
+              android:exported="false" />
+        <receiver
+              android:name=".TodayBoardWidgetProvider"
+              android:enabled="true"
+              android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/today_board_widget_info" />
+        </receiver>\n'''
           if '.TodayBoardReceiver' not in s:
               s=s.replace('    </application>', receiver+'    </application>')
+          elif '.TodayBoardWidgetProvider' not in s:
+              widget='''        <receiver
+              android:name=".TodayBoardWidgetProvider"
+              android:enabled="true"
+              android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/today_board_widget_info" />
+        </receiver>\n'''
+              s=s.replace('    </application>', widget+'    </application>')
           p.write_text(s)
           PY
 

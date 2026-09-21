@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.4</title>
+<title>PERSONAL CENTER V2.5</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -94,7 +94,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.4</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.5</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -889,17 +889,52 @@ function renderAiSecretary(){
 }
 async function completeSecretaryAction(key,title){const {error}=await sb.from('pc_secretary_action_log').upsert({user_id:state.user.id,action_date:today,action_key:key,title,status:'done'},{onConflict:'user_id,action_date,action_key'});if(error)return alert(error.message);await loadAll();toast('오늘 비서 할 일 완료')}
 function askSecretaryPreset(q){toggleAiChat(true);$('aiSecretaryInput').value=q;askSecretary()}
+function normalizeSecretaryText(q){return String(q||'').toLowerCase().replace(/[?!.,~ㅋㅋㅎㅎㅠㅜ]/g,' ').replace(/\s+/g,' ').trim()}
+function secretaryIntentScores(q){
+ const t=normalizeSecretaryText(q),score={income:0,card:0,debt:0,year:0,balance:0,receivable:0,routine:0,today:0};
+ const hit=(name,re,w)=>{if(re.test(t))score[name]+=w};
+ hit('income',/(벌|수입|소득|매출|급여|월급|돈.*벌)/,6);hit('income',/(얼마|최소|필요)/,3);hit('income',/(이번달|이번 달|오늘|하루)/,1);
+ hit('card',/(카드|신용|체크카드|체크 카드)/,7);hit('card',/(써|사용|긁|결제|끊|해지|줄)/,3);
+ hit('debt',/(빚|대출|마통|마이너스|비상금대출|상환|원금)/,7);hit('debt',/(갚|먼저|우선|순서)/,3);
+ hit('year',/(1년|일년|12개월|내년|년 뒤)/,7);hit('year',/(모아|모여|저축|자산|얼마.*남)/,4);
+ hit('balance',/(잔고|잔액|현금|통장|계좌)/,7);hit('balance',/(버텨|몇일|며칠|방어|확인)/,3);
+ hit('receivable',/(받을 돈|입금|들어올|들어 오는|미수|정산금|지분|급여 예정)/,7);hit('receivable',/(언제|얼마|예정)/,2);
+ hit('routine',/(루틴|릴스|블로그|포스팅|업무|운동|책읽기|책 읽기)/,7);hit('routine',/(했|안했|남았|완료|해야)/,2);
+ hit('today',/(오늘|지금)/,3);hit('today',/(뭐 해야|뭐해야|할 일|할일|우선순위|먼저 뭐|뭐부터)/,7);
+ return {text:t,score}
+}
+function secretaryIntent(q){
+ const x=secretaryIntentScores(q),entries=Object.entries(x.score).sort((a,b)=>b[1]-a[1]);
+ if(!entries.length||entries[0][1]<=0)return {primary:'general',secondary:null,scores:x.score,text:x.text};
+ const primary=entries[0][0],secondary=entries[1]&&entries[1][1]>=Math.max(5,entries[0][1]-2)?entries[1][0]:null;
+ return {primary,secondary,scores:x.score,text:x.text}
+}
+function secretaryAnswerByIntent(intent,s,q){
+ if(intent==='income'){
+  const monthNeed=s.planNeed,remain=s.m.remain,daily=s.m.daily;
+  return '절약계획 기준 최소 월소득은 '+won(monthNeed)+'입니다. 현재 이번 달 수익 기준 아직 '+won(remain)+' 부족하고, 남은 기간 기준 하루 최소 '+won(daily)+'을 추가로 확보해야 합니다. 월 200만원을 따로 모으려면 약 '+won(monthNeed+2000000)+', 월 300만원이면 약 '+won(monthNeed+3000000)+'이 필요합니다.'
+ }
+ if(intent==='card'){
+  const left=Math.max(0,s.cap-s.cardUsed),e=s.cardExit;
+  if(!e.complete)return '신용카드 완전중단 여부는 아직 판단 보류입니다. '+e.month+' 수입과 카드값을 확정해야 합니다. 지금은 고정결제·불가피한 항목만 신용카드로 쓰고 생활비는 체크카드로 옮기세요. 현재 이번 달 개인카드 사용은 '+won(s.cardUsed)+'입니다.';
+  if(e.ready)return '전월 여유자금 '+won(e.surplus)+'으로 완전중단 기준 '+won(e.target)+'을 충족했습니다. 신용카드 완전중단 전환이 가능합니다. 현재 월 카드 사용은 '+won(s.cardUsed)+'입니다.';
+  return '아직 신용카드를 완전히 끊으면 안 됩니다. 전월 여유자금 '+won(Math.max(0,e.surplus))+' / 필요 '+won(e.target)+'이라 '+won(e.gap)+'이 더 필요합니다. 현재는 고정결제·불가피한 것만 신용카드, 생활비는 체크카드로 쓰세요. 이번 달 카드 목표 잔여는 약 '+won(left)+'입니다.'
+ }
+ if(intent==='debt')return '우선상환 순서는 비상금대출 → 마이너스통장입니다. 두 건 잔액은 합계 '+won(s.priorityDebt)+'. 형 채무는 2027년 1~12월 계획상환, 우리은행 장기대출은 약정 원금상환 시작일부터 정규납부로 봅니다. 여유자금이 생기면 이 두 우선부채부터 줄이고 끝난 뒤 저축으로 전환합니다.';
+ if(intent==='year'){const income=Number(state.profile?.strategy_monthly_income_assumption||0)||s.planNeed,yr=simulateYearPlan(today.slice(0,7),income);return '월 '+won(income)+'을 유지하고 현재 절약계획을 지키면 1년 뒤 예상 현금성 자산은 약 '+won(Math.max(0,yr.endCash))+', 1년간 줄이는 대출 원금은 약 '+won(yr.principalPaid)+'입니다.'+(yr.clearMonth?' 비상금대출·마이너스통장은 '+yr.clearMonth.replace('-','년 ')+'월경 정리 예상입니다.':' 우선상환 부채는 1년 안에 전부 정리되지 않습니다.')};
+ if(intent==='balance')return '현재 등록 잔고는 '+won(s.cash)+'이고 지금 소비패턴 기준 수입 없이 약 '+s.runway.toFixed(1)+'일 버틸 수 있습니다. 다음 잔고 점검일은 '+s.nextBal+'입니다.';
+ if(intent==='receivable'){const p=s.pendingReceivables;return p.length?'예정수입 '+p.length+'건이 있습니다. '+p.slice(0,4).map(x=>x.source+' '+(Number(x.amount)>0?won(x.amount):'금액 미정')+' / '+x.expected_receive_date).join(', ')+'.':'현재 등록된 예정수입이 없습니다.'}
+ if(intent==='routine'){const p=s.routineIncomplete;return p.length?'오늘 업무 루틴 '+s.routines.length+'개 중 '+p.length+'개 남았습니다. 미완료: '+p.map(x=>x.title+(x.target_time?'('+String(x.target_time).slice(0,5)+')':'')).join(', ')+'. 끝낸 뒤 체크하세요.':'오늘 대상 업무 루틴은 전부 완료했습니다.'}
+ if(intent==='today'){const a=secretaryActions().slice(0,3);return a.length?'오늘은 '+a.map((x,i)=>(i+1)+'번 '+x.title).join(', ')+' 순서로 처리하세요.':'오늘 급한 재무·업무 작업은 없습니다. 신용카드는 계획상한 안에서만 쓰세요.'}
+ return '지금 핵심은 잔고 '+won(s.cash)+', 절약계획 최소 월소득 '+won(s.planNeed)+', 우선상환 부채 '+won(s.priorityDebt)+'입니다. 자연스럽게 말해도 됩니다. 예: “나 오늘 얼마 벌어야 돼?”, “이번 달 카드 더 써도 됨?”, “돈 생기면 뭐부터 갚냐?”'
+}
 function secretaryAnswer(q){
- const s=secretarySnapshot(),text=String(q||'').toLowerCase(),mode=state.profile?.secretary_mode||'strict',prefix=mode==='strict'?'':'';
- if(/오늘|뭐.*해|해야/.test(text)){const a=secretaryActions().slice(0,3);return a.length?'오늘은 '+a.map((x,i)=>(i+1)+'번 '+x.title).join(', ')+' 순서로 처리하세요.':'오늘 급한 재무 작업은 없습니다. 신용카드는 계획상한 안에서만 쓰세요.'}
- if(/얼마.*벌|월소득|소득/.test(text)){return '절약계획 기준 최소 월소득은 '+won(s.planNeed)+'입니다. 월 200만원을 추가로 모으려면 약 '+won(s.planNeed+2000000)+', 월 300만원이면 약 '+won(s.planNeed+3000000)+'이 필요합니다.'}
- if(/카드|써도|끊/.test(text)){const left=Math.max(0,s.cap-s.cardUsed),e=s.cardExit;if(!e.complete)return '신용카드 완전중단 여부는 아직 판단 보류입니다. '+e.month+' 수입과 카드값을 확정해야 합니다. 지금은 고정결제·불가피한 항목만 신용카드로 쓰고 생활비는 체크카드로 옮기세요.';if(e.ready)return '전월 여유자금 '+won(e.surplus)+'으로 완전중단 기준 '+won(e.target)+'을 충족했습니다. 신용카드 완전중단 전환이 가능합니다. 현재 월 카드 사용은 '+won(s.cardUsed)+'입니다.';return '아직 신용카드를 완전히 끊으면 안 됩니다. 전월 여유자금 '+won(Math.max(0,e.surplus))+' / 필요 '+won(e.target)+'이라 '+won(e.gap)+'이 더 필요합니다. 현재는 고정결제·불가피한 것만 신용카드, 생활비는 체크카드로 쓰세요. 이번 달 카드 목표 잔여는 약 '+won(left)+'입니다.'}
- if(/빚|대출|갚/.test(text)){return '우선순위는 비상금대출 → 마이너스통장입니다. 두 건 잔액은 합계 '+won(s.priorityDebt)+'. 형 채무는 2027년 1~12월 계획상환, 우리은행 원금상환은 약정 시작일부터 정규납부로 봅니다.'}
- if(/1년|모여|모을|저축/.test(text)){const income=Number(state.profile?.strategy_monthly_income_assumption||0)||s.planNeed,yr=simulateYearPlan(today.slice(0,7),income);return '월 '+won(income)+'을 유지하고 현재 절약계획을 지키면 1년 뒤 예상 현금성 자산은 약 '+won(Math.max(0,yr.endCash))+', 1년간 줄이는 대출 원금은 약 '+won(yr.principalPaid)+'입니다.'}
- if(/잔고|현금|버텨/.test(text)){return '현재 등록 잔고는 '+won(s.cash)+'이고 지금 소비패턴 기준 수입 없이 약 '+s.runway.toFixed(1)+'일 버틸 수 있습니다. 다음 잔고 점검일은 '+s.nextBal+'입니다.'}
- if(/받을|급여|입금/.test(text)){const p=s.pendingReceivables;return p.length?'예정수입 '+p.length+'건이 있습니다. '+p.slice(0,3).map(x=>x.source+' '+(Number(x.amount)>0?won(x.amount):'금액 미정')+' / '+x.expected_receive_date).join(', ')+'.':'현재 등록된 예정수입이 없습니다.'}
- if(/루틴|릴스|블로그|업무/.test(text)){const p=s.routineIncomplete;return p.length?'오늘 업무 루틴 '+s.routines.length+'개 중 '+p.length+'개 남았습니다. 미완료: '+p.map(x=>x.title+(x.target_time?'('+String(x.target_time).slice(0,5)+')':'')).join(', ')+'. 끝낸 뒤 체크하세요.':'오늘 대상 업무 루틴은 전부 완료했습니다.'}
- return '지금 핵심은 잔고 '+won(s.cash)+', 절약계획 최소 월소득 '+won(s.planNeed)+', 우선상환 부채 '+won(s.priorityDebt)+'입니다. “이번 달 얼마 벌어야 해?”, “카드 더 써도 돼?”, “빚 뭐부터 갚아?”처럼 물어보면 현재 데이터로 바로 계산해드릴게요.'
+ const s=secretarySnapshot(),intent=secretaryIntent(q),primary=secretaryAnswerByIntent(intent.primary,s,q);
+ if(intent.secondary&&intent.secondary!==intent.primary&&['income','card','debt','year','balance','receivable','routine'].includes(intent.secondary)){
+  const second=secretaryAnswerByIntent(intent.secondary,s,q);
+  return primary+'\n\n추가로, '+second
+ }
+ return primary
 }
 async function askSecretary(){
  const input=$('aiSecretaryInput'),q=input.value.trim();if(!q)return;

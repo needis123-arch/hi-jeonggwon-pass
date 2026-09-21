@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.3</title>
+<title>PERSONAL CENTER V2.4</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -69,12 +69,32 @@
 @media(max-width:1150px){.kpis{grid-template-columns:repeat(3,1fr)}.formgrid{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:1fr 1fr}.hero-grid{grid-template-columns:1fr}}
 @media(max-width:900px){body{padding-bottom:72px}.app{grid-template-columns:1fr}.side{display:none}.content{padding:15px 15px 88px}.top{height:66px;padding:0 13px}.grid2,.grid3{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.hero .need{font-size:32px}.formgrid{grid-template-columns:1fr 1fr}.mobile{position:fixed;bottom:0;left:0;right:0;height:68px;background:rgba(255,255,255,.97);border-top:1px solid var(--line);z-index:100;display:grid;grid-template-columns:repeat(6,1fr);padding:5px 6px}.mobile button{border:0;background:transparent;font-size:9px;font-weight:900;color:#687382;border-radius:10px}.mobile button.active{background:#f2f5f7;color:#111}.day{min-height:90px}.toast{bottom:82px}}
 @media(max-width:560px){.quick-task{grid-template-columns:1fr 110px auto}.quick-task-title{grid-column:1/-1}.kpis{grid-template-columns:1fr 1fr}.hero-side{grid-template-columns:1fr 1fr}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.head{align-items:flex-start;flex-direction:column}.actions .btn.hide-sm{display:none}.calgrid{min-width:730px}.calendar{overflow:auto}.content{padding-left:10px;padding-right:10px}}
+
+/* V2.4 navigation + priority + floating AI */
+.priority-strip{background:linear-gradient(90deg,#f7ffea,#fff);border:1px solid #d9e8bd;box-shadow:0 7px 20px rgba(92,130,42,.07)}
+.priority-strip-title{font-size:10px;font-weight:1000;color:#1a2612}.priority-strip-title .dot{width:9px;height:9px;background:#84dd19;box-shadow:0 0 0 4px rgba(132,221,25,.13)}
+.priority-pill{padding:6px 10px;border-width:1px;font-weight:900;transition:.14s ease}.priority-pill:hover{transform:translateY(-1px);box-shadow:0 5px 12px rgba(20,30,40,.06)}
+.priority-pill.must{background:#fff1f3;border-color:#ffb4bf;color:#a91f35}.priority-pill.high{background:#fff8e8;border-color:#ffc96b;color:#8b5600}.priority-pill.normal{background:#f5faed;border-color:#cfe6aa;color:#426b08}.priority-pill.low{background:#f7f9fb;border-color:#dce2e8;color:#6b7580}
+.priority-pill.must .pbadge{color:#b72c42}.priority-pill.high .pbadge{color:#9d6500}.priority-pill.normal .pbadge{color:#507d14}
+.priority-pill input{accent-color:#73bd0c}
+.hero-box.clickable{cursor:pointer;position:relative;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+.hero-box.clickable:hover{transform:translateY(-2px);border-color:#769d35;background:#222a32}.hero-box.clickable:after{content:'›';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:20px;color:#b8ff35;font-weight:1000}
+.dashboard-dup-kpis{display:none!important}
+.secretary-detail{margin-top:11px;border:1px solid #dfe7d7;border-radius:12px;background:rgba(255,255,255,.6)}.secretary-detail summary{cursor:pointer;padding:9px 11px;font-size:9px;font-weight:1000;color:#53606e;list-style:none}.secretary-detail summary::-webkit-details-marker{display:none}.secretary-detail summary:after{content:' +';color:#72a51f}.secretary-detail[open] summary:after{content:' –'}.secretary-detail-body{padding:0 10px 10px}
+.ai-chat-backdrop{position:fixed;inset:0;background:rgba(8,12,18,.32);backdrop-filter:blur(2px);z-index:998;display:none}.ai-chat-backdrop.show{display:block}
+.ai-chat-fab{position:fixed;right:26px;bottom:26px;z-index:1000;border:1px solid rgba(255,255,255,.13);border-radius:18px;background:linear-gradient(135deg,#15191f,#222a31);color:#fff;height:58px;min-width:142px;padding:0 16px 0 10px;display:flex;align-items:center;justify-content:flex-start;gap:10px;font-size:12px;font-weight:1000;box-shadow:0 16px 38px rgba(5,10,15,.30);cursor:pointer;transition:.18s ease}.ai-chat-fab:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(5,10,15,.36)}.ai-chat-fab .orb{width:38px;height:38px;border-radius:12px;background:linear-gradient(145deg,#c5ff52,#8ee817);color:#10150b;display:grid;place-items:center;font-size:12px;font-weight:1000;box-shadow:inset 0 0 0 1px rgba(60,100,0,.12)}.ai-chat-fab .badge{position:absolute;right:-5px;top:-6px;min-width:23px;height:23px;border-radius:999px;background:#ff3e55;color:#fff;display:none;place-items:center;padding:0 6px;font-size:9px;font-weight:1000;border:3px solid var(--bg)}
+.ai-chat-drawer{position:fixed;right:26px;bottom:96px;width:min(450px,calc(100vw - 34px));height:min(680px,calc(100vh - 125px));z-index:999;background:#fafff5;border:1px solid #cfe5aa;border-radius:22px;box-shadow:0 28px 75px rgba(8,15,24,.30);display:none;overflow:hidden}.ai-chat-drawer.show{display:flex;flex-direction:column;animation:aiDrawerIn .18s ease-out}@keyframes aiDrawerIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.ai-chat-drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 16px;background:#15191f;color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}.ai-chat-drawer-head b{font-size:13px}.ai-chat-drawer-head small{display:block;color:#aab5c0;font-size:8px;margin-top:3px}.ai-chat-drawer-head .btn{background:#252d35;color:#fff;border-color:#3a444e}
+.ai-chat-drawer .ai-chat-history{flex:1;max-height:none;overflow:auto;display:grid;align-content:start;gap:9px;padding:15px;margin:0;background:linear-gradient(180deg,#f7fdeF,#fff)}.ai-chat-drawer .ai-msg{max-width:88%;border-radius:14px;padding:10px 12px;font-size:10px;line-height:1.55;box-shadow:0 3px 10px rgba(30,45,20,.04)}.ai-chat-drawer .ai-msg.user{justify-self:end;background:#15191f;color:#fff;border-bottom-right-radius:5px}.ai-chat-drawer .ai-msg.assistant{justify-self:start;background:#fff;border:1px solid #dce6d2;border-bottom-left-radius:5px}
+.ai-chat-compose{border-top:1px solid #dce6d2;padding:11px;background:#fff}.ai-chat-compose .ai-quick{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 9px}.ai-chat-compose .ai-quick button{background:#f4f9ec;border:1px solid #d4e5ba;color:#3e610a;padding:6px 9px}.ai-chat-compose .ai-chat-row{display:grid;grid-template-columns:1fr auto;gap:7px}.ai-chat-compose .ai-chat-row input{min-width:0;border:1px solid #cfd8c8;border-radius:12px;padding:11px 12px;outline:none}.ai-chat-compose .ai-chat-row input:focus{border-color:#92cf2e;box-shadow:0 0 0 3px rgba(146,207,46,.14)}
+@media(max-width:760px){.ai-chat-fab{right:14px;bottom:78px;min-width:128px;height:54px}.ai-chat-fab .orb{width:35px;height:35px}.ai-chat-drawer{left:8px;right:8px;bottom:72px;width:auto;height:calc(100vh - 88px);border-radius:20px}}
+
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.3</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.4</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -438,7 +458,7 @@
 </nav>
 
 <div id="aiChatBackdrop" class="ai-chat-backdrop" onclick="toggleAiChat(false)"></div>
-<button id="aiChatFab" class="ai-chat-fab" type="button" onclick="toggleAiChat()"><span class="orb">AI</span><span>AI 비서</span><span id="aiChatFabBadge" class="badge">0</span></button>
+<button id="aiChatFab" class="ai-chat-fab" type="button" title="AI 관리비서 열기" aria-controls="aiChatDrawer" aria-expanded="false" onclick="toggleAiChat()"><span class="orb">AI</span><span>관리비서</span><span id="aiChatFabBadge" class="badge">0</span></button>
 <section id="aiChatDrawer" class="ai-chat-drawer" aria-label="AI 비서 채팅">
  <div class="ai-chat-drawer-head"><div><b>인성 재무 관리비서</b><small>타이트 모드 · 현재 데이터 기준</small></div><button class="btn mini" type="button" onclick="toggleAiChat(false)">닫기</button></div>
  <div id="aiChatHistory" class="ai-chat-history"></div>
@@ -543,18 +563,21 @@ let state={user:null,profile:null,businesses:[],accounts:[],debts:[],debtPayment
 function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
 function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('recvEarnedMonth'))$('recvEarnedMonth').value=today.slice(0,7);if($('recvDate'))$('recvDate').value=lastDayStr(now.getFullYear(),now.getMonth()+1)}
 function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',routines:'업무 루틴',goals:'5년 목표',settings:'설정'})[p]||p}
-function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
-function scrollAfterGo(page,id){go(page);setTimeout(()=>{const el=$(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.animate([{boxShadow:'0 0 0 0 rgba(158,242,41,0)'},{boxShadow:'0 0 0 4px rgba(158,242,41,.32)'},{boxShadow:'0 0 0 0 rgba(158,242,41,0)'}],{duration:1100})}},120)}
+function showPage(p,scroll=true){if(!$('page-'+p))p='dashboard';document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();if(scroll)window.scrollTo({top:0,behavior:'smooth'});return p}
+function go(p,opts={}){const page=showPage(p,opts.scroll!==false);toggleAiChat(false);if(opts.history!==false){const hash='#'+page;if(location.hash!==hash)history.pushState({pcPage:page},'',hash)}}
+function scrollAfterGo(page,id){go(page);setTimeout(()=>{const el=$(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.animate([{boxShadow:'0 0 0 0 rgba(158,242,41,0)'},{boxShadow:'0 0 0 4px rgba(158,242,41,.32)'},{boxShadow:'0 0 0 0 rgba(158,242,41,0)'}],{duration:1100})}},140)}
 function goDetail(type){if(type==='debt')return go('debt');if(type==='income')return scrollAfterGo('dashboard','incomePanel');if(type==='card')return scrollAfterGo('money','cardBillPanel');if(type==='living')return scrollAfterGo('money','recurringPanel')}
-function toggleAiChat(force){const drawer=$('aiChatDrawer'),backdrop=$('aiChatBackdrop');if(!drawer)return;const open=typeof force==='boolean'?force:!drawer.classList.contains('show');drawer.classList.toggle('show',open);backdrop?.classList.toggle('show',open);if(open){setTimeout(()=>$('aiSecretaryInput')?.focus(),80);if($('aiChatHistory'))$('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight}}
+function toggleAiChat(force){const drawer=$('aiChatDrawer'),backdrop=$('aiChatBackdrop'),fab=$('aiChatFab');if(!drawer)return;const open=typeof force==='boolean'?force:!drawer.classList.contains('show');drawer.classList.toggle('show',open);backdrop?.classList.toggle('show',open);fab?.setAttribute('aria-expanded',String(open));if(open){setTimeout(()=>$('aiSecretaryInput')?.focus(),80);if($('aiChatHistory'))$('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight}}
 
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+window.addEventListener('popstate',e=>{toggleAiChat(false);const p=e.state?.pcPage||location.hash.replace('#','')||'dashboard';showPage(p)});
+const initialPage=location.hash.replace('#','');if(initialPage&&$('page-'+initialPage)){history.replaceState({pcPage:initialPage},'',location.href);showPage(initialPage,false)}else{history.replaceState({pcPage:'dashboard'},'',location.pathname+location.search+'#dashboard')}
 $('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{dateStyle:'full'}).format(now);
 $('logoutBtn').onclick=()=>sb.auth.signOut();
 $('loginBtn').onclick=login;$('signupBtn').onclick=signup;
 $('loginPassword').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
 document.addEventListener('change',e=>{if(e.target?.id==='incomeMonthPicker')renderIncomePanel();if(e.target?.id==='cardBillMonth')renderCardBillEditor()});
-document.addEventListener('keydown',e=>{if(e.target?.id==='aiSecretaryInput'&&e.key==='Enter'){e.preventDefault();askSecretary()}});
+document.addEventListener('keydown',e=>{if(e.target?.id==='aiSecretaryInput'&&e.key==='Enter'){e.preventDefault();askSecretary();return}if(e.key==='Escape'&&$('aiChatDrawer')?.classList.contains('show'))toggleAiChat(false)});
 
 async function login(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value;const {error}=await sb.auth.signInWithPassword({email,password});$('loginMsg').textContent=error?error.message:''}
 async function signup(){const email=$('loginEmail').value.trim(),password=$('loginPassword').value;if(!email||password.length<6){$('loginMsg').textContent='이메일과 6자 이상 비밀번호를 입력하세요.';return}const {error}=await sb.auth.signUp({email,password});$('loginMsg').textContent=error?error.message:'계정 생성 요청 완료. 이메일 확인이 필요하면 메일을 확인하세요.'}
@@ -1014,8 +1037,7 @@ function renderTodayTasks(){
  $('priorityStripItems').innerHTML=all.length?all.map(x=>{
   const toggle=x.kind==='task'?"toggleTask('"+x.id+"',this.checked)":"toggleEvent('"+x.id+"',this.checked)";
   const open=x.kind==='task'?"openTaskDetail('"+x.id+"')":"openEventDetail('"+x.id+"')";
-  const mark=x.priority==='must'?'‼ ':x.priority==='high'?'! ':'';
-  return '<div class="priority-pill '+esc(x.priority)+'"><input type="checkbox" onchange="'+toggle+'"><button type="button" onclick="'+open+'">'+mark+esc(x.title)+'</button><span class="pbadge">'+(x.kind==='task'?'할일':'일정')+'</span></div>'
+  return '<div class="priority-pill '+esc(x.priority)+'"><input type="checkbox" onchange="'+toggle+'"><button type="button" onclick="'+open+'">'+esc(x.title)+'</button><span class="pbadge">'+(x.kind==='task'?'할일':'일정')+'</span></div>'
  }).join(''):'<span class="autosave-note">오늘 미완료 일정 없음</span>'
 }
 function openTaskDetail(id){
@@ -1417,8 +1439,8 @@ function renderCalendar(){
   }
   const end=x.target_payoff_date||x.maturity_date;if(end&&date===end)items.push('<span class="calitem system-cal carddue" onclick="event.stopPropagation();go(\'debt\')">⏰ '+esc(x.name)+' '+(x.target_payoff_date?'목표상환일':'만기')+'</span>')
  });
- state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'" onclick="event.stopPropagation();openTaskDetail(\''+t.id+'\')">'+(t.status==='done'?'✓ ':'')+(t.priority==='must'?'‼ ':t.priority==='high'?'! ':'')+esc(t.title)+'</span>'));
- state.events.filter(e=>e.event_date===date&&e.status!=='skipped').forEach(e=>items.push('<div class="calitem eventbtn '+(e.status==='done'?'done ':'')+(e.priority==='must'?'must':'')+'" onclick="event.stopPropagation()"><span class="schedule-check" onclick="event.stopPropagation();toggleEvent(\''+e.id+'\','+(e.status!=='done')+')">'+(e.status==='done'?'✓':'')+'</span><button type="button" style="border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer" onclick="event.stopPropagation();openEventDetail(\''+e.id+'\')">'+(e.priority==='must'?'‼ ':e.priority==='high'?'! ':'')+esc(e.title)+(e.memo?' · 📝':'')+'</button></div>'));
+ state.tasks.filter(t=>t.due_date===date&&t.status!=='skipped').forEach(t=>items.push('<span class="calitem task '+(t.priority==='must'?'must':'')+'" onclick="event.stopPropagation();openTaskDetail(\''+t.id+'\')">'+(t.status==='done'?'✓ ':'')+esc(t.title)+'</span>'));
+ state.events.filter(e=>e.event_date===date&&e.status!=='skipped').forEach(e=>items.push('<div class="calitem eventbtn '+(e.status==='done'?'done ':'')+(e.priority==='must'?'must':'')+'" onclick="event.stopPropagation()"><span class="schedule-check" onclick="event.stopPropagation();toggleEvent(\''+e.id+'\','+(e.status!=='done')+')">'+(e.status==='done'?'✓':'')+'</span><button type="button" style="border:0;background:transparent;padding:0;font:inherit;color:inherit;cursor:pointer" onclick="event.stopPropagation();openEventDetail(\''+e.id+'\')">'+esc(e.title)+(e.memo?' · 📝':'')+'</button></div>'));
  state.recurring.filter(r=>r.scope==='personal'&&r.item_type==='expense'&&+r.due_day===d&&!isCardMethod(r.payment_method)).forEach(r=>items.push('<span class="calitem money" onclick="event.stopPropagation()">-'+esc(r.name)+' '+won(r.amount)+'</span>'));
  personalDebts().filter(x=>+x.payment_day===d).forEach(x=>items.push('<span class="calitem money" onclick="event.stopPropagation()">대출 '+esc(x.name)+' '+won(x.min_payment)+'</span>'));
  h+='<div class="day '+(date===today?'today':'')+'" onclick="openQuickSchedule(\''+date+'\')"><div class="daynum">'+d+' <span style="color:#9aa4b1;font-weight:500">＋</span></div>'+items.slice(0,6).join('')+(items.length>6?'<span class="calitem" onclick="event.stopPropagation()">+'+(items.length-6)+'개</span>':'')+'</div>'}

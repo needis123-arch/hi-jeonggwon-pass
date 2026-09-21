@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.2</title>
+<title>PERSONAL CENTER V2.3</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -74,7 +74,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.2</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.3</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -96,15 +96,15 @@
   <div id="priorityStripItems" class="priority-strip-items"></div>
   <button class="btn mini priority-strip-more" type="button" onclick="go('calendar')">캘린더 ›</button>
  </div>
- <div class="head"><div><h2>오늘 정신 차릴 숫자</h2><p>사업과 개인 돈을 섞지 않고, 오늘 해야 할 행동까지 한 화면에서 봅니다.</p></div><button class="btn" onclick="loadAll()">새로고침</button></div>
+ <div style="display:flex;justify-content:flex-end;margin:0 0 8px"><button class="btn mini" onclick="loadAll()">새로고침</button></div>
  <div class="hero card">
   <div class="hero-grid">
    <div><h2>이번 달 총 필요자금 <span style="font-size:10px;color:#a9b5c1">· 빚 상환 포함</span></h2><div class="need" id="heroNeed">0원</div><div class="remain">현재 내 수익 <b id="heroIncomeLine">0원</b> · 아직 부족 <b id="heroRemain">0원</b> · 하루 최소 <b id="heroDaily">0원</b></div><div class="progress"><i id="incomeBar"></i></div><small id="heroCaption">카드값과 월 수익을 넣으면 이번 달 필요한 돈이 한 번에 계산됩니다.</small><div id="heroDataWarning" class="need-main-note"></div></div>
    <div class="hero-side">
-    <div class="hero-box"><span>이번 달 빚 갚는 돈</span><b id="heroSurvival">0원</b></div>
-    <div class="hero-box"><span>이번 달 내 수익</span><b id="heroIncome">0원</b></div>
-    <div class="hero-box"><span>카드값 실부담</span><b id="heroSupport">0원</b></div>
-    <div class="hero-box"><span>생활 · 고정비</span><b id="heroPayoff">0원</b></div>
+    <div class="hero-box clickable" role="button" tabindex="0" onclick="goDetail('debt')" onkeydown="if(event.key==='Enter')goDetail('debt')"><span>이번 달 빚 갚는 돈</span><b id="heroSurvival">0원</b></div>
+    <div class="hero-box clickable" role="button" tabindex="0" onclick="goDetail('income')" onkeydown="if(event.key==='Enter')goDetail('income')"><span>이번 달 내 수익</span><b id="heroIncome">0원</b></div>
+    <div class="hero-box clickable" role="button" tabindex="0" onclick="goDetail('card')" onkeydown="if(event.key==='Enter')goDetail('card')"><span>카드값 실부담</span><b id="heroSupport">0원</b></div>
+    <div class="hero-box clickable" role="button" tabindex="0" onclick="goDetail('living')" onkeydown="if(event.key==='Enter')goDetail('living')"><span>생활 · 고정비</span><b id="heroPayoff">0원</b></div>
    </div>
   </div>
  </div>
@@ -115,6 +115,9 @@
   </div>
   <div id="aiSecretaryMessage" class="ai-sec-message">재무상태를 확인하는 중입니다.<small>숫자 계산은 저장된 실제 데이터 기준입니다.</small></div>
   <div id="aiSecretaryActions" class="ai-action-grid"></div>
+  <details class="secretary-detail">
+   <summary>재무 상태 상세 보기</summary>
+   <div class="secretary-detail-body">
   <div class="secretary-grid">
    <div class="secretary-box"><span>현재 등록 잔고</span><b id="secCash">0원</b><small id="secCashDate" class="balance-check-meta">확인일 -</small></div>
    <div class="secretary-box"><span>현재 패턴 최소 월소득</span><b id="secCurrentNeed">0원</b><small class="balance-check-meta">지금 소비습관 기준</small></div>
@@ -124,17 +127,14 @@
    <div class="secretary-box"><span>신용카드 완전중단 조건</span><b id="secCardExit">판단대기</b><small id="secCardExitSub" class="balance-check-meta">전월 여유자금 300만원 필요</small></div>
   </div>
   <div id="secretaryBrief" class="secretary-brief">재무상태를 계산하는 중입니다.</div>
-  <div class="ai-chat">
-   <div id="aiChatHistory" class="ai-chat-history"></div>
-   <div class="ai-chat-row"><input id="aiSecretaryInput" placeholder="예: 이번 달 얼마 벌어야 돼? / 카드 더 써도 돼? / 뭐부터 갚아?"><button class="btn primary" type="button" onclick="askSecretary()">물어보기</button></div>
-   <div class="ai-quick"><button type="button" onclick="askSecretaryPreset('오늘 뭐 해야 해?')">오늘 뭐 해야 해?</button><button type="button" onclick="askSecretaryPreset('이번 달 얼마 벌어야 해?')">얼마 벌어야 해?</button><button type="button" onclick="askSecretaryPreset('카드 더 써도 돼?')">카드 써도 돼?</button><button type="button" onclick="askSecretaryPreset('빚 뭐부터 갚아?')">빚 뭐부터?</button><button type="button" onclick="askSecretaryPreset('1년 뒤 얼마 모여?')">1년 뒤?</button></div>
-  </div>
+   </div>
+  </details>
  </div>
  <div class="panel card" style="margin-bottom:16px">
   <div class="routine-dashboard"><div><b>오늘 업무 루틴</b><div class="autosave-note">스케줄과 별개 · 매일 반복해야 하는 운영업무</div></div><div><b id="routineDashProgress">0/0</b> <button class="btn mini" type="button" onclick="go('routines')">관리 ›</button></div></div>
   <div id="routineDashList" class="routine-dashboard-list"></div>
  </div>
- <div class="panel card" style="margin-bottom:16px">
+ <div class="panel card" id="incomePanel" style="margin-bottom:16px">
   <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:12px">
    <div><h3>월 수익 입력 — 내가 실제로 번 돈</h3><p style="margin:4px 0 0">하이·레이는 운영비를 제외하고 실제 가져온 돈, 정권은 지분/정산 +@, 개인 급여·판매·영업소득은 별도로 기록합니다.</p></div>
    <div style="text-align:right"><span class="autosave-note">월 합계</span><div class="income-total" id="monthlyIncomeTotal">0원</div></div>
@@ -161,7 +161,7 @@
    <button class="btn mini primary" type="button" onclick="addReceivable()">예정수입 추가</button>
   </div>
  </div>
- <div class="kpis">
+ <div class="kpis dashboard-dup-kpis" aria-hidden="true">
   <div class="kpi card"><span>이번 달 빚 상환</span><strong id="kDebtDue">0원</strong><small id="kDebtDueSub">대출 + 기한채무</small></div>
   <div class="kpi card"><span>이번 달 카드값</span><strong id="kCardDue">0원</strong><small id="kCardDueSub">1일 출금 · 환급 반영</small></div>
   <div class="kpi card"><span>생활 · 고정비</span><strong id="kLivingDue">0원</strong><small>현금고정 + 생활예산</small></div>
@@ -231,7 +231,7 @@
    <div class="kpi card"><span>현재 추세 vs 평균</span><strong id="cardTrend">-</strong><small>현재일까지 기준</small></div>
   </div>
  </div>
- <div class="formcard card">
+ <div class="formcard card" id="cardBillPanel">
   <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap">
    <div><h3 style="margin:0">카드값 출금 관리</h3><p style="margin:5px 0 0;color:var(--muted);font-size:10px">매월 1일 실제 계좌에서 빠지는 카드대금입니다. <b>소비지출에는 다시 더하지 않고 현금흐름에만 반영</b>합니다.</p></div>
    <span class="tag orange">중복지출 방지</span>
@@ -258,7 +258,7 @@
   <div id="spendingReportRows"></div>
   <div class="callout" style="margin:14px 0 0"><b>리포트 해석</b><p id="spendingReportInsight">카드자료를 불러오는 중입니다.</p><p style="margin-top:6px"><b>각 항목을 클릭하면 실제 가맹점별 세부 리스트를 볼 수 있습니다.</b></p></div>
  </div>
- <div class="formcard card">
+ <div class="formcard card" id="recurringPanel">
   <h3>월 반복 수입 / 지출</h3><div class="formgrid">
    <div class="field"><label>항목명</label><input id="recName" placeholder="월세 / 차량할부 / 보험 / 구독"></div>
    <div class="field"><label>종류</label><select id="recType"><option value="expense">지출</option><option value="income">수입</option></select></div>
@@ -437,6 +437,17 @@
  <button class="active" data-page="dashboard">오늘</button><button data-page="money">돈</button><button data-page="debt">빚</button><button data-page="calendar">일정</button><button data-page="routines">루틴</button><button data-page="business">사업</button>
 </nav>
 
+<div id="aiChatBackdrop" class="ai-chat-backdrop" onclick="toggleAiChat(false)"></div>
+<button id="aiChatFab" class="ai-chat-fab" type="button" onclick="toggleAiChat()"><span class="orb">AI</span><span>AI 비서</span><span id="aiChatFabBadge" class="badge">0</span></button>
+<section id="aiChatDrawer" class="ai-chat-drawer" aria-label="AI 비서 채팅">
+ <div class="ai-chat-drawer-head"><div><b>인성 재무 관리비서</b><small>타이트 모드 · 현재 데이터 기준</small></div><button class="btn mini" type="button" onclick="toggleAiChat(false)">닫기</button></div>
+ <div id="aiChatHistory" class="ai-chat-history"></div>
+ <div class="ai-chat-compose">
+  <div class="ai-quick"><button type="button" onclick="askSecretaryPreset('오늘 뭐 해야 해?')">오늘 뭐 해야 해?</button><button type="button" onclick="askSecretaryPreset('이번 달 얼마 벌어야 해?')">얼마 벌어야 해?</button><button type="button" onclick="askSecretaryPreset('카드 더 써도 돼?')">카드 써도 돼?</button><button type="button" onclick="askSecretaryPreset('빚 뭐부터 갚아?')">빚 뭐부터?</button><button type="button" onclick="askSecretaryPreset('1년 뒤 얼마 모여?')">1년 뒤?</button></div>
+  <div class="ai-chat-row"><input id="aiSecretaryInput" placeholder="재무·빚·카드·업무 루틴을 물어보세요"><button class="btn primary" type="button" onclick="askSecretary()">물어보기</button></div>
+ </div>
+</section>
+
 <dialog class="event-dialog" id="spendingDetailDialog">
  <div class="event-dialog-head"><div><h3 id="spendingDetailTitle">지출 세부내역</h3><div class="autosave-note" id="spendingDetailPeriod">2026.05~08</div></div><button class="btn mini" type="button" onclick="closeSpendingDetail()">닫기</button></div>
  <div class="event-dialog-body">
@@ -533,6 +544,10 @@ function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setT
 function setDefaults(){['txDate','flowDate','taskDate','eventDate','debtPayDate'].forEach(id=>{if($(id))$(id).value=today});if($('incomeMonthPicker'))$('incomeMonthPicker').value=today.slice(0,7);if($('cardBillMonth'))$('cardBillMonth').value=today.slice(0,7);if($('strategyMonth'))$('strategyMonth').value=today.slice(0,7);if($('recvEarnedMonth'))$('recvEarnedMonth').value=today.slice(0,7);if($('recvDate'))$('recvDate').value=lastDayStr(now.getFullYear(),now.getMonth()+1)}
 function pageName(p){return({dashboard:'오늘 / 대시보드',money:'자산 · 지출',debt:'빚 상환',business:'사업체 ↔ 개인',calendar:'캘린더 · 할 일',routines:'업무 루틴',goals:'5년 목표',settings:'설정'})[p]||p}
 function go(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));$('page-'+p)?.classList.add('active');document.querySelectorAll('[data-page]').forEach(x=>x.classList.toggle('active',x.dataset.page===p));$('pageTitle').textContent=pageName(p);if(p==='calendar')renderCalendar();window.scrollTo({top:0,behavior:'smooth'})}
+function scrollAfterGo(page,id){go(page);setTimeout(()=>{const el=$(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.animate([{boxShadow:'0 0 0 0 rgba(158,242,41,0)'},{boxShadow:'0 0 0 4px rgba(158,242,41,.32)'},{boxShadow:'0 0 0 0 rgba(158,242,41,0)'}],{duration:1100})}},120)}
+function goDetail(type){if(type==='debt')return go('debt');if(type==='income')return scrollAfterGo('dashboard','incomePanel');if(type==='card')return scrollAfterGo('money','cardBillPanel');if(type==='living')return scrollAfterGo('money','recurringPanel')}
+function toggleAiChat(force){const drawer=$('aiChatDrawer'),backdrop=$('aiChatBackdrop');if(!drawer)return;const open=typeof force==='boolean'?force:!drawer.classList.contains('show');drawer.classList.toggle('show',open);backdrop?.classList.toggle('show',open);if(open){setTimeout(()=>$('aiSecretaryInput')?.focus(),80);if($('aiChatHistory'))$('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight}}
+
 document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
 $('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{dateStyle:'full'}).format(now);
 $('logoutBtn').onclick=()=>sb.auth.signOut();
@@ -843,13 +858,14 @@ function renderAiSecretary(){
  $('aiSecretaryStatus').className='ai-status '+st.level;$('aiSecretaryStatus').textContent=st.text;
  $('aiSecretaryMessage').innerHTML=esc(secretaryMainMessage())+'<small>저장된 잔고·카드·대출·수입 데이터를 기준으로 계산합니다.</small>';
  const visible=actions.filter(a=>!done.has(a.key)).slice(0,3);
+ const pendingCount=actions.filter(a=>!done.has(a.key)).length;if($('aiChatFabBadge')){$('aiChatFabBadge').textContent=pendingCount;$('aiChatFabBadge').style.display=pendingCount?'grid':'none'}
  $('aiSecretaryActions').innerHTML=visible.length?visible.map((a,i)=>'<div class="ai-action"><span class="num">'+(i+1)+'</span><div><b>'+esc(a.title)+'</b><small>'+esc(a.detail)+'</small></div><div><button onclick="go(\''+a.page+'\')">열기</button><br><button onclick="'+(a.routineId?'toggleRoutine(\''+a.routineId+'\',true)':'completeSecretaryAction(\''+a.key+'\',\''+esc(a.title).replace(/&#39;/g,"\\'")+'\')')+'">완료</button></div></div>').join(''):'<div class="empty" style="grid-column:1/-1">오늘 비서가 요구한 작업을 모두 처리했습니다.</div>';
  const msgs=[...state.secretaryMessages].sort((a,b)=>String(a.created_at).localeCompare(String(b.created_at))).slice(-10);
  $('aiChatHistory').innerHTML=msgs.length?msgs.map(m=>'<div class="ai-msg '+m.role+'">'+esc(m.message)+'</div>').join(''):'<div class="autosave-note">아래 질문 버튼을 누르거나 직접 물어보세요.</div>';
  $('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight
 }
 async function completeSecretaryAction(key,title){const {error}=await sb.from('pc_secretary_action_log').upsert({user_id:state.user.id,action_date:today,action_key:key,title,status:'done'},{onConflict:'user_id,action_date,action_key'});if(error)return alert(error.message);await loadAll();toast('오늘 비서 할 일 완료')}
-function askSecretaryPreset(q){$('aiSecretaryInput').value=q;askSecretary()}
+function askSecretaryPreset(q){toggleAiChat(true);$('aiSecretaryInput').value=q;askSecretary()}
 function secretaryAnswer(q){
  const s=secretarySnapshot(),text=String(q||'').toLowerCase(),mode=state.profile?.secretary_mode||'strict',prefix=mode==='strict'?'':'';
  if(/오늘|뭐.*해|해야/.test(text)){const a=secretaryActions().slice(0,3);return a.length?'오늘은 '+a.map((x,i)=>(i+1)+'번 '+x.title).join(', ')+' 순서로 처리하세요.':'오늘 급한 재무 작업은 없습니다. 신용카드는 계획상한 안에서만 쓰세요.'}

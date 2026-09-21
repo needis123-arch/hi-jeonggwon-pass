@@ -68,7 +68,7 @@ jobs:
 
       - name: Install native today board
         run: |
-          TARGET="android/app/src/main/java/kr/co/hirealty/personalcenter"
+          TARGET="android/app/src/main/java/kr/co/hirealty/personalcenter/app"
           mkdir -p "$TARGET"
           cp native/android/TodayBoardManager.java "$TARGET/TodayBoardManager.java"
           cp native/android/TodayBoardReceiver.java "$TARGET/TodayBoardReceiver.java"

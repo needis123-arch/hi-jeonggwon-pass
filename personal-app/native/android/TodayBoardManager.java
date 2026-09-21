@@ -33,8 +33,9 @@ public final class TodayBoardManager {
     public static final String KEY_TIMES = "times_json";
     public static final String KEY_COMPLETED = "completed_keys";
     public static final String KEY_QUEUE = "completed_queue";
+    public static final String KEY_SCHEDULED = "scheduled_keys";
     public static final String BOARD_CHANNEL_ID = "pc_today_board_v3";
-    public static final String REMIND_CHANNEL_ID = "pc_today_remind_v3";
+    public static final String REMIND_CHANNEL_ID = "pc_today_remind_v4";
     public static final int NOTIFICATION_ID = 240921;
     public static final String ACTION_REMIND = "kr.co.hirealty.personalcenter.stable.TODAY_REMIND";
     public static final String ACTION_REFRESH = "kr.co.hirealty.personalcenter.stable.TODAY_REFRESH";
@@ -116,8 +117,8 @@ public final class TodayBoardManager {
 
         NotificationChannel remind = nm.getNotificationChannel(REMIND_CHANNEL_ID);
         if (remind == null) {
-            remind = new NotificationChannel(REMIND_CHANNEL_ID, "오늘 할 일 시간 알림", NotificationManager.IMPORTANCE_HIGH);
-            remind.setDescription("10:30, 13:00, 17:00, 20:00, 22:00에 같은 고정판을 다시 알려줍니다.");
+            remind = new NotificationChannel(REMIND_CHANNEL_ID, "일회성 할 일 알림", NotificationManager.IMPORTANCE_HIGH);
+            remind.setDescription("각 할 일과 입력 일정에 대해 정해진 시간에 한 번만 알려줍니다.");
             remind.enableVibration(true);
             remind.setShowBadge(true);
             remind.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -197,7 +198,7 @@ public final class TodayBoardManager {
             }
         }
 
-        NotificationCompat.Builder b = new NotificationCompat.Builder(context, REMIND_CHANNEL_ID)
+        NotificationCompat.Builder b = new NotificationCompat.Builder(context, BOARD_CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_menu_agenda)
             .setContentTitle("오늘 할 일 · " + total + "개 남음")
             .setContentText(top.optString("label", "할 일"))
@@ -210,8 +211,8 @@ public final class TodayBoardManager {
             .setAutoCancel(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .setPriority(alert ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_DEFAULT)
-            .setOnlyAlertOnce(!alert);
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setOnlyAlertOnce(true);
 
         // Samsung/lock-screen compatibility: native Android actions are kept in addition
         // to the custom compact "완료" button. This gives us two independent tap paths.
@@ -224,14 +225,72 @@ public final class TodayBoardManager {
             );
         }
 
-        if (alert) {
-            b.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-        } else {
-            b.setSilent(true);
-        }
+        b.setSilent(true);
 
         try { nm.notify(NOTIFICATION_ID, b.build()); } catch (SecurityException ignored) {}
         TodayBoardWidgetProvider.updateAll(context);
+    }
+
+
+    private static int oneShotNotificationId(String key) {
+        return 500000 + Math.abs(key.hashCode() % 1000000000);
+    }
+
+    public static void showOneShot(Context context, Intent intent) {
+        createChannels(context);
+        String key = intent != null ? intent.getStringExtra("key") : "";
+        if (key == null || key.isEmpty()) return;
+
+        Set<String> completed = prefs(context).getStringSet(KEY_COMPLETED, new HashSet<>());
+        if (completed.contains(key)) return;
+
+        String label = intent.getStringExtra("label");
+        String kind = intent.getStringExtra("kind");
+        String date = intent.getStringExtra("date");
+        if (label == null || label.isEmpty()) label = "확인할 일이 있습니다.";
+        if (kind == null) kind = "";
+        if (date == null) date = today();
+
+        Intent openIntent = new Intent(context, MainActivity.class);
+        openIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent openPi = PendingIntent.getActivity(
+            context,
+            oneShotNotificationId(key) + 1,
+            openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder b = new NotificationCompat.Builder(context, REMIND_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_menu_agenda)
+            .setContentTitle("reminder".equals(kind) ? "입력할 것" : "오늘 할 일")
+            .setContentText(label)
+            .setContentIntent(openPi)
+            .setAutoCancel(true)
+            .setOngoing(false)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+
+        if (!"reminder".equals(kind)) {
+            JSONObject item = new JSONObject();
+            try {
+                item.put("key", key);
+                item.put("kind", kind);
+                item.put("itemId", intent.getStringExtra("itemId"));
+                item.put("date", date);
+                item.put("label", label);
+                b.addAction(
+                    android.R.drawable.checkbox_on_background,
+                    "✓ 완료",
+                    completePendingIntent(context, item, "one-shot")
+                );
+            } catch (Exception ignored) {}
+        }
+
+        try {
+            NotificationManagerCompat.from(context).notify(oneShotNotificationId(key), b.build());
+        } catch (SecurityException ignored) {}
     }
 
     public static void markComplete(Context context, Intent intent) {
@@ -273,6 +332,7 @@ public final class TodayBoardManager {
             .apply();
 
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID);
+        NotificationManagerCompat.from(context).cancel(oneShotNotificationId(key));
         showBoard(context, false);
         TodayBoardWidgetProvider.updateAll(context);
     }
@@ -297,13 +357,35 @@ public final class TodayBoardManager {
         return Math.abs((date + "|" + slot).hashCode());
     }
 
-    private static PendingIntent alarmPi(Context context, String date, int slot, String action) {
+    private static PendingIntent refreshAlarmPi(Context context, String date) {
         Intent i = new Intent(context, TodayBoardReceiver.class);
-        i.setAction(action);
+        i.setAction(ACTION_REFRESH);
         i.putExtra("date", date);
-        i.putExtra("slot", slot);
         return PendingIntent.getBroadcast(
-            context, requestCode(date, slot), i,
+            context,
+            requestCode(date, 0),
+            i,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+    }
+
+    private static int itemAlarmRequestCode(String key) {
+        return 100000 + Math.abs(("item|" + key).hashCode() % 1000000000);
+    }
+
+    private static PendingIntent itemAlarmPi(Context context, JSONObject item) {
+        String key = item.optString("key", "");
+        Intent i = new Intent(context, TodayBoardReceiver.class);
+        i.setAction(ACTION_REMIND);
+        i.putExtra("key", key);
+        i.putExtra("kind", item.optString("kind", ""));
+        i.putExtra("itemId", item.optString("itemId", ""));
+        i.putExtra("date", item.optString("date", today()));
+        i.putExtra("label", item.optString("label", ""));
+        return PendingIntent.getBroadcast(
+            context,
+            itemAlarmRequestCode(key),
+            i,
             PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
     }
@@ -312,15 +394,15 @@ public final class TodayBoardManager {
         try {
             String[] d = date.split("-");
             String[] t = hhmm.split(":");
-            Calendar c = Calendar.getInstance();
-            c.set(Calendar.YEAR, Integer.parseInt(d[0]));
-            c.set(Calendar.MONTH, Integer.parseInt(d[1]) - 1);
-            c.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d[2]));
-            c.set(Calendar.HOUR_OF_DAY, Integer.parseInt(t[0]));
-            c.set(Calendar.MINUTE, Integer.parseInt(t[1]));
-            c.set(Calendar.SECOND, 0);
-            c.set(Calendar.MILLISECOND, 0);
-            return c.getTimeInMillis();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.YEAR, Integer.parseInt(d[0]));
+            cal.set(Calendar.MONTH, Integer.parseInt(d[1]) - 1);
+            cal.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d[2]));
+            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(t[0]));
+            cal.set(Calendar.MINUTE, Integer.parseInt(t[1]));
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            return cal.getTimeInMillis();
         } catch (Exception e) { return 0; }
     }
 
@@ -338,33 +420,77 @@ public final class TodayBoardManager {
     public static void reschedule(Context context) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         JSONArray all = readItems(context);
-        JSONArray times = readTimes(context);
-        Set<String> dates = new LinkedHashSet<>();
+        SharedPreferences p = prefs(context);
 
-        for (int i = 0; i < all.length(); i++) {
-            JSONObject o = all.optJSONObject(i);
-            if (o != null && !o.optString("date").isEmpty()) dates.add(o.optString("date"));
+        // Cancel item alarms that were scheduled by a previous sync.
+        Set<String> oldKeys = new HashSet<>(p.getStringSet(KEY_SCHEDULED, new HashSet<>()));
+        for (String key : oldKeys) {
+            Intent i = new Intent(context, TodayBoardReceiver.class);
+            i.setAction(ACTION_REMIND);
+            PendingIntent pi = PendingIntent.getBroadcast(
+                context,
+                itemAlarmRequestCode(key),
+                i,
+                PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE
+            );
+            if (pi != null) {
+                am.cancel(pi);
+                pi.cancel();
+            }
         }
 
+        // Cancel the legacy 5-times-per-day alarms from earlier versions.
         Calendar base = Calendar.getInstance();
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
-
         for (int day = 0; day < 10; day++) {
             Calendar x = (Calendar) base.clone();
             x.add(Calendar.DAY_OF_MONTH, day);
             String ds = f.format(x.getTime());
-            for (int slot = 0; slot < 8; slot++) {
-                PendingIntent pi = alarmPi(context, ds, slot, slot == 0 ? ACTION_REFRESH : ACTION_REMIND);
-                am.cancel(pi);
+            for (int slot = 1; slot < 8; slot++) {
+                Intent old = new Intent(context, TodayBoardReceiver.class);
+                old.setAction(ACTION_REMIND);
+                PendingIntent oldPi = PendingIntent.getBroadcast(
+                    context,
+                    requestCode(ds, slot),
+                    old,
+                    PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE
+                );
+                if (oldPi != null) {
+                    am.cancel(oldPi);
+                    oldPi.cancel();
+                }
             }
         }
 
-        for (String date : dates) {
-            setAlarm(am, atMillis(date, "00:05"), alarmPi(context, date, 0, ACTION_REFRESH));
-            for (int i = 0; i < times.length(); i++) {
-                String time = times.optString(i);
-                setAlarm(am, atMillis(date, time), alarmPi(context, date, i + 1, ACTION_REMIND));
+        Set<String> dates = new LinkedHashSet<>();
+        Set<String> scheduled = new HashSet<>();
+        Set<String> completed = p.getStringSet(KEY_COMPLETED, new HashSet<>());
+
+        for (int i = 0; i < all.length(); i++) {
+            JSONObject item = all.optJSONObject(i);
+            if (item == null) continue;
+            String key = item.optString("key", "");
+            String date = item.optString("date", "");
+            if (key.isEmpty() || date.isEmpty() || completed.contains(key)) continue;
+
+            dates.add(date);
+            String defaultTime = "reminder".equals(item.optString("kind", "")) ? "20:00" : "10:30";
+            String time = item.optString("notifyTime", defaultTime);
+            long when = atMillis(date, time);
+            if (when > System.currentTimeMillis() + 3000) {
+                setAlarm(am, when, itemAlarmPi(context, item));
+                scheduled.add(key);
             }
         }
+
+        // Midnight refresh keeps the persistent board on the current day.
+        for (String date : dates) {
+            PendingIntent pi = refreshAlarmPi(context, date);
+            am.cancel(pi);
+            setAlarm(am, atMillis(date, "00:05"), pi);
+        }
+
+        p.edit().putStringSet(KEY_SCHEDULED, scheduled).apply();
     }
+
 }

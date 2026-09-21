@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.1</title>
+<title>PERSONAL CENTER V2.2</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -74,7 +74,7 @@
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.1</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.2</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -111,7 +111,7 @@
  <div class="panel card ai-secretary" style="margin-bottom:16px">
   <div class="ai-sec-head">
    <div class="ai-sec-title"><div class="ai-sec-orb">AI</div><div><h3>인성 재무 관리비서</h3><p>잔고·카드·대출·받을 돈을 보고 오늘 해야 할 일을 우선순위로 지시합니다.</p></div></div>
-   <div style="display:flex;gap:6px;align-items:center"><select id="secretaryMode" class="inlineedit" style="width:95px;min-width:95px" onchange="saveSecretaryMode(this.value)"><option value="strict">타이트</option><option value="normal">보통</option><option value="soft">부드럽게</option></select><span id="aiSecretaryStatus" class="ai-status warn">분석중</span></div>
+   <div style="display:flex;gap:6px;align-items:center"><span class="tag red">타이트 고정</span><span id="aiSecretaryStatus" class="ai-status warn">분석중</span></div>
   </div>
   <div id="aiSecretaryMessage" class="ai-sec-message">재무상태를 확인하는 중입니다.<small>숫자 계산은 저장된 실제 데이터 기준입니다.</small></div>
   <div id="aiSecretaryActions" class="ai-action-grid"></div>
@@ -121,6 +121,7 @@
    <div class="secretary-box"><span>절약계획 최소 월소득</span><b id="secPlanNeed">0원</b><small id="secPlanNeedSub" class="balance-check-meta">신용→체크 전환 기준</small></div>
    <div class="secretary-box"><span>잔고 버티는 기간</span><b id="secRunway">-</b><small class="balance-check-meta">수입 0원 가정</small></div>
    <div class="secretary-box"><span>이번 주 체크카드 예산</span><b id="secWeekDebit">0원</b><small class="balance-check-meta">현금 없으면 소비 중단선</small></div>
+   <div class="secretary-box"><span>신용카드 완전중단 조건</span><b id="secCardExit">판단대기</b><small id="secCardExitSub" class="balance-check-meta">전월 여유자금 300만원 필요</small></div>
   </div>
   <div id="secretaryBrief" class="secretary-brief">재무상태를 계산하는 중입니다.</div>
   <div class="ai-chat">
@@ -413,7 +414,8 @@
    <div class="field"><label>월 세금 적립 목표</label><input id="setTaxReserve" type="number" placeholder="개인 세금 대비 적립액"></div>
    <div class="field"><label>신용카드 월 사용 상한</label><input id="setCreditCap" type="number" placeholder="고정결제 위주"></div>
    <div class="field"><label>체크카드 주간 생활비</label><input id="setDebitWeekly" type="number" placeholder="주 단위 예산"></div>
-   <div class="field"><label>AI 비서 강도</label><select id="setSecretaryMode"><option value="strict">타이트하게</option><option value="normal">보통</option><option value="soft">부드럽게</option></select></div>
+   <div class="field"><label>AI 비서 강도</label><input value="타이트 고정" disabled></div>
+   <div class="field"><label>신용카드 완전중단 전월 여유자금</label><input id="setCreditExitBuffer" type="number" value="3000000"></div>
    <div class="field"><label>비상자금 목표</label><input id="setEmergency" type="number" placeholder="예: 20,000,000"></div>
    <div class="field"><label>5년 자산 목표</label><input id="setFiveYear" type="number" placeholder="0"></div>
    <div class="field full"><label>5년 목표 메모</label><textarea id="setNote" rows="3" placeholder="왜 돈을 모으는지, 5년 뒤 원하는 상태"></textarea></div>
@@ -784,26 +786,38 @@ function renderRoutines(){
 function secretarySystemPrompt(){
  const rules=state.secretaryRules.filter(x=>x.enabled).sort((a,b)=>Number(a.priority)-Number(b.priority)).map(x=>'- '+x.title+': '+x.instruction).join('\n');
  const s=secretarySnapshot(),routines=todayRoutines().map(r=>({title:r.title,priority:r.priority,done:routineDone(r.id),target_time:r.target_time||null}));
- return '너는 사용자의 전략 관리비서다. 숫자를 임의로 만들지 말고 제공된 데이터와 규칙을 우선한다.\n\n[운영원칙]\n'+rules+'\n\n[현재 재무상태]\n잔고 '+s.cash+', 최소월소득 '+s.planNeed+', 카드사용 '+s.cardUsed+', 우선상환부채 '+s.priorityDebt+'.\n\n[오늘 업무루틴]\n'+JSON.stringify(routines)
+ return '너는 사용자의 매우 타이트한 전략 관리비서다. 말투와 판단 강도는 항상 타이트하게 유지한다. 숫자를 임의로 만들지 말고 제공된 데이터와 규칙을 우선한다.\n\n[운영원칙]\n'+rules+'\n\n[현재 재무상태]\n잔고 '+s.cash+', 최소월소득 '+s.planNeed+', 카드사용 '+s.cardUsed+', 우선상환부채 '+s.priorityDebt+'.\n\n[오늘 업무루틴]\n'+JSON.stringify(routines)
 }
 function renderSecretaryRules(){
  if(!$('secretaryRulesList'))return;const arr=[...state.secretaryRules].sort((a,b)=>Number(a.priority)-Number(b.priority));$('secretaryRuleCount').textContent=arr.filter(x=>x.enabled).length+'개 적용';
  $('secretaryRulesList').innerHTML=arr.length?arr.map(r=>'<div class="skill-row"><input type="checkbox" '+(r.enabled?'checked':'')+' onchange="updateSecretaryRule(\''+r.id+'\',\'enabled\',this.checked,\'bool\')"><b>'+esc(r.title)+'</b><textarea class="inlineedit" style="min-height:54px" onchange="updateSecretaryRule(\''+r.id+'\',\'instruction\',this.value)">'+esc(r.instruction)+'</textarea></div>').join(''):'<div class="empty">비서 운영원칙이 없습니다.</div>'
 }
 async function updateSecretaryRule(id,field,value,type='text'){const v=type==='bool'?!!value:value;const {error}=await sb.from('pc_secretary_rules').update({[field]:v,updated_at:new Date().toISOString()}).eq('id',id);if(error)return alert(error.message);await loadAll();toast('AI 비서 운영원칙 수정')}
+function monthRangeFromKey(mk){const p=mk.split('-').map(Number),last=new Date(p[0],p[1],0).getDate();return {start:mk+'-01',end:mk+'-'+String(last).padStart(2,'0')}}
+function previousMonthKey(){return addMonthKey(today.slice(0,7),-1)}
+function cardExitSurplusInfo(){
+ const mk=previousMonthKey(),range=monthRangeFromKey(mk),incomeRows=incomeRowsForMonth(mk),income=incomeRows.reduce((s,x)=>s+Number(x.amount||0),0),bill=cardBillTotalForMonth(mk),hasIncome=incomeRows.length>0,hasBill=cardBillsForMonth(mk).length>0;
+ const cashFixed=cashFixedAverage(),debt=strategyDebtForMonth(mk),tax=Number(state.profile?.monthly_tax_reserve||0);
+ const flows=state.flows.filter(x=>x.flow_date>=range.start&&x.flow_date<=range.end),support=flows.filter(x=>['personal_paid_business','capital_injection'].includes(x.flow_type)).reduce((s,x)=>s+Number(x.amount||0),0),reimburse=flows.filter(x=>x.flow_type==='reimbursement').reduce((s,x)=>s+Number(x.amount||0),0);
+ const need=Math.max(0,cashFixed+bill+debt+tax+support-reimburse),surplus=income-need,target=Number(state.profile?.credit_card_exit_buffer||3000000),complete=hasIncome&&hasBill;
+ return {month:mk,income,bill,cashFixed,debt,tax,support,reimburse,need,surplus,target,complete,ready:complete&&surplus>=target,gap:Math.max(0,target-surplus)}
+}
 function secretarySnapshot(){
  const m=metrics(),cash=currentCashTotal(),planNeed=plannedBaselineMonthlyNeed(),currentNeed=currentBaselineMonthlyNeed(),runway=currentNeed>0?cash/currentNeed*30:999,cap=plannedCreditCap(),cardUsed=currentPersonalCardSpend(),priorityDebt=priorityDebtBalance(),ref=balanceReferenceDate(),nextBal=nextBalanceCheckDate(),balanceDue=!ref||today>=nextBal;
  const pendingReceivables=state.receivables.filter(r=>r.status==='expected'),unknownReceivables=pendingReceivables.filter(r=>Number(r.amount||0)<=0);
  const nearDebt=personalDebts().map(d=>({d,days:daysTo(d.target_payoff_date||d.maturity_date)})).filter(x=>x.days!=null&&x.days>=0&&x.days<=90).sort((a,b)=>a.days-b.days);
- const routines=todayRoutines(),routineIncomplete=routines.filter(r=>!routineDone(r.id));
- return {m,cash,planNeed,currentNeed,runway,cap,cardUsed,priorityDebt,balanceDue,nextBal,pendingReceivables,unknownReceivables,nearDebt,routines,routineIncomplete}
+ const routines=todayRoutines(),routineIncomplete=routines.filter(r=>!routineDone(r.id)),cardExit=cardExitSurplusInfo();
+ return {m,cash,planNeed,currentNeed,runway,cap,cardUsed,priorityDebt,balanceDue,nextBal,pendingReceivables,unknownReceivables,nearDebt,routines,routineIncomplete,cardExit}
 }
 function secretaryActions(){
  const s=secretarySnapshot(),out=[];
  const push=(key,title,detail,page,severity='normal',routineId=null)=>out.push({key,title,detail,page,severity,routineId});
  if(s.balanceDue)push('balance_check','계좌 잔고 지금 확인','7일 잔고 점검이 필요합니다. 등록 잔고 '+won(s.cash)+'이 실제와 맞는지 확인하세요.','money','must');
  state.cards.filter(x=>!x.confirmation_day).forEach(card=>push('card_cycle_'+card.id,card.card_name+' 확정일 설정','카드값 확정일이 없으면 월말 현금계획이 틀어집니다.','money','high'));
- if(s.cardUsed>s.cap&&s.cap>0)push('card_stop','신용카드 신규사용 중단','현재 개인카드 '+won(s.cardUsed)+' / 목표 '+won(s.cap)+'. 생활비는 체크카드로 전환하세요.','money','must');
+ if(s.cardUsed>s.cap&&s.cap>0)push('card_stop','신용카드 생활비 사용 중단','현재 개인카드 '+won(s.cardUsed)+' / 목표 '+won(s.cap)+'. 완전 해지는 아직 별도 조건이고, 지금은 고정결제·불가피한 항목 외 사용을 끊으세요.','money','must');
+ if(!s.cardExit.complete)push('card_exit_data','전월 여유자금 확정 필요',s.cardExit.month+' 수입·카드값 데이터가 완성돼야 신용카드 완전중단 가능 여부를 판단합니다.','dashboard','high');
+ else if(s.cardExit.ready)push('card_exit_ready','신용카드 완전중단 조건 충족','전월 여유자금 '+won(s.cardExit.surplus)+'으로 기준 '+won(s.cardExit.target)+'을 넘었습니다. 완전중단 전환 검토 가능.','money','high');
+ else push('card_exit_buffer','카드 끊기 준비금 '+won(s.cardExit.gap)+' 더 확보','전월 여유자금 '+won(Math.max(0,s.cardExit.surplus))+' / 필요 '+won(s.cardExit.target)+'. 완전중단 전까지 최소사용 유지.','dashboard','high');
  const noBill=cardBillTotalForMonth(today.slice(0,7))<=0;if(noBill)push('card_bill','이번 달 카드 확정액 입력','다음 출금액을 모르면 이번 달 총 필요자금 계산이 완성되지 않습니다.','money','high');
  if(s.unknownReceivables.length)push('receivable_amount','받을 돈 예상금액 입력',s.unknownReceivables[0].source+' 등 '+s.unknownReceivables.length+'건의 금액이 비어 있습니다.','dashboard','high');
  if(s.nearDebt.length)push('debt_due_'+s.nearDebt[0].d.id,s.nearDebt[0].d.name+' 만기자금 확인','D-'+s.nearDebt[0].days+' · 남은 원금 '+won(s.nearDebt[0].d.balance),'debt',s.nearDebt[0].days<=30?'must':'high');
@@ -819,16 +833,14 @@ function secretaryStatus(){
  return {level:'good',text:'안정'}
 }
 function secretaryMainMessage(){
- const s=secretarySnapshot(),mode=state.profile?.secretary_mode||'strict',status=secretaryStatus(),a=secretaryActions(),top=a[0];
- const min=won(s.planNeed),cash=won(s.cash),gap=won(s.m.remain);
- if(mode==='soft')return '현재 잔고는 '+cash+'이고 절약계획 기준 최소 월소득은 '+min+'입니다.'+(s.routineIncomplete.length?' 오늘 업무 루틴 '+s.routineIncomplete.length+'개가 남아 있습니다.':'')+(top?' 오늘은 '+top.title+'부터 처리하면 됩니다.':' 현재 급한 작업은 없습니다.');
- if(mode==='normal')return '현재 잔고 '+cash+' · 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 아직 '+gap+' 부족합니다. ':'')+(s.routineIncomplete.length?'업무 루틴 '+s.routineIncomplete.length+'개 미완료. ':'')+(top?'우선순위 1번: '+top.title+'.':'오늘 즉시 처리할 경고는 없습니다.');
- return (status.level==='danger'?'지금 우선순위부터 바로 처리하세요. ':status.level==='warn'?'오늘 미완료를 남기지 마세요. ':'현재 흐름은 괜찮습니다. ')+'잔고 '+cash+', 절약계획 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 '+gap+' 부족. ':'')+(s.routineIncomplete.length?'업무 루틴 '+s.routineIncomplete.length+'개 남음. ':'')+(top?'지금 1순위는 “'+top.title+'”입니다.':'급한 조치 없음.')
+ const s=secretarySnapshot(),status=secretaryStatus(),a=secretaryActions(),top=a[0],cash=won(s.cash),min=won(s.planNeed),gap=won(s.m.remain);
+ const cardMsg=!s.cardExit.complete?'신용카드 완전중단 판단은 보류. 전월 데이터를 먼저 확정하세요.':s.cardExit.ready?'전월 여유자금 '+won(s.cardExit.surplus)+'으로 신용카드 완전중단 조건을 충족했습니다.':'전월 여유자금 '+won(Math.max(0,s.cardExit.surplus))+'이라 완전중단 조건 '+won(s.cardExit.target)+'에 못 미칩니다. 카드 최소사용 유지.';
+ return (status.level==='danger'?'지금 우선순위부터 바로 처리하세요. ':status.level==='warn'?'오늘 미완료를 남기지 마세요. ':'현재 흐름은 괜찮습니다. ')+'잔고 '+cash+', 절약계획 최소 월소득 '+min+'. '+(s.m.remain>0?'이번 달 '+gap+' 부족. ':'')+(s.routineIncomplete.length?'업무 루틴 '+s.routineIncomplete.length+'개 남음. ':'')+cardMsg+' '+(top?'지금 1순위는 “'+top.title+'”입니다.':'급한 조치 없음.')
 }
 function renderAiSecretary(){
  if(!$('aiSecretaryMessage'))return;
  const st=secretaryStatus(),actions=secretaryActions(),done=new Set(state.secretaryActionLog.filter(x=>x.status==='done').map(x=>x.action_key));
- $('secretaryMode').value=state.profile?.secretary_mode||'strict';$('aiSecretaryStatus').className='ai-status '+st.level;$('aiSecretaryStatus').textContent=st.text;
+ $('aiSecretaryStatus').className='ai-status '+st.level;$('aiSecretaryStatus').textContent=st.text;
  $('aiSecretaryMessage').innerHTML=esc(secretaryMainMessage())+'<small>저장된 잔고·카드·대출·수입 데이터를 기준으로 계산합니다.</small>';
  const visible=actions.filter(a=>!done.has(a.key)).slice(0,3);
  $('aiSecretaryActions').innerHTML=visible.length?visible.map((a,i)=>'<div class="ai-action"><span class="num">'+(i+1)+'</span><div><b>'+esc(a.title)+'</b><small>'+esc(a.detail)+'</small></div><div><button onclick="go(\''+a.page+'\')">열기</button><br><button onclick="'+(a.routineId?'toggleRoutine(\''+a.routineId+'\',true)':'completeSecretaryAction(\''+a.key+'\',\''+esc(a.title).replace(/&#39;/g,"\\'")+'\')')+'">완료</button></div></div>').join(''):'<div class="empty" style="grid-column:1/-1">오늘 비서가 요구한 작업을 모두 처리했습니다.</div>';
@@ -836,14 +848,13 @@ function renderAiSecretary(){
  $('aiChatHistory').innerHTML=msgs.length?msgs.map(m=>'<div class="ai-msg '+m.role+'">'+esc(m.message)+'</div>').join(''):'<div class="autosave-note">아래 질문 버튼을 누르거나 직접 물어보세요.</div>';
  $('aiChatHistory').scrollTop=$('aiChatHistory').scrollHeight
 }
-async function saveSecretaryMode(v){const {error}=await sb.from('pc_profiles').update({secretary_mode:v,updated_at:new Date().toISOString()}).eq('user_id',state.user.id);if(error)return alert(error.message);state.profile.secretary_mode=v;renderAiSecretary();toast('비서 말투 변경')}
 async function completeSecretaryAction(key,title){const {error}=await sb.from('pc_secretary_action_log').upsert({user_id:state.user.id,action_date:today,action_key:key,title,status:'done'},{onConflict:'user_id,action_date,action_key'});if(error)return alert(error.message);await loadAll();toast('오늘 비서 할 일 완료')}
 function askSecretaryPreset(q){$('aiSecretaryInput').value=q;askSecretary()}
 function secretaryAnswer(q){
  const s=secretarySnapshot(),text=String(q||'').toLowerCase(),mode=state.profile?.secretary_mode||'strict',prefix=mode==='strict'?'':'';
  if(/오늘|뭐.*해|해야/.test(text)){const a=secretaryActions().slice(0,3);return a.length?'오늘은 '+a.map((x,i)=>(i+1)+'번 '+x.title).join(', ')+' 순서로 처리하세요.':'오늘 급한 재무 작업은 없습니다. 신용카드는 계획상한 안에서만 쓰세요.'}
  if(/얼마.*벌|월소득|소득/.test(text)){return '절약계획 기준 최소 월소득은 '+won(s.planNeed)+'입니다. 월 200만원을 추가로 모으려면 약 '+won(s.planNeed+2000000)+', 월 300만원이면 약 '+won(s.planNeed+3000000)+'이 필요합니다.'}
- if(/카드|써도/.test(text)){const left=Math.max(0,s.cap-s.cardUsed);return s.cardUsed>=s.cap?'이번 달 개인카드가 목표 '+won(s.cap)+'을 이미 넘었습니다. 신규 신용카드 사용은 중단하고 생활비는 체크카드로 쓰세요.':'현재 개인카드 '+won(s.cardUsed)+' / 목표 '+won(s.cap)+'. 신용카드 여유는 약 '+won(left)+'이지만 고정결제 외 소비는 체크카드를 우선하세요.'}
+ if(/카드|써도|끊/.test(text)){const left=Math.max(0,s.cap-s.cardUsed),e=s.cardExit;if(!e.complete)return '신용카드 완전중단 여부는 아직 판단 보류입니다. '+e.month+' 수입과 카드값을 확정해야 합니다. 지금은 고정결제·불가피한 항목만 신용카드로 쓰고 생활비는 체크카드로 옮기세요.';if(e.ready)return '전월 여유자금 '+won(e.surplus)+'으로 완전중단 기준 '+won(e.target)+'을 충족했습니다. 신용카드 완전중단 전환이 가능합니다. 현재 월 카드 사용은 '+won(s.cardUsed)+'입니다.';return '아직 신용카드를 완전히 끊으면 안 됩니다. 전월 여유자금 '+won(Math.max(0,e.surplus))+' / 필요 '+won(e.target)+'이라 '+won(e.gap)+'이 더 필요합니다. 현재는 고정결제·불가피한 것만 신용카드, 생활비는 체크카드로 쓰세요. 이번 달 카드 목표 잔여는 약 '+won(left)+'입니다.'}
  if(/빚|대출|갚/.test(text)){return '우선순위는 비상금대출 → 마이너스통장입니다. 두 건 잔액은 합계 '+won(s.priorityDebt)+'. 형 채무는 2027년 1~12월 계획상환, 우리은행 원금상환은 약정 시작일부터 정규납부로 봅니다.'}
  if(/1년|모여|모을|저축/.test(text)){const income=Number(state.profile?.strategy_monthly_income_assumption||0)||s.planNeed,yr=simulateYearPlan(today.slice(0,7),income);return '월 '+won(income)+'을 유지하고 현재 절약계획을 지키면 1년 뒤 예상 현금성 자산은 약 '+won(Math.max(0,yr.endCash))+', 1년간 줄이는 대출 원금은 약 '+won(yr.principalPaid)+'입니다.'}
  if(/잔고|현금|버텨/.test(text)){return '현재 등록 잔고는 '+won(s.cash)+'이고 지금 소비패턴 기준 수입 없이 약 '+s.runway.toFixed(1)+'일 버틸 수 있습니다. 다음 잔고 점검일은 '+s.nextBal+'입니다.'}
@@ -866,13 +877,13 @@ function renderFinanceSecretary(){
  $('secCash').textContent=won(cash);$('secCash').className=due?'cash-stale':'cash-ok';
  $('secCashDate').textContent=(ref?ref+' 기준':'확인 이력 없음')+' · 다음 점검 '+(next||today);
  $('secCurrentNeed').textContent=won(currentNeed);$('secPlanNeed').textContent=won(planNeed);$('secPlanNeedSub').textContent='신용 '+won(cardCap)+' / 체크 주 '+won(debitWeek);
- $('secRunway').textContent=currentNeed>0?runway.toFixed(1)+'일':'-';$('secWeekDebit').textContent=won(debitWeek);
+ $('secRunway').textContent=currentNeed>0?runway.toFixed(1)+'일':'-';$('secWeekDebit').textContent=won(debitWeek);const ce=cardExitSurplusInfo();$('secCardExit').textContent=!ce.complete?'판단보류':ce.ready?'가능':'아직 불가';$('secCardExit').className=ce.complete?(ce.ready?'good':'bad'):'';$('secCardExitSub').textContent=!ce.complete?ce.month+' 데이터 확정 필요':('전월 여유 '+won(Math.max(0,ce.surplus))+' / 기준 '+won(ce.target));
  const save2=planNeed+2000000,save3=planNeed+3000000;
  let parts=[];
  parts.push('현재 등록잔고 '+won(cash)+'으로 지금 소비패턴을 유지하면 수입 없이 약 '+runway.toFixed(1)+'일 버틸 수 있습니다.');
  parts.push('신용카드는 월 '+won(cardCap)+'까지만 두고, 생활비는 체크카드 주 '+won(debitWeek)+'로 옮기면 카드 소비를 월 약 '+won(cardSave)+' 줄이는 계획입니다.');
  parts.push('이 기준에서 최소 월소득은 약 '+won(planNeed)+', 월 200만원을 모으려면 약 '+won(save2)+', 월 300만원이면 약 '+won(save3)+'이 필요합니다.');
- if(priority>0)parts.push('여유자금은 비상금대출·마이너스통장 '+won(priority)+'부터 메우고, 끝난 뒤 현금저축으로 전환합니다.');parts.push('개인 신용카드는 자동결제 중심으로만 쓰고, 생활비는 체크카드로 쓰며 사업비는 개인카드에서 분리하는 방식으로 관리합니다.');
+ if(priority>0)parts.push('여유자금은 비상금대출·마이너스통장 '+won(priority)+'부터 메우고, 끝난 뒤 현금저축으로 전환합니다.');const ce=cardExitSurplusInfo();parts.push(!ce.complete?'신용카드 완전중단은 전월 데이터가 확정될 때까지 보류합니다. 그 전에는 고정결제·불가피한 항목만 최소사용하고 생활비는 체크카드로 옮깁니다.':ce.ready?'전월 여유자금 '+won(ce.surplus)+'으로 신용카드 완전중단 기준 '+won(ce.target)+'을 충족했습니다.':'전월 여유자금 '+won(Math.max(0,ce.surplus))+'으로 신용카드 완전중단 기준 '+won(ce.target)+'에 못 미칩니다. '+won(ce.gap)+'을 더 확보할 때까지 최소사용을 유지합니다.');
  if(saveTarget>0)parts.push('현재 저장된 월 저축목표는 '+won(saveTarget)+'입니다.');
  $('secretaryBrief').textContent=parts.join(' ');
 }
@@ -1403,8 +1414,8 @@ function renderGoals(){
 async function addGoal(){const row={title:$('goalTitle').value.trim(),target_value:+$('goalTarget').value||0,current_value:+$('goalCurrent').value||0,target_date:$('goalDate').value||null};if(!row.title)return;const {error}=await sb.from('pc_goals').insert(row);if(error)return alert(error.message);['goalTitle','goalTarget','goalCurrent','goalDate'].forEach(id=>$(id).value='');await loadAll();toast('목표 저장')}
 async function updateGoal(id,current){const v=prompt('현재 달성값을 입력하세요.',current);if(v===null)return;const n=Number(String(v).replace(/,/g,''));if(!Number.isFinite(n))return;await sb.from('pc_goals').update({current_value:n}).eq('id',id);await loadAll()}
 async function disableGoal(id){await sb.from('pc_goals').update({active:false}).eq('id',id);await loadAll()}
-function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p.monthly_personal_income_target||'';$('setVariableBudget').value=p.monthly_variable_budget||'';$('setDebtExtra').value=p.monthly_debt_extra_target||'';$('setSavingsTarget').value=p.monthly_savings_target||'';$('setTaxReserve').value=p.monthly_tax_reserve||'';$('setCreditCap').value=p.credit_card_monthly_cap||'';$('setDebitWeekly').value=p.debit_card_weekly_budget||'';$('setSecretaryMode').value=p.secretary_mode||'strict';$('setEmergency').value=p.emergency_fund_target||'';$('setFiveYear').value=p.five_year_asset_target||'';$('setNote').value=p.five_year_note||''}
-async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_variable_budget:+$('setVariableBudget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,monthly_savings_target:+$('setSavingsTarget').value||0,monthly_tax_reserve:+$('setTaxReserve').value||0,credit_card_monthly_cap:+$('setCreditCap').value||0,debit_card_weekly_budget:+$('setDebitWeekly').value||0,secretary_mode:$('setSecretaryMode').value,emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장 · 월 필요수입 재계산 완료')}
+function renderSettings(){const p=state.profile||{};$('setIncomeTarget').value=p.monthly_personal_income_target||'';$('setVariableBudget').value=p.monthly_variable_budget||'';$('setDebtExtra').value=p.monthly_debt_extra_target||'';$('setSavingsTarget').value=p.monthly_savings_target||'';$('setTaxReserve').value=p.monthly_tax_reserve||'';$('setCreditCap').value=p.credit_card_monthly_cap||'';$('setDebitWeekly').value=p.debit_card_weekly_budget||'';$('setCreditExitBuffer').value=p.credit_card_exit_buffer||3000000;$('setEmergency').value=p.emergency_fund_target||'';$('setFiveYear').value=p.five_year_asset_target||'';$('setNote').value=p.five_year_note||''}
+async function saveSettings(){const row={monthly_personal_income_target:+$('setIncomeTarget').value||0,monthly_variable_budget:+$('setVariableBudget').value||0,monthly_debt_extra_target:+$('setDebtExtra').value||0,monthly_savings_target:+$('setSavingsTarget').value||0,monthly_tax_reserve:+$('setTaxReserve').value||0,credit_card_monthly_cap:+$('setCreditCap').value||0,debit_card_weekly_budget:+$('setDebitWeekly').value||0,credit_card_exit_buffer:+$('setCreditExitBuffer').value||3000000,secretary_mode:'strict',emergency_fund_target:+$('setEmergency').value||0,five_year_asset_target:+$('setFiveYear').value||0,five_year_note:$('setNote').value,updated_at:new Date().toISOString()};const {error}=await sb.from('pc_profiles').update(row).eq('user_id',state.user.id);if(error)return alert(error.message);await loadAll();toast('설정 저장 · 월 필요수입 재계산 완료')}
 
 async function delRow(table,id){if(!confirm('삭제할까요?'))return;const {error}=await sb.from(table).delete().eq('id',id);if(error)return alert(error.message);await loadAll()}
 setDefaults();

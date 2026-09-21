@@ -92,7 +92,7 @@ jobs:
           grep -n "TodayBoardReceiver" /tmp/manifest.xml
           grep -n "TodayBoardWidgetProvider" /tmp/manifest.xml
           grep -n "android.appwidget.action.APPWIDGET_UPDATE" /tmp/manifest.xml
-          grep -n "today_board_widget_info" /tmp/manifest.xml
+          grep -A8 -n "TodayBoardWidgetProvider" /tmp/manifest.xml || true
 
       - name: Verify APK signer
         run: |

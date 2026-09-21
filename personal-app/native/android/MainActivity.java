@@ -1,4 +1,4 @@
-package kr.co.hirealty.personalcenter.app;
+package kr.co.hirealty.personalcenter.stable;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;

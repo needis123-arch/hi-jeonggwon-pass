@@ -35,8 +35,9 @@ today_receiver = '''        <receiver
 
 widget_receiver = '''        <receiver
             android:name=".TodayBoardWidgetProvider"
+            android:label="오늘 할 일"
             android:enabled="true"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

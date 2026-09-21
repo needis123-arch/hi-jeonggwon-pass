@@ -1,4 +1,4 @@
-package kr.co.hirealty.personalcenter;
+package kr.co.hirealty.personalcenter.app;
 
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;

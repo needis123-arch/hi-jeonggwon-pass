@@ -11,7 +11,7 @@ public class TodayBoardReceiver extends BroadcastReceiver {
         if (TodayBoardManager.ACTION_COMPLETE.equals(action)) {
             TodayBoardManager.markComplete(context, intent);
         } else if (TodayBoardManager.ACTION_REMIND.equals(action)) {
-            TodayBoardManager.showBoard(context, true);
+            TodayBoardManager.showOneShot(context, intent);
         } else if (TodayBoardManager.ACTION_REFRESH.equals(action)) {
             TodayBoardManager.showBoard(context, false);
         }

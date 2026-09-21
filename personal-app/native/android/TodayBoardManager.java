@@ -197,8 +197,7 @@ public final class TodayBoardManager {
             }
         }
 
-        String channelId = alert ? REMIND_CHANNEL_ID : BOARD_CHANNEL_ID;
-        NotificationCompat.Builder b = new NotificationCompat.Builder(context, channelId)
+        NotificationCompat.Builder b = new NotificationCompat.Builder(context, REMIND_CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_menu_agenda)
             .setContentTitle("오늘 할 일 · " + total + "개 남음")
             .setContentText(top.optString("label", "할 일"))
@@ -227,6 +226,8 @@ public final class TodayBoardManager {
 
         if (alert) {
             b.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+        } else {
+            b.setSilent(true);
         }
 
         try { nm.notify(NOTIFICATION_ID, b.build()); } catch (SecurityException ignored) {}
@@ -271,6 +272,7 @@ public final class TodayBoardManager {
             .putString(KEY_QUEUE, queue.toString())
             .apply();
 
+        NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID);
         showBoard(context, false);
         TodayBoardWidgetProvider.updateAll(context);
     }

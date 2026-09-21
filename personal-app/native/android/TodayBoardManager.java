@@ -190,7 +190,7 @@ public final class TodayBoardManager {
                     label += "  · +" + (total - BIG_ROW_IDS.length) + "개";
                 }
                 big.setViewVisibility(id, View.VISIBLE);
-                big.setTextViewText(id, "☐ " + label);
+                big.setTextViewText(id, "✓ 완료 · " + label);
                 big.setOnClickPendingIntent(id, completePendingIntent(context, item, "notif-big-" + i));
             } else {
                 big.setViewVisibility(id, View.GONE);

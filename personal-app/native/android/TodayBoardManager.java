@@ -31,7 +31,8 @@ public final class TodayBoardManager {
     public static final String KEY_TIMES = "times_json";
     public static final String KEY_COMPLETED = "completed_keys";
     public static final String KEY_QUEUE = "completed_queue";
-    public static final String CHANNEL_ID = "pc_today_board";
+    public static final String BOARD_CHANNEL_ID = "pc_today_board_v2";
+    public static final String REMIND_CHANNEL_ID = "pc_today_remind_v2";
     public static final int NOTIFICATION_ID = 240921;
     public static final String ACTION_REMIND = "kr.co.hirealty.personalcenter.TODAY_REMIND";
     public static final String ACTION_REFRESH = "kr.co.hirealty.personalcenter.TODAY_REFRESH";
@@ -90,21 +91,34 @@ public final class TodayBoardManager {
         return out;
     }
 
-    public static void createChannel(Context context) {
+    public static void createChannels(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         NotificationManager nm = context.getSystemService(NotificationManager.class);
-        NotificationChannel ch = nm.getNotificationChannel(CHANNEL_ID);
-        if (ch == null) {
-            ch = new NotificationChannel(CHANNEL_ID, "오늘 할 일 고정판", NotificationManager.IMPORTANCE_HIGH);
-            ch.setDescription("오늘 미완료 일정과 할 일을 잠금화면에 한 장으로 고정 표시합니다.");
-            ch.enableVibration(true);
-            ch.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-            nm.createNotificationChannel(ch);
+
+        NotificationChannel board = nm.getNotificationChannel(BOARD_CHANNEL_ID);
+        if (board == null) {
+            board = new NotificationChannel(BOARD_CHANNEL_ID, "오늘 할 일 고정판", NotificationManager.IMPORTANCE_DEFAULT);
+            board.setDescription("오늘 미완료 일정과 할 일을 잠금화면에 한 장으로 계속 표시합니다.");
+            board.setSound(null, null);
+            board.enableVibration(false);
+            board.setShowBadge(true);
+            board.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            nm.createNotificationChannel(board);
+        }
+
+        NotificationChannel remind = nm.getNotificationChannel(REMIND_CHANNEL_ID);
+        if (remind == null) {
+            remind = new NotificationChannel(REMIND_CHANNEL_ID, "오늘 할 일 시간 알림", NotificationManager.IMPORTANCE_HIGH);
+            remind.setDescription("10:30, 13:00, 17:00, 20:00, 22:00에 미완료 할 일을 다시 알려줍니다.");
+            remind.enableVibration(true);
+            remind.setShowBadge(true);
+            remind.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            nm.createNotificationChannel(remind);
         }
     }
 
     public static void showBoard(Context context, boolean alert) {
-        createChannel(context);
+        createChannels(context);
         List<JSONObject> items = itemsForDate(context, today());
         NotificationManagerCompat nm = NotificationManagerCompat.from(context);
         if (items.isEmpty()) {
@@ -145,7 +159,8 @@ public final class TodayBoardManager {
         String compact = top.optString("label", "할 일");
         if (total > 1) compact += " 외 " + (total - 1) + "개";
 
-        NotificationCompat.Builder b = new NotificationCompat.Builder(context, CHANNEL_ID)
+        String channelId = alert ? REMIND_CHANNEL_ID : BOARD_CHANNEL_ID;
+        NotificationCompat.Builder b = new NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_menu_agenda)
             .setContentTitle("오늘 할 일 · " + total + "개 남음")
             .setContentText(compact)
@@ -154,16 +169,14 @@ public final class TodayBoardManager {
             .setOngoing(true)
             .setAutoCancel(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
+            .setPriority(alert ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_DEFAULT)
             .setOnlyAlertOnce(!alert)
             .addAction(android.R.drawable.checkbox_on_background, "완료", completePi)
             .addAction(android.R.drawable.ic_menu_view, "열기", openPi);
 
         if (alert) {
             b.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
-            b.setSilent(false);
-        } else {
-            b.setSilent(true);
         }
 
         try { nm.notify(NOTIFICATION_ID, b.build()); } catch (SecurityException ignored) {}

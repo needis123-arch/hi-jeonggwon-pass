@@ -69,11 +69,25 @@ jobs:
       - name: Install native board and widget
         run: python native/android/install_native.py
 
+      - name: Verify native manifest source
+        run: |
+          grep -n "TodayBoardReceiver" android/app/src/main/AndroidManifest.xml
+          grep -n "TodayBoardWidgetProvider" android/app/src/main/AndroidManifest.xml
+          grep -n "APPWIDGET_UPDATE" android/app/src/main/AndroidManifest.xml
+
       - name: Build debug APK
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
+
+      - name: Verify merged manifest components
+        run: |
+          AAPT2="$(find "$ANDROID_HOME/build-tools" -type f -name aapt2 | sort -V | tail -1)"
+          "$AAPT2" dump xmltree android/app/build/outputs/apk/debug/app-debug.apk AndroidManifest.xml > /tmp/manifest.txt
+          grep -n "TodayBoardReceiver" /tmp/manifest.txt
+          grep -n "TodayBoardWidgetProvider" /tmp/manifest.txt
+          grep -n "android.appwidget.action.APPWIDGET_UPDATE" /tmp/manifest.txt
 
       - name: Verify APK signer
         run: |

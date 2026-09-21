@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PERSONAL CENTER V2.12</title>
+<title>PERSONAL CENTER V2.13</title>
 <style>
 :root{--bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;--accent:#b8ff35;--accent2:#78ba0d;--good:#128252;--bad:#d83c4d;--warn:#c47a00;--dark:#15191f;--shadow:0 8px 28px rgba(18,31,45,.06);--r:18px}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:Pretendard,Inter,"Noto Sans KR",system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -154,7 +154,7 @@ body,.app,.content,.page{min-width:0;max-width:100%}
 <body>
 <div class="app">
 <aside class="side">
- <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.12</small></div></div>
+ <div class="brand"><div class="logo">P</div><div><b>PERSONAL CENTER</b><small>MONEY × LIFE OS V2.13</small></div></div>
  <nav class="nav">
   <button class="active" data-page="dashboard">오늘 / 대시보드</button>
   <button data-page="money">자산 · 지출</button>
@@ -1636,10 +1636,22 @@ function isAndroidAppShell(){
 function nativeTodayBoard(){
  try{
   if(!isAndroidAppShell())return null;
-  if(window.Capacitor?.Plugins?.TodayBoard)return window.Capacitor.Plugins.TodayBoard;
+  const cap=window.Capacitor;
+  if(cap?.Plugins?.TodayBoard)return cap.Plugins.TodayBoard;
   if(nativeTodayBoardProxy)return nativeTodayBoardProxy;
-  if(window.Capacitor?.registerPlugin){
-   nativeTodayBoardProxy=window.Capacitor.registerPlugin('TodayBoard');
+  if(cap?.registerPlugin){
+   nativeTodayBoardProxy=cap.registerPlugin('TodayBoard');
+   return nativeTodayBoardProxy
+  }
+  if(typeof cap?.nativePromise==='function'){
+   nativeTodayBoardProxy={
+    sync:(o={})=>cap.nativePromise('TodayBoard','sync',o),
+    getCompleted:(o={})=>cap.nativePromise('TodayBoard','getCompleted',o),
+    ackCompleted:(o={})=>cap.nativePromise('TodayBoard','ackCompleted',o),
+    refresh:(o={})=>cap.nativePromise('TodayBoard','refresh',o),
+    status:(o={})=>cap.nativePromise('TodayBoard','status',o),
+    openNotificationSettings:(o={})=>cap.nativePromise('TodayBoard','openNotificationSettings',o)
+   };
    return nativeTodayBoardProxy
   }
   return null

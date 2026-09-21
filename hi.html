@@ -65,6 +65,14 @@ input:focus,select:focus,textarea:focus{outline:2px solid #868f63;outline-offset
 .consent-trigger.done .consent-check{color:#54832f}
 .consent-revoke{display:none;margin:8px 0 0 auto;border:0;background:none;color:var(--danger);text-decoration:underline;font-size:11px;padding:4px}
 .consent-revoke.show{display:block}
+.marketing-consent-card{display:flex;align-items:flex-start;gap:11px;width:100%;margin-top:12px;padding:15px 14px;border:1px solid #e1e4d8;border-radius:10px;background:#fbfbf7;color:#3f4637;cursor:pointer}
+.marketing-consent-card input{width:19px;height:19px;flex:none;margin:2px 0 0;accent-color:#73844c}
+.marketing-consent-copy{display:block;min-width:0}
+.marketing-consent-copy strong{display:block;font-size:12px;line-height:1.5}
+.marketing-consent-copy small{display:block;margin-top:4px;font-size:10.8px;line-height:1.6;color:#818777;word-break:keep-all}
+.marketing-consent-card:has(input:checked){background:#f4f7ec;border-color:#b9c6a1}
+.opt{color:#657246}
+
 .req{color:var(--danger)}
 .submitbtn{width:100%;margin-top:18px;border:0;background:var(--amber);color:#282d1c;padding:17px;min-height:55px;border-radius:10px;font-weight:800;font-size:16px}
 .submitbtn.alt{background:#292e20;color:white}
@@ -266,6 +274,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid #868f63;outline-offset
           <span class="consent-arrow">›</span>
         </button>
         <button type="button" class="consent-revoke" id="s_consent_revoke" onclick="revokePrivacy('s')">동의 취소</button>
+        <label class="marketing-consent-card">
+          <input type="checkbox" id="s_marketing">
+          <span class="marketing-consent-copy"><strong><span class="opt">[선택]</span> 광고·마케팅 정보 수신 동의</strong><small>정권통신의 신기종 사전예약, 통신 혜택·이벤트 안내를 위해 이름·연락처를 이용하며 문자(SMS/LMS/MMS) 및 전화로 안내할 수 있습니다. 미동의해도 상담 신청은 가능합니다. 동의는 언제든 철회할 수 있으며 법령에 따라 2년마다 수신동의 여부를 확인합니다.</small></span>
+        </label>
         <button class="submitbtn" id="s_btn" onclick="submitSeek()">상담 신청하기</button>
         <p class="notice-under-submit"><strong>신청 후 담당자를 배정해 연락드릴 예정입니다.</strong><br>부재 시 문자를 드릴 예정이니 확인 부탁드립니다.</p>
         <div class="msg" id="msg_s"></div>
@@ -379,6 +391,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid #868f63;outline-offset
           <span class="consent-arrow">›</span>
         </button>
         <button type="button" class="consent-revoke" id="o_consent_revoke" onclick="revokePrivacy('o')">동의 취소</button>
+        <label class="marketing-consent-card">
+          <input type="checkbox" id="o_marketing">
+          <span class="marketing-consent-copy"><strong><span class="opt">[선택]</span> 광고·마케팅 정보 수신 동의</strong><small>정권통신의 신기종 사전예약, 통신 혜택·이벤트 안내를 위해 이름·연락처를 이용하며 문자(SMS/LMS/MMS) 및 전화로 안내할 수 있습니다. 미동의해도 매물 접수는 가능합니다. 동의는 언제든 철회할 수 있으며 법령에 따라 2년마다 수신동의 여부를 확인합니다.</small></span>
+        </label>
         <button class="submitbtn b" id="o_btn" onclick="submitOffer()">집 내놓기 신청하기</button>
         <p class="notice-under-submit"><strong>접수된 매물은 내용 확인 후 광고·중개를 진행합니다.</strong><br>추가 확인이 필요한 경우 전화 또는 문자로 안내드릴 수 있습니다.</p>
         <div class="msg" id="msg_o"></div>
@@ -412,43 +428,52 @@ input:focus,select:focus,textarea:focus{outline:2px solid #868f63;outline-offset
 const CONFIG={WEBAPP_URL:'https://script.google.com/macros/s/AKfycbynYvXKdsCxhdDzEoruAUdUUTWWXvBehJmI5_D6rc1iouEH5HF0sOV2zMJm1Z56HVa6dQ/exec'};
 const PRIVACY_VERSION='2026-09-v1';
 const TRACKING=(()=>{
- const p=new URLSearchParams(location.search),campus=String(p.get('campus')||'').toLowerCase();
- const schools={cau:'중앙대',ssu:'숭실대',snu:'서울대',중앙대:'중앙대',숭실대:'숭실대',서울대:'서울대'};
+ const p=new URLSearchParams(location.search),rawCampus=String(p.get('campus')||'').toLowerCase();
+ const aliases={중앙대:'cau',숭실대:'ssu',서울대:'snu'};
+ const campus=aliases[rawCampus]||rawCampus;
+ const schools={cau:'중앙대',ssu:'숭실대',snu:'서울대'};
  const schoolTag=schools[campus]||'미선택';
  const campaignTag=campus==='general'?'일반 리틀리':(schoolTag==='미선택'?'기타/직접':schoolTag+' 리틀리');
- return {schoolTag,campaignTag};
+ return {campus,schoolTag,campaignTag};
 })();
+function applyCampusBranding(logoData={}){
+  const defaults={
+    cau:{logoText:'HI × 중앙대',logoImageUrl:''},
+    ssu:{logoText:'HI × 숭실대',logoImageUrl:''},
+    snu:{logoText:'HI × 서울대',logoImageUrl:''},
+    general:{logoText:String(logoData.logoText||'하이부동산'),logoImageUrl:String(logoData.logoImageUrl||'')},
+    direct:{logoText:String(logoData.logoText||'하이부동산'),logoImageUrl:String(logoData.logoImageUrl||'')}
+  };
+  const key=['cau','ssu','snu','general'].includes(TRACKING.campus)?TRACKING.campus:'direct';
+  const cfg=(logoData.campusBrands&&logoData.campusBrands[key])||{};
+  const fallback=defaults[key];
+  const logoUrl=String(cfg.logoImageUrl||fallback.logoImageUrl||'').trim();
+  const logoText=String(cfg.logoText||fallback.logoText||'하이부동산').trim();
+
+  const img=document.getElementById('brandLogo');
+  const stamp=document.getElementById('brandStamp');
+  const text=document.getElementById('brandText');
+  document.title=logoText+' 상담 신청';
+
+  const showText=()=>{
+    img.style.display='none';
+    stamp.style.display='grid';
+    text.style.display='block';
+    stamp.textContent='HI';
+    text.textContent=logoText;
+  };
+  if(logoUrl){
+    img.onload=()=>{img.style.display='block';stamp.style.display='none';text.style.display='none';};
+    img.onerror=showText;
+    img.src=logoUrl;
+  }else showText();
+}
 async function loadAdminLogo(){
+  applyCampusBranding({});
   try{
     const res=await fetch(CONFIG.WEBAPP_URL+'?action=content');
     const data=await res.json();
-    const logoData=data && data.logo ? data.logo : {};
-    const logoUrl=String(logoData.logoImageUrl||'').trim();
-    const logoText=String(logoData.logoText||'하이부동산').trim();
-
-    const img=document.getElementById('brandLogo');
-    const stamp=document.getElementById('brandStamp');
-    const text=document.getElementById('brandText');
-
-    if(logoUrl){
-      img.onload=()=>{
-        img.style.display='block';
-        stamp.style.display='none';
-        text.style.display='none';
-      };
-      img.onerror=()=>{
-        img.style.display='none';
-        stamp.style.display='grid';
-        text.style.display='block';
-        text.textContent=logoText || '하이부동산';
-      };
-      img.src=logoUrl;
-    }else{
-      img.style.display='none';
-      stamp.style.display='grid';
-      text.style.display='block';
-      text.textContent=logoText || '하이부동산';
-    }
+    applyCampusBranding(data&&data.logo?data.logo:{});
   }catch(e){}
 }
 loadAdminLogo();
@@ -580,6 +605,12 @@ function confirmPrivacy(){
 function revokePrivacy(t){
  document.getElementById(t+'_consent').checked=false;document.getElementById(t+'_consent_trigger').classList.remove('done');document.getElementById(t+'_consent_icon').textContent='☐';document.getElementById(t+'_consent_status').textContent='내용을 확인하고 동의해주세요.';document.getElementById(t+'_consent_revoke').classList.remove('show');
 }
+const MARKETING_VERSION='2026-09-v1';
+function marketingInfo(prefix){
+  const agreed=!!document.getElementById(prefix+'_marketing')?.checked;
+  const at=agreed?new Date().toISOString():'';
+  return {agreed,at,marker:agreed?'[광고수신:Y@'+at+']':''};
+}
 async function post(payload,btnId,msgId,okText){
  const b=document.getElementById(btnId),orig=b.textContent;b.disabled=true;b.textContent='접수 중...';
  try{const r=await fetch(CONFIG.WEBAPP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});const d=await r.json();
@@ -602,8 +633,9 @@ async function submitSeek(){
  if(!reason)return msg('msg_s','이사 상황을 선택해주세요.',false);
  if(!cons)return msg('msg_s','개인정보 필수동의를 완료해주세요.',false);
  const when=mode==='단일'?single:(mode==='기간'?from+'~'+to:'협의가능');
- const parts=['[직접문의][집구해요]','거래:'+trades.join('/'),'예산:'+budget,'입주:'+when,'이사:'+reason,checked('s_priority_group').length?'중요:'+checked('s_priority_group').join('/'):'',radio('s_loan')?'대출:'+radio('s_loan'):'',radio('s_pet')?'반려:'+radio('s_pet'):'',radio('s_parking')?'주차:'+radio('s_parking'):'',val('s_memo')?'기타:'+val('s_memo'):''].filter(Boolean);
- const ok=await post({type:'A',source:'HIA',name,phone,service:parts.join(' | ').slice(0,295),moveDate:mode==='단일'?single:(mode==='기간'?from:''),area,contact:'전화',staff:'',schoolTag:TRACKING.schoolTag,campaignTag:TRACKING.campaignTag,consentConfirmed:true,consentVersion:PRIVACY_VERSION,consentAt:new Date().toISOString()},'s_btn','msg_s','접수완료! 담당자 배정 후 연락드릴게요.');
+ const mk=marketingInfo('s');
+ const parts=['[직접문의][집구해요]',mk.marker,'거래:'+trades.join('/'),'예산:'+budget,'입주:'+when,'이사:'+reason,checked('s_priority_group').length?'중요:'+checked('s_priority_group').join('/'):'',radio('s_loan')?'대출:'+radio('s_loan'):'',radio('s_pet')?'반려:'+radio('s_pet'):'',radio('s_parking')?'주차:'+radio('s_parking'):'',val('s_memo')?'기타:'+val('s_memo'):''].filter(Boolean);
+ const ok=await post({type:'A',source:'HIA',name,phone,service:parts.join(' | ').slice(0,295),moveDate:mode==='단일'?single:(mode==='기간'?from:''),area,contact:'전화',staff:'',schoolTag:TRACKING.schoolTag,campaignTag:TRACKING.campaignTag,consentConfirmed:true,consentVersion:PRIVACY_VERSION,consentAt:new Date().toISOString(),marketingConsent:mk.agreed,marketingConsentAt:mk.at,marketingConsentVersion:MARKETING_VERSION,marketingChannels:mk.agreed?'문자,전화':''},'s_btn','msg_s','접수완료! 담당자 배정 후 연락드릴게요.');
  if(ok){document.querySelectorAll('#panel-seek input:not([type=checkbox]):not([type=radio]),#panel-seek textarea').forEach(e=>{if(!e.classList.contains('staff-locked'))e.value=''});document.querySelectorAll('#panel-seek input[type=checkbox],#panel-seek input[type=radio]').forEach(e=>e.checked=false);document.querySelectorAll('#panel-seek .chip').forEach(e=>e.classList.remove('sel'));document.querySelector('input[name=s_date_mode][value=단일]').checked=true;toggleSeekDate();revokePrivacy('s')}
 }
 
@@ -618,8 +650,9 @@ async function submitOffer(){
  if(!prop)return msg('msg_o','매물 종류를 선택해주세요.',false);
  if(!moveout)return msg('msg_o','희망 퇴실일을 입력해주세요.',false);
  if(!cons)return msg('msg_o','개인정보 필수동의를 완료해주세요.',false);
- const parts=['[직접문의][집내놔요]','관계:'+role,landlordPhone?'임대인연락:'+landlordPhone:'','형태:'+trades.join('/'),'종류:'+prop,'현재금액:'+val('o_current_price'),'만기:'+val('o_expiry'),'퇴실:'+moveout,'퇴실일정:'+radio('o_move_mode'),'상태:'+radio('o_occupancy'),'사진:'+radio('o_photo'),val('o_memo')?'기타:'+val('o_memo'):''].filter(Boolean);
- const ok=await post({type:'A',source:'HIB',name,phone,service:parts.join(' | ').slice(0,295),moveDate:moveout,area:addr,contact:'전화',staff:'',schoolTag:TRACKING.schoolTag,campaignTag:TRACKING.campaignTag,consentConfirmed:true,consentVersion:PRIVACY_VERSION,consentAt:new Date().toISOString()},'o_btn','msg_o','매물 접수가 완료되었습니다. 내용 확인 후 광고·중개를 진행할게요.');
+ const mk=marketingInfo('o');
+ const parts=['[직접문의][집내놔요]',mk.marker,'관계:'+role,landlordPhone?'임대인연락:'+landlordPhone:'','형태:'+trades.join('/'),'종류:'+prop,'현재금액:'+val('o_current_price'),'만기:'+val('o_expiry'),'퇴실:'+moveout,'퇴실일정:'+radio('o_move_mode'),'상태:'+radio('o_occupancy'),'사진:'+radio('o_photo'),val('o_memo')?'기타:'+val('o_memo'):''].filter(Boolean);
+ const ok=await post({type:'A',source:'HIB',name,phone,service:parts.join(' | ').slice(0,295),moveDate:moveout,area:addr,contact:'전화',staff:'',schoolTag:TRACKING.schoolTag,campaignTag:TRACKING.campaignTag,consentConfirmed:true,consentVersion:PRIVACY_VERSION,consentAt:new Date().toISOString(),marketingConsent:mk.agreed,marketingConsentAt:mk.at,marketingConsentVersion:MARKETING_VERSION,marketingChannels:mk.agreed?'문자,전화':''},'o_btn','msg_o','매물 접수가 완료되었습니다. 내용 확인 후 광고·중개를 진행할게요.');
  if(ok){document.querySelectorAll('#panel-offer input:not([type=checkbox]):not([type=radio]),#panel-offer textarea').forEach(e=>{if(!e.classList.contains('staff-locked'))e.value=''});document.querySelectorAll('#panel-offer input[type=checkbox],#panel-offer input[type=radio]').forEach(e=>e.checked=false);document.querySelectorAll('#panel-offer .chip').forEach(e=>e.classList.remove('sel'));toggleLandlordContact();revokePrivacy('o')}
 }
 </script>

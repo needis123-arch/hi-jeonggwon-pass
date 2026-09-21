@@ -1,4 +1,4 @@
-package kr.co.hirealty.personalcenter;
+package kr.co.hirealty.personalcenter.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

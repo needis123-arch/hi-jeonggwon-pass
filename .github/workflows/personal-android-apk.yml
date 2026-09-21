@@ -41,6 +41,27 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Install native today board
+        run: |
+          TARGET="android/app/src/main/java/kr/co/hirealty/personalcenter"
+          mkdir -p "$TARGET"
+          cp native/android/TodayBoardManager.java "$TARGET/TodayBoardManager.java"
+          cp native/android/TodayBoardReceiver.java "$TARGET/TodayBoardReceiver.java"
+          cp native/android/TodayBoardPlugin.java "$TARGET/TodayBoardPlugin.java"
+          cp native/android/MainActivity.java "$TARGET/MainActivity.java"
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("android/app/src/main/AndroidManifest.xml")
+          s=p.read_text()
+          receiver='''        <receiver
+              android:name=".TodayBoardReceiver"
+              android:enabled="true"
+              android:exported="false" />\n'''
+          if '.TodayBoardReceiver' not in s:
+              s=s.replace('    </application>', receiver+'    </application>')
+          p.write_text(s)
+          PY
+
       - name: Build debug APK
         run: |
           cd android

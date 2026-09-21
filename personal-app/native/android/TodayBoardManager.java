@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.view.View;
+import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -31,12 +33,16 @@ public final class TodayBoardManager {
     public static final String KEY_TIMES = "times_json";
     public static final String KEY_COMPLETED = "completed_keys";
     public static final String KEY_QUEUE = "completed_queue";
-    public static final String BOARD_CHANNEL_ID = "pc_today_board_v2";
-    public static final String REMIND_CHANNEL_ID = "pc_today_remind_v2";
+    public static final String BOARD_CHANNEL_ID = "pc_today_board_v3";
+    public static final String REMIND_CHANNEL_ID = "pc_today_remind_v3";
     public static final int NOTIFICATION_ID = 240921;
     public static final String ACTION_REMIND = "kr.co.hirealty.personalcenter.stable.TODAY_REMIND";
     public static final String ACTION_REFRESH = "kr.co.hirealty.personalcenter.stable.TODAY_REFRESH";
     public static final String ACTION_COMPLETE = "kr.co.hirealty.personalcenter.stable.TODAY_COMPLETE";
+
+    private static final int[] BIG_ROW_IDS = {
+        R.id.notif_row1, R.id.notif_row2, R.id.notif_row3, R.id.notif_row4, R.id.notif_row5
+    };
 
     private TodayBoardManager() {}
 
@@ -65,6 +71,8 @@ public final class TodayBoardManager {
             .putString(KEY_TIMES, times.toString())
             .putStringSet(KEY_COMPLETED, completed)
             .apply();
+
+        TodayBoardWidgetProvider.updateAll(context);
     }
 
     public static JSONArray readItems(Context context) {
@@ -98,7 +106,7 @@ public final class TodayBoardManager {
         NotificationChannel board = nm.getNotificationChannel(BOARD_CHANNEL_ID);
         if (board == null) {
             board = new NotificationChannel(BOARD_CHANNEL_ID, "오늘 할 일 고정판", NotificationManager.IMPORTANCE_DEFAULT);
-            board.setDescription("오늘 미완료 일정과 할 일을 잠금화면에 한 장으로 계속 표시합니다.");
+            board.setDescription("잠금화면에서 오늘 미완료 할 일을 한 장으로 확인하고 바로 완료합니다.");
             board.setSound(null, null);
             board.enableVibration(false);
             board.setShowBadge(true);
@@ -109,12 +117,37 @@ public final class TodayBoardManager {
         NotificationChannel remind = nm.getNotificationChannel(REMIND_CHANNEL_ID);
         if (remind == null) {
             remind = new NotificationChannel(REMIND_CHANNEL_ID, "오늘 할 일 시간 알림", NotificationManager.IMPORTANCE_HIGH);
-            remind.setDescription("10:30, 13:00, 17:00, 20:00, 22:00에 미완료 할 일을 다시 알려줍니다.");
+            remind.setDescription("10:30, 13:00, 17:00, 20:00, 22:00에 같은 고정판을 다시 알려줍니다.");
             remind.enableVibration(true);
             remind.setShowBadge(true);
             remind.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             nm.createNotificationChannel(remind);
         }
+    }
+
+    private static PendingIntent openPendingIntent(Context context) {
+        Intent openIntent = new Intent(context, MainActivity.class);
+        openIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return PendingIntent.getActivity(
+            context, 240922, openIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+    }
+
+    private static PendingIntent completePendingIntent(Context context, JSONObject item, String origin) {
+        String key = item.optString("key", "");
+        Intent completeIntent = new Intent(context, TodayBoardReceiver.class);
+        completeIntent.setAction(ACTION_COMPLETE);
+        completeIntent.putExtra("key", key);
+        completeIntent.putExtra("kind", item.optString("kind", ""));
+        completeIntent.putExtra("itemId", item.optString("itemId", ""));
+        completeIntent.putExtra("date", item.optString("date", today()));
+        completeIntent.putExtra("label", item.optString("label", ""));
+        int request = Math.abs((origin + "|" + key).hashCode());
+        return PendingIntent.getBroadcast(
+            context, request, completeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
     }
 
     public static void showBoard(Context context, boolean alert) {
@@ -123,63 +156,65 @@ public final class TodayBoardManager {
         NotificationManagerCompat nm = NotificationManagerCompat.from(context);
         if (items.isEmpty()) {
             nm.cancel(NOTIFICATION_ID);
+            TodayBoardWidgetProvider.updateAll(context);
             return;
         }
 
         JSONObject top = items.get(0);
         int total = items.size();
-        NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle()
-            .setBigContentTitle("오늘 할 일 · " + total + "개 남음")
-            .setSummaryText("완료하면 다음 항목이 맨 위로 올라옵니다.");
+        PendingIntent openPi = openPendingIntent(context);
 
-        for (int i = 0; i < Math.min(5, items.size()); i++) {
-            String label = items.get(i).optString("label", "할 일");
-            style.addLine("☐ " + label);
+        RemoteViews compact = new RemoteViews(context.getPackageName(), R.layout.notification_today_board);
+        compact.setTextViewText(R.id.notif_title, "오늘 할 일 · " + total + "개 남음");
+        compact.setTextViewText(R.id.notif_top, "☐ " + top.optString("label", "할 일"));
+        compact.setOnClickPendingIntent(R.id.notif_open, openPi);
+        compact.setOnClickPendingIntent(R.id.notif_complete, completePendingIntent(context, top, "notif-top"));
+
+        RemoteViews big = new RemoteViews(context.getPackageName(), R.layout.notification_today_board_big);
+        big.setTextViewText(R.id.notif_big_title, "오늘 할 일");
+        big.setTextViewText(R.id.notif_big_count, total + "개 남음");
+        big.setOnClickPendingIntent(R.id.notif_big_open, openPi);
+
+        for (int i = 0; i < BIG_ROW_IDS.length; i++) {
+            int id = BIG_ROW_IDS[i];
+            if (i < total) {
+                JSONObject item = items.get(i);
+                String label = item.optString("label", "할 일");
+                if (i == BIG_ROW_IDS.length - 1 && total > BIG_ROW_IDS.length) {
+                    label += "  · +" + (total - BIG_ROW_IDS.length) + "개";
+                }
+                big.setViewVisibility(id, View.VISIBLE);
+                big.setTextViewText(id, "☐ " + label);
+                big.setOnClickPendingIntent(id, completePendingIntent(context, item, "notif-big-" + i));
+            } else {
+                big.setViewVisibility(id, View.GONE);
+            }
         }
-
-        Intent openIntent = new Intent(context, MainActivity.class);
-        openIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent openPi = PendingIntent.getActivity(
-            context, 240922, openIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        Intent completeIntent = new Intent(context, TodayBoardReceiver.class);
-        completeIntent.setAction(ACTION_COMPLETE);
-        completeIntent.putExtra("key", top.optString("key"));
-        completeIntent.putExtra("kind", top.optString("kind"));
-        completeIntent.putExtra("itemId", top.optString("itemId"));
-        completeIntent.putExtra("date", top.optString("date"));
-        completeIntent.putExtra("label", top.optString("label"));
-        PendingIntent completePi = PendingIntent.getBroadcast(
-            context, 240923, completeIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        String compact = top.optString("label", "할 일");
-        if (total > 1) compact += " 외 " + (total - 1) + "개";
 
         String channelId = alert ? REMIND_CHANNEL_ID : BOARD_CHANNEL_ID;
         NotificationCompat.Builder b = new NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_menu_agenda)
             .setContentTitle("오늘 할 일 · " + total + "개 남음")
-            .setContentText(compact)
-            .setStyle(style)
+            .setContentText(top.optString("label", "할 일"))
             .setContentIntent(openPi)
+            .setCustomContentView(compact)
+            .setCustomBigContentView(big)
+            .setCustomHeadsUpContentView(compact)
+            .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
             .setOngoing(true)
             .setAutoCancel(false)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setPriority(alert ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_DEFAULT)
             .setOnlyAlertOnce(!alert)
-            .addAction(android.R.drawable.checkbox_on_background, "완료", completePi)
-            .addAction(android.R.drawable.ic_menu_view, "열기", openPi);
+            .addAction(android.R.drawable.checkbox_on_background, "완료", completePendingIntent(context, top, "action"));
 
         if (alert) {
             b.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
         }
 
         try { nm.notify(NOTIFICATION_ID, b.build()); } catch (SecurityException ignored) {}
+        TodayBoardWidgetProvider.updateAll(context);
     }
 
     public static void markComplete(Context context, Intent intent) {
@@ -196,10 +231,13 @@ public final class TodayBoardManager {
 
         boolean exists = false;
         for (int i = 0; i < queue.length(); i++) {
-            if (key.equals(queue.optJSONObject(i) != null ? queue.optJSONObject(i).optString("key") : "")) {
-                exists = true; break;
+            JSONObject o = queue.optJSONObject(i);
+            if (o != null && key.equals(o.optString("key"))) {
+                exists = true;
+                break;
             }
         }
+
         if (!exists) {
             JSONObject q = new JSONObject();
             try {
@@ -212,8 +250,13 @@ public final class TodayBoardManager {
             } catch (Exception ignored) {}
         }
 
-        p.edit().putStringSet(KEY_COMPLETED, completed).putString(KEY_QUEUE, queue.toString()).apply();
+        p.edit()
+            .putStringSet(KEY_COMPLETED, completed)
+            .putString(KEY_QUEUE, queue.toString())
+            .apply();
+
         showBoard(context, false);
+        TodayBoardWidgetProvider.updateAll(context);
     }
 
     public static JSONArray getCompletedQueue(Context context) {
@@ -279,6 +322,7 @@ public final class TodayBoardManager {
         JSONArray all = readItems(context);
         JSONArray times = readTimes(context);
         Set<String> dates = new LinkedHashSet<>();
+
         for (int i = 0; i < all.length(); i++) {
             JSONObject o = all.optJSONObject(i);
             if (o != null && !o.optString("date").isEmpty()) dates.add(o.optString("date"));
@@ -286,6 +330,7 @@ public final class TodayBoardManager {
 
         Calendar base = Calendar.getInstance();
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+
         for (int day = 0; day < 10; day++) {
             Calendar x = (Calendar) base.clone();
             x.add(Calendar.DAY_OF_MONTH, day);

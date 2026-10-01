@@ -107,7 +107,7 @@ input:focus,textarea:focus{outline:2px solid #868f63;outline-offset:1px;backgrou
 <header class="topline">
   <div class="brandbar">
     <div class="brand-stamp">정</div>
-    <div class="mark">정권통신</div>
+    <div class="mark" id="brandMark">정권통신</div>
   </div>
   <div class="header-note"><span></span>고객 상담 · 조건 확인 접수</div>
 </header>
@@ -127,7 +127,7 @@ input:focus,textarea:focus{outline:2px solid #868f63;outline-offset:1px;backgrou
   </aside>
 
   <section class="card">
-    <h2>정권통신 상담 접수</h2>
+    <h2 id="formTitle">정권통신 상담 접수</h2>
     <p>아는 내용까지만 선택해주세요. 모르는 항목은 ‘모름’으로 선택하셔도 됩니다.</p>
 
     <div class="form-fields">
@@ -267,7 +267,7 @@ input:focus,textarea:focus{outline:2px solid #868f63;outline-offset:1px;backgrou
         </div>
       </div>
 
-      <div class="field">
+      <div class="field" id="schoolField">
         <label>학교 <span class="hint">(해당 시 하나만)</span></label>
         <div class="choicegroup">
           <label><input type="radio" name="b_school" value="중앙대"><span>중앙대</span></label>
@@ -336,6 +336,38 @@ input:focus,textarea:focus{outline:2px solid #868f63;outline-offset:1px;backgrou
 <script>
 const CONFIG={WEBAPP_URL:'https://script.google.com/macros/s/AKfycbynYvXKdsCxhdDzEoruAUdUUTWWXvBehJmI5_D6rc1iouEH5HF0sOV2zMJm1Z56HVa6dQ/exec'};
 const PRIVACY_VERSION='2026-09-v1';
+const TRACKING=(()=>{
+  const p=new URLSearchParams(location.search);
+  const campus=String(p.get('campus')||'general').toLowerCase();
+  const schools={cau:'중앙대',ssu:'숭실대',snu:'서울대',중앙대:'중앙대',숭실대:'숭실대',서울대:'서울대'};
+  const schoolTag=schools[campus]||'미선택';
+  const campusKey=schools[campus] ? ({'중앙대':'cau','숭실대':'ssu','서울대':'snu'}[schoolTag]) : 'general';
+  const campaignTag=schoolTag==='미선택' ? '일반 통신접수' : schoolTag+' 통신접수';
+  return {campusKey,schoolTag,campaignTag,isCampus:schoolTag!=='미선택'};
+})();
+
+function applyCampusMode(){
+  const field=document.getElementById('schoolField');
+  const brand=document.getElementById('brandMark');
+  const title=document.getElementById('formTitle');
+  if(TRACKING.isCampus){
+    document.querySelectorAll('input[name="b_school"]').forEach(el=>{
+      el.checked=el.value===TRACKING.schoolTag;
+      el.disabled=el.value!==TRACKING.schoolTag;
+    });
+    if(field)field.style.display='none';
+    if(brand)brand.textContent='정권통신 × '+TRACKING.schoolTag;
+    if(title)title.textContent=TRACKING.schoolTag+' 전용 통신 상담 접수';
+    document.title='정권통신 × '+TRACKING.schoolTag+' 상담 접수';
+  }else{
+    document.querySelectorAll('input[name="b_school"]').forEach(el=>el.disabled=false);
+    if(field)field.style.display='';
+    if(brand)brand.textContent='정권통신';
+    if(title)title.textContent='정권통신 상담 접수';
+    document.title='정권통신 고객 상담 접수';
+  }
+}
+
 
 const PRIVACY_HTML=`
 <h5>1. 수집하는 개인정보 항목</h5>
@@ -497,7 +529,8 @@ async function submitLead(){
     area:val('b_area'),
     contact:'전화/문자',
     staff:'',
-    schoolTag:radio('b_school')||'미선택',
+    schoolTag:TRACKING.isCampus?TRACKING.schoolTag:(radio('b_school')||'미선택'),
+    campaignTag:TRACKING.campaignTag,
     consentConfirmed:true,
     consentVersion:PRIVACY_VERSION,
     consentAt:new Date().toISOString()
@@ -535,7 +568,9 @@ function clearForm(){
   document.getElementById('phoneBlock').classList.remove('show');
   document.getElementById('internetBlock').classList.remove('show');
   revokePrivacy();
+  applyCampusMode();
 }
+applyCampusMode();
 </script>
 </body>
 </html>

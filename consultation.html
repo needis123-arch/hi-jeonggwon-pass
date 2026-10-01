@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f2518">
+<title>정권통신 상담 신청</title>
+<style>
+:root{--ink:#202519;--muted:#757b6a;--line:#dfe4d5;--yellow:#f8d633;--bg:#f7f8f2}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",system-ui,sans-serif}main{max-width:620px;margin:32px auto;padding:30px;background:#fff;border:1px solid var(--line);border-radius:20px}header{margin-bottom:30px}header small{font-size:12px;letter-spacing:1px;color:var(--muted)}h1{font-size:27px;line-height:1.4;margin:10px 0}p{font-size:14px;color:var(--muted);line-height:1.7}.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 18px}.field{min-width:0;display:flex;flex-direction:column;gap:9px}.full{grid-column:1/-1}.field label,.label{font-size:13px;font-weight:800}input,select,textarea,button{font:inherit}input:not([type=checkbox]):not([type=radio]),select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#fafbf7;padding:13px;color:var(--ink);font-size:14px;min-width:0}.options{display:flex;flex-wrap:wrap;gap:8px}.choice{border:1px solid var(--line);padding:12px;border-radius:10px;font-size:13px!important;font-weight:500!important;cursor:pointer}.choice:has(input:checked){background:#fff5b7;border-color:#dec236}.choice input{margin:0 5px 0 0;accent-color:#bea100}.help{font-size:12px;color:var(--muted);line-height:1.7}.consent{border:1px solid var(--line);border-radius:12px;padding:15px;background:#f7f8f2}.consent details{margin-bottom:12px;font-size:13px}.consent summary{cursor:pointer;font-weight:700}.consent p{font-size:12px}.consent label{font-size:13px;line-height:1.7;display:flex;align-items:flex-start;gap:8px}.submit{width:100%;margin-top:22px;border:0;border-radius:11px;padding:17px;background:var(--yellow);font-weight:900;font-size:16px}.submit:disabled{opacity:.55;cursor:wait}.message{font-size:14px;line-height:1.7;margin:16px 0;white-space:pre-wrap;color:#b13a31}.message.success{color:#197c47;background:#eaf8ed;padding:16px;border-radius:11px}.honeypot{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}footer{margin-top:24px;border-top:1px solid var(--line);padding-top:18px;font-size:12px;color:var(--muted)}@media(max-width:650px){main{margin:0;border:0;border-radius:0;padding:26px 20px;min-height:100dvh}.grid{gap:20px 12px}h1{font-size:24px}.field{min-width:0}}@media(max-width:380px){.grid{grid-template-columns:1fr}.full{grid-column:1}}
+</style>
+</head>
+<body>
+<main>
+<header><small>정권통신 · 상담 접수</small><h1>필요한 통신 상담,<br>남겨주시면 연락드릴게요.</h1><p>휴대폰·인터넷·TV 조건과 궁금한 내용을 남겨주세요.<br>담당자가 확인하고 상담을 이어갑니다.</p></header>
+<form id="consultRequestForm">
+<div class="grid">
+ <div class="field"><label for="requestName">이름 *</label><input id="requestName" autocomplete="name" maxlength="80" placeholder="홍길동" required></div>
+ <div class="field"><label for="requestPhone">전화번호 *</label><input id="requestPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="13" placeholder="010-1234-5678" required></div>
+ <div class="field full"><span class="label">필요 서비스 * <span class="help">(중복 선택 가능)</span></span><div class="options">
+  <label class="choice"><input type="checkbox" name="service" value="휴대폰">휴대폰</label><label class="choice"><input type="checkbox" name="service" value="인터넷">인터넷</label><label class="choice"><input type="checkbox" name="service" value="TV">TV</label><label class="choice"><input type="checkbox" name="service" value="결합상품">결합상품</label><label class="choice"><input type="checkbox" name="service" value="통신비 무료진단">통신비 무료진단</label>
+ </div></div>
+ <div class="field"><label for="requestStaff">상담 담당자</label><select id="requestStaff"><option value="">담당자 배정 요청</option><option>송훈</option><option>인성</option></select></div>
+ <div class="field"><label for="requestMoveDate">이사 예정일 (선택)</label><input id="requestMoveDate" type="date"></div>
+ <div class="field full"><span class="label">상담 희망 방식</span><div class="options"><label class="choice"><input type="radio" name="method" value="전화" checked>전화</label><label class="choice"><input type="radio" name="method" value="방문">방문</label><label class="choice"><input type="radio" name="method" value="카카오톡">카카오톡</label></div></div>
+ <div class="field full"><label for="requestReferral">추천인 코드 <span class="help">(없으면 비워두세요)</span></label><input id="requestReferral" maxlength="80" placeholder="안내받은 코드"></div>
+ <div class="field full"><label for="requestNote">상담 내용 (선택)</label><textarea id="requestNote" rows="4" maxlength="5000" placeholder="희망 기종, 현재 통신사, 인터넷 설치 지역, 연락 가능한 시간 등을 적어주세요."></textarea></div>
+ <div class="full consent"><details><summary>[필수] 개인정보 수집·이용 안내</summary><p>정권통신은 이름, 전화번호, 필요 서비스, 상담 희망 방식, 담당자, 이사 예정일, 추천인 코드 및 직접 작성한 상담 내용을 상담 접수·고객 연락·방문 안내·후속 상담에 사용합니다.</p><p>상담 및 고객 요청 처리 목적 달성 후 관련 법령 및 내부 운영 기준에 따라 보관 후 파기합니다. 동의를 거부할 수 있으나 필수 정보에 대한 동의가 없으면 상담을 접수할 수 없습니다.</p><p>실제 통신사 조회·가입·개통에 필요한 추가 동의나 본인확인은 별도로 안내합니다.</p></details><label><input id="requestConsent" type="checkbox" required>안내 내용을 확인했으며 개인정보 수집·이용에 동의합니다.</label></div>
+</div>
+<div class="honeypot" aria-hidden="true"><label>Company<input id="requestCompany" tabindex="-1" autocomplete="off"></label></div>
+<button class="submit" id="requestSubmit" type="submit">통신 상담 신청하기</button>
+<div class="message" id="requestMessage" role="status" aria-live="polite"></div>
+<p class="help" style="text-align:center">신청하신 상담을 위해 담당자가 연락드립니다.</p>
+</form>
+<footer>정권통신 · 고객 상담 접수</footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+'use strict';
+const requestClient=supabase.createClient('https://ielwjiftulcolzfmhkwl.supabase.co','sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh',{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+const requestValue=id=>document.getElementById(id).value.trim();
+let requestBusy=false,requestComplete=false;
+let requestKey=sessionStorage.getItem('jk-consult-request-key')||crypto.randomUUID();sessionStorage.setItem('jk-consult-request-key',requestKey);
+const requestedStaff=new URLSearchParams(location.search).get('staff');if(['송훈','인성'].includes(requestedStaff))document.getElementById('requestStaff').value=requestedStaff;
+function requestFormatPhone(value){const d=value.replace(/\D/g,'').slice(0,11);if(d.length>7)return d.slice(0,3)+'-'+d.slice(3,d.length===10?6:7)+'-'+d.slice(d.length===10?6:7);return d.length>3?d.slice(0,3)+'-'+d.slice(3):d}
+document.getElementById('requestPhone').addEventListener('input',e=>{e.target.value=requestFormatPhone(e.target.value)});
+function requestMessage(message,success=false){const e=document.getElementById('requestMessage');e.textContent=message;e.classList.toggle('success',success)}
+async function submitConsultationRequest(event){
+ event?.preventDefault();if(requestBusy||requestComplete)return;if(requestValue('requestCompany'))return;
+ const name=requestValue('requestName'),phone=requestValue('requestPhone').replace(/\D/g,''),services=[...document.querySelectorAll('input[name=service]:checked')].map(e=>e.value);
+ if(!name||!/^01\d{8,9}$/.test(phone)){requestMessage('이름과 휴대폰 번호를 정확히 입력해 주세요.');return}if(!services.length){requestMessage('필요 서비스를 한 가지 이상 선택해 주세요.');return}if(!document.getElementById('requestConsent').checked){requestMessage('개인정보 수집·이용 안내를 확인하고 동의해 주세요.');return}
+ requestBusy=true;const button=document.getElementById('requestSubmit');button.disabled=true;button.textContent='접수 중...';requestMessage('');
+ try{
+  const {error}=await requestClient.from('jk_consultations').insert({public_request_key:requestKey,customer_name:name,phone_digits:phone,staff_name:requestValue('requestStaff')||null,services,contact_method:document.querySelector('input[name=method]:checked')?.value||'전화',customer_note:requestValue('requestNote'),move_date:requestValue('requestMoveDate')||null,referral_code:requestValue('requestReferral'),intake_source:'고객신청',privacy_consent:true,consent_version:'2026-10-consult-v1'});
+  if(error&&error.code!=='23505'){requestMessage('신청을 접수하지 못했습니다. 잠시 후 다시 시도해 주세요.');return}
+  requestComplete=true;sessionStorage.removeItem('jk-consult-request-key');button.textContent='상담 신청 완료';requestMessage('상담 신청이 접수되었습니다. 담당자가 내용을 확인하고 연락드릴게요.',true);document.getElementById('consultRequestForm').reset();
+ }catch(e){requestMessage('연결이 원활하지 않습니다. 다시 신청하기를 눌러 주세요.')}finally{requestBusy=false;if(!requestComplete){button.disabled=false;button.textContent='통신 상담 신청하기'}}
+}
+document.getElementById('consultRequestForm').addEventListener('submit',submitConsultationRequest);
+</script>
+</body>
+</html>

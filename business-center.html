@@ -12,7 +12,8 @@
 <link rel="manifest" href="./manifest.webmanifest?v=2">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
-<title>정권통신 Business Center V3.41</title>
+<link rel="stylesheet" href="./business-consultations.css?v=3.42">
+<title>정권통신 Business Center V3.42</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -167,11 +168,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.41</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.42</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
   <button data-page="ledger">장부 관리</button>
+  <button data-page="consultations">상담 관리 <span data-consult-badge style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:10px">0</span></button>
   <button data-page="report">자동 매출보고</button>
   <button data-page="used">중고 반납</button>
   <button data-page="payback">페이백</button>
@@ -196,6 +198,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 <section class="page active" id="page-dashboard">
  <div class="section-head"><div><h2>정권통신 경영 현황</h2><p>장부 입력만으로 매출·갯수·손익·목표·유입을 자동 계산합니다.</p></div><button class="btn" onclick="loadAll()">새로고침</button></div>
+<div class="card consult-reminder-card"><div class="table-top"><div><b>상담 재연락 알림</b><div class="consult-note">오늘 연락 예정 · 기한이 지난 상담을 따로 확인합니다.</div></div><button class="btn" onclick="go('consultations')">상담 관리</button></div><div id="consultDashboardReminders" class="consult-reminder-list">불러오는 중...</div></div>
  <div class="alert-center card">
   <div class="alert-head"><div><h3>기간 도래 알림</h3><small>월말 페이백 · 중고반납 · 제휴카드 · 유지조건을 자동 추적합니다.</small></div><button class="btn" onclick="loadAlerts()">알림 새로고침</button></div>
   <div class="alert-summary">
@@ -325,6 +328,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 </section>
 
 <section class="page" id="page-alerts">
+<div class="card consult-reminder-card"><div class="table-top"><div><b>상담 재연락 알림</b><div class="consult-note">오늘 연락 예정 · 기한이 지난 상담을 따로 확인합니다.</div></div><button class="btn" onclick="go('consultations')">상담 관리</button></div><div id="consultAlertReminders" class="consult-reminder-list">불러오는 중...</div></div>
  <div class="section-head"><div><h2>알림센터</h2><p>처리임박·긴급 업무, 완료 이력, 카카오 알림톡 발송상태를 한 곳에서 관리합니다.</p></div><button class="btn" onclick="loadAlertCenter()">새로고침</button></div>
  <div class="summary">
   <div class="box"><span>긴급</span><strong id="acCritical" style="color:#dc3f50">0건</strong></div>
@@ -349,6 +353,14 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  </div>
 </section>
 
+
+<section class="page" id="page-consultations">
+ <div class="section-head"><div><h2>상담 관리</h2><p>상담 후 놓친 고객을 기록하고 3~5일 뒤 다시 연락합니다.</p></div><div class="consult-head-actions"><button class="btn" onclick="loadConsultations();loadConsultReminders(false)">새로고침</button><button class="btn" onclick="copyConsultationLink()">고객 신청 링크 복사</button><button class="btn primary" onclick="beginNewConsultation()">+ 상담 기록</button></div></div>
+ <a id="consultPublicLink" class="consult-note" target="_blank" rel="noopener" hidden>고객 상담 신청 페이지 열기</a>
+ <div class="consult-tabs" role="tablist" aria-label="담당자별 상담 페이지"><button class="btn active" role="tab" aria-selected="true" data-consult-staff="all" onclick="chooseConsultStaff('all')">전체</button><button class="btn" role="tab" data-consult-staff="송훈" onclick="chooseConsultStaff('송훈')">송훈</button><button class="btn" role="tab" data-consult-staff="인성" onclick="chooseConsultStaff('인성')">인성</button><button class="btn" role="tab" data-consult-staff="unassigned" onclick="chooseConsultStaff('unassigned')">미지정</button></div>
+ <div class="consult-toolbar"><input id="consultSearch" placeholder="고객명 또는 전화번호 검색" aria-label="상담 검색" oninput="queueConsultSearch()"><select id="consultStatusFilter" aria-label="상담 상태 필터" onchange="consultState.page=1;loadConsultations()"><option value="active">진행 중 상담</option><option value="due">오늘·기한 지난 연락</option><option value="all">전체 상태</option><option>상담전</option><option>상담중</option><option>재연락</option><option>방문예정</option><option>계약완료</option><option>종료</option></select><span class="consult-badge due">연락 예정 <b id="consultDueTotal">0건</b></span></div>
+ <div id="consultLayout" class="consult-layout"><div class="card consult-list-panel" id="consultListPanel"><div class="table-top"><b id="consultScope">전체 상담</b><span id="consultCount">0건</span></div><div id="consultList" class="consult-list"><div class="empty">상담 목록을 불러오는 중...</div></div><div class="consult-pager"><button class="btn" id="consultPrev" onclick="changeConsultPage(-1)">이전</button><span id="consultPageText">1 / 1쪽</span><button class="btn" id="consultNext" onclick="changeConsultPage(1)">다음</button></div></div><div id="consultDetail" class="card consult-detail"><div class="empty">고객을 선택하면 상담 내용을 확인할 수 있습니다.</div></div></div>
+</section>
 
 <section class="page" id="page-ledger">
  <div class="section-head"><div><h2>장부 관리</h2><p>월별로 장부를 나누고, 거래처별 실적과 상세내역까지 한 화면에서 확인합니다.</p></div><button class="btn primary" onclick="openLedger()">+ 판매건 입력</button></div>
@@ -567,6 +579,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <button data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터</button>
   <button data-page="ledger">장부 관리</button>
+  <button data-page="consultations">상담 관리 <span data-consult-badge style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:10px">0</span></button>
   <button data-page="report">자동 매출보고</button>
   <button data-page="used">중고 반납</button>
   <button data-page="payback">페이백</button>
@@ -585,6 +598,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./business-consultations.js?v=3.42"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -613,7 +627,7 @@ $('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month
 ['ledgerMonth','reportMonth','usedMonth','paybackMonth','affiliateMonth','adMonth','expenseMonth','sourceMonth','alertHistoryMonth','notifyHistoryMonth','payRateMonth'].forEach(id=>{if($(id))$(id).value=mk(now)});
 $('reportDate').value=ymd(now);
 
-const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',cash:'자금 / 시재',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
+const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',consultations:'상담 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',cash:'자금 / 시재',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
 function toggleMobileMenu(){
  const sheet=$('mobileMenuSheet'),backdrop=$('mobileMenuBackdrop');
@@ -654,7 +668,8 @@ function go(p,opts={}){
  $('pageTitle').textContent=titles[p]||'정권통신';
  updateNavigationChrome(p);
  window.scrollTo({top:0,behavior:opts.instant?'auto':'smooth'});
- if(p==='alerts')loadAlertCenter();
+ if(p==='alerts'){loadAlertCenter();loadConsultReminders(false)}
+ if(p==='consultations')openConsultationPage();
  if(p==='report')loadReport();
  if(p==='used')loadUsed();
  if(p==='payback')loadPayback();
@@ -709,14 +724,14 @@ window.addEventListener('beforeunload',e=>{
  }
 });
 async function resetPasswordPrompt(){const p1=prompt('새 비밀번호를 입력하세요.');if(!p1)return;const p2=prompt('새 비밀번호를 다시 입력하세요.');if(p1!==p2){alert('비밀번호가 다릅니다.');return}const {error}=await sb.auth.updateUser({password:p1});alert(error?error.message:'비밀번호 변경 완료');if(!error)hideLogin()}
-async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){showLogin();return}await loadAll();const requested=new URLSearchParams(location.search).get('page');const saved=(requested&&$('page-'+requested))?requested:(localStorage.getItem('jk-active-page')||'dashboard');if(!history.state?.jk){history.replaceState({jk:true,page:'dashboard',jkDepth:0},'',routeUrl('dashboard'));if(saved!=='dashboard')go(saved,{push:true,instant:true});else go('dashboard',{push:false,instant:true})}else{go(saved,{push:false,instant:true})}if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
+async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){consultState.reminders=[];consultState.dueCount=0;renderConsultReminders();if($('consultList'))$('consultList').innerHTML='';if($('consultDetail'))$('consultDetail').innerHTML='';showLogin();return}await loadAll();const requested=new URLSearchParams(location.search).get('page');const saved=(requested&&$('page-'+requested))?requested:(localStorage.getItem('jk-active-page')||'dashboard');if(!history.state?.jk){history.replaceState({jk:true,page:'dashboard',jkDepth:0},'',routeUrl('dashboard'));if(saved!=='dashboard')go(saved,{push:true,instant:true});else go('dashboard',{push:false,instant:true})}else{go(saved,{push:false,instant:true})}if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
 
 function opt(type){return state.options.filter(x=>x.option_type===type&&x.active).sort((a,b)=>a.sort_order-b.sort_order)}
 function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">${esc(x.label)}</option>`).join('')}
 function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
 async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
-async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadSurvival(),loadBreakEven(),loadLeadFunnel(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
+async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadConsultReminders(),loadSurvival(),loadBreakEven(),loadLeadFunnel(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
 
 
 function alertTypeLabel(t){return ({PAYBACK_MONTHEND:'페이백',USED_DEVICE_RETURN:'중고반납',AFFILIATE_CARD:'제휴카드',PLAN_CHANGE:'요금제 변경',INSURANCE_CANCEL:'보험 해지',ADDON_CANCEL:'부가서비스 해지'})[t]||t}

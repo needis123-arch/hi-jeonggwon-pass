@@ -44,7 +44,7 @@ async function selectConsultation(id,push=true){
  const request=++consultState.selectionRequest;consultState.creating=false;if(push)consultPushRoute(id);
  const {data,error}=await sb.from('jk_consultations').select('*').eq('id',id).single();if(request!==consultState.selectionRequest)return;if(error){toast('상담 내용을 불러오지 못했습니다.');return}consultState.selected=data;renderConsultDetail(data);renderConsultList();await loadConsultHistory(id,request);
 }
-function returnConsultList(){consultState.selectionRequest++;if(history.state?.consultId){history.back();return}consultState.creating=false;consultState.selected=null;history.replaceState({...history.state,consultId:null},'',consultRoute(consultState.staff,null));$('consultLayout').classList.remove('detail-open');$('consultDetail').innerHTML='<div class="empty">고객을 선택해 주세요.</div>'}
+function returnConsultList(){consultState.selectionRequest++;consultState.creating=false;consultState.selected=null;history.replaceState({...history.state,consultId:null},'',consultRoute(consultState.staff,null));$('consultLayout').classList.remove('detail-open');$('consultDetail').innerHTML='<div class="empty">고객을 선택해 주세요.</div>'}
 function beginNewConsultation(push=true){
  consultState.selectionRequest++;consultState.creating=true;consultState.selected=null;const today=consultToday(),staff=['송훈','인성'].includes(consultState.staff)?consultState.staff:null;
  let r={customer_name:'',phone_digits:'',staff_name:staff,services:[],contact_method:'방문',consulted_on:today,visited_on:today,followup_days:3,next_contact_on:consultAddDays(today,3),status:'재연락',consultation_note:'',customer_note:'',intake_source:'직접기록'};

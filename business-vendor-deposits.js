@@ -1,0 +1,38 @@
+'use strict';
+function vendorDepositSummary(data,month,rate=10,startMonth='2026-08'){
+ const items=(data.items||[]).filter(r=>r.category==='vendor'),map=Object.fromEntries(items.map(r=>[r.item_key,r])),groups=new Map();
+ const get=name=>{if(!groups.has(name))groups.set(name,{vendor:name,incoming:0,outgoing:0,reserve:0,salesSupply:0,purchaseSupply:0,salesVAT:0,purchaseVAT:0});return groups.get(name)};
+ for(const r of items)get(r.title.split(' · ')[0]);
+ for(const p of data.payments||[]){const r=map[p.item_key];if(p.voided||!r||p.paid_on.slice(0,7)!==month)continue;const g=get(r.title.split(' · ')[0]);if(r.direction==='in'){g.incoming+=Number(p.amount);if(r.source_month.slice(0,7)>=startMonth)g.reserve+=Number(p.amount)*rate/100}else g.outgoing+=Number(p.amount)}
+ for(const i of data.invoices||[]){if(i.voided||i.invoice_date.slice(0,7)!==month)continue;const r=map[i.source_item_key],g=get(r?r.title.split(' · ')[0]:i.vendor);if(i.kind==='sales'){g.salesSupply+=Number(i.supply_amount);g.salesVAT+=Number(i.vat_amount)}else{g.purchaseSupply+=Number(i.supply_amount);if(i.creditable)g.purchaseVAT+=Number(i.vat_amount)}}
+ return [...groups.values()].map(g=>({...g,reserve:Math.round(g.reserve),vatDifference:g.salesVAT-g.purchaseVAT})).sort((a,b)=>a.vendor.localeCompare(b.vendor,'ko'));
+}
+if(typeof module!=='undefined'&&module.exports)module.exports={vendorDepositSummary};
+const vendorDepositState={requestKey:null};
+function renderVendorDeposits(){
+ const root=$('vendorDepositRows'),m=financeState.model;if(!root||!m)return;const month=financeValue('financeMonth'),rate=m.reserve.rate;
+ $('vendorDepositMonthLabel').textContent=month+' 실제 입금·지급 / '+month+' 작성 증빙 · 판매월은 입금 기록에서 별도 선택';
+ root.innerHTML=vendorDepositSummary(financeState.data,month,rate,m.reserve.startMonth).map(g=>'<article class="finance-vendor"><h4>'+esc(g.vendor)+'</h4><div class="finance-comparison"><div><small>이 달 실제 입금</small><b>'+won(g.incoming)+'</b></div><div><small>이 달 실제 지급</small><b>'+won(g.outgoing)+'</b></div><div><small>입금 '+rate+'% 세금 적립</small><b>'+won(g.reserve)+'</b></div><div><small>매출 공급가액</small><b>'+won(g.salesSupply)+'</b><small>매출세액 '+won(g.salesVAT)+'</small></div><div><small>매입 공급가액</small><b>'+won(g.purchaseSupply)+'</b><small>공제가능 확인 매입세액 '+won(g.purchaseVAT)+'</small></div><div><small>증빙 세액 차이</small><b>'+won(g.vatDifference)+'</b></div></div><div class="finance-toolbar"><button class="btn primary" data-vendor-deposit="'+esc(g.vendor)+'">입금액 입력</button></div></article>').join('')||'<p class="finance-help">장부 거래처 또는 등록한 매입·매출 증빙이 표시됩니다.</p>';
+ root.querySelectorAll('[data-vendor-deposit]').forEach(b=>b.onclick=()=>openVendorDeposit(b.dataset.vendorDeposit));
+}
+function openVendorDeposit(vendor=''){
+ const rows=(financeState.model?.items||[]).filter(r=>r.category==='vendor').sort((a,b)=>b.source_month.localeCompare(a.source_month)),selected=rows.find(r=>r.title.split(' · ')[0]===vendor&&r.remaining>0)?.item_key||rows.find(r=>r.title.split(' · ')[0]===vendor)?.item_key||rows[0]?.item_key;
+ if(!rows.length){alert('입금할 거래처 판매월의 장부 또는 정산 항목을 먼저 등록하세요.');return}vendorDepositState.requestKey=crypto.randomUUID();modalMode='vendor-deposit';$('modalTitle').textContent='거래처 월별 실제 입금액';$('modalSave').textContent='실제 입금 저장';
+ $('modalBody').innerHTML=`<div class="form"><div class="field full"><label>거래처 / 정산 판매월 *</label><select id="vdSource" onchange="syncVendorDepositSource()">${financeSelectOptions(rows.map(r=>[r.item_key,r.title+' · '+(r.direction==='in'?'받을 돈':'낼 돈')+' '+won(r.amount)]),selected)}</select></div><div class="field full finance-compare" id="vdComparison"></div><div class="field"><label>정산서의 확정 입금 총액 *</label><input id="vdTotal" inputmode="numeric" oninput="formatMoneyInput(this)"><small>이번 입금액과 구분합니다. 일부 입금이면 총액은 그대로 두세요.</small></div><div class="field"><label>통장에 실제 들어온 금액 *</label><input id="vdAmount" inputmode="numeric" oninput="formatMoneyInput(this)"></div><div class="field"><label>실제 입금일 *</label><input id="vdDate" type="date" max="${financeToday()}" onchange="syncVendorDepositDate()"></div><div class="field"><label>입금 수단</label><select id="vdMethod"><option>계좌</option><option>현금</option></select></div><div class="field full"><label>장부 예상과 다른 금액이면 차액 사유</label><textarea id="vdReason" maxlength="1500"></textarea></div><div class="field full"><label><input id="vdChecked" type="checkbox"> 거래처 정산서와 통장 입금액을 대조했습니다 *</label></div><div class="field full"><label><input id="vdIncluded" type="checkbox" checked> 이 입금은 현재 남은 잔고에 이미 반영돼 있음</label><small>이미 받아서 사용한 돈을 정리할 때는 유지하세요. 저장한 잔고 이후 새로 받은 입금만 체크를 해제하세요.</small></div><div class="field full"><label>입금 메모</label><textarea id="vdNote" maxlength="1500"></textarea></div></div><p class="finance-help">판매월과 실제 입금월을 따로 기록합니다. 실제 입금액의 적립률은 잔고 / 세금 기준 설정을 따릅니다. 10% 적립액은 운영상 보관할 돈이며, 계산서 공급가액·부가세는 증빙 메뉴에서 별도로 입력하세요. 같은 통장 입금 내역을 두 번 기록하지 마세요.</p>`;
+ syncVendorDepositSource();showModal();
+}
+function syncVendorDepositSource(){const r=financeState.model.itemMap[financeValue('vdSource')];if(!r)return;const expected=financeVendorExpected(r);$('vdComparison').textContent='판매월 '+r.source_month.slice(0,7)+' · 장부 예상 '+(expected<0?'낼 돈 ':'받을 돈 ')+won(Math.abs(expected))+' · 실제 처리 '+won(r.paid)+' · 미정산 '+won(r.remaining);$('vdTotal').value=r.confirmed?r.amount:(r.direction==='in'?r.amount:'');$('vdTotal').readOnly=r.confirmed;$('vdAmount').value='';$('vdReason').value=r.reconciliation_reason||'';$('vdChecked').checked=false;if(r.confirmed&&r.direction!=='in')$('vdComparison').textContent+=' · 지급으로 확정된 항목입니다. 정산서 비교에서 방향을 먼저 확인하세요.'}
+function syncVendorDepositDate(){const before=financeValue('vdDate')<(financeState.model.snapshot?.snapshot_date||'');$('vdIncluded').disabled=before;if(before)$('vdIncluded').checked=true}
+async function saveVendorDeposit(){
+ if(financeState.saving)return;const r=financeState.model.itemMap[financeValue('vdSource')],amount=moneyNumber(financeValue('vdAmount')),total=moneyNumber(financeValue('vdTotal')),date=financeValue('vdDate'),reason=financeValue('vdReason'),included=$('vdIncluded').checked;
+ if(!r||!date||date>financeToday()||!Number.isSafeInteger(amount)||amount<=0||!Number.isSafeInteger(total)||total<=0||amount>total-Number(r.paid||0)||!$('vdChecked').checked){alert('판매월·실제 입금일·입금액·확정 총액을 확인하고 정산서 대조를 체크하세요. 입금액은 미정산 잔액 이내여야 합니다.');return}
+ if(r.excluded||(r.confirmed&&r.direction!=='in')){alert('제외되었거나 지급으로 확정된 항목입니다. 정산서 비교에서 먼저 확인하세요.');return}
+ if(total!==financeVendorExpected(r)&&!reason){alert('장부 예상과 확정 입금 총액이 다릅니다. 정산서 차액 사유를 입력하세요.');return}
+ if((!financeState.model.snapshot||financeState.model.snapshot.draft)&&date>=financeToday()){alert('오늘 입금을 기록하려면 현재 합산 잔고를 먼저 저장하세요.');return}
+ financeState.saving=true;$('modalSave').disabled=true;
+ try{
+  if(!r.confirmed){const {error}=await sb.from('jk_internal_items').insert({item_key:r.item_key,category:'vendor',title:r.title,source_month:r.source_month,direction:'in',amount:total,due_date:r.due_date,excluded:false,note:r.note||'',reconciliation_reason:reason,reconciled_ledger_signed:financeVendorExpected(r)}).select('*').single();if(error)throw error}
+  const {error}=await sb.rpc('jk_internal_record_payment',{p_item_key:r.item_key,p_amount:amount,p_paid_on:date,p_request_key:vendorDepositState.requestKey,p_payment_method:financeValue('vdMethod'),p_balance_included:included,p_note:financeValue('vdNote')});if(error)throw error;
+  closeModal();$('financeMonth').value=date.slice(0,7);await loadInternalFinance();toast('거래처 입금액과 실제 입금월을 기록했습니다.');
+ }catch(e){await loadInternalFinance();alert('입금을 저장하지 못했습니다. '+e.message+' 이미 저장된 정산 항목·입금 기록을 확인한 뒤 다시 처리하세요.')}finally{financeState.saving=false;$('modalSave').disabled=false}
+}

@@ -12,10 +12,10 @@
 <link rel="manifest" href="./manifest.webmanifest?v=2">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
-<link rel="stylesheet" href="./business-consultations.css?v=3.48">
-<link rel="stylesheet" href="./business-finance.css?v=3.48">
-<link rel="stylesheet" href="./business-navigation.css?v=3.48">
-<title>정권통신 Business Center V3.48</title>
+<link rel="stylesheet" href="./business-consultations.css?v=3.49">
+<link rel="stylesheet" href="./business-finance.css?v=3.49">
+<link rel="stylesheet" href="./business-navigation.css?v=3.49">
+<title>정권통신 Business Center V3.49</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -170,7 +170,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.48</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.49</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -443,7 +443,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 
 <section class="page" id="page-finance">
  <div class="section-head"><div><h2>우리 정산</h2><p>실제 보유한 돈에서 아직 낼 돈과 세금 확보액을 구분합니다.</p></div><button class="btn" onclick="loadInternalFinance()">새로고침</button></div>
- <div id="financeMessage" class="finance-message" role="status"></div>
+ <div id="financeMessage" class="finance-message" role="status"></div><div class="finance-toolbar"><button class="btn primary" onclick="openVendorDeposit()">거래처 입금액 입력</button><button class="btn" onclick="openCompanyCard()">현대카드 단말기 대금 기록</button><button class="btn" onclick="$('vendorDepositRows').closest('.finance-panel').scrollIntoView({behavior:'smooth'})">월별 거래처 기록 보기</button><button class="btn" onclick="$('companyCardRows').closest('.finance-panel').scrollIntoView({behavior:'smooth'})">사무실 카드 내역 보기</button></div>
  <div class="finance-kpis">
   <div class="finance-kpi main"><span>현재 합산 보유금</span><strong id="financeCurrent">-</strong><small id="financeBalanceDate">통장 + 현금</small></div>
   <div class="finance-kpi"><span>세금 확보 후 지금 사용 가능</span><strong id="financeFree">-</strong><small>보유금 − 남겨둘 세금 목표</small></div>
@@ -455,7 +455,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <p class="finance-help" id="financeForecastBasis"></p>
   <div class="finance-kpis">
    <div class="finance-kpi"><span>다음 달 받을 돈</span><strong id="financeNextIn">-</strong><small>거래처 + 카드 + 중고업체 + 기타</small></div>
-   <div class="finance-kpi"><span>다음 달 나갈 돈</span><strong id="financeNextOut">-</strong><small>거래처 지급 + 실수령 급여 + 원천세 + 비용</small></div>
+   <div class="finance-kpi"><span>다음 달 나갈 돈</span><strong id="financeNextOut">-</strong><small>거래처 지급 + 급여 + 원천세 + 비용 + 사무실 카드대금</small></div>
    <div class="finance-kpi main"><span>다음 달 말 예상 보유금</span><strong id="financeNextCash">-</strong></div>
    <div class="finance-kpi main"><span>세금 확보 후 다음 달 사용 가능</span><strong id="financeNextFree">-</strong><small>최소 유지금까지 추가 확보 필요 <b id="financeGap">-</b></small></div>
   </div>
@@ -473,10 +473,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  </div>
  <div class="card finance-panel"><h3>거래처 엑셀 ↔ 우리 장부 대조</h3><p class="finance-help">엑셀 파일을 선택하고 거래처·판매월·정산 방향을 확인하세요. 거래처 정산서 원본은 음수=우리가 받을 돈, 양수=우리가 입금할 돈이며 우리 장부와 부호가 반대입니다. 매출·매입·정산합계와 중고·리베이트 열을 연결해 차이·누락·중복을 찾습니다. 파일은 기기에서 읽으며 대조 결과 저장을 눌러야 기록됩니다.</p><div class="finance-toolbar"><label>판매월<input id="excelSalesMonth" type="month" onchange="resetSettlementExcel()"></label><label>거래처<select id="excelVendor" onchange="resetSettlementExcel()"></select></label><label>정산 방향<select id="excelSign" onchange="resetSettlementExcel()"><option value="">방향 확인 후 선택</option><option value="-1">엑셀 음수 = 우리가 받을 돈</option><option value="1">엑셀 양수 = 우리가 받을 돈</option></select></label><label>정산 파일<input id="excelFile" type="file" accept=".xlsx,.xls,.csv" onchange="readSettlementExcel(this)"></label></div><div class="finance-toolbar"><label>거래처 저장 양식<select id="excelProfile" onchange="chooseStatementProfile()"><option value="">양식을 선택하세요</option></select></label><label>양식 이름<input id="excelProfileName" maxlength="80" placeholder="예: 휴대폰 정산 / 인터넷 정산"></label><button class="btn" onclick="applyStatementProfile()">저장 양식 적용</button><button id="excelProfileSave" class="btn" onclick="saveStatementProfile()">이 거래처 양식 저장</button></div><p id="excelProfileMessage" class="finance-help" role="status"></p><div class="finance-toolbar"><label>정산 금액 읽기<select id="excelNetMode" onchange="resetSettlementExcel()"><option value="net">최종 정산합계 열</option><option value="sales_minus_purchase">거래처 매출 − 매입 (합계 열 없음)</option></select></label><label>시트<select id="excelSheet" onchange="selectSettlementSheet()"></select></label><label>제목행 번호<input id="excelHeaderRow" type="number" min="1" max="30" value="1" onchange="mapSettlementHeaders()"></label></div><details><summary>엑셀 열 연결 확인</summary><div id="excelMapping" class="finance-report-fields"></div></details><div class="finance-toolbar"><button class="btn primary" onclick="compareSettlementExcel()">대조 시작</button><button class="btn" onclick="saveSettlementComparison()">대조 결과 저장</button><button class="btn" id="excelApply" disabled onclick="applySettlementComparison()">확인한 엑셀 합계로 정산 확정</button></div><p id="excelMessage" class="finance-help" role="status"></p><div id="excelResult"></div><div id="excelHistory"></div></div>
  <div class="card finance-panel"><div class="finance-panel-top"><h3>거래처 판매월 정산 비교</h3><button class="btn" onclick="showAugustSettlement()">8월 판매 → 9월 입금 확인</button></div><div class="finance-toolbar"><label for="financeVendorMonth">판매월</label><input id="financeVendorMonth" type="month" onchange="renderVendorTaxClose()"></div><p class="finance-help">장부 예상(K−L · 부가세 포함) → 거래처 정산서 확정액 → 실제 입금·지급을 비교합니다. 상계 정산금과 계산서 공급가액은 서로 다를 수 있으므로 증빙은 별도로 연결합니다.</p><div id="financeVendorRows"></div><div id="financeCloseChecklist" class="finance-warning"></div></div>
+ <div class="card finance-panel"><div class="finance-panel-top"><h3>거래처별 월 입금액 / 매입·매출 비교</h3><button class="btn primary" onclick="openVendorDeposit()">+ 거래처 실제 입금액</button></div><p id="vendorDepositMonthLabel" class="finance-help"></p><p class="finance-help">실제 입금월의 거래처별 받은 돈과 입금 적립액, 증빙 작성월의 매입·매출을 비교합니다. 입금 적립액은 이미 현재 돈 안에서 남겨둘 금액입니다. 매출 공급가액은 입금액과 다를 수 있습니다. 증빙 세액 차이는 입력한 매출세액 − 공제가능 확인 매입세액이며 신고 확정액이 아닙니다.</p><div id="vendorDepositRows"></div></div>
  <div class="card finance-panel"><h3>거래처 입금 10% 세금 적립</h3><div id="financeReserveSummary"></div><p class="finance-help">실제 받은 거래처 정산금만 적립합니다. 예정 입금·취소 기록은 제외합니다. 10%는 현금을 모아둘 기준이며 확정 부가세는 아래 매출·매입 증빙으로 확인합니다.</p></div>
  <div class="card finance-panel"><h3>급여 3.3% 공제 / 신고·납부 확인</h3><div id="financePayrollTax"></div><p class="finance-help">사업소득: 소득세 3% + 지방소득세 0.3% 예상. 실제 공제 세액은 지급 화면에서 조정할 수 있습니다. 근로소득은 간이세액표 등 별도 기준이므로 해당 항목은 3.3% 미적용으로 설정하세요. 원천세는 실제 지급월의 다음 달 10일, 사업소득 간이지급명세서는 다음 달 말일을 확인합니다. 공휴일 연장·반기납부 여부는 신고서 기한을 확인해 예정일을 조정하세요. 아래 완료 기록은 관리용이며 실제 전자신고는 <a href="https://www.hometax.go.kr/" target="_blank" rel="noopener">홈택스</a>·<a href="https://www.wetax.go.kr/" target="_blank" rel="noopener">위택스</a>에서 진행합니다.</p></div>
  <div class="card finance-panel"><div class="finance-panel-top"><h3>급여 정산</h3><button class="btn" onclick="go('settings')">월별 급여율 설정</button></div><p id="financeSalaryRule" class="finance-help"></p><div id="financeSalaryRows" class="finance-salaries"></div></div>
  <div class="card finance-panel"><div class="finance-panel-top"><h3>거래처 · 지출 · 입금 확인</h3><button class="btn primary" onclick="beginFinanceManual()">기타 / 세금 예정 추가</button></div><div class="finance-toolbar"><select id="financeFilter" aria-label="정산 항목 구분" onchange="renderFinanceItems()"><option value="all">선택 월 전체</option><option value="vendor">거래처 정산</option><option value="payroll">급여</option><option value="expense">비용원장</option><option value="ad">광고비</option><option value="card">카드 입금</option><option value="payback">고객 페이백 지급</option><option value="used">중고업체 입금</option><option value="tax">세금 납부</option><option value="manual">기타</option><option value="unknown">과거 미확인 (전체)</option></select><span>과거 미확인 <b id="financeUnknownCount">0건</b></span></div><div id="financeItems"></div></div>
+ <div class="card finance-panel"><div class="finance-panel-top"><h3>사무실 카드로 낸 단말기 대금</h3><button class="btn primary" onclick="openCompanyCard()">+ 현대카드 / 사무실 카드 기록</button></div><p class="finance-help">고객 현금 완납 → 사무실 카드로 단말기 대금 결제 → 카드대금 실제 납부를 구분합니다. 거래처 정산과 마진은 그대로 두며, 실제 카드대금 출금일에만 돈이 빠집니다. 이미 쓴 현금은 현재 잔고에 다시 더하지 않습니다.</p><p id="companyCardSummary" class="finance-help"></p><div id="companyCardRows"></div></div>
  <div class="card finance-panel"><div class="finance-panel-top"><h3>고객 현금·계좌 실제 수납 기록</h3><button class="btn primary" onclick="openCustomerReceipt()">+ 고객 수납 기록</button></div><p class="finance-help">실제 받은 날짜 기준으로 고객 이름·받은 금액·담당자를 확인합니다. 장부에 입력한 S와 별개인 수납 이력이며, 현재 잔고에 포함한 돈을 다시 더하지 않습니다.</p><p id="customerReceiptSummary" class="finance-help"></p><div id="customerReceiptRows"></div></div><div class="card finance-panel"><h3>선택 월 실제 지급·입금 내역</h3><div id="financeHistory"></div></div>
  <div class="card finance-panel"><div class="finance-panel-top"><h3>부가세 / 세금 적립</h3><button class="btn" onclick="openFinanceInvoice()">계산서 기록</button></div><div class="finance-toolbar"><label>계산서 집계 기간</label><input id="financeTaxStart" type="date" aria-label="세액 집계 시작일" onchange="renderInternalFinance()"><span>~</span><input id="financeTaxEnd" type="date" aria-label="세액 집계 종료일" onchange="renderInternalFinance()"></div><div class="finance-kpis"><div class="finance-kpi"><span>기록한 매출세액</span><strong id="financeSalesVAT">-</strong></div><div class="finance-kpi"><span>공제가능 확인 매입세액</span><strong id="financePurchaseVAT">-</strong></div><div class="finance-kpi"><span>일반과세 부가세 차액 참고</span><strong id="financeVATReference">-</strong><small>max(매출세액 − 공제가능 매입세액, 0)</small></div><div class="finance-kpi"><span>실제로 모아둔 세금</span><strong id="financeTaxSaved">-</strong><small>목표까지 더 모을 금액 <b id="financeTaxGap">-</b></small></div></div><p class="finance-help">부가세 차액은 입력한 계산서만 기준으로 한 일반과세 참고값입니다. 과세유형·공제·신고기간에 따라 실제 납부액이 달라집니다. 납부할 세금과 기타 세금 목표는 잔고 / 세금 기준에서 확인해 입력하세요. 계산서 금액은 거래처 현금 정산에 두 번 더하지 않습니다. <a href="https://d.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7693&amp;mi=2401" target="_blank" rel="noopener">국세청 안내</a></p><p class="finance-help" id="financeLedgerVAT"></p><h4>선택 월 계산서 기록</h4><div id="financeInvoices"></div></div>
 </section>
@@ -643,14 +645,16 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./business-consultations.js?v=3.48"></script>
-<script src="./business-finance.js?v=3.48"></script>
-<script src="./business-used-settlement.js?v=3.48"></script>
-<script src="./business-tax-close.js?v=3.48"></script>
-<script src="./business-settlement-excel.js?v=3.48"></script>
-<script src="./business-statement-profiles.js?v=3.48"></script>
-<script src="./business-receipts.js?v=3.48"></script>
-<script src="./business-navigation.js?v=3.48"></script>
+<script src="./business-consultations.js?v=3.49"></script>
+<script src="./business-finance.js?v=3.49"></script>
+<script src="./business-used-settlement.js?v=3.49"></script>
+<script src="./business-tax-close.js?v=3.49"></script>
+<script src="./business-settlement-excel.js?v=3.49"></script>
+<script src="./business-statement-profiles.js?v=3.49"></script>
+<script src="./business-receipts.js?v=3.49"></script>
+<script src="./business-navigation.js?v=3.49"></script>
+<script src="./business-company-card.js?v=3.49"></script>
+<script src="./business-vendor-deposits.js?v=3.49"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -2126,7 +2130,7 @@ async function deactivateStaff(id,name){
 
 function showModal(){$('modalBg').classList.add('show');setTimeout(()=>$('modalBody').scrollTop=0,0)}
 function closeModal(){if(modalMode==='ledger'){sessionStorage.removeItem('jk-ledger-modal-open');sessionStorage.removeItem('jk-ledger-edit-id')}editingLedgerId=null;editingAdId=null;editingExpenseId=null;if($('modalSave'))$('modalSave').textContent='저장';$('modalBg').classList.remove('show')}
-async function saveModal(){if(modalMode==='customer-receipt')return saveCustomerReceipt();if(modalMode==='used-finance')return saveUsedFinance();if(modalMode==='ledger')return saveLedger();if(modalMode==='ad')return saveAd();if(modalMode==='expense')return saveExpense();if(modalMode==='target')return saveTarget();if(modalMode==='finance-balance')return saveFinanceBalance();if(modalMode==='finance-item'||modalMode==='finance-manual')return saveFinanceItem();if(modalMode==='finance-payment')return saveFinancePayment();if(modalMode==='finance-invoice')return saveFinanceInvoice()}
+async function saveModal(){if(modalMode==='vendor-deposit')return saveVendorDeposit();if(modalMode==='company-card')return saveCompanyCard();if(modalMode==='customer-receipt')return saveCustomerReceipt();if(modalMode==='used-finance')return saveUsedFinance();if(modalMode==='ledger')return saveLedger();if(modalMode==='ad')return saveAd();if(modalMode==='expense')return saveExpense();if(modalMode==='target')return saveTarget();if(modalMode==='finance-balance')return saveFinanceBalance();if(modalMode==='finance-item'||modalMode==='finance-manual')return saveFinanceItem();if(modalMode==='finance-payment')return saveFinancePayment();if(modalMode==='finance-invoice')return saveFinanceInvoice()}
 $('modalBg').onclick=e=>{if(e.target.id==='modalBg'&&modalMode!=='ledger')closeModal()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()})
 

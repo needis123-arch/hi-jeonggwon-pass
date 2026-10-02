@@ -173,7 +173,7 @@ AS $function$
       v_used_adjustment bigint;
     begin
       v_m := coalesce(new.base_rebate,0) - coalesce(new.cash_sale_amount,0);
-      v_p := round(greatest(coalesce(new.base_rebate,0),0)::numeric / 11)::bigint;
+      v_p := round(greatest(v_m,0)::numeric * 0.1)::bigint;
       select case when adjust_payroll then sale_amount-coalesce(new.used_device_amount,0) else 0 end into v_used_adjustment from public.jk_internal_used_sales where ledger_id=new.id;
 
       new.vat_amount := v_p;
@@ -439,7 +439,7 @@ AS $function$
     end;
     $function$;
 
-comment on column public.jk_sales_ledger.vat_amount is 'P: wage margin exclusion for VAT included in gross K rebate, round(max(K,0)/11). Actual tax returns use invoice evidence.';
+comment on column public.jk_sales_ledger.vat_amount is 'P: operating wage reserve, round(max(K-L,0)*0.1). Actual tax returns use invoice evidence.';
 comment on column public.jk_sales_ledger.cash_received is 'S total customer receipts. Vendor gross cash comparison uses K-L; customer payback and used proceeds are separate.';
 -- Recalculate derived P/W only; preserve all raw entries and actual payments.
 update public.jk_sales_ledger set base_rebate=base_rebate;

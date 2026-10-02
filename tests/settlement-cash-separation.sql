@@ -7,14 +7,14 @@ declare l uuid;pay uuid;req uuid:=gen_random_uuid();today date:=(now() at time z
 begin
  insert into public.jk_sales_ledger(activation_date,vendor,customer_name_snapshot,customer_phone_snapshot,base_rebate,cash_sale_amount,payback_amount,penalty_paid,cash_received,sim_cost,used_device_amount,cash_receipt_method,used_device_model,payback_due_date)
  values(sm,vendor_name,'SYNTHETIC CUSTOMER','01000000000',1100000,200000,100000,25000,300000,5000,200000,'현금','SYNTHETIC MODEL',today) returning id into l;
- if (select vat_amount from public.jk_sales_ledger where id=l)<>100000 then raise exception 'FAILED gross K VAT / 11';end if;
+ if (select vat_amount from public.jk_sales_ledger where id=l)<>90000 then raise exception 'FAILED positive real rebate 10 percent';end if;
  select final_margin into w from public.jk_sales_ledger where id=l;
- if w<>1170000 then raise exception 'FAILED net wage margin %',w;end if;
+ if w<>1180000 then raise exception 'FAILED net wage margin %',w;end if;
  data:=public.jk_internal_settlement_data(sm,today);
  select value into r from jsonb_array_elements(data->'items') where value->>'item_key'='vendor:'||sm::text||':'||md5(vendor_name);
  if (r->>'amount')::bigint<>900000 or r->>'direction'<>'in' or (r->'basis'->>'gross_signed')::bigint<>900000 then raise exception 'FAILED gross vendor independent of VAT/Q/R/S/T/U';end if;
  perform public.jk_internal_save_used(l,250000,'separate',today,null,true,null,0,'SYNTHETIC higher sale',null);
- if (select used_device_amount from public.jk_sales_ledger where id=l)<>200000 or (select final_margin from public.jk_sales_ledger where id=l)<>1220000 then raise exception 'FAILED preserve U and adjust W +50k';end if;
+ if (select used_device_amount from public.jk_sales_ledger where id=l)<>200000 or (select final_margin from public.jk_sales_ledger where id=l)<>1230000 then raise exception 'FAILED preserve U and adjust W +50k';end if;
  pay:=public.jk_internal_record_payment('used:'||l,200000,today,req,'계좌',true,'SYNTHETIC partial');
  if public.jk_internal_record_payment('used:'||l,200000,today,req)<>pay then raise exception 'FAILED used retry';end if;
  select value into u from jsonb_array_elements(public.jk_internal_used_data(sm)) where value->>'ledger_id'=l::text;
@@ -45,7 +45,7 @@ begin
  perform public.jk_internal_void_payment((select id from public.jk_internal_payments where item_key='used:'||l and amount=200000),'SYNTHETIC correction');
  select updated_at into stamp from public.jk_internal_used_sales where ledger_id=l;
  perform public.jk_internal_save_used(l,150000,'separate',today,null,true,null,0,'SYNTHETIC lower sale',stamp);
- if (select final_margin from public.jk_sales_ledger where id=l)<>1120000 then raise exception 'FAILED lower sale payroll adjustment';end if;
+ if (select final_margin from public.jk_sales_ledger where id=l)<>1130000 then raise exception 'FAILED lower sale payroll adjustment';end if;
 end $$;
 reset role;
 do $$begin

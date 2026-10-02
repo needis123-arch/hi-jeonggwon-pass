@@ -7,7 +7,8 @@ function consultToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/S
 function consultAddDays(date,days){const d=new Date(date+'T00:00:00Z');if(Number.isNaN(d.getTime()))return '';d.setUTCDate(d.getUTCDate()+Number(days));return d.toISOString().slice(0,10)}
 function consultClosed(status){return ['계약완료','종료'].includes(status)}
 function consultDueLabel(r){if(consultClosed(r.status))return r.status;if(!r.next_contact_on)return '예정일 없음';const today=consultToday();if(r.next_contact_on<today)return '기한 지남 · '+r.next_contact_on;if(r.next_contact_on===today)return r.status==='상담전'?'오늘 첫 연락':'오늘 재연락';return r.next_contact_on+' 연락'}
-function consultStaffOptions(value){return '<option value="">미지정</option>'+['송훈','인성'].map(n=>'<option '+(n===value?'selected':'')+'>'+n+'</option>').join('')}
+function consultActiveStaff(){return state.staff.filter(x=>x.active).map(x=>x.name)}
+function consultStaffOptions(value){const names=consultActiveStaff();if(value&&!names.includes(value))names.push(value);return '<option value="">미지정</option>'+names.map(n=>'<option value="'+esc(n)+'" '+(n===value?'selected':'')+'>'+esc(n)+(consultActiveStaff().includes(n)?'':' (사용 중지)')+'</option>').join('')}
 function consultStatusOptions(value){return CONSULT_STATUSES.map(n=>'<option '+(n===value?'selected':'')+'>'+n+'</option>').join('')}
 function consultFieldValue(id){return $(id)?.value.trim()||''}
 function consultationFormServices(values=[]){return '<div class="consult-services">'+CONSULT_SERVICES.map(v=>'<label><input type="checkbox" name="consultService" value="'+esc(v)+'" '+(values.includes(v)?'checked':'')+'> '+esc(v)+'</label>').join('')+'</div>'}
@@ -15,12 +16,12 @@ function setConsultMessage(text,success=false){const e=$('consultMessage');if(e)
 function consultRoute(staff,id){const u=new URL(location.href);u.searchParams.set('page','consultations');if(staff&&staff!=='all')u.searchParams.set('consultStaff',staff);else u.searchParams.delete('consultStaff');if(id)u.searchParams.set('consultId',id);else u.searchParams.delete('consultId');return u.pathname+u.search+u.hash}
 function consultPushRoute(id){history.pushState({jk:true,page:'consultations',jkDepth:Number(history.state?.jkDepth||0)+1,consultId:id,consultStaff:consultState.staff},'',consultRoute(consultState.staff,id))}
 async function openConsultationPage(){
- const params=new URLSearchParams(location.search),staff=params.get('consultStaff')||'all';consultState.staff=['all','송훈','인성','unassigned'].includes(staff)?staff:'all';
+ const params=new URLSearchParams(location.search),staff=params.get('consultStaff')||'all';consultState.staff=['all','unassigned',...state.staff.map(x=>x.name)].includes(staff)?staff:'all';
  consultState.creating=false;consultState.selected=null;const selectionRequest=++consultState.selectionRequest;renderConsultTabs();$('consultLayout')?.classList.remove('detail-open');if($('consultDetail'))$('consultDetail').innerHTML='<div class="empty">고객을 선택하면 신청 내용과 상담 기록을 확인할 수 있습니다.</div>';
  await loadConsultations();if(selectionRequest!==consultState.selectionRequest)return;const id=params.get('consultId');if(id==='new')beginNewConsultation(false);else if(id)await selectConsultation(id,false);
 }
 async function chooseConsultStaff(staff){consultState.staff=staff;consultState.page=1;consultState.selected=null;consultState.creating=false;consultState.selectionRequest++;renderConsultTabs();history.replaceState({...history.state,consultId:null,consultStaff:staff},'',consultRoute(staff,null));$('consultLayout').classList.remove('detail-open');$('consultDetail').innerHTML='<div class="empty">'+esc(staff==='all'?'전체':staff==='unassigned'?'미지정':staff)+' 상담 목록에서 고객을 선택하세요.</div>';await loadConsultations()}
-function renderConsultTabs(){document.querySelectorAll('[data-consult-staff]').forEach(b=>{const selected=b.dataset.consultStaff===consultState.staff;b.classList.toggle('active',selected);b.setAttribute('aria-selected',String(selected))});if($('consultScope'))$('consultScope').textContent=consultState.staff==='all'?'전체 상담':consultState.staff==='unassigned'?'미지정 접수함':consultState.staff+' 상담 페이지'}
+function renderConsultTabs(){const tabs=$('consultTabs');if(tabs){const names=[{name:'전체',value:'all'},...state.staff.map(x=>({name:x.name+(x.active?'':' (사용 중지)'),value:x.name})),{name:'미지정',value:'unassigned'}];tabs.replaceChildren(...names.map(x=>{const b=document.createElement('button');b.type='button';b.className='btn'+(x.value===consultState.staff?' active':'');b.setAttribute('role','tab');b.setAttribute('aria-selected',String(x.value===consultState.staff));b.dataset.consultStaff=x.value;b.textContent=x.name;b.onclick=()=>chooseConsultStaff(x.value);return b}))}if($('consultScope'))$('consultScope').textContent=consultState.staff==='all'?'전체 상담':consultState.staff==='unassigned'?'미지정 접수함':consultState.staff+' 상담 페이지'}
 let consultSearchTimer;
 function queueConsultSearch(){clearTimeout(consultSearchTimer);consultSearchTimer=setTimeout(()=>{consultState.page=1;loadConsultations()},250)}
 async function loadConsultations(){
@@ -46,9 +47,10 @@ async function selectConsultation(id,push=true){
 }
 function returnConsultList(){consultState.selectionRequest++;consultState.creating=false;consultState.selected=null;history.replaceState({...history.state,consultId:null},'',consultRoute(consultState.staff,null));$('consultLayout').classList.remove('detail-open');$('consultDetail').innerHTML='<div class="empty">고객을 선택해 주세요.</div>'}
 function beginNewConsultation(push=true){
- consultState.selectionRequest++;consultState.creating=true;consultState.selected=null;const today=consultToday(),staff=['송훈','인성'].includes(consultState.staff)?consultState.staff:null;
+ consultState.selectionRequest++;consultState.creating=true;consultState.selected=null;const today=consultToday(),staff=consultActiveStaff().includes(consultState.staff)?consultState.staff:null;
  let r={customer_name:'',phone_digits:'',staff_name:staff,services:[],contact_method:'방문',consulted_on:today,visited_on:today,followup_days:3,next_contact_on:consultAddDays(today,3),status:'재연락',consultation_note:'',customer_note:'',intake_source:'직접기록'};
  try{const draft=JSON.parse(localStorage.getItem('jk-consult-draft')||'null');if(draft)r={...r,...draft}}catch(e){}
+ if(r.staff_name&&!consultActiveStaff().includes(r.staff_name))r.staff_name=null;
  if(push)consultPushRoute('new');renderConsultDetail(r,true);$('consultName').focus();
 }
 function renderConsultDetail(r,creating=false){
@@ -98,8 +100,8 @@ function renderConsultReminders(){
  if($('consultDueTotal'))$('consultDueTotal').textContent=consultState.dueCount+'건';
 }
 async function openConsultReminder(id){go('consultations');await selectConsultation(id)}
-function consultationPublicUrl(staff){const u=new URL('./consultation.html',location.href);if(['송훈','인성'].includes(staff))u.searchParams.set('staff',staff);return u.href}
-async function copyConsultationLink(){const staff=['송훈','인성'].includes(consultState.staff)?consultState.staff:null;try{await navigator.clipboard.writeText(consultationPublicUrl(staff));toast((staff?staff+' 전용 ':'')+'상담 신청 링크를 복사했습니다.')}catch(e){const a=$('consultPublicLink');if(a){a.href=consultationPublicUrl(staff);a.hidden=false}toast('아래 상담 신청 링크를 길게 눌러 복사해 주세요.')}}
+function consultationPublicUrl(staff){const u=new URL('./consultation.html',location.href);if(consultActiveStaff().includes(staff))u.searchParams.set('staff',staff);return u.href}
+async function copyConsultationLink(){const staff=consultActiveStaff().includes(consultState.staff)?consultState.staff:null;try{await navigator.clipboard.writeText(consultationPublicUrl(staff));toast((staff?staff+' 전용 ':'')+'상담 신청 링크를 복사했습니다.')}catch(e){const a=$('consultPublicLink');if(a){a.href=consultationPublicUrl(staff);a.hidden=false}toast('아래 상담 신청 링크를 길게 눌러 복사해 주세요.')}}
 // In-app reminders refresh while the app is visible. No customer messages are sent automatically.
 setInterval(async()=>{if(document.visibilityState!=='visible')return;const {data:{session}}=await sb.auth.getSession();if(session)loadConsultReminders(false)},60000);
 document.addEventListener('visibilitychange',async()=>{if(document.visibilityState!=='visible')return;const {data:{session}}=await sb.auth.getSession();if(session)loadConsultReminders()});

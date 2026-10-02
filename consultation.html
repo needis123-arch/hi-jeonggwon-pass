@@ -19,7 +19,7 @@
  <div class="field full"><span class="label">필요 서비스 * <span class="help">(중복 선택 가능)</span></span><div class="options">
   <label class="choice"><input type="checkbox" name="service" value="휴대폰">휴대폰</label><label class="choice"><input type="checkbox" name="service" value="인터넷">인터넷</label><label class="choice"><input type="checkbox" name="service" value="TV">TV</label><label class="choice"><input type="checkbox" name="service" value="결합상품">결합상품</label><label class="choice"><input type="checkbox" name="service" value="통신비 무료진단">통신비 무료진단</label>
  </div></div>
- <div class="field"><label for="requestStaff">상담 담당자</label><select id="requestStaff"><option value="">담당자 배정 요청</option><option>송훈</option><option>인성</option></select></div>
+ <div class="field"><label for="requestStaff">상담 담당자</label><select id="requestStaff"><option value="">담당자 배정 요청</option></select></div>
  <div class="field"><label for="requestMoveDate">이사 예정일 (선택)</label><input id="requestMoveDate" type="date"></div>
  <div class="field full"><span class="label">상담 희망 방식</span><div class="options"><label class="choice"><input type="radio" name="method" value="전화" checked>전화</label><label class="choice"><input type="radio" name="method" value="방문">방문</label><label class="choice"><input type="radio" name="method" value="카카오톡">카카오톡</label></div></div>
  <div class="field full"><label for="requestReferral">추천인 코드 <span class="help">(없으면 비워두세요)</span></label><input id="requestReferral" maxlength="80" placeholder="안내받은 코드"></div>
@@ -40,7 +40,14 @@ const requestClient=supabase.createClient('https://ielwjiftulcolzfmhkwl.supabase
 const requestValue=id=>document.getElementById(id).value.trim();
 let requestBusy=false,requestComplete=false;
 let requestKey=sessionStorage.getItem('jk-consult-request-key')||crypto.randomUUID();sessionStorage.setItem('jk-consult-request-key',requestKey);
-const requestedStaff=new URLSearchParams(location.search).get('staff');if(['송훈','인성'].includes(requestedStaff))document.getElementById('requestStaff').value=requestedStaff;
+const requestedStaff=new URLSearchParams(location.search).get('staff');
+async function loadRequestStaff(){
+ const select=document.getElementById('requestStaff');select.disabled=true;
+ try{const {data,error}=await requestClient.from('jk_consultation_staff_directory').select('name').eq('active',true).order('name');if(error)throw error;
+  select.replaceChildren(new Option('담당자 배정 요청',''),...(data||[]).map(x=>new Option(x.name,x.name)));if((data||[]).some(x=>x.name===requestedStaff))select.value=requestedStaff;
+ }catch(e){requestMessage('담당자 목록을 불러오지 못했습니다. 담당자 배정 요청으로 접수하실 수 있습니다.');}finally{select.disabled=false;select.dataset.loaded='true'}
+}
+loadRequestStaff();
 function requestFormatPhone(value){const d=value.replace(/\D/g,'').slice(0,11);if(d.length>7)return d.slice(0,3)+'-'+d.slice(3,d.length===10?6:7)+'-'+d.slice(d.length===10?6:7);return d.length>3?d.slice(0,3)+'-'+d.slice(3):d}
 document.getElementById('requestPhone').addEventListener('input',e=>{e.target.value=requestFormatPhone(e.target.value)});
 function requestMessage(message,success=false){const e=document.getElementById('requestMessage');e.textContent=message;e.classList.toggle('success',success)}

@@ -12,9 +12,9 @@
 <link rel="manifest" href="./manifest.webmanifest?v=2">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
-<link rel="stylesheet" href="./business-consultations.css?v=3.43">
-<link rel="stylesheet" href="./business-finance.css?v=3.43">
-<title>정권통신 Business Center V3.43</title>
+<link rel="stylesheet" href="./business-consultations.css?v=3.44">
+<link rel="stylesheet" href="./business-finance.css?v=3.44">
+<title>정권통신 Business Center V3.44</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -169,7 +169,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.43</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.44</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -453,21 +453,25 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <p class="finance-help" id="financeForecastBasis"></p>
   <div class="finance-kpis">
    <div class="finance-kpi"><span>다음 달 받을 돈</span><strong id="financeNextIn">-</strong><small>거래처 입금 + 카드 정산 + 기타</small></div>
-   <div class="finance-kpi"><span>다음 달 나갈 돈</span><strong id="financeNextOut">-</strong><small>거래처 지급 + 급여 + 비용 + 광고</small></div>
+   <div class="finance-kpi"><span>다음 달 나갈 돈</span><strong id="financeNextOut">-</strong><small>거래처 지급 + 실수령 급여 + 원천세 + 비용</small></div>
    <div class="finance-kpi main"><span>다음 달 말 예상 보유금</span><strong id="financeNextCash">-</strong></div>
    <div class="finance-kpi main"><span>세금 확보 후 다음 달 사용 가능</span><strong id="financeNextFree">-</strong><small>최소 유지금까지 추가 확보 필요 <b id="financeGap">-</b></small></div>
   </div>
   <p class="finance-help" id="financeForecastNote"></p>
   <div id="financeWarnings" class="finance-warning" role="status" hidden></div>
-  <details><summary>계산 기준 보기</summary><p class="finance-help">거래처 정산은 판매월 W 최종마진 − S 완납 수납총액이며 다음 달 말에 처리합니다. 양수는 받을 돈, 음수는 낼 돈입니다. 받은 현금 S는 현재 잔고 안에 포함되므로 다시 입금으로 더하지 않습니다. 카드 미입금분은 수수료 차감 후 예정액만 따로 더합니다. 페이백 Q는 W에 이미 반영되어 이 화면에서 다시 차감하지 않습니다.<br>급여·비용·광고는 실제 처리 기록을 뺀 미정산 잔액을 사용합니다. 기준일 이전의 자동 항목은 과거 지급 여부를 확인해야 예상에 포함됩니다. 앞으로 판매할 매출, 입력하지 않은 청구서·세금은 포함하지 않습니다.</p></details>
+  <details><summary>계산 기준 보기</summary><p class="finance-help">거래처 정산은 판매월 W 최종마진 − S 완납 수납총액이며 다음 달 말에 처리합니다. 양수는 받을 돈, 음수는 낼 돈입니다. 받은 현금 S는 현재 잔고 안에 포함되므로 다시 입금으로 더하지 않습니다. 카드 미입금분은 수수료 차감 후 예정액만 따로 더합니다. 페이백 Q는 W에 이미 반영되어 이 화면에서 다시 차감하지 않습니다.<br>급여는 총액에서 공제액을 뺀 실수령액과 별도 원천세 납부로 나누며, 총 현금 지출은 중복하지 않습니다. 비용·광고는 실제 처리 기록을 뺀 미정산 잔액을 사용합니다. 기준일 이전의 자동 항목은 과거 지급 여부를 확인해야 예상에 포함됩니다. 앞으로 판매할 매출, 입력하지 않은 청구서·세금은 포함하지 않습니다.</p></details>
  </div>
  <div class="finance-toolbar"><button class="btn" onclick="changeFinanceMonth(-1)">◀ 이전 월</button><input id="financeMonth" type="month" aria-label="정산 지급월" onchange="loadInternalFinance()"><button class="btn" onclick="changeFinanceMonth(1)">다음 월 ▶</button><b id="financeMonthLabel">월 정산</b></div>
  <div class="finance-kpis">
   <div class="finance-kpi"><span>선택 월 실제 지급 기록</span><strong id="financeActualOut">-</strong><small>실제 지급일 기준 · 미기록은 포함 안 됨</small></div>
   <div class="finance-kpi"><span>선택 월 실제 입금 기록</span><strong id="financeActualIn">-</strong><small>우리 정산에서 확인한 처리 내역</small></div>
   <div class="finance-kpi"><span>선택 판매월 발생급여</span><strong id="financeSalaryEarned">-</strong><small>그다음 달 말 지급 대상</small></div>
-  <div class="finance-kpi"><span>선택 지급월 급여 미지급</span><strong id="financeSalaryPending">-</strong><small>이 달 실제 지급급여 <b id="financeSalaryPaid">-</b></small></div>
+  <div class="finance-kpi"><span>선택 지급월 급여 총액 미정산</span><strong id="financeSalaryPending">-</strong><small>이 달 직원 실지급액 <b id="financeSalaryPaid">-</b></small></div>
  </div>
+ <div class="card finance-panel"><h3>거래처 엑셀 ↔ 우리 장부 대조</h3><p class="finance-help">엑셀 파일을 선택하고 거래처·판매월·정산 방향을 확인하세요. 매출·매입·정산합계와 중고·리베이트 열을 연결해 차이·누락·중복을 찾습니다. 파일은 기기에서 읽으며 대조 결과 저장을 눌러야 기록됩니다.</p><div class="finance-toolbar"><label>판매월<input id="excelSalesMonth" type="month" onchange="resetSettlementExcel()"></label><label>거래처<select id="excelVendor" onchange="resetSettlementExcel()"></select></label><label>정산 방향<select id="excelSign" onchange="resetSettlementExcel()"><option value="">방향 확인 후 선택</option><option value="-1">엑셀 음수 = 우리가 받을 돈</option><option value="1">엑셀 양수 = 우리가 받을 돈</option></select></label><label>정산 파일<input id="excelFile" type="file" accept=".xlsx,.xls,.csv" onchange="readSettlementExcel(this)"></label></div><div class="finance-toolbar"><label>시트<select id="excelSheet" onchange="selectSettlementSheet()"></select></label><label>제목행 번호<input id="excelHeaderRow" type="number" min="1" max="30" value="1" onchange="mapSettlementHeaders()"></label></div><details><summary>엑셀 열 연결 확인</summary><div id="excelMapping" class="finance-report-fields"></div></details><div class="finance-toolbar"><button class="btn primary" onclick="compareSettlementExcel()">대조 시작</button><button class="btn" onclick="saveSettlementComparison()">대조 결과 저장</button><button class="btn" id="excelApply" disabled onclick="applySettlementComparison()">확인한 엑셀 합계로 정산 확정</button></div><p id="excelMessage" class="finance-help" role="status"></p><div id="excelResult"></div><div id="excelHistory"></div></div>
+ <div class="card finance-panel"><div class="finance-panel-top"><h3>거래처 판매월 정산 비교</h3><button class="btn" onclick="showAugustSettlement()">8월 판매 → 9월 입금 확인</button></div><div class="finance-toolbar"><label for="financeVendorMonth">판매월</label><input id="financeVendorMonth" type="month" onchange="renderVendorTaxClose()"></div><p class="finance-help">장부 예상(W−S) → 거래처 정산서 확정액 → 실제 입금·지급을 비교합니다. 상계 정산금과 계산서 공급가액은 서로 다를 수 있으므로 증빙은 별도로 연결합니다.</p><div id="financeVendorRows"></div><div id="financeCloseChecklist" class="finance-warning"></div></div>
+ <div class="card finance-panel"><h3>거래처 입금 10% 세금 적립</h3><div id="financeReserveSummary"></div><p class="finance-help">실제 받은 거래처 정산금만 적립합니다. 예정 입금·취소 기록은 제외합니다. 10%는 현금을 모아둘 기준이며 확정 부가세는 아래 매출·매입 증빙으로 확인합니다.</p></div>
+ <div class="card finance-panel"><h3>급여 3.3% 공제 / 신고·납부 확인</h3><div id="financePayrollTax"></div><p class="finance-help">사업소득: 소득세 3% + 지방소득세 0.3% 예상. 실제 공제 세액은 지급 화면에서 조정할 수 있습니다. 근로소득은 간이세액표 등 별도 기준이므로 해당 항목은 3.3% 미적용으로 설정하세요. 원천세는 실제 지급월의 다음 달 10일, 사업소득 간이지급명세서는 다음 달 말일을 확인합니다. 공휴일 연장·반기납부 여부는 신고서 기한을 확인해 예정일을 조정하세요. 아래 완료 기록은 관리용이며 실제 전자신고는 <a href="https://www.hometax.go.kr/" target="_blank" rel="noopener">홈택스</a>·<a href="https://www.wetax.go.kr/" target="_blank" rel="noopener">위택스</a>에서 진행합니다.</p></div>
  <div class="card finance-panel"><div class="finance-panel-top"><h3>급여 정산</h3><button class="btn" onclick="go('settings')">월별 급여율 설정</button></div><p id="financeSalaryRule" class="finance-help"></p><div id="financeSalaryRows" class="finance-salaries"></div></div>
  <div class="card finance-panel"><div class="finance-panel-top"><h3>거래처 · 지출 · 입금 확인</h3><button class="btn primary" onclick="beginFinanceManual()">기타 / 세금 예정 추가</button></div><div class="finance-toolbar"><select id="financeFilter" aria-label="정산 항목 구분" onchange="renderFinanceItems()"><option value="all">선택 월 전체</option><option value="vendor">거래처 정산</option><option value="payroll">급여</option><option value="expense">비용원장</option><option value="ad">광고비</option><option value="card">카드 입금</option><option value="tax">세금 납부</option><option value="manual">기타</option><option value="unknown">과거 미확인 (전체)</option></select><span>과거 미확인 <b id="financeUnknownCount">0건</b></span></div><div id="financeItems"></div></div>
  <div class="card finance-panel"><h3>선택 월 실제 지급·입금 내역</h3><div id="financeHistory"></div></div>
@@ -636,8 +640,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./business-consultations.js?v=3.43"></script>
-<script src="./business-finance.js?v=3.43"></script>
+<script src="./business-consultations.js?v=3.44"></script>
+<script src="./business-finance.js?v=3.44"></script>
+<script src="./business-tax-close.js?v=3.44"></script>
+<script src="./business-settlement-excel.js?v=3.44"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";

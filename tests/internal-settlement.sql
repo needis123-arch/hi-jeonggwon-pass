@@ -8,7 +8,7 @@ declare k text:='test:'||gen_random_uuid(); req uuid:=gen_random_uuid(); p uuid;
 begin
  insert into public.jk_internal_balances(snapshot_date,total_balance,tax_reserve_target,tax_reserve_saved) values('2000-01-01',123456789,2000,1000);
  begin insert into public.jk_internal_balances(snapshot_date,total_balance,tax_reserve_saved) values('2000-01-02',100,101);raise exception 'FAILED tax subset';exception when check_violation then null;end;
- insert into public.jk_internal_items(item_key,category,title,source_month,direction,amount,due_date) values(k,'payroll','SYNTHETIC test payroll',sm,'out',700,today);
+ insert into public.jk_internal_items(item_key,category,title,source_month,direction,amount,due_date) values(k,'manual','SYNTHETIC test payroll',sm,'out',700,today);
  p:=public.jk_internal_record_payment(k,300,today,req,'계좌',true,'SYNTHETIC partial');
  if public.jk_internal_record_payment(k,300,today,req,'계좌',true,'SYNTHETIC retry')<>p then raise exception 'FAILED idempotency';end if;
  if (select sum(amount) from public.jk_internal_payments where item_key=k and not voided)<>300 then raise exception 'FAILED partial';end if;

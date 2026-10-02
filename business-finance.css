@@ -28,5 +28,20 @@
 #page-finance .finance-salary small{display:block;color:#6b7888;margin-bottom:12px}
 #page-finance .finance-message{font-size:12px;color:#b02d39;margin:10px 0}
 #page-finance .finance-message.success{color:#177b53}
+.finance-compare{background:#f6f9ef;border:1px solid #dde5cd;border-radius:10px;padding:12px;margin:10px 0;font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+#page-finance .finance-vendor{padding:14px 0;border-bottom:1px solid #e3e8dd;overflow-wrap:anywhere}
+#page-finance .finance-comparison{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#page-finance .finance-comparison>div{background:#f7f9f4;border-radius:10px;padding:12px;min-width:0}
+#page-finance .finance-comparison small{display:block;color:#617083;font-size:11px;margin-bottom:6px}
+#page-finance .finance-comparison b{font-size:14px;overflow-wrap:anywhere}
+#page-finance .finance-report-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+#page-finance .finance-report-fields label{font-size:12px;min-width:0}
+#page-finance .finance-report-fields input{display:block;border:1px solid #d8dfd0;border-radius:8px;padding:10px;width:100%;min-width:0;margin-top:6px}
+#page-finance .finance-report-fields select,#page-finance .finance-excel-row select{display:block;width:100%;min-width:0;max-width:100%;padding:9px;border:1px solid #d8dfd0;border-radius:8px;margin-top:6px}
+#page-finance .finance-excel-row{padding:15px 0;border-bottom:1px solid #e3e8dd;min-width:0;overflow-wrap:anywhere;font-size:12px;line-height:1.7}
+#page-finance .finance-excel-row>input{width:100%;min-width:0;border:1px solid #d8dfd0;border-radius:8px;padding:9px}
+#page-finance .finance-toolbar label{min-width:0;max-width:100%;font-size:12px}
+#page-finance .finance-toolbar label>input,#page-finance .finance-toolbar label>select{display:block;max-width:100%;min-width:0;margin-top:5px}
+@media(max-width:700px){#page-finance .finance-comparison{grid-template-columns:repeat(2,minmax(0,1fr))}#page-finance .finance-report-fields{grid-template-columns:1fr}}
 @media(max-width:1100px){#page-finance .finance-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){#page-finance .finance-panel{padding:15px}#page-finance .finance-kpi{padding:12px}#page-finance .finance-kpi strong{font-size:19px}#page-finance .finance-salaries{grid-template-columns:1fr}#page-finance .finance-item,#page-finance .finance-history{flex-direction:column;align-items:stretch;gap:10px}#page-finance .finance-item-money{text-align:left;justify-items:start}#page-finance .finance-kpis{gap:8px}#page-finance .finance-toolbar{gap:7px}#page-finance .finance-toolbar input{min-width:0;flex:1}#page-finance .finance-history button{margin-top:8px}}

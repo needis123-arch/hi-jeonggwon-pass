@@ -12,8 +12,9 @@
 <link rel="manifest" href="./manifest.webmanifest?v=2">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
-<link rel="stylesheet" href="./business-consultations.css?v=3.42">
-<title>정권통신 Business Center V3.42</title>
+<link rel="stylesheet" href="./business-consultations.css?v=3.43">
+<link rel="stylesheet" href="./business-finance.css?v=3.43">
+<title>정권통신 Business Center V3.43</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -168,7 +169,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.42</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.43</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -180,6 +181,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <button data-page="affiliate">제휴카드 등록 <span id="affiliateBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
   <button data-page="ads">광고비</button>
   <button data-page="expenses">비용원장</button>
+  <button data-page="finance">우리 정산</button>
   <button data-page="cash">자금 / 시재</button>
   <button data-page="targets">목표 관리</button>
   <button data-page="sources">유입 분석</button>
@@ -213,11 +215,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
  <div class="card" style="padding:16px;margin-bottom:16px">
   <div class="table-top"><div><b>자금 방어 현황</b><div style="font-size:9px;color:#6c7788;margin-top:3px">장부상 이익과 실제 현금잔고를 분리해서 봅니다.</div></div><button class="btn" onclick="go('cash')">자금관리 열기</button></div>
   <div class="summary" style="margin:0">
-   <div class="box drill-card" data-route="cash" tabindex="0"><span>현재 가용자금</span><strong id="dCashAvailable">0원</strong></div>
-   <div class="box drill-card" data-route="cash" tabindex="0"><span>이번달 예상 입금 (거래처+카드)</span><strong id="dCashSettlement">0원</strong></div>
-   <div class="box drill-card" data-route="expenses" tabindex="0"><span>남은 비용원장 지출</span><strong id="dCashExpenses">0원</strong><small id="dCashExpensesDetail" style="display:block;color:#6c7788;margin-top:4px">고정·유동·카드 포함</small></div>
-   <div class="box drill-card" data-route="cash" tabindex="0"><span>월말 예상잔고</span><strong id="dCashProjected">0원</strong></div>
-   <div class="box drill-card" data-route="cash" tabindex="0"><span>추가 확보 필요</span><strong id="dCashGap">0원</strong></div>
+   <div class="box drill-card" data-route="finance" tabindex="0"><span>현재 보유금</span><strong id="dCashAvailable">0원</strong></div>
+   <div class="box drill-card" data-route="finance" tabindex="0"><span>이번달 예상 입금 (거래처+카드)</span><strong id="dCashSettlement">0원</strong></div>
+   <div class="box drill-card" data-route="finance" tabindex="0"><span>남은 총 지급액</span><strong id="dCashExpenses">0원</strong><small id="dCashExpensesDetail" style="display:block;color:#6c7788;margin-top:4px">고정·유동·카드 포함</small></div>
+   <div class="box drill-card" data-route="finance" tabindex="0"><span>세금 확보 후 월말 사용 가능</span><strong id="dCashProjected">0원</strong></div>
+   <div class="box drill-card" data-route="finance" tabindex="0"><span>추가 확보 필요</span><strong id="dCashGap">0원</strong></div>
   </div>
  </div>
 
@@ -437,7 +439,42 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 </section>
 
 
+<section class="page" id="page-finance">
+ <div class="section-head"><div><h2>우리 정산</h2><p>실제 보유한 돈에서 아직 낼 돈과 세금 확보액을 구분합니다.</p></div><button class="btn" onclick="loadInternalFinance()">새로고침</button></div>
+ <div id="financeMessage" class="finance-message" role="status"></div>
+ <div class="finance-kpis">
+  <div class="finance-kpi main"><span>현재 합산 보유금</span><strong id="financeCurrent">-</strong><small id="financeBalanceDate">통장 + 현금</small></div>
+  <div class="finance-kpi"><span>세금 확보 후 지금 사용 가능</span><strong id="financeFree">-</strong><small>보유금 − 남겨둘 세금 목표</small></div>
+  <div class="finance-kpi"><span>남겨둘 세금 총 목표</span><strong id="financeProtected">-</strong><small>부가세·기타 세금 적립 목표</small></div>
+  <div class="finance-kpi"><span>이번 달 말 예상 보유금</span><strong id="financeEnd">-</strong><small>확인한 미정산 지급·입금 반영</small></div>
+ </div>
+ <div class="card finance-panel">
+  <div class="finance-panel-top"><h3>다음 달 예상 정산</h3><button class="btn primary" onclick="openFinanceBalance()">잔고 / 세금 기준 입력</button></div>
+  <p class="finance-help" id="financeForecastBasis"></p>
+  <div class="finance-kpis">
+   <div class="finance-kpi"><span>다음 달 받을 돈</span><strong id="financeNextIn">-</strong><small>거래처 입금 + 카드 정산 + 기타</small></div>
+   <div class="finance-kpi"><span>다음 달 나갈 돈</span><strong id="financeNextOut">-</strong><small>거래처 지급 + 급여 + 비용 + 광고</small></div>
+   <div class="finance-kpi main"><span>다음 달 말 예상 보유금</span><strong id="financeNextCash">-</strong></div>
+   <div class="finance-kpi main"><span>세금 확보 후 다음 달 사용 가능</span><strong id="financeNextFree">-</strong><small>최소 유지금까지 추가 확보 필요 <b id="financeGap">-</b></small></div>
+  </div>
+  <p class="finance-help" id="financeForecastNote"></p>
+  <div id="financeWarnings" class="finance-warning" role="status" hidden></div>
+  <details><summary>계산 기준 보기</summary><p class="finance-help">거래처 정산은 판매월 W 최종마진 − S 완납 수납총액이며 다음 달 말에 처리합니다. 양수는 받을 돈, 음수는 낼 돈입니다. 받은 현금 S는 현재 잔고 안에 포함되므로 다시 입금으로 더하지 않습니다. 카드 미입금분은 수수료 차감 후 예정액만 따로 더합니다. 페이백 Q는 W에 이미 반영되어 이 화면에서 다시 차감하지 않습니다.<br>급여·비용·광고는 실제 처리 기록을 뺀 미정산 잔액을 사용합니다. 기준일 이전의 자동 항목은 과거 지급 여부를 확인해야 예상에 포함됩니다. 앞으로 판매할 매출, 입력하지 않은 청구서·세금은 포함하지 않습니다.</p></details>
+ </div>
+ <div class="finance-toolbar"><button class="btn" onclick="changeFinanceMonth(-1)">◀ 이전 월</button><input id="financeMonth" type="month" aria-label="정산 지급월" onchange="loadInternalFinance()"><button class="btn" onclick="changeFinanceMonth(1)">다음 월 ▶</button><b id="financeMonthLabel">월 정산</b></div>
+ <div class="finance-kpis">
+  <div class="finance-kpi"><span>선택 월 실제 지급 기록</span><strong id="financeActualOut">-</strong><small>실제 지급일 기준 · 미기록은 포함 안 됨</small></div>
+  <div class="finance-kpi"><span>선택 월 실제 입금 기록</span><strong id="financeActualIn">-</strong><small>우리 정산에서 확인한 처리 내역</small></div>
+  <div class="finance-kpi"><span>선택 판매월 발생급여</span><strong id="financeSalaryEarned">-</strong><small>그다음 달 말 지급 대상</small></div>
+  <div class="finance-kpi"><span>선택 지급월 급여 미지급</span><strong id="financeSalaryPending">-</strong><small>이 달 실제 지급급여 <b id="financeSalaryPaid">-</b></small></div>
+ </div>
+ <div class="card finance-panel"><div class="finance-panel-top"><h3>급여 정산</h3><button class="btn" onclick="go('settings')">월별 급여율 설정</button></div><p id="financeSalaryRule" class="finance-help"></p><div id="financeSalaryRows" class="finance-salaries"></div></div>
+ <div class="card finance-panel"><div class="finance-panel-top"><h3>거래처 · 지출 · 입금 확인</h3><button class="btn primary" onclick="beginFinanceManual()">기타 / 세금 예정 추가</button></div><div class="finance-toolbar"><select id="financeFilter" aria-label="정산 항목 구분" onchange="renderFinanceItems()"><option value="all">선택 월 전체</option><option value="vendor">거래처 정산</option><option value="payroll">급여</option><option value="expense">비용원장</option><option value="ad">광고비</option><option value="card">카드 입금</option><option value="tax">세금 납부</option><option value="manual">기타</option><option value="unknown">과거 미확인 (전체)</option></select><span>과거 미확인 <b id="financeUnknownCount">0건</b></span></div><div id="financeItems"></div></div>
+ <div class="card finance-panel"><h3>선택 월 실제 지급·입금 내역</h3><div id="financeHistory"></div></div>
+ <div class="card finance-panel"><div class="finance-panel-top"><h3>부가세 / 세금 적립</h3><button class="btn" onclick="openFinanceInvoice()">계산서 기록</button></div><div class="finance-toolbar"><label>계산서 집계 기간</label><input id="financeTaxStart" type="date" aria-label="세액 집계 시작일" onchange="renderInternalFinance()"><span>~</span><input id="financeTaxEnd" type="date" aria-label="세액 집계 종료일" onchange="renderInternalFinance()"></div><div class="finance-kpis"><div class="finance-kpi"><span>기록한 매출세액</span><strong id="financeSalesVAT">-</strong></div><div class="finance-kpi"><span>공제가능 확인 매입세액</span><strong id="financePurchaseVAT">-</strong></div><div class="finance-kpi"><span>일반과세 부가세 차액 참고</span><strong id="financeVATReference">-</strong><small>max(매출세액 − 공제가능 매입세액, 0)</small></div><div class="finance-kpi"><span>실제로 모아둔 세금</span><strong id="financeTaxSaved">-</strong><small>목표까지 더 모을 금액 <b id="financeTaxGap">-</b></small></div></div><p class="finance-help">부가세 차액은 입력한 계산서만 기준으로 한 일반과세 참고값입니다. 과세유형·공제·신고기간에 따라 실제 납부액이 달라집니다. 납부할 세금과 기타 세금 목표는 잔고 / 세금 기준에서 확인해 입력하세요. 계산서 금액은 거래처 현금 정산에 두 번 더하지 않습니다. <a href="https://d.nts.go.kr/nts/cm/cntnts/cntntsView.do?cntntsId=7693&amp;mi=2401" target="_blank" rel="noopener">국세청 안내</a></p><p class="finance-help" id="financeLedgerVAT"></p><h4>선택 월 계산서 기록</h4><div id="financeInvoices"></div></div>
+</section>
 <section class="page" id="page-cash">
+ <div class="card" style="padding:14px;margin-bottom:16px"><b>우리 정산에서 실제 지급 확인과 세금 적립을 관리합니다.</b><p>이 페이지는 원장 기준 추정액입니다. 확인한 미지급액·세금 확보 후 잔액은 우리 정산을 확인하세요.</p><button class="btn primary" onclick="go('finance')">우리 정산 보기</button></div>
  <div class="section-head"><div><h2>자금 / 시재</h2><p>판매월 다음달 말 정산 구조를 반영해 실제 버틸 수 있는 현금을 관리합니다.</p></div><button class="btn" onclick="loadCashflow()">새로고침</button></div>
  <div class="summary">
   <div class="box"><span>현재 가용자금</span><strong id="cashAvailable">0원</strong></div>
@@ -586,6 +623,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
   <button data-page="affiliate">제휴카드 등록</button>
   <button data-page="ads">광고비</button>
   <button data-page="expenses">비용원장</button>
+  <button data-page="finance">우리 정산</button>
   <button data-page="cash">자금 / 시재</button>
   <button data-page="targets">목표 관리</button>
   <button data-page="sources">유입 분석</button>
@@ -598,7 +636,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./business-consultations.js?v=3.42"></script>
+<script src="./business-consultations.js?v=3.43"></script>
+<script src="./business-finance.js?v=3.43"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -627,7 +666,7 @@ $('todayText').textContent=new Intl.DateTimeFormat('ko-KR',{year:'numeric',month
 ['ledgerMonth','reportMonth','usedMonth','paybackMonth','affiliateMonth','adMonth','expenseMonth','sourceMonth','alertHistoryMonth','notifyHistoryMonth','payRateMonth'].forEach(id=>{if($(id))$(id).value=mk(now)});
 $('reportDate').value=ymd(now);
 
-const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',consultations:'상담 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',cash:'자금 / 시재',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
+const titles={dashboard:'종합 대시보드',alerts:'알림센터',ledger:'장부 관리',consultations:'상담 관리',report:'자동 매출보고',used:'중고 반납',payback:'페이백',affiliate:'제휴카드 등록',ads:'광고비',expenses:'비용원장',finance:'우리 정산',cash:'자금 / 시재',targets:'목표 관리',sources:'유입 분석',settings:'환경 설정'};
 document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>go(b.dataset.page));
 function toggleMobileMenu(){
  const sheet=$('mobileMenuSheet'),backdrop=$('mobileMenuBackdrop');
@@ -677,6 +716,7 @@ function go(p,opts={}){
  if(p==='ads')loadAds();
  if(p==='expenses')loadExpenses();
  if(p==='cash')loadCashflow();
+ if(p==='finance')loadInternalFinance();
  if(p==='sources')loadSources();
  if(p==='settings')loadSettings();
  if(p==='targets')loadDashboard();
@@ -731,7 +771,7 @@ function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">
 function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
 async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
-async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadConsultReminders(),loadSurvival(),loadBreakEven(),loadLeadFunnel(),loadSources(),loadSettings(),loadNotificationStatus()]);await checkAffiliateAlerts()}
+async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadConsultReminders(),loadSurvival(),loadBreakEven(),loadLeadFunnel(),loadSources(),loadSettings(),loadNotificationStatus()]);await loadInternalFinance();await checkAffiliateAlerts()}
 
 
 function alertTypeLabel(t){return ({PAYBACK_MONTHEND:'페이백',USED_DEVICE_RETURN:'중고반납',AFFILIATE_CARD:'제휴카드',PLAN_CHANGE:'요금제 변경',INSURANCE_CANCEL:'보험 해지',ADDON_CANCEL:'부가서비스 해지'})[t]||t}
@@ -2070,7 +2110,7 @@ async function deactivateStaff(id,name){
 
 function showModal(){$('modalBg').classList.add('show');setTimeout(()=>$('modalBody').scrollTop=0,0)}
 function closeModal(){if(modalMode==='ledger'){sessionStorage.removeItem('jk-ledger-modal-open');sessionStorage.removeItem('jk-ledger-edit-id')}editingLedgerId=null;editingAdId=null;editingExpenseId=null;if($('modalSave'))$('modalSave').textContent='저장';$('modalBg').classList.remove('show')}
-async function saveModal(){if(modalMode==='ledger')return saveLedger();if(modalMode==='ad')return saveAd();if(modalMode==='expense')return saveExpense();if(modalMode==='target')return saveTarget()}
+async function saveModal(){if(modalMode==='ledger')return saveLedger();if(modalMode==='ad')return saveAd();if(modalMode==='expense')return saveExpense();if(modalMode==='target')return saveTarget();if(modalMode==='finance-balance')return saveFinanceBalance();if(modalMode==='finance-item'||modalMode==='finance-manual')return saveFinanceItem();if(modalMode==='finance-payment')return saveFinancePayment();if(modalMode==='finance-invoice')return saveFinanceInvoice()}
 $('modalBg').onclick=e=>{if(e.target.id==='modalBg'&&modalMode!=='ledger')closeModal()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMobileMenu()})
 

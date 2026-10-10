@@ -3,42 +3,13 @@
 (() => {
  'use strict';
  const BUCKET='jk-ledger-documents', TABLE='jk_ledger_documents';
- const LIMIT=20*1024*1024, ITERATIONS=600000, MAGIC=new TextEncoder().encode('JKDOC001');
- const enc=new TextEncoder(), dec=new TextDecoder();
+ const LIMIT=20*1024*1024;
  const MIME=new Set(['image/jpeg','image/png','image/webp']);
  let root,ctx=null,serial=0,previewUrl=null,expiry=null,lastFocus=null;
  const el=id=>document.getElementById(id);
  const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const current=c=>ctx===c&&c.token===serial;
- async function keyFor(password,salt,usage){
-  const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);
-  return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:ITERATIONS,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,[usage]);
- }
- async function encrypt(file,password,ledgerId,id){
-  const meta=enc.encode(JSON.stringify({name:file.name.slice(0,255),mime:file.type}));
-  const bytes=new Uint8Array(await file.arrayBuffer()),plain=new Uint8Array(4+meta.length+bytes.length);
-  new DataView(plain.buffer).setUint32(0,meta.length);plain.set(meta,4);plain.set(bytes,4+meta.length);
-  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
-  const key=await keyFor(password,salt,'encrypt');
-  const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:enc.encode(ledgerId+'/'+id)},key,plain);
-  plain.fill(0);bytes.fill(0);
-  return new Blob([MAGIC,salt,iv,cipher],{type:'application/octet-stream'});
- }
- async function decrypt(blob,password,row){
-  const bytes=new Uint8Array(await blob.arrayBuffer());
-  if(bytes.length<53||bytes.length>LIMIT+4096||MAGIC.some((b,i)=>bytes[i]!==b))throw new Error('지원하지 않는 서류 파일입니다.');
-  const key=await keyFor(password,bytes.slice(8,24),'decrypt');
-  let plain;
-  try{plain=new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes.slice(24,36),additionalData:enc.encode(row.ledger_id+'/'+row.id)},key,bytes.slice(36)));}
-  catch{throw new Error('서류 비밀번호가 맞지 않거나 파일이 손상되었습니다.');}
-  try{
-   const n=new DataView(plain.buffer).getUint32(0);
-   if(n<1||n>2048||n+4>=plain.length)throw new Error('서류 형식이 올바르지 않습니다.');
-   const meta=JSON.parse(dec.decode(plain.slice(4,4+n)));
-   if(!MIME.has(meta.mime)||typeof meta.name!=='string')throw new Error('지원하지 않는 서류 형식입니다.');
-   return {name:meta.name,blob:new Blob([plain.slice(4+n)],{type:meta.mime})};
-  }finally{plain.fill(0);}
- }
+ const {encrypt,decrypt}=window.jkDocumentCrypto;
  function lock(){
   clearTimeout(expiry);expiry=null;
   const view=el('docPreview');if(view)view.replaceChildren();
@@ -53,7 +24,7 @@
  function status(text){if(el('docStatus'))el('docStatus').textContent=text;}
  function busy(c,value){
   if(!current(c))return;c.busy=value;
-  root.querySelectorAll('[data-doc-action],#docUpload,#docFiles,#docKind,#docPassword,#docConfirm,#docLock').forEach(x=>x.disabled=value);
+  root.querySelectorAll('[data-doc-action],#docUpload,#docFiles,#docKind,#docPassword,#docConfirm,#docLock,#docDriveConnect').forEach(x=>x.disabled=value);
  }
  async function authenticated(){
   const {data,error}=await sb.auth.getSession();
@@ -73,7 +44,7 @@
   `;document.head.append(style);
   root=document.createElement('div');root.className='doc-overlay';root.hidden=true;
   root.innerHTML=`<section class="doc-dialog" role="dialog" aria-modal="true" aria-labelledby="docTitle"><div class="doc-head"><div><h2 id="docTitle">고객 서류</h2><div id="docCustomer" class="doc-sub"></div></div><button class="btn" id="docClose" aria-label="서류 닫기">닫기</button></div>
-   <div class="doc-note">SSD에서 이 고객의 폴더를 열고 사진을 여러 장 선택하세요. 선택한 파일만 암호화해 비공개 저장하며 SSD 원본은 유지됩니다.<br><b>서류 비밀번호는 로그인 비밀번호와 별도입니다.</b> 잊으면 복구할 수 없으니 SSD 원본을 보관하세요. 열람 후 5분, 다른 화면으로 전환하거나 닫으면 다시 잠깁니다.</div>
+   <div class="doc-note"><b>저장 위치: 본인 구글드라이브 · 암호화 서류 폴더</b><div class="doc-buttons"><button class="btn" id="docDriveConnect">구글드라이브 연결</button><span id="docDriveStatus" class="doc-sub"></span></div>SSD에서 이 고객의 폴더를 열고 사진을 여러 장 선택하세요. 선택한 사진을 암호화해 드라이브에 저장하며 SSD 원본은 유지됩니다.<br><b>서류 비밀번호는 로그인 비밀번호와 별도입니다.</b> 잊으면 복구할 수 없으니 SSD 원본을 보관하세요. 열람 후 5분, 다른 화면으로 전환하거나 닫으면 다시 잠깁니다.<br><a href="business-documents-privacy.html" target="_blank" rel="noopener">구글드라이브 데이터 처리 안내</a></div>
    <div class="doc-layout"><div class="doc-controls"><label for="docPassword">서류 비밀번호</label><input id="docPassword" type="password" autocomplete="off" placeholder="서류를 저장할 때 사용한 비밀번호">
    <div id="docNewPassword"><label for="docConfirm">새 서류 저장 시 비밀번호 확인</label><input id="docConfirm" type="password" autocomplete="off" placeholder="같은 비밀번호를 다시 입력"></div>
    <label for="docKind">추가할 서류 구분</label><select id="docKind"><option>가입 서류</option><option>신분증 사본</option><option>기타 서류</option></select>
@@ -81,10 +52,13 @@
    <div class="doc-buttons"><button class="btn primary" id="docUpload">암호화해서 저장</button><button class="btn" id="docLock">다시 잠그기</button></div><div id="docStatus" class="doc-status" role="status" aria-live="polite"></div><div id="docList" class="doc-list"></div></div>
    <div><div id="docViewTitle" class="doc-preview-title"></div><div id="docPreview" class="doc-preview"></div></div></div></section>`;
   document.body.append(root);el('docClose').onclick=close;el('docLock').onclick=()=>{lock();status('서류를 잠갔습니다.');};el('docUpload').onclick=upload;
+  const driveStatus=()=>{el('docDriveStatus').textContent=jkDocumentDrive.ready()?'연결됨 · '+jkDocumentDrive.owner:jkDocumentDrive.configured()?'연결 필요 · '+jkDocumentDrive.owner:'구글 연동 설정 완료 후 이용할 수 있습니다.';};
+  el('docDriveConnect').onclick=async()=>{const c=ctx;if(!c||c.busy)return;busy(c,true);try{await jkDocumentDrive.connect();if(current(c))status('구글드라이브를 연결했습니다. 이제 사진을 선택하세요.');}catch(e){if(current(c))status(e.message);}finally{driveStatus();busy(c,false);}};
+  document.addEventListener('jk-document-drive-state',()=>{lock();driveStatus();});driveStatus();
   root.addEventListener('click',e=>{if(e.target===root)close();const b=e.target.closest('[data-doc-action]');if(b&&ctx&&!ctx.busy){const row=ctx.rows.find(x=>x.id===b.dataset.id);if(row)b.dataset.docAction==='view'?view(row):remove(row);}});
   root.addEventListener('keydown',e=>{
    if(e.key==='Escape'){e.preventDefault();close();}
-   if(e.key==='Tab'){const a=[...root.querySelectorAll('button,input,select,iframe')].filter(x=>!x.disabled&&x.getClientRects().length);if(!a.length)return;const first=a[0],last=a[a.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
+   if(e.key==='Tab'){const a=[...root.querySelectorAll('button,input,select,iframe,a[href]')].filter(x=>!x.disabled&&x.getClientRects().length);if(!a.length)return;const first=a[0],last=a[a.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
   });
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&ctx)close();});
   window.addEventListener('pagehide',close);
@@ -96,7 +70,7 @@
   el('docNewPassword').hidden=c.rows.length>0;
  }
  async function refresh(c){
-  const {data,error}=await sb.from(TABLE).select('id,ledger_id,storage_path,doc_kind,byte_size,created_at').eq('ledger_id',c.ledger.id).order('created_at');
+  const {data,error}=await sb.from(TABLE).select('id,ledger_id,storage_path,storage_provider,drive_file_id,doc_kind,byte_size,created_at').eq('ledger_id',c.ledger.id).order('created_at');
   if(error)throw new Error('서류 목록을 불러오지 못했습니다. 로그인·권한을 확인하고 다시 열어 주세요.');
   if(!current(c))return;c.rows=data||[];renderList(c);
  }
@@ -109,11 +83,13 @@
   try{await authenticated();await refresh(c);if(current(c))c.ready=true;}catch(e){if(current(c))status(e.message);}finally{busy(c,false);if(current(c)&&c.ready)el('docPassword').focus();}
  }
  async function download(row){
+  if(row.storage_provider==='google_drive')return jkDocumentDrive.download(row);
   const {data,error}=await sb.storage.from(BUCKET).download(row.storage_path);
   if(error||!data)throw new Error('서류 파일을 불러오지 못했습니다. 로그인·권한과 인터넷 연결을 확인해 주세요.');return data;
  }
  async function view(row){
   const c=ctx;if(!c?.ready||c.busy)return;
+  if(row.storage_provider==='google_drive'&&!jkDocumentDrive.ready()){status('먼저 구글드라이브 연결을 눌러 주세요.');return;}
   const password=el('docPassword').value;lock();if(!password){status('서류 비밀번호를 입력하세요.');el('docPassword').focus();return;}
   busy(c,true);status('비밀번호 확인 중...');
   try{
@@ -125,6 +101,7 @@
  }
  async function upload(){
   const c=ctx;if(!c?.ready||c.busy)return;
+  if(!jkDocumentDrive.ready()){status('먼저 구글드라이브 연결을 눌러 주세요.');return;}
   const files=[...el('docFiles').files],password=el('docPassword').value,confirmPassword=el('docConfirm').value,kind=el('docKind').value;
   if(!files.length){status('이 고객의 사진을 선택하세요.');return;}
   if(files.length>20||files.reduce((s,f)=>s+f.size,0)>100*1024*1024){status('한 번에 20개, 전체 100MB 이하로 선택하세요.');return;}
@@ -142,14 +119,13 @@
     status(`${completed+1} / ${files.length} 암호화해서 저장 중...`);
     const id=crypto.randomUUID(),storagePath=c.ledger.id+'/'+id+'.jkdoc';
     const blob=await encrypt(file,password,c.ledger.id,id);if(!current(c))break;
-    const {error}=await sb.storage.from(BUCKET).upload(storagePath,blob,{contentType:'application/octet-stream',cacheControl:'0',upsert:false});
-    if(error)throw new Error('암호화 서류 업로드에 실패했습니다. 다시 시도해 주세요.');
+    const driveFileId=await jkDocumentDrive.upload(c.ledger.id,id,blob);
     let linked=false;
     try{
      if(!current(c))throw new Error('저장을 중단했습니다.');
-     const result=await sb.from(TABLE).insert({id,ledger_id:c.ledger.id,storage_path:storagePath,doc_kind:kind,byte_size:file.size});
+     const result=await sb.from(TABLE).insert({id,ledger_id:c.ledger.id,storage_path:storagePath,storage_provider:'google_drive',drive_file_id:driveFileId,doc_kind:kind,byte_size:file.size});
      if(result.error)throw new Error('장부에 서류를 연결하지 못했습니다.');linked=true;completed++;
-    }finally{if(!linked)await sb.storage.from(BUCKET).remove([storagePath]);}
+    }finally{if(!linked)await jkDocumentDrive.trash(driveFileId);}
    }
    if(current(c)){el('docFiles').value='';await refresh(c);status(`${completed}개 서류를 저장했습니다. SSD 원본은 유지됩니다.`);}
   }catch(e){if(current(c)){await refresh(c).catch(()=>{});status(`${completed?completed+'개 저장 완료. ':''}${e.message}`);}}
@@ -157,10 +133,11 @@
  }
  async function remove(row){
   const c=ctx;if(!c?.ready||c.busy)return;
-  if(!window.confirm('이 서류의 온라인 복사본을 삭제할까요? SSD 원본은 유지됩니다.'))return;
+  if(row.storage_provider==='google_drive'&&!jkDocumentDrive.ready()){status('먼저 구글드라이브 연결을 눌러 주세요.');return;}
+  if(!window.confirm(row.storage_provider==='google_drive'?'이 서류를 구글드라이브 휴지통으로 옮기고 장부 연결을 삭제할까요? 휴지통에서 복원해도 장부 연결은 자동 복구되지 않습니다. SSD 원본은 유지됩니다.':'이 서류의 온라인 복사본을 삭제할까요? SSD 원본은 유지됩니다.'))return;
   lock();busy(c,true);status('삭제 중...');
   try{
-   await authenticated();const storage=await sb.storage.from(BUCKET).remove([row.storage_path]);if(storage.error)throw new Error('서류 파일을 삭제하지 못했습니다.');
+   await authenticated();if(row.storage_provider==='google_drive')await jkDocumentDrive.trash(row.drive_file_id);else{const storage=await sb.storage.from(BUCKET).remove([row.storage_path]);if(storage.error)throw new Error('서류 파일을 삭제하지 못했습니다.');}
    const record=await sb.from(TABLE).delete().eq('id',row.id).eq('ledger_id',c.ledger.id);if(record.error)throw new Error('파일은 삭제됐지만 장부 연결 정리가 필요합니다. 삭제를 다시 눌러 주세요.');
    await refresh(c);if(current(c))status('온라인 복사본을 삭제했습니다.');
   }catch(e){if(current(c))status(e.message);}finally{busy(c,false);}

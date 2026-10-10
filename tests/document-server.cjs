@@ -1,7 +1,7 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict');
 (async()=>{
  const source=fs.readFileSync(path.join(__dirname,'../supabase/functions/jk-document-access/handler.js'),'utf8');
- const {createHandler,ORIGIN}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+ const {createHandler,ORIGIN,REDIRECT}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
  const id='11111111-1111-4111-8111-111111111111',doc='22222222-2222-4222-8222-222222222222';
  let owner=false,approved=false,revokedDuringFetch=false,wrongGoogle=false,unverified=false,authInvalid=false,calls=[];
  const env={SUPABASE_URL:'https://sb.test',SUPABASE_ANON_KEY:'PUBLIC',SUPABASE_SERVICE_ROLE_KEY:'SERVER-ONLY'};
@@ -17,7 +17,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
    if(name==='jk_document_server_log_read')return new Response('');
    throw Error(name);
   }
-  if(url==='https://oauth2.googleapis.com/token'){const p=new URLSearchParams(o.body);assert.equal(p.get('client_secret'),'TESTSECRET');if(p.get('grant_type')==='authorization_code')assert.equal(p.get('redirect_uri'),ORIGIN);return json({access_token:'GOOGLE-TEMP',refresh_token:'TESTREFRESH',scope:'https://www.googleapis.com/auth/drive.file',expires_in:3600});}
+  if(url==='https://oauth2.googleapis.com/token'){const p=new URLSearchParams(o.body);assert.equal(p.get('client_secret'),'TESTSECRET');if(p.get('grant_type')==='authorization_code')assert([ORIGIN,REDIRECT].includes(p.get('redirect_uri')));return json({access_token:'GOOGLE-TEMP',refresh_token:'TESTREFRESH',scope:'https://www.googleapis.com/auth/drive.file',expires_in:3600});}
   assert(url.startsWith('https://www.googleapis.com/drive/v3/'));assert.equal(o.headers.Authorization,'Bearer GOOGLE-TEMP');
   if(url.includes('/about?'))return json({user:{emailAddress:wrongGoogle?'other@example.invalid':'needis123@gmail.com'}});
   if(url.includes('/files?q='))return json({files:[{id:'synthetic_folder_12345'}]});
@@ -32,8 +32,13 @@ const fs=require('fs'),path=require('path'),assert=require('assert/strict');
  unverified=true;assert.equal((await handler(request({action:'download',document_id:doc}))).status,403);unverified=false;
  assert.equal((await handler(request(null))).status,400);
  assert.equal((await handler(request({action:'connect',code:'synthetic-code-long'}))).status,403);
+ assert.equal((await handler(request({action:'owner-token'}))).status,403);
  assert.equal((await handler(request({action:'download',document_id:doc}))).status,403);assert(!calls.some(c=>c.url.includes('/token')));
- owner=true;assert.equal((await handler(request({action:'connect',code:'synthetic-code-long'},{csrf:false}))).status,400);
+ owner=true;assert.equal((await handler(request({action:'owner-token'},{csrf:false}))).status,400);
+ assert.equal((await handler(request({action:'owner-token'}))).status,200);
+ assert.equal((await handler(request({action:'connect',code:'synthetic-code-long',redirect_uri:'https://evil.invalid'}))).status,400);
+ assert.equal((await handler(request({action:'connect',code:'synthetic-code-long',redirect_uri:REDIRECT}))).status,200);
+ assert.equal((await handler(request({action:'connect',code:'synthetic-code-long'},{csrf:false}))).status,400);
  wrongGoogle=true;assert.equal((await handler(request({action:'connect',code:'synthetic-code-long'}))).status,403);wrongGoogle=false;
  let r=await handler(request({action:'connect',code:'synthetic-code-long'}));assert.equal(r.status,200);const connected=await r.json();assert.equal(connected.owner,'needis123@gmail.com');assert(!JSON.stringify(connected).includes('TESTSECRET'));assert(!JSON.stringify(connected).includes('TESTREFRESH'));
  owner=false;approved=true;r=await handler(request({action:'download',document_id:doc,p_user_id:'attacker'}));assert.equal(r.status,200);assert.equal(r.headers.get('Cache-Control'),'no-store');assert.equal((await r.arrayBuffer()).byteLength,100);

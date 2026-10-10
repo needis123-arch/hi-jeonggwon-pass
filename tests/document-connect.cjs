@@ -1,0 +1,15 @@
+const fs=require('fs'),path=require('path'),assert=require('assert/strict'),{chromium}=require('playwright');
+const repo=path.join(__dirname,'..'),redirect='https://connect.test/business-documents-connect.html',owner='needis123@gmail.com';
+(async()=>{const browser=await chromium.launch({headless:true,channel:'msedge'});try{
+ const page=await browser.newPage(),errors=[],sent=[];page.on('pageerror',e=>errors.push(e.message));let isOwner=true;
+ await page.route('**/*',r=>{const u=new URL(r.request().url());if(u.href.includes('supabase-js'))return r.fulfill({contentType:'application/javascript',body:`window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:{access_token:'SYNTHETIC-JWT'}}})},rpc:async()=>({data:{owner:${isOwner},email:'${owner}',drive_connected:false}})})};`});
+  if(u.href==='https://accounts.google.com/gsi/client')return r.fulfill({contentType:'application/javascript',body:`window.google={accounts:{oauth2:{initCodeClient:c=>{window.__config=c;return {requestCode:()=>window.__started=true}}}}};`});
+  if(u.pathname==='/functions/v1/jk-document-access'){const body=JSON.parse(r.request().postData());assert.equal(r.request().headers().authorization,'Bearer SYNTHETIC-JWT');assert.deepEqual(body,{action:'connect',code:'SYNTHETIC-CODE',redirect_uri:redirect});sent.push(body);return r.fulfill({json:{owner,access_token:'TEMPORARY-NEVER-PERSISTED'}});}
+  const f=path.join(repo,u.pathname.slice(1));if(u.hostname==='connect.test'&&fs.existsSync(f))return r.fulfill({contentType:f.endsWith('.js')?'application/javascript':'text/html',body:fs.readFileSync(f)});return r.fulfill({status:404});
+ });
+ await page.goto(redirect);await page.waitForFunction(()=>!document.getElementById('connect').disabled);await page.locator('#connect').click();const c=await page.evaluate(()=>__config);assert.equal(c.ux_mode,'redirect');assert.equal(c.redirect_uri,redirect);assert.equal(c.scope,'https://www.googleapis.com/auth/drive.file');assert.equal(c.include_granted_scopes,false);
+ await page.goto(redirect+'?code=SYNTHETIC-CODE&state='+c.state);await page.waitForFunction(()=>document.getElementById('status').textContent.includes('연결 완료'));assert.equal(sent.length,1);assert.equal(page.url(),redirect);assert.equal(await page.evaluate(()=>sessionStorage.length),0);assert.equal(await page.evaluate(()=>localStorage.length),0);
+ await page.goto(redirect+'?code=SYNTHETIC-CODE&state=wrong-state');await page.waitForFunction(()=>document.getElementById('status').textContent.includes('맞지'));assert.equal(sent.length,1);
+ isOwner=false;await page.goto(redirect);await page.waitForFunction(()=>document.getElementById('status').textContent.includes('사장님만'));assert(await page.locator('#connect').isDisabled());assert.deepEqual(errors,[]);
+ console.log('PASS: redirect connection, state/time/user binding, immediate authorization-code URL removal, owner-only exchange, no persistent Google token, invalid state rejection (all network mocked)');
+ }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

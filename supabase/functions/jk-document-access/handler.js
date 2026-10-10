@@ -1,4 +1,5 @@
 export const ORIGIN='https://needis123-arch.github.io';
+export const REDIRECT=ORIGIN+'/hi-jeonggwon-pass/business-documents-connect.html';
 const OWNER='needis123@gmail.com',SCOPE='https://www.googleapis.com/auth/drive.file';
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 class HttpError extends Error{constructor(status,message){super(message);this.status=status;}}
@@ -33,14 +34,24 @@ export function createHandler({env,fetchImpl=fetch}){
    if(!user.id||!user.email_confirmed_at||user.is_anonymous)throw new HttpError(403,'이메일을 확인한 계정으로 로그인하세요.');
    const raw=await req.text();if(raw.length>8192)throw new HttpError(400,'요청이 너무 큽니다.');
    let body;try{body=JSON.parse(raw);}catch{throw new HttpError(400,'요청 형식이 올바르지 않습니다.');}
-   if(!body||typeof body!=='object'||!['connect','download'].includes(body.action))throw new HttpError(400,'지원하지 않는 요청입니다.');
+   if(!body||typeof body!=='object'||!['connect','owner-token','download'].includes(body.action))throw new HttpError(400,'지원하지 않는 요청입니다.');
    const state=await rpc('jk_document_access_state',{},authorization);
+   if(body.action==='owner-token'){
+    if(!state?.owner||String(user.email).toLowerCase()!==OWNER)throw new HttpError(403,'구글 저장소 연결은 사장님만 할 수 있습니다.');
+    if(req.headers.get('X-Requested-With')!=='XmlHttpRequest')throw new HttpError(400,'장부에서 연결을 다시 시작하세요.');
+    const cfg=await rpc('jk_document_server_credentials',{},authorization,true);
+    if(!cfg?.refresh_token)return reply({error:'구글드라이브 최초 연결이 필요합니다.',code:'drive_not_connected'},503);
+    if(!cfg.client_id||!cfg.client_secret||!/^[A-Za-z0-9_-]{10,200}$/.test(cfg.folder_id||''))throw new HttpError(503,'구글 저장소 설정을 확인하세요.');
+    const tokens=await tokenRequest({client_id:cfg.client_id,client_secret:cfg.client_secret,refresh_token:cfg.refresh_token,grant_type:'refresh_token'});
+    return reply({access_token:tokens.access_token,expires_in:tokens.expires_in||3600,folder_id:cfg.folder_id,owner:OWNER});
+   }
    if(body.action==='connect'){
     if(!state?.owner||String(user.email).toLowerCase()!==OWNER)throw new HttpError(403,'구글 저장소 연결은 사장님만 할 수 있습니다.');
     if(req.headers.get('X-Requested-With')!=='XmlHttpRequest'||typeof body.code!=='string'||body.code.length<10||body.code.length>4096)throw new HttpError(400,'구글 연결 요청을 다시 시작하세요.');
     const cfg=await rpc('jk_document_server_credentials',{},authorization,true);
     if(!cfg?.client_id||!cfg.client_secret)throw new HttpError(503,'구글 서버 연동 설정이 아직 완료되지 않았습니다.');
-    const tokens=await tokenRequest({client_id:cfg.client_id,client_secret:cfg.client_secret,code:body.code,redirect_uri:ORIGIN,grant_type:'authorization_code'});
+    if(body.redirect_uri!==undefined&&body.redirect_uri!==REDIRECT)throw new HttpError(400,'허용되지 않은 연결 주소입니다.');
+    const tokens=await tokenRequest({client_id:cfg.client_id,client_secret:cfg.client_secret,code:body.code,redirect_uri:body.redirect_uri||ORIGIN,grant_type:'authorization_code'});
     if(!String(tokens.scope||'').split(' ').includes(SCOPE))throw new HttpError(403,'앱 서류 파일 접근 권한이 필요합니다.');
     const about=await (await google('https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)',tokens.access_token)).json();
     if(String(about.user?.emailAddress||'').toLowerCase()!==OWNER)throw new HttpError(403,OWNER+' 계정으로 연결하세요.');

@@ -4,7 +4,7 @@
  'use strict';
  const CLIENT_ID='296636406674-rd44edn55es8urma78ttta4476roph3i.apps.googleusercontent.com',OWNER='needis123@gmail.com',SCOPE='https://www.googleapis.com/auth/drive.file';
  const API='https://www.googleapis.com/drive/v3/',UPLOAD='https://www.googleapis.com/upload/drive/v3/files';
- let sdkReady=false,token='',until=0,folder='',pending=null,generation=0;
+ let sdkReady=false,token='',until=0,folder='',pending=null,generation=0,connecting=false;
  function clear(){token='';until=0;folder='';}
  function ready(){return Boolean(token&&Date.now()<until);}
  function notify(){document.dispatchEvent(new Event('jk-document-drive-state'));}
@@ -29,13 +29,29 @@
   script.onload=()=>{sdkReady=true;notify();};
   script.onerror=notify;document.head.append(script);
  }
- function connect(){
+ async function connect(){
+  if(connecting||pending)throw new Error('진행 중인 구글 연결을 먼저 완료하세요.');
+  connecting=true;const epoch=generation;
+  try{
+   const {data,error}=await sb.auth.getSession();if(error||!data?.session?.access_token)throw new Error('장부에 먼저 로그인하세요.');
+   const response=await fetch(SUPABASE_URL+'/functions/v1/jk-document-access',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json','X-Requested-With':'XmlHttpRequest'},body:JSON.stringify({action:'owner-token'}),cache:'no-store'});
+   const connected=await response.json();if(epoch!==generation)throw new Error('로그인이 끝나 구글 연결을 중단했습니다.');
+   if(response.ok){
+    if(connected.owner!==OWNER||!connected.access_token||!/^[A-Za-z0-9_-]{10,200}$/.test(connected.folder_id||''))throw new Error('구글 저장 계정을 확인하지 못했습니다.');
+    clear();token=connected.access_token;folder=connected.folder_id;until=Date.now()+Math.max(0,Number(connected.expires_in||3600)-30)*1000;notify();return;
+   }
+   if(connected.code!=='drive_not_connected')throw new Error(connected.error||'구글 저장소 연결을 확인하지 못했습니다.');
+   return await connectPopup();
+  }finally{connecting=false;}
+ }
+ function connectPopup(){
   if(!configured())return Promise.reject(new Error('구글 연동 설정이 아직 완료되지 않았습니다. 설정 완료 후 연결할 수 있습니다.'));
   if(!sdkReady)return Promise.reject(new Error('구글 연결 화면을 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요.'));
   if(pending)return Promise.reject(new Error('열려 있는 구글 연결 창을 먼저 완료하세요.'));
   return new Promise((resolve,reject)=>{
    const p=pending={resolve,reject},epoch=generation;
-   const finish=()=>{if(pending===p)pending=null;};
+   const timeout=setTimeout(()=>fail(new Error('구글 연결창이 표시되지 않으면 현재 화면 연결을 이용하세요.')),60000);
+   const finish=()=>{clearTimeout(timeout);if(pending===p)pending=null;};
    const fail=error=>{if(pending!==p)return;finish();clear();notify();reject(error);};
    try{
     const client=google.accounts.oauth2.initCodeClient({client_id:CLIENT_ID,scope:SCOPE,include_granted_scopes:false,login_hint:OWNER,select_account:true,ux_mode:'popup',

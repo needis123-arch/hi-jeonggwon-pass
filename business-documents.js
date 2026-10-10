@@ -45,8 +45,8 @@
   root=document.createElement('div');root.className='doc-overlay';root.hidden=true;
   root.innerHTML=`<section class="doc-dialog" role="dialog" aria-modal="true" aria-labelledby="docTitle"><div class="doc-head"><div><h2 id="docTitle">고객 서류</h2><div id="docCustomer" class="doc-sub"></div></div><button class="btn" id="docClose" aria-label="서류 닫기">닫기</button></div>
    <div class="doc-note"><b>저장 위치: 본인 구글드라이브 · 암호화 서류 폴더</b><div class="doc-buttons"><button class="btn" id="docDriveConnect">구글드라이브 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a><span id="docDriveStatus" class="doc-sub"></span></div>SSD에서 이 고객의 폴더를 열고 사진을 여러 장 선택하세요. 선택한 사진을 암호화해 드라이브에 저장하며 SSD 원본은 유지됩니다.<br><b>서류 비밀번호는 로그인 비밀번호와 별도입니다.</b> 잊으면 복구할 수 없으니 SSD 원본을 보관하세요. 열람 후 5분, 다른 화면으로 전환하거나 닫으면 다시 잠깁니다.<br><a href="business-documents-privacy.html" target="_blank" rel="noopener">구글드라이브 데이터 처리 안내</a></div>
-   <div class="doc-layout"><div class="doc-controls"><label for="docPassword">서류 비밀번호</label><input id="docPassword" type="password" autocomplete="off" placeholder="서류를 저장할 때 사용한 비밀번호">
-   <div id="docNewPassword"><label for="docConfirm">새 서류 저장 시 비밀번호 확인</label><input id="docConfirm" type="password" autocomplete="off" placeholder="같은 비밀번호를 다시 입력"></div>
+   <div class="doc-layout"><div class="doc-controls"><label for="docPassword">서류 비밀번호 (숫자 4자리)</label><input id="docPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="숫자 4자리"><small class="doc-sub">이전에 저장한 서류는 당시 비밀번호로 열어 주세요.</small>
+   <div id="docNewPassword"><label for="docConfirm">새 서류 저장 시 비밀번호 확인</label><input id="docConfirm" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="같은 숫자 4자리를 다시 입력"></div>
    <label for="docKind">추가할 서류 구분</label><select id="docKind"><option>가입 서류</option><option>신분증 사본</option><option>기타 서류</option></select>
    <label for="docFiles">사진 선택 (여러 장 가능)</label><input id="docFiles" type="file" multiple accept="image/jpeg,image/png,image/webp"><small class="doc-sub">JPG · PNG · WEBP / 파일당 20MB, 한 번에 20개</small>
    <div class="doc-buttons"><button class="btn primary" id="docUpload">암호화해서 저장</button><button class="btn" id="docLock">다시 잠그기</button></div><div id="docStatus" class="doc-status" role="status" aria-live="polite"></div><div id="docList" class="doc-list"></div></div>
@@ -68,6 +68,7 @@
   if(!current(c))return;
   el('docList').innerHTML=c.rows.map((r,i)=>`<div class="doc-file"><b>${safe(r.doc_kind)} ${i+1}</b><small>${safe(new Date(r.created_at).toLocaleString('ko-KR'))} · ${(r.byte_size/1024/1024).toFixed(1)}MB</small><div class="doc-buttons"><button class="btn" data-doc-action="view" data-id="${safe(r.id)}">비밀번호로 보기</button><button class="btn danger" data-doc-action="remove" data-id="${safe(r.id)}">삭제</button></div></div>`).join('')||'<div class="doc-sub">연결된 서류가 없습니다. 이 고객의 사진을 선택해 추가하세요.</div>';
   el('docNewPassword').hidden=c.rows.length>0;
+  if(c.rows.length)el('docPassword').removeAttribute('maxlength');else el('docPassword').maxLength=4;
  }
  async function refresh(c){
   const {data,error}=await sb.from(TABLE).select('id,ledger_id,storage_path,storage_provider,drive_file_id,doc_kind,byte_size,created_at').eq('ledger_id',c.ledger.id).order('created_at');
@@ -90,7 +91,7 @@
  async function view(row){
   const c=ctx;if(!c?.ready||c.busy)return;
   if(row.storage_provider==='google_drive'&&!jkDocumentDrive.ready()){status('먼저 구글드라이브 연결을 눌러 주세요.');return;}
-  const password=el('docPassword').value;lock();if(!password){status('서류 비밀번호를 입력하세요.');el('docPassword').focus();return;}
+  const password=el('docPassword').value;lock();if(!/^[0-9]{4}$/.test(password)&&password.length<10){status('서류 비밀번호는 숫자 4자리입니다.');el('docPassword').focus();return;}
   busy(c,true);status('비밀번호 확인 중...');
   try{
    await authenticated();const file=await decrypt(await download(row),password,row);if(!current(c))return;
@@ -106,7 +107,7 @@
   if(!files.length){status('이 고객의 사진을 선택하세요.');return;}
   if(files.length>20||files.reduce((s,f)=>s+f.size,0)>100*1024*1024){status('한 번에 20개, 전체 100MB 이하로 선택하세요.');return;}
   if(files.some(f=>!MIME.has(f.type)||!f.size||f.size>LIMIT)){status('JPG·PNG·WEBP 사진만 가능하며 파일당 20MB 이하여야 합니다. 다른 형식은 JPG로 변환해 주세요.');return;}
-  if(password.length<10){status('서류 비밀번호를 10자 이상 입력하세요.');return;}
+  if(!/^[0-9]{4}$/.test(password)&&!(c.rows.length&&password.length>=10)){status('서류 비밀번호를 숫자 4자리로 입력하세요.');return;}
   if(!c.rows.length&&password!==confirmPassword){status('비밀번호 확인이 일치하지 않습니다.');return;}
   if(!window.confirm(`${c.ledger.customer_name_snapshot} · ${formatPhone(c.ledger.customer_phone_snapshot)} 고객의 ${files.length}개 파일이 맞나요? 이 고객 장부에 암호화해서 저장합니다.`))return;
   lock();busy(c,true);let completed=0;

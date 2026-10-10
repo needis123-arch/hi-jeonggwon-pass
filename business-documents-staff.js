@@ -39,7 +39,7 @@
  }
  async function show(i){
   if(busy||!approved)return;const row=files[i],password=$('docPassword').value;if(!row)return;
-  if(password.length<10){message('서류 비밀번호 10자 이상을 입력하세요.');return;}
+  if(!/^[0-9]{4}$/.test(password)&&password.length<10){message('서류 비밀번호는 숫자 4자리입니다.');return;}
   lock();const n=viewEpoch;busy=true;message('승인 확인 후 사진을 불러오는 중입니다.');
   try{
    const {data,error}=await client.auth.getSession();if(error||!data?.session?.access_token)throw new Error('다시 로그인하세요.');

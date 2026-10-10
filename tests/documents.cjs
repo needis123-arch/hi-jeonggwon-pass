@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict'),{chromium}=require('playwright');
-const repo=path.join(__dirname,'..'),password='Synthetic-only-password-2026',png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j2s8AAAAASUVORK5CYII=','base64');
+const repo=path.join(__dirname,'..'),password='0007',png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j2s8AAAAASUVORK5CYII=','base64');
 const stub=String.raw`
 window.__driveConnected=true;window.__session={user:{id:'22222222-2222-4222-8222-222222222222',email:'synthetic@example.invalid'}};window.__docs=[];window.__files=new Map();window.__auth=[];window.__failInsert=false;window.__writes=[];
 window.__ledger=[{id:'11111111-1111-4111-8111-111111111111',customer_name_snapshot:'합성 테스트 고객',customer_phone_snapshot:'01012345678',activation_date:'2026-10-10',vendor:'합성 거래처',final_margin:170000,base_rebate:170000,cash_sale_amount:319000,cash_received:319000},{id:'33333333-3333-4333-8333-333333333333',customer_name_snapshot:'다른 합성 고객',customer_phone_snapshot:'01000000000',activation_date:'2026-10-10',vendor:'다른 거래처'}];
@@ -16,7 +16,9 @@ window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:__
  await page.evaluate(()=>__driveConnected=false);await page.locator('#docUpload').click();assert.match(await page.locator('#docStatus').textContent(),/구글드라이브 연결/);await page.locator('#docDriveConnect').click();await page.waitForFunction(()=>!document.getElementById('docUpload').disabled);
  await page.locator('#docFiles').setInputFiles({name:'unsupported.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-synthetic')});await page.locator('#docUpload').click();assert.match(await page.locator('#docStatus').textContent(),/JPG·PNG·WEBP/);assert.equal(await page.evaluate(()=>__files.size),0);
  await page.locator('#docFiles').setInputFiles({name:'합성_신분증_실제자료아님.png',mimeType:'image/png',buffer:png});
- await page.locator('#docPassword').fill(password);await page.locator('#docConfirm').fill('wrong');await page.locator('#docUpload').click();assert.match(await page.locator('#docStatus').textContent(),/일치하지/);assert.equal(await page.evaluate(()=>__files.size),0);
+ assert.equal(await page.locator('#docPassword').getAttribute('inputmode'),'numeric');
+ for(const invalid of ['123','abcd','12a4']){await page.locator('#docPassword').fill(invalid);await page.locator('#docConfirm').fill(invalid);await page.locator('#docUpload').click();assert.match(await page.locator('#docStatus').textContent(),/숫자 4자리/);assert.equal(await page.evaluate(()=>__files.size),0);}
+ await page.locator('#docPassword').fill(password);await page.locator('#docConfirm').fill('9999');await page.locator('#docUpload').click();assert.match(await page.locator('#docStatus').textContent(),/일치하지/);assert.equal(await page.evaluate(()=>__files.size),0);
  await page.locator('#docConfirm').fill(password);await page.locator('#docUpload').click();await page.waitForFunction(()=>__docs.length===1&&!document.getElementById('docUpload').disabled);
  const encrypted=await page.evaluate(async()=>Array.from(new Uint8Array(await [...__files.values()][0].arrayBuffer())));
  assert.equal(Buffer.from(encrypted).subarray(0,8).toString(),'JKDOC001');assert(!Buffer.from(encrypted).includes(png));assert(!Buffer.from(encrypted).includes(Buffer.from('합성_신분증')));
@@ -40,6 +42,6 @@ window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:__
  await page.locator('#docPassword').fill(password);await page.locator('[data-doc-action=view]').click();await page.waitForFunction(()=>document.querySelector('#docPreview img')?.complete);await page.evaluate(()=>__auth.forEach(f=>f('SIGNED_OUT')));assert(await page.locator('.doc-overlay').isHidden());assert.equal(await page.locator('#docPreview img').count(),0);
  await page.evaluate(()=>{__session=null;return openLedgerDocuments(__ledger[0].id)});await page.waitForFunction(()=>!document.getElementById('docUpload').disabled);assert.match(await page.locator('#docStatus').textContent(),/로그인 후/);await page.locator('#docClose').click();
  await page.evaluate(()=>{__session={user:{id:'synthetic'}};return openLedgerDocuments(__ledger[0].id)});await page.waitForFunction(()=>!document.getElementById('docUpload').disabled);await page.locator('[data-doc-action=remove]').click();await page.waitForFunction(()=>__docs.length===0);assert.equal(await page.evaluate(()=>__files.size),0);
- assert.deepEqual(errors,[]);assert(!await page.evaluate(()=>JSON.stringify({...localStorage,...sessionStorage}).includes('Synthetic-only-password')));
+ assert.deepEqual(errors,[]);assert(!await page.evaluate(()=>JSON.stringify({...localStorage,...sessionStorage}).includes('0007')));
  console.log('PASS: client encryption, no original names/passwords on server, wrong password, cross-customer binding, rollback cleanup, new-device access, mobile, expiry, logout, unauthenticated block and removal using synthetic scans only');
  }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

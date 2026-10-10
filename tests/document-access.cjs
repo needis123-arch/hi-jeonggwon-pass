@@ -1,5 +1,5 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict'),{chromium}=require('playwright');
-const repo=path.join(__dirname,'..'),doc='22222222-2222-4222-8222-222222222222',ledger='11111111-1111-4111-8111-111111111111',password='Synthetic-only-password-2026';
+const repo=path.join(__dirname,'..'),doc='22222222-2222-4222-8222-222222222222',ledger='11111111-1111-4111-8111-111111111111',password='0007';
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j2s8AAAAASUVORK5CYII=','base64');
 const stub=`window.__status='none';window.__owner=false;window.__auth=[];window.__session={access_token:'STAFF-JWT'};window.__downloads=0;window.__decisions=[];
 window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:__session}}),onAuthStateChange:f=>__auth.push(f),signInWithPassword:async()=>({error:null}),signOut:async()=>{__session=null;__auth.forEach(f=>f('SIGNED_OUT'));return {error:null}}},rpc:async(name,args={})=>{
@@ -22,7 +22,9 @@ window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:__
  await page.evaluate(()=>__status='approved');await page.locator('#refresh').click();await page.locator('[data-customer]').waitFor();assert.match(await page.locator('#customers').textContent(),/010-1234-5678/);
  await page.locator('[data-customer]').click();await page.locator('[data-file]').waitFor();
  const bytes=await page.evaluate(async({png,password,ledger,doc})=>Array.from(new Uint8Array(await (await jkDocumentCrypto.encrypt(new File([new Uint8Array(png)],'synthetic.png',{type:'image/png'}),password,ledger,doc)).arrayBuffer())),{png:[...png],password,ledger,doc});ciphertext=Buffer.from(bytes);
- await page.locator('#docPassword').fill('Wrong-but-long-password');await page.locator('[data-file]').click();await page.waitForFunction(()=>document.getElementById('message').textContent.includes('맞지'));assert.equal(await page.locator('#preview img').count(),0);
+ assert.equal(await page.locator('#docPassword').getAttribute('inputmode'),'numeric');
+ for(const invalid of ['123','12345','abcd','12a4']){await page.locator('#docPassword').fill(invalid);await page.locator('[data-file]').click();assert.match(await page.locator('#message').textContent(),/숫자 4자리/);assert.equal(await page.evaluate(()=>__downloads),0);}
+ await page.locator('#docPassword').fill('9999');await page.locator('[data-file]').click();await page.waitForFunction(()=>document.getElementById('message').textContent.includes('맞지'));assert.equal(await page.locator('#preview img').count(),0);
  await page.locator('#docPassword').fill(password);await page.locator('[data-file]').click();await page.waitForFunction(()=>document.querySelector('#preview img')?.complete);assert.equal(await page.locator('#preview img').evaluate(i=>i.naturalWidth),1);assert.equal(await page.locator('#docPassword').inputValue(),'');
  await page.screenshot({path:path.join(repo,'tests/documents-staff-desktop.png')});await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:path.join(repo,'tests/documents-staff-mobile.png')});
  await page.locator('#lock').click();assert.equal(await page.locator('#preview img').count(),0);

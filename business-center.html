@@ -12,10 +12,10 @@
 <link rel="manifest" href="./manifest.webmanifest?v=2">
 <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./app-icon.svg">
-<link rel="stylesheet" href="./business-consultations.css?v=3.50">
-<link rel="stylesheet" href="./business-finance.css?v=3.50">
-<link rel="stylesheet" href="./business-navigation.css?v=3.50">
-<title>정권통신 Business Center V3.50</title>
+<link rel="stylesheet" href="./business-consultations.css?v=3.51">
+<link rel="stylesheet" href="./business-finance.css?v=3.51">
+<link rel="stylesheet" href="./business-navigation.css?v=3.51">
+<title>정권통신 Business Center V3.51</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -170,7 +170,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.50</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.51</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -645,16 +645,17 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./business-consultations.js?v=3.50"></script>
-<script src="./business-finance.js?v=3.50"></script>
-<script src="./business-used-settlement.js?v=3.50"></script>
-<script src="./business-tax-close.js?v=3.50"></script>
-<script src="./business-settlement-excel.js?v=3.50"></script>
-<script src="./business-statement-profiles.js?v=3.50"></script>
-<script src="./business-receipts.js?v=3.50"></script>
-<script src="./business-navigation.js?v=3.50"></script>
-<script src="./business-company-card.js?v=3.50"></script>
-<script src="./business-vendor-deposits.js?v=3.50"></script>
+<script src="./business-consultations.js?v=3.51"></script>
+<script src="./business-finance.js?v=3.51"></script>
+<script src="./business-used-settlement.js?v=3.51"></script>
+<script src="./business-tax-close.js?v=3.51"></script>
+<script src="./business-settlement-excel.js?v=3.51"></script>
+<script src="./business-statement-profiles.js?v=3.51"></script>
+<script src="./business-receipts.js?v=3.51"></script>
+<script src="./business-navigation.js?v=3.51"></script>
+<script src="./business-company-card.js?v=3.51"></script>
+<script src="./business-vendor-deposits.js?v=3.51"></script>
+<script src="./business-documents.js?v=3.51"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -708,6 +709,7 @@ function routeUrl(p){
  return u.pathname+u.search+u.hash;
 }
 function go(p,opts={}){
+ if(typeof closeLedgerDocuments==='function')closeLedgerDocuments();
  closeMobileMenu();
  if(!$('page-'+p))return;
  const push=opts.push!==false;
@@ -1029,7 +1031,7 @@ function receiptSummary(r){
 }
 function ledgerDetails(r){
  const fields=[['생년월일',r.customer_birth_date_snapshot?isoToBirth6(r.customer_birth_date_snapshot):'-'],['통신사',r.carrier],['유입경로',r.lead_source],['요금제',r.plan_name],['출고가',won(r.retail_price)],['K 기본리베이트',won(r.base_rebate)],['L 현금판매금액',won(r.cash_sale_amount)],['M 실리베이트',won(r.real_rebate)],['P 실리베이트 10%',won(r.vat_amount)],['Q 페이백',won(r.payback_amount)],['R 위약금대납',won(r.penalty_paid)],['S 완납 수납총액',won(r.cash_received)],['수납방식',r.cash_receipt_method||'미구분 (기존 기록 확인 필요)'],['현금·계좌 수납분',won(Number(r.cash_received||0)-Number(r.card_received_amount||0))],['카드 결제금액',won(r.card_received_amount)],['카드 정산 예정액 (수수료 차감 후)',won(r.card_settlement_amount)],['카드 입금예정일',r.card_settlement_due_date],['카드 실제 입금일',r.card_settled_date],['T 유심',won(r.sim_cost)],['U 중고 예상금액',won(r.used_device_amount)],['중고기종',r.used_device_model],['W 최종마진',won(r.final_margin)],['요금제 변경가능일',r.plan_change_date],['보험 해지가능일',r.insurance_cancel_date],['부가 해지가능일',r.addon_cancel_date],['페이백 지급예정일',r.payback_due_date],['제휴카드 상태',r.affiliate_card_status],['제휴카드사',r.affiliate_card_company],['제휴카드 금액',won(r.affiliate_card_amount)],['제휴카드 등록기한',r.affiliate_card_due_date],['메모',r.memo]];
- return '<dl class="ledger-detail-grid">'+fields.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v??'-')+'</dd></div>').join('')+`</dl><div class="ledger-detail-actions"><button class="btn" onclick="openLedger('${r.id}')">수정</button>${r.used_device_amount||r.used_device_model?`<button class="btn" onclick="openLinkedUsed('${r.id}','${String(r.activation_date).slice(0,7)}')">중고 판매 / 수령 내역</button>`:''}<button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div>`;
+ return '<dl class="ledger-detail-grid">'+fields.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v??'-')+'</dd></div>').join('')+`</dl><div class="ledger-detail-actions"><button class="btn" onclick="openLedger('${r.id}')">수정</button><button class="btn" onclick="openLedgerDocuments('${r.id}')">서류 보기 / 추가</button>${r.used_device_amount||r.used_device_model?`<button class="btn" onclick="openLinkedUsed('${r.id}','${String(r.activation_date).slice(0,7)}')">중고 판매 / 수령 내역</button>`:''}<button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div>`;
 }
 function renderLedger(keepPage=false){
  if(!$('ledgerBody'))return;
@@ -1339,7 +1341,7 @@ async function saveLedger(){
   await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadSources(),loadCashflow(),loadSurvival(),loadNotificationStatus()]);
   await checkAffiliateAlerts();
 }
-async function deleteLedger(id){if(!confirm('판매건을 삭제할까요?'))return;const {error}=await sb.from('jk_sales_ledger').delete().eq('id',id);if(error){alert(error.message);return}await loadAll()}
+async function deleteLedger(id){if(!confirm('판매건을 삭제할까요?'))return;const {error}=await sb.from('jk_sales_ledger').delete().eq('id',id);if(error){alert(error.code==='23503'?'연결된 서류 또는 기록이 있습니다. 서류 보기에서 온라인 복사본을 정리한 뒤 삭제하세요.':error.message);return}await loadAll()}
 
 async function loadReport(){const month=$('reportMonth')?.value||mk(now),date=$('reportDate')?.value||ymd(now);const [a,b]=bounds(month);const [mo,dy,st]=await Promise.all([sb.from('jk_v_monthly_sales_summary').select('*').eq('month',a).maybeSingle(),sb.from('jk_v_daily_sales_summary').select('*').eq('activation_date',date).maybeSingle(),sb.from('jk_v_staff_monthly_summary').select('*').eq('month',a).order('staff_name')]);if(mo.error||dy.error||st.error)return;const m=mo.data||{},d=dy.data||{},staff=st.data||[];const marks=r=>`${Number(r.sim_only_count||0)>0?`(+${r.sim_only_count})`:''}${Number(r.dongpan_count||0)>0?`(동판+${r.dongpan_count})`:''}${Number(r.contract_renewal_count||0)>0?`(약갱+${r.contract_renewal_count})`:''}${Number(r.bundle_count||0)>0?`(번들+${r.bundle_count})`:''}`;let txt=`${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일 매출보고\n\n월 총 갯수 ${Number(m.units||0)}개${marks(m)}\n총 매출 : ${won(m.margin_total||0)}\n평균마진 : ${won(m.avg_margin||0)}\n\n일 총 갯수 ${Number(d.units||0)}개${marks(d)}\n총 매출 : ${won(d.margin_total||0)}\n평균마진 : ${won(d.avg_margin||0)}`;staff.forEach(s=>{txt+=`\n\n[${s.staff_name||'미지정'}]\n갯수 ${Number(s.units||0)}개${marks(s)}\n총 매출 : ${won(s.margin_total||0)}\n평균마진 : ${won(s.avg_margin||0)}`});$('reportText').textContent=txt}
 async function copyReport(){await navigator.clipboard.writeText($('reportText').textContent);toast('매출보고 복사 완료')}

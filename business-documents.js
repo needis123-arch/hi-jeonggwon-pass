@@ -5,18 +5,12 @@
  const BUCKET='jk-ledger-documents', TABLE='jk_ledger_documents';
  const LIMIT=20*1024*1024;
  const MIME=new Set(['image/jpeg','image/png','image/webp']);
- let root,ctx=null,serial=0,previewUrl=null,expiry=null,lastFocus=null;
+ let root,ctx=null,serial=0,viewer=null,lastFocus=null;
  const el=id=>document.getElementById(id);
  const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const current=c=>ctx===c&&c.token===serial;
  const {encrypt,decrypt}=window.jkDocumentCrypto;
- function lock(){
-  clearTimeout(expiry);expiry=null;
-  const view=el('docPreview');if(view)view.replaceChildren();
-  if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
-  for(const id of ['docPassword','docConfirm'])if(el(id))el(id).value='';
-  if(el('docViewTitle'))el('docViewTitle').textContent='비밀번호를 입력하고 서류를 선택하세요.';
- }
+ function lock(){viewer?.clear();for(const id of ['docPassword','docConfirm'])if(el(id))el(id).value='';}
  function close(){
   serial++;ctx=null;lock();if(root){root.hidden=true;root.querySelectorAll('input').forEach(x=>x.value='');}
   document.body.classList.remove('doc-open');const app=document.querySelector('.app');if(app)app.inert=false;lastFocus?.focus();
@@ -44,14 +38,16 @@
   `;document.head.append(style);
   root=document.createElement('div');root.className='doc-overlay';root.hidden=true;
   root.innerHTML=`<section class="doc-dialog" role="dialog" aria-modal="true" aria-labelledby="docTitle"><div class="doc-head"><div><h2 id="docTitle">고객 서류</h2><div id="docCustomer" class="doc-sub"></div></div><button class="btn" id="docClose" aria-label="서류 닫기">닫기</button></div>
-   <div class="doc-note"><b>저장 위치: 본인 구글드라이브 · 암호화 서류 폴더</b><div class="doc-buttons"><button class="btn" id="docDriveConnect">구글드라이브 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a><span id="docDriveStatus" class="doc-sub"></span></div>SSD에서 이 고객의 폴더를 열고 사진을 여러 장 선택하세요. 선택한 사진을 암호화해 드라이브에 저장하며 SSD 원본은 유지됩니다.<br><b>서류 비밀번호는 로그인 비밀번호와 별도입니다.</b> 잊으면 복구할 수 없으니 SSD 원본을 보관하세요. 열람 후 5분, 다른 화면으로 전환하거나 닫으면 다시 잠깁니다.<br><a href="business-documents-privacy.html" target="_blank" rel="noopener">구글드라이브 데이터 처리 안내</a></div>
+   <div class="doc-note"><b>저장 위치: 본인 구글드라이브 · 암호화 서류 폴더</b><div class="doc-buttons"><button class="btn" id="docDriveConnect">구글드라이브 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a><span id="docDriveStatus" class="doc-sub"></span></div>SSD에서 이 고객의 폴더를 열고 사진을 여러 장 선택하세요. 선택한 사진을 암호화해 드라이브에 저장하며 SSD 원본은 유지됩니다.<br><b>서류 비밀번호는 로그인 비밀번호와 별도입니다.</b> 잊으면 복구할 수 없으니 SSD 원본을 보관하세요. 비밀번호 확인 후 5분 동안 다른 서류도 바로 볼 수 있습니다. 다른 앱·탭으로 전환하면 잠깁니다. 내려받은 사진·인쇄본은 자동 잠금 대상이 아닙니다.<br><a href="business-documents-privacy.html" target="_blank" rel="noopener">구글드라이브 데이터 처리 안내</a></div>
    <div class="doc-layout"><div class="doc-controls"><label for="docPassword">서류 비밀번호 (숫자 4자리)</label><input id="docPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="숫자 4자리"><small class="doc-sub">이전에 저장한 서류는 당시 비밀번호로 열어 주세요.</small>
    <div id="docNewPassword"><label for="docConfirm">새 서류 저장 시 비밀번호 확인</label><input id="docConfirm" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="같은 숫자 4자리를 다시 입력"></div>
    <label for="docKind">추가할 서류 구분</label><select id="docKind"><option>가입 서류</option><option>신분증 사본</option><option>기타 서류</option></select>
    <label for="docFiles">사진 선택 (여러 장 가능)</label><input id="docFiles" type="file" multiple accept="image/jpeg,image/png,image/webp"><small class="doc-sub">JPG · PNG · WEBP / 파일당 20MB, 한 번에 20개</small>
    <div class="doc-buttons"><button class="btn primary" id="docUpload">암호화해서 저장</button><button class="btn" id="docLock">다시 잠그기</button></div><div id="docStatus" class="doc-status" role="status" aria-live="polite"></div><div id="docList" class="doc-list"></div></div>
    <div><div id="docViewTitle" class="doc-preview-title"></div><div id="docPreview" class="doc-preview"></div></div></div></section>`;
-  document.body.append(root);el('docClose').onclick=close;el('docLock').onclick=()=>{lock();status('서류를 잠갔습니다.');};el('docUpload').onclick=upload;
+  document.body.append(root);el('docClose').onclick=close;el('docLock').onclick=()=>{jkDocumentViewer.session.lock();status('서류를 잠갔습니다.');};el('docUpload').onclick=upload;
+  viewer=jkDocumentViewer.mount({preview:el('docPreview'),title:el('docViewTitle'),input:el('docPassword'),message:status,isActive:()=>Boolean(ctx?.ready),onBusy:value=>{if(ctx)busy(ctx,value);},getFile:async(row,password)=>{await authenticated();return decrypt(await download(row),password,row);}});
+  window.addEventListener('jk-document-viewer-lock',()=>{el('docConfirm').value='';});
   const driveStatus=()=>{el('docDriveStatus').textContent=jkDocumentDrive.ready()?'연결됨 · '+jkDocumentDrive.owner:jkDocumentDrive.configured()?'연결 필요 · '+jkDocumentDrive.owner:'구글 연동 설정 완료 후 이용할 수 있습니다.';};
   el('docDriveConnect').onclick=async()=>{const c=ctx;if(!c||c.busy)return;busy(c,true);try{await jkDocumentDrive.connect();if(current(c))status('구글드라이브를 연결했습니다. 이제 사진을 선택하세요.');}catch(e){if(current(c))status(e.message);}finally{driveStatus();busy(c,false);}};
   document.addEventListener('jk-document-drive-state',()=>{lock();driveStatus();});driveStatus();
@@ -60,13 +56,14 @@
    if(e.key==='Escape'){e.preventDefault();close();}
    if(e.key==='Tab'){const a=[...root.querySelectorAll('button,input,select,iframe,a[href]')].filter(x=>!x.disabled&&x.getClientRects().length);if(!a.length)return;const first=a[0],last=a[a.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
   });
-  document.addEventListener('visibilitychange',()=>{if(document.hidden&&ctx)close();});
-  window.addEventListener('pagehide',close);
-  sb.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT')close();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&ctx){jkDocumentViewer.session.lock();close();}});
+  window.addEventListener('pagehide',()=>{jkDocumentViewer.session.lock();close();});
+  sb.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){jkDocumentViewer.session.lock();close();}});
  }
  function renderList(c){
   if(!current(c))return;
-  el('docList').innerHTML=c.rows.map((r,i)=>`<div class="doc-file"><b>${safe(r.doc_kind)} ${i+1}</b><small>${safe(new Date(r.created_at).toLocaleString('ko-KR'))} · ${(r.byte_size/1024/1024).toFixed(1)}MB</small><div class="doc-buttons"><button class="btn" data-doc-action="view" data-id="${safe(r.id)}">비밀번호로 보기</button><button class="btn danger" data-doc-action="remove" data-id="${safe(r.id)}">삭제</button></div></div>`).join('')||'<div class="doc-sub">연결된 서류가 없습니다. 이 고객의 사진을 선택해 추가하세요.</div>';
+  el('docList').innerHTML=c.rows.map((r,i)=>`<div class="doc-file"><b>${safe(r.doc_kind)} ${i+1}</b><small>${safe(new Date(r.created_at).toLocaleString('ko-KR'))} · ${(r.byte_size/1024/1024).toFixed(1)}MB</small><div class="doc-buttons"><button class="btn" data-doc-action="view" data-id="${safe(r.id)}">보기</button><button class="btn danger" data-doc-action="remove" data-id="${safe(r.id)}">삭제</button></div></div>`).join('')||'<div class="doc-sub">연결된 서류가 없습니다. 이 고객의 사진을 선택해 추가하세요.</div>';
+  viewer.setRows(c.rows,c.ledger.customer_name_snapshot+'_'+c.ledger.activation_date);
   el('docNewPassword').hidden=c.rows.length>0;
   if(c.rows.length)el('docPassword').removeAttribute('maxlength');else el('docPassword').maxLength=4;
  }
@@ -88,22 +85,11 @@
   const {data,error}=await sb.storage.from(BUCKET).download(row.storage_path);
   if(error||!data)throw new Error('서류 파일을 불러오지 못했습니다. 로그인·권한과 인터넷 연결을 확인해 주세요.');return data;
  }
- async function view(row){
-  const c=ctx;if(!c?.ready||c.busy)return;
-  if(row.storage_provider==='google_drive'&&!jkDocumentDrive.ready()){status('먼저 구글드라이브 연결을 눌러 주세요.');return;}
-  const password=el('docPassword').value;lock();if(!/^[0-9]{4}$/.test(password)&&password.length<10){status('서류 비밀번호는 숫자 4자리입니다.');el('docPassword').focus();return;}
-  busy(c,true);status('비밀번호 확인 중...');
-  try{
-   await authenticated();const file=await decrypt(await download(row),password,row);if(!current(c))return;
-   previewUrl=URL.createObjectURL(file.blob);el('docViewTitle').textContent=file.name;
-   const media=document.createElement('img');media.src=previewUrl;media.alt='선택한 고객 서류';
-   el('docPreview').replaceChildren(media);status('열람 중입니다. 5분 뒤 다시 잠깁니다.');expiry=setTimeout(()=>{lock();status('열람 시간이 지나 서류를 잠갔습니다.');},5*60*1000);
-  }catch(e){if(current(c))status(e.message);}finally{busy(c,false);}
- }
+ function view(row){if(ctx?.ready&&!ctx.busy)viewer.show(row);}
  async function upload(){
   const c=ctx;if(!c?.ready||c.busy)return;
   if(!jkDocumentDrive.ready()){status('먼저 구글드라이브 연결을 눌러 주세요.');return;}
-  const files=[...el('docFiles').files],password=el('docPassword').value,confirmPassword=el('docConfirm').value,kind=el('docKind').value;
+  const files=[...el('docFiles').files],password=el('docPassword').value||(c.rows.length?jkDocumentViewer.session.read():''),confirmPassword=el('docConfirm').value,kind=el('docKind').value;
   if(!files.length){status('이 고객의 사진을 선택하세요.');return;}
   if(files.length>20||files.reduce((s,f)=>s+f.size,0)>100*1024*1024){status('한 번에 20개, 전체 100MB 이하로 선택하세요.');return;}
   if(files.some(f=>!MIME.has(f.type)||!f.size||f.size>LIMIT)){status('JPG·PNG·WEBP 사진만 가능하며 파일당 20MB 이하여야 합니다. 다른 형식은 JPG로 변환해 주세요.');return;}

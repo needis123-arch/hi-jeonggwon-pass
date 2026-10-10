@@ -5,7 +5,7 @@
  const BUCKET='jk-ledger-documents', TABLE='jk_ledger_documents';
  const LIMIT=20*1024*1024, ITERATIONS=600000, MAGIC=new TextEncoder().encode('JKDOC001');
  const enc=new TextEncoder(), dec=new TextDecoder();
- const MIME=new Set(['image/jpeg','image/png','image/webp','application/pdf']);
+ const MIME=new Set(['image/jpeg','image/png','image/webp']);
  let root,ctx=null,serial=0,previewUrl=null,expiry=null,lastFocus=null;
  const el=id=>document.getElementById(id);
  const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -77,7 +77,7 @@
    <div class="doc-layout"><div class="doc-controls"><label for="docPassword">서류 비밀번호</label><input id="docPassword" type="password" autocomplete="off" placeholder="서류를 저장할 때 사용한 비밀번호">
    <div id="docNewPassword"><label for="docConfirm">새 서류 저장 시 비밀번호 확인</label><input id="docConfirm" type="password" autocomplete="off" placeholder="같은 비밀번호를 다시 입력"></div>
    <label for="docKind">추가할 서류 구분</label><select id="docKind"><option>가입 서류</option><option>신분증 사본</option><option>기타 서류</option></select>
-   <label for="docFiles">사진 / PDF 선택 (여러 장 가능)</label><input id="docFiles" type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf"><small class="doc-sub">JPG · PNG · WEBP · PDF / 파일당 20MB, 한 번에 20개</small>
+   <label for="docFiles">사진 선택 (여러 장 가능)</label><input id="docFiles" type="file" multiple accept="image/jpeg,image/png,image/webp"><small class="doc-sub">JPG · PNG · WEBP / 파일당 20MB, 한 번에 20개</small>
    <div class="doc-buttons"><button class="btn primary" id="docUpload">암호화해서 저장</button><button class="btn" id="docLock">다시 잠그기</button></div><div id="docStatus" class="doc-status" role="status" aria-live="polite"></div><div id="docList" class="doc-list"></div></div>
    <div><div id="docViewTitle" class="doc-preview-title"></div><div id="docPreview" class="doc-preview"></div></div></div></section>`;
   document.body.append(root);el('docClose').onclick=close;el('docLock').onclick=()=>{lock();status('서류를 잠갔습니다.');};el('docUpload').onclick=upload;
@@ -119,17 +119,16 @@
   try{
    await authenticated();const file=await decrypt(await download(row),password,row);if(!current(c))return;
    previewUrl=URL.createObjectURL(file.blob);el('docViewTitle').textContent=file.name;
-   const media=document.createElement(file.blob.type==='application/pdf'?'iframe':'img');media.src=previewUrl;
-   if(media.tagName==='IMG')media.alt='선택한 고객 서류';else{media.title='고객 서류 PDF';media.setAttribute('sandbox','allow-same-origin');}
+   const media=document.createElement('img');media.src=previewUrl;media.alt='선택한 고객 서류';
    el('docPreview').replaceChildren(media);status('열람 중입니다. 5분 뒤 다시 잠깁니다.');expiry=setTimeout(()=>{lock();status('열람 시간이 지나 서류를 잠갔습니다.');},5*60*1000);
   }catch(e){if(current(c))status(e.message);}finally{busy(c,false);}
  }
  async function upload(){
   const c=ctx;if(!c?.ready||c.busy)return;
   const files=[...el('docFiles').files],password=el('docPassword').value,confirmPassword=el('docConfirm').value,kind=el('docKind').value;
-  if(!files.length){status('이 고객의 사진 또는 PDF를 선택하세요.');return;}
+  if(!files.length){status('이 고객의 사진을 선택하세요.');return;}
   if(files.length>20||files.reduce((s,f)=>s+f.size,0)>100*1024*1024){status('한 번에 20개, 전체 100MB 이하로 선택하세요.');return;}
-  if(files.some(f=>!MIME.has(f.type)||!f.size||f.size>LIMIT)){status('JPG·PNG·WEBP·PDF만 가능하며 파일당 20MB 이하여야 합니다. 다른 사진 형식은 JPG로 변환해 주세요.');return;}
+  if(files.some(f=>!MIME.has(f.type)||!f.size||f.size>LIMIT)){status('JPG·PNG·WEBP 사진만 가능하며 파일당 20MB 이하여야 합니다. 다른 형식은 JPG로 변환해 주세요.');return;}
   if(password.length<10){status('서류 비밀번호를 10자 이상 입력하세요.');return;}
   if(!c.rows.length&&password!==confirmPassword){status('비밀번호 확인이 일치하지 않습니다.');return;}
   if(!window.confirm(`${c.ledger.customer_name_snapshot} · ${formatPhone(c.ledger.customer_phone_snapshot)} 고객의 ${files.length}개 파일이 맞나요? 이 고객 장부에 암호화해서 저장합니다.`))return;

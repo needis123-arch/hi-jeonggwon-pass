@@ -13,6 +13,7 @@ window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:__
  await page.evaluate(()=>{hideLogin();go('ledger');state.ledger=__ledger;renderLedger();});
  await page.evaluate(()=>openLedgerDocuments(__ledger[0].id));await page.waitForFunction(()=>!document.getElementById('docUpload').disabled);
  assert.match(await page.locator('#docCustomer').textContent(),/010-1234-5678/);
+ await page.locator('#docFiles').setInputFiles({name:'unsupported.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-synthetic')});await page.locator('#docUpload').click();assert.match(await page.locator('#docStatus').textContent(),/JPG·PNG·WEBP/);assert.equal(await page.evaluate(()=>__files.size),0);
  await page.locator('#docFiles').setInputFiles({name:'합성_신분증_실제자료아님.png',mimeType:'image/png',buffer:png});
  await page.locator('#docPassword').fill(password);await page.locator('#docConfirm').fill('wrong');await page.locator('#docUpload').click();assert.match(await page.locator('#docStatus').textContent(),/일치하지/);assert.equal(await page.evaluate(()=>__files.size),0);
  await page.locator('#docConfirm').fill(password);await page.locator('#docUpload').click();await page.waitForFunction(()=>__docs.length===1&&!document.getElementById('docUpload').disabled);

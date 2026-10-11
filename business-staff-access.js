@@ -65,7 +65,13 @@
  }
  async function google(){
   const button=el('staffGoogleLogin');if(button.disabled)return;button.disabled=true;el('loginMsg').textContent='구글 계정 선택 화면으로 이동합니다.';
-  try{const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin+location.pathname,scopes:'openid email profile',queryParams:{prompt:'select_account'}}});if(error)throw error;}
+  try{
+   const embedded=window.self!==window.top;
+   const options={redirectTo:location.origin+location.pathname,scopes:'openid email profile',queryParams:{prompt:'select_account'}};
+   if(embedded)options.skipBrowserRedirect=true;
+   const {data,error}=await sb.auth.signInWithOAuth({provider:'google',options});if(error)throw error;
+   if(embedded){if(!data?.url)throw Error();window.top.location.assign(data.url);}
+  }
   catch{el('loginMsg').textContent='구글 로그인을 시작하지 못했습니다. 다시 시도하세요.';button.disabled=false;}
  }
  window.jkStaffAccess=Object.freeze({gate,loadLedger,google,get readOnly(){return !owner;},get approved(){return approved;}});

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="./business-consultations.css?v=3.52">
 <link rel="stylesheet" href="./business-finance.css?v=3.52">
 <link rel="stylesheet" href="./business-navigation.css?v=3.52">
-<title>정권통신 Business Center V3.55</title>
+<title>정권통신 Business Center V3.55.1</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -175,7 +175,7 @@ body[data-access="staff"] .ledger-detail-actions button:not([data-staff-document
 <body data-access="locked">
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.55</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.55.1</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -647,7 +647,7 @@ body[data-access="staff"] .ledger-detail-actions button:not([data-staff-document
 </div>
 
 <div class="modal-bg" id="modalBg"><div class="modal"><div class="modal-head"><h3 id="modalTitle">입력</h3><button class="close" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="btn" onclick="closeModal()">취소</button><button class="btn primary" id="modalSave" onclick="saveModal()">저장</button></div></div></div>
-<div class="login-bg" id="loginBg"><div class="login"><h2>정권통신 BUSINESS CENTER 로그인</h2><p>장부와 고객정보는 로그인 후에만 조회됩니다.</p><button class="btn primary" id="staffGoogleLogin">직원 · 구글 계정으로 로그인</button><p>본인 구글 계정으로 로그인 → 사장님 승인 → 장부·서류 조회</p><details><summary>대표 · 기존 이메일 로그인</summary><input id="loginEmail" type="email" value="needis123@gmail.com"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()"><button class="btn primary" onclick="login()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정 메일</button></details><div class="msg" id="loginMsg"></div></div></div>
+<div class="login-bg" id="loginBg"><div class="login"><h2>정권통신 로그인</h2><p>장부와 고객정보는 로그인 후에만 조회됩니다.</p><button class="btn primary" id="staffGoogleLogin">직원 · 구글 계정으로 로그인</button><p>본인 구글 계정으로 로그인 → 사장님 승인 → 장부·서류 조회</p><details><summary>대표 · 기존 이메일 로그인</summary><input id="loginEmail" type="email" value="needis123@gmail.com"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()"><button class="btn primary" onclick="login()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정 메일</button></details><div class="msg" id="loginMsg"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -666,7 +666,7 @@ body[data-access="staff"] .ledger-detail-actions button:not([data-staff-document
 <script src="./business-document-drive.js?v=3.53"></script>
 <script src="./business-document-viewer.js?v=3.53"></script>
 <script src="./business-documents.js?v=3.55"></script>
-<script src="./business-staff-access.js?v=3.55"></script>
+<script src="./business-staff-access.js?v=3.55.1"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -1295,6 +1295,15 @@ function receiptPayload(){const n=id=>moneyNumber($(id)?.value),method=$('fRecei
 }
 function previewCalc(){const n=id=>moneyNumber($(id)?.value),m=n('fK')-n('fL'),p=Math.round(Math.max(m,0)*0.1),w=m-p-n('fQ')-n('fR')+n('fS')-n('fT')+n('fU')+(editingUsedSale?.adjust_payroll?Number(editingUsedSale.sale_amount)-n('fU'):0);if($('pvM'))$('pvM').textContent=won(m);if($('pvP'))$('pvP').textContent=won(p);if($('pvW'))$('pvW').textContent=won(w);if($('pvUsedNote'))$('pvUsedNote').textContent=editingUsedSale?.adjust_payroll?'중고 판매 확정 '+won(editingUsedSale.sale_amount)+' 적용 · 예상 U와 차액 '+won(Number(editingUsedSale.sale_amount)-n('fU')):''}
 async function saveLedger(){
+  if(jkStaffAccess.readOnly){alert('직원 계정은 장부 조회만 가능합니다. 수정·저장은 사장님 계정으로 로그인해 주세요.');return;}
+  // A previously opened form must not submit with a lost or revoked session.
+  try{
+    const {data,error}=await sb.auth.getUser();
+    if(error||!data?.user){alert('로그인 상태를 확인하지 못했습니다. 다시 로그인한 뒤 저장해 주세요.');showLogin();return;}
+    const permission=await sb.rpc('is_admin');
+    if(permission.error){alert('저장 권한을 확인하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.');return;}
+    if(permission.data!==true){alert('이 계정은 장부 수정·저장 권한이 없습니다. 사장님 계정으로 로그인해 주세요.');return;}
+  }catch{alert('로그인 확인 중 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 저장해 주세요.');return;}
   const editId=editingLedgerId;
   const name=$('fName').value.trim(),phone=$('fPhone').value.replace(/\D/g,''),birthRaw=$('fBirth').value.trim(),birth=birth6ToISO(birthRaw);
   if(!name||phone.length<10){alert('고객명과 번호를 확인하세요.');return}
@@ -1303,7 +1312,7 @@ async function saveLedger(){
   const cls=classify($('fDeal').value);
   const customerPayload={name,phone,phone_normalized:phone,birth_date:birth};
   const cu=await sb.from('jk_customers').upsert(customerPayload,{onConflict:'phone_normalized'}).select('id').single();
-  if(cu.error){alert(cu.error.message);return}
+  if(cu.error){alert(cu.error.code==='42501'?'고객 정보를 저장할 권한을 확인하지 못했습니다. 앱을 새로고침하고 사장님 계정으로 다시 로그인해 주세요.':cu.error.message);return}
   const n=id=>moneyNumber($(id)?.value),usedReq=shouldTrackUsed();
   const payload={
     ...receipt,

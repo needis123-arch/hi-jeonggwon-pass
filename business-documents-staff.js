@@ -17,11 +17,13 @@
   if(code==='email_address_invalid'||code==='validation_failed')return '이메일 주소 형식을 확인하세요.';
   if(code==='weak_password')return '계정 비밀번호를 10자 이상으로 설정하고 다른 비밀번호를 사용해 주세요.';
   if(code==='invalid_credentials')return '이메일 또는 계정 비밀번호가 맞지 않습니다. 서류 비밀번호 4자리와 계정 비밀번호는 별개입니다.';
+  if(code==='provider_disabled'||code==='validation_failed_google')return '구글 로그인 연결 설정이 아직 완료되지 않았습니다. 사장님에게 확인을 요청하세요.';
+  if(code==='access_denied')return '구글 로그인이 취소되었습니다. 본인 구글 계정을 선택하고 다시 로그인하세요.';
   return '로그인·가입 요청을 처리하지 못했습니다. 연결을 확인하고 다시 시도하세요.'+(code?' (오류: '+String(code).replace(/[^a-z0-9_]/gi,'').slice(0,60)+')':'');
  }
  function mailButtons(){
   const seconds=Math.max(0,Math.ceil((mailUntil-Date.now())/1000));
-  $('login').disabled=authBusy;$('signup').disabled=authBusy||seconds>0;$('resend').disabled=authBusy||seconds>0;
+  $('googleLogin').disabled=authBusy;$('login').disabled=authBusy;$('signup').disabled=authBusy||seconds>0;$('resend').disabled=authBusy||seconds>0;
   $('resend').textContent=seconds?'인증 메일 다시 보내기 · '+seconds+'초 후':'인증 메일 다시 보내기';
   if(!seconds&&mailTimer){clearInterval(mailTimer);mailTimer=null;}
  }
@@ -75,6 +77,11 @@
  }
  function show(i){if(!busy&&approved&&files[i])viewer.show(files[i]);}
  async function action(f){message();try{await f();}catch(e){message(e.message||'요청을 처리하지 못했습니다.');}}
+ $('googleLogin').onclick=()=>authAction(async()=>{
+  $('password').value='';
+  const {error}=await client.auth.signInWithOAuth({provider:'google',options:{redirectTo:mailRedirect,scopes:'openid email profile',queryParams:{prompt:'select_account'}}});
+  checkAuthError(error);
+ });
  $('login').onclick=()=>authAction(async()=>{const {error}=await client.auth.signInWithPassword({email:email(),password:$('password').value});$('password').value='';checkAuthError(error);await state();await list();});
  $('signup').onclick=()=>{if(Date.now()<mailUntil)return;authAction(async()=>{const address=email(),password=$('password').value;if(password.length<10)throw new Error('10자 이상 계정 비밀번호를 입력하세요.');const {data,error}=await client.auth.signUp({email:address,password,options:{emailRedirectTo:mailRedirect}});$('password').value='';checkAuthError(error);await state();if(data?.session){await list();}else{mailWait(60);message('가입 확인 메일을 요청했습니다. 받은메일함·스팸함에서 인증 링크를 눌러 주세요. 이미 가입했다면 새 메일이 오지 않을 수 있습니다. 인증 후에는 계정 만들기 대신 로그인하세요.');}});};
  $('resend').onclick=()=>{if(Date.now()<mailUntil)return;authAction(async()=>{const {error}=await client.auth.resend({type:'signup',email:email(),options:{emailRedirectTo:mailRedirect}});checkAuthError(error);mailWait(60);message('가입 확인 메일을 다시 요청했습니다. 받은메일함·스팸함을 확인하고 인증 후 로그인하세요.');});};
@@ -90,7 +97,9 @@
  $('lock').onclick=lock;
  document.addEventListener('visibilitychange',()=>{if(document.hidden)lock();else state();});
  window.addEventListener('pagehide',()=>{epoch++;clear();});
- client.auth.onAuthStateChange(e=>{if(e==='SIGNED_OUT'){epoch++;clear();}setTimeout(state,0);});
+ client.auth.onAuthStateChange(e=>{if(e==='SIGNED_OUT'){epoch++;clear();}setTimeout(()=>state().then(list),0);});
  setInterval(()=>{if(!document.hidden&&approved)state();},30000);
+ const callbackError=new URLSearchParams(location.hash.slice(1)).get('error');
+ if(callbackError){history.replaceState(null,'',location.pathname+location.search);message(authError({code:callbackError}));}
  state().then(list);
 })();

@@ -42,7 +42,7 @@
   const content=await window.jkDocumentCrypto.decrypt(await response.blob(),password,row);$('lock').hidden=false;return content;
  }});
  function lock(){jkDocumentViewer.session.lock();$('lock').hidden=true;}
- function clear(){viewEpoch++;lock();approved=false;customers=[];files=[];viewer.setRows([],'');$('directory').hidden=true;$('customers').replaceChildren();$('files').replaceChildren();$('selected').textContent='고객을 선택하세요.';$('unlock').hidden=true;}
+ function clear(){const previousMessage=$('message').textContent;viewEpoch++;lock();message(previousMessage);approved=false;customers=[];files=[];viewer.setRows([],'');$('directory').hidden=true;$('customers').replaceChildren();$('files').replaceChildren();$('selected').textContent='고객을 선택하세요.';$('unlock').hidden=true;}
  async function rpc(name,args={}){const {data,error}=await client.rpc(name,args);if(error)throw new Error('승인 또는 로그인이 변경됐습니다. 승인 상태 새로고침을 눌러 주세요.');return data;}
  async function state(){
   const n=++epoch;

@@ -1,12 +1,12 @@
 const fs=require('fs'),path=require('path'),assert=require('assert/strict'),vm=require('vm'),{chromium}=require('playwright');
 const repo=path.join(__dirname,'..');
-const stub=`window.__queries=[];const query=()=>new Proxy({}, {get:(t,k)=>k==='then'?resolve=>resolve({data:[],error:null}):()=>query()});window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange:()=>{}},from:n=>{__queries.push(n);return query()},rpc:async()=>({data:null,error:null})})};`;
+const stub=`window.__queries=[];const query=()=>new Proxy({}, {get:(t,k)=>k==='then'?resolve=>resolve({data:[],error:null}):()=>query()});window.supabase={createClient:()=>({auth:{getSession:async()=>({data:{session:null}}),onAuthStateChange:()=>{}},from:n=>{__queries.push(n);return query()},rpc:async n=>({data:n==='jk_document_access_state'?{owner:true}:null,error:null})})};`;
 (async()=>{
  const browser=await chromium.launch({headless:true,channel:'msedge'}),page=await browser.newPage({viewport:{width:1365,height:1000}}),errors=[],assets=[];
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',r=>{const u=new URL(r.request().url());assets.push(u.pathname);if(u.href.includes('supabase-js'))return r.fulfill({contentType:'application/javascript',body:stub});const f=path.join(repo,u.pathname.slice(1));if(u.hostname==='navigation.test'&&fs.existsSync(f)&&fs.statSync(f).isFile())return r.fulfill({contentType:f.endsWith('.js')?'application/javascript':f.endsWith('.css')?'text/css':'text/html',body:fs.readFileSync(f)});return r.fulfill({status:404,body:''})});
  await page.goto('https://navigation.test/business-center.html?page=quotes&consultId=new');
- await page.evaluate(()=>{hideLogin();go('costs');$('alertCenterBadge').textContent='3';$('alertCenterBadge').style.display='inline-block'});
+ await page.evaluate(()=>{document.body.dataset.access='owner';hideLogin();go('costs');$('alertCenterBadge').textContent='3';$('alertCenterBadge').style.display='inline-block'});
  assert.equal(await page.locator('.nav-group').count(),3);
  assert.equal(await page.locator('.cost-menu-card').count(),4);
  assert.equal(await page.locator('[data-page="quotes"],#page-quotes').count(),0);

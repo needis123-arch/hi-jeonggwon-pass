@@ -18,14 +18,14 @@
  }
  window.loadDocumentAccessRequests=load;
  window.copyDocumentStaffLink=async()=>{
-  const link=new URL('business-documents-staff.html',location.href).href;
+  const link=new URL('business-center.html?page=ledger',location.href).href;
   try{await navigator.clipboard.writeText(link);alert('직원 신청 링크를 복사했습니다. 직원에게 전달하세요.');}catch{prompt('직원에게 아래 링크를 전달하세요.',link);}
  };
  window.connectDocumentOwnerDrive=async()=>{try{await window.jkDocumentDrive.connect();await load();}catch(e){alert(e.message);}};
  document.addEventListener('click',async e=>{
   const b=e.target.closest('[data-document-action]');if(!b||!card()?.contains(b)||busy)return;
   const action=b.dataset.documentAction,label=b.dataset.label;
-  const message=action==='approved'?`${label}\n전체 고객 서류의 열람을 허용할까요? 서류 비밀번호가 추가로 필요하며 추가·삭제와 정산 수정은 허용하지 않습니다.`:action==='revoked'?`${label}\n다음 서류 열람부터 권한을 차단할까요? 이미 본 사진까지 회수할 수는 없습니다.`:`${label}\n이번 열람 신청을 거절할까요?`;
+  const message=action==='approved'?`${label}\n장부 조회와 전체 고객 서류의 열람·인쇄·내려받기를 허용할까요? 서류 비밀번호가 추가로 필요하며 추가·삭제와 정산 수정은 허용하지 않습니다.`:action==='revoked'?`${label}\n다음 장부 조회·서류 열람부터 권한을 차단할까요? 이미 본 사진까지 회수할 수는 없습니다.`:`${label}\n이번 열람 신청을 거절할까요?`;
   if(!confirm(message))return;
   busy=true;b.disabled=true;
   try{await rpc('jk_document_decide_access',{p_user_id:b.dataset.documentUser,p_action:action,p_version:Number(b.dataset.version)});await load();}

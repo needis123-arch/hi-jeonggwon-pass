@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="./business-consultations.css?v=3.52">
 <link rel="stylesheet" href="./business-finance.css?v=3.52">
 <link rel="stylesheet" href="./business-navigation.css?v=3.52">
-<title>정권통신 Business Center V3.53</title>
+<title>정권통신 Business Center V3.55</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -165,12 +165,17 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 .ledger-list-wrap{max-height:65vh;overflow:auto}.ledger-list{min-width:780px;table-layout:fixed}.ledger-list th,.ledger-list td{white-space:normal;overflow-wrap:anywhere;font-size:12px;padding:12px 10px}.ledger-list th{font-size:11px}.ledger-list th:first-child{width:11%}.ledger-list th:nth-child(2){width:19%}.ledger-list th:nth-child(3){width:18%}.ledger-list th:nth-child(4){width:14%}.ledger-list th:nth-child(5){width:17%}.ledger-list th:nth-child(6){width:13%}.ledger-list th:last-child{width:8%}.ledger-list td small{display:block;margin-top:4px;color:var(--muted)}
 .ledger-list th:nth-child(2),.ledger-list td:nth-child(2){position:sticky;left:0;background:#fff;z-index:1}.ledger-list th:nth-child(2){background:#f7f9fb;z-index:3}.ledger-detail-row td{position:static!important;background:#f8fafc!important}.ledger-detail-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;padding:14px}.ledger-detail-grid div{min-width:0;overflow-wrap:anywhere}.ledger-detail-grid dt{font-size:11px;color:var(--muted);margin-bottom:4px}.ledger-detail-grid dd{margin:0;white-space:pre-wrap;font-size:13px}.ledger-detail-actions{display:flex;gap:8px;padding:0 14px 14px}.ledger-mobile{display:none;padding:12px;gap:10px}.ledger-record{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fff;min-width:0}.ledger-record-head{display:flex;justify-content:space-between;gap:8px}.ledger-record-head small{display:block;color:var(--muted);margin:5px 0}.ledger-record-meta{font-size:12px;line-height:1.7;overflow-wrap:anywhere}.ledger-record details{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}.ledger-record summary{cursor:pointer;font-size:12px;font-weight:800}.ledger-pager{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:14px}.ledger-pager select{padding:8px;border:1px solid var(--line);border-radius:9px}.ledger-pager .btn:disabled{opacity:.4;cursor:default}.receipt-note{font-size:11px;color:var(--muted);line-height:1.6}.card-receipt-field[hidden]{display:none}
 @media(max-width:900px){.ledger-desktop{display:none}.ledger-mobile{display:grid}.ledger-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr));padding:12px 0}.ledger-detail-actions{padding:0}.ledger-control-top .toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ledger-control-top .toolbar>*{min-width:0;width:100%}.ledger-control-top #ledgerSearch{grid-column:1/-1}.ledger-fold{margin-bottom:10px}}
+/* Employee view shares the ledger; owner pages and controls stay inaccessible. */
+body[data-access="locked"] .content{visibility:hidden}
+.staff-ledger-toolbar{display:none}body[data-access="staff"] .staff-ledger-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
+body[data-access="staff"] .page:not(#page-ledger):not(#page-staffaccess),body[data-access="staff"] [data-page]:not([data-page="ledger"]),body[data-access="staff"] .nav-group:not([data-group="ledger"]),body[data-access="staff"] .nav-group-toggle,body[data-access="staff"] .section-menu,body[data-access="staff"] .topbar .actions,body[data-access="staff"] .mobile-home-btn,body[data-access="staff"] #detailBackBtn,body[data-access="staff"] #page-ledger .section-head>button{display:none!important}
+body[data-access="staff"] .ledger-detail-actions button:not([data-staff-document]){display:none!important}
 </style>
 </head>
-<body>
+<body data-access="locked">
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.53</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.55</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -571,7 +576,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <section class="page" id="page-settings">
  <div class="section-head"><div><h2>환경 설정</h2><p>실제로 장부 입력에서 사용하는 선택항목을 여기서 관리합니다.</p></div></div>
  <div class="settings-grid">
-<div id="documentAccessCard" class="card setting-card" hidden><h3>고객 서류 · 직원 열람 승인</h3><p>승인한 직원은 전체 고객 서류를 비밀번호로 열람할 수 있습니다. 서류 추가·삭제와 정산 수정 권한은 주지 않습니다.</p><div class="doc-buttons"><button class="btn" onclick="loadDocumentAccessRequests()">신청 새로고침</button><button class="btn" onclick="copyDocumentStaffLink()">직원 신청 링크 복사</button><button class="btn" onclick="connectDocumentOwnerDrive()">서류 저장소 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a></div><p id="documentConnectionStatus"></p><div id="documentAccessRequests"></div></div>
+<div id="documentAccessCard" class="card setting-card" hidden><h3>장부·고객 서류 · 직원 열람 승인</h3><p>승인한 직원은 장부를 조회하고 고객별 서류를 비밀번호로 열람·인쇄·내려받기 할 수 있습니다. 장부 수정·서류 추가·삭제와 정산·환경설정 변경은 허용하지 않습니다.</p><div class="doc-buttons"><button class="btn" onclick="loadDocumentAccessRequests()">신청 새로고침</button><button class="btn" onclick="copyDocumentStaffLink()">직원 신청 링크 복사</button><button class="btn" onclick="connectDocumentOwnerDrive()">서류 저장소 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a></div><p id="documentConnectionStatus"></p><div id="documentAccessRequests"></div></div>
   <div class="setting-card card"><h3>유입경로</h3><p>장부의 유입경로 선택지입니다.</p><div class="setting-list" id="setLead"></div><div class="addrow"><input id="newLead" placeholder="예: 맘카페"><button class="btn primary" onclick="addOption('lead_source','newLead')">추가</button></div></div>
   <div class="setting-card card"><h3>거래처 관리</h3><p>판매건 등록의 거래처 선택지입니다. 새 거래처가 생기면 여기서 추가하세요.</p><div class="setting-list" id="setVendor"></div><div class="addrow"><input id="newVendor" placeholder="예: 삼보"><button class="btn primary" onclick="addOption('vendor','newVendor')">추가</button></div></div>
   <div class="setting-card card"><h3>통신사 / 알뜰통신사</h3><p>SKT·KT·LGU+뿐 아니라 알뜰통신사도 직접 추가할 수 있습니다.</p><div class="setting-list" id="setCarrier"></div><div class="addrow"><input id="newCarrier" placeholder="예: KT M모바일"><button class="btn primary" onclick="addOption('carrier','newCarrier')">추가</button></div></div>
@@ -642,7 +647,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 </div>
 
 <div class="modal-bg" id="modalBg"><div class="modal"><div class="modal-head"><h3 id="modalTitle">입력</h3><button class="close" onclick="closeModal()">×</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="btn" onclick="closeModal()">취소</button><button class="btn primary" id="modalSave" onclick="saveModal()">저장</button></div></div></div>
-<div class="login-bg" id="loginBg"><div class="login"><h2>정권통신 대표 로그인</h2><p>장부와 고객정보는 로그인 후에만 조회됩니다.</p><input id="loginEmail" type="email" value="needis123@gmail.com"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()"><button class="btn primary" onclick="login()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정 메일</button><button class="btn" onclick="hideLogin()">닫기</button><p><a href="business-documents-staff.html">직원 서류 열람 · 신청</a></p><div class="msg" id="loginMsg"></div></div></div>
+<div class="login-bg" id="loginBg"><div class="login"><h2>정권통신 BUSINESS CENTER 로그인</h2><p>장부와 고객정보는 로그인 후에만 조회됩니다.</p><button class="btn primary" id="staffGoogleLogin">직원 · 구글 계정으로 로그인</button><p>본인 구글 계정으로 로그인 → 사장님 승인 → 장부·서류 조회</p><details><summary>대표 · 기존 이메일 로그인</summary><input id="loginEmail" type="email" value="needis123@gmail.com"><input id="loginPassword" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')login()"><button class="btn primary" onclick="login()">로그인</button><button class="btn" onclick="sendReset()">비밀번호 재설정 메일</button></details><div class="msg" id="loginMsg"></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -657,10 +662,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 <script src="./business-company-card.js?v=3.52"></script>
 <script src="./business-vendor-deposits.js?v=3.52"></script>
 <script src="./business-document-crypto.js?v=3.52"></script>
-<script src="./business-document-access.js?v=3.52"></script>
+<script src="./business-document-access.js?v=3.55"></script>
 <script src="./business-document-drive.js?v=3.53"></script>
 <script src="./business-document-viewer.js?v=3.53"></script>
-<script src="./business-documents.js?v=3.53"></script>
+<script src="./business-documents.js?v=3.55"></script>
+<script src="./business-staff-access.js?v=3.55"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -714,6 +720,7 @@ function routeUrl(p){
  return u.pathname+u.search+u.hash;
 }
 function go(p,opts={}){
+ if(document.body.dataset.access==='staff' && (!jkStaffAccess.approved || !['ledger','staffaccess'].includes(p)))p=jkStaffAccess.approved?'ledger':'staffaccess';
  if(typeof closeLedgerDocuments==='function')closeLedgerDocuments();
  closeMobileMenu();
  if(!$('page-'+p))return;
@@ -790,14 +797,14 @@ window.addEventListener('beforeunload',e=>{
  }
 });
 async function resetPasswordPrompt(){const p1=prompt('새 비밀번호를 입력하세요.');if(!p1)return;const p2=prompt('새 비밀번호를 다시 입력하세요.');if(p1!==p2){alert('비밀번호가 다릅니다.');return}const {error}=await sb.auth.updateUser({password:p1});alert(error?error.message:'비밀번호 변경 완료');if(!error)hideLogin()}
-async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';if(!session){consultState.reminders=[];consultState.dueCount=0;renderConsultReminders();if($('consultList'))$('consultList').innerHTML='';if($('consultDetail'))$('consultDetail').innerHTML='';showLogin();return}await loadAll();const requested=new URLSearchParams(location.search).get('page');const saved=(requested&&$('page-'+requested))?requested:($('page-'+localStorage.getItem('jk-active-page'))?localStorage.getItem('jk-active-page'):'dashboard');if(!history.state?.jk){history.replaceState({jk:true,page:'dashboard',jkDepth:0},'',routeUrl('dashboard'));if(saved!=='dashboard')go(saved,{push:true,instant:true});else go('dashboard',{push:false,instant:true})}else{go(saved,{push:false,instant:true})}if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
+async function sessionChanged(){const {data:{session}}=await sb.auth.getSession();$('sessionText').textContent=session?session.user.email:'로그인 필요';$('authStatus').textContent=session?'로그인됨':'로그인 필요';const kind=await jkStaffAccess.gate(session);if(kind==='stale')return;if(session&&kind!=='owner')return;if(!session){consultState.reminders=[];consultState.dueCount=0;renderConsultReminders();if($('consultList'))$('consultList').innerHTML='';if($('consultDetail'))$('consultDetail').innerHTML='';showLogin();return}await loadAll();const requested=new URLSearchParams(location.search).get('page');const saved=(requested&&$('page-'+requested))?requested:($('page-'+localStorage.getItem('jk-active-page'))?localStorage.getItem('jk-active-page'):'dashboard');if(!history.state?.jk){history.replaceState({jk:true,page:'dashboard',jkDepth:0},'',routeUrl('dashboard'));if(saved!=='dashboard')go(saved,{push:true,instant:true});else go('dashboard',{push:false,instant:true})}else{go(saved,{push:false,instant:true})}if(saved==='ledger'&&sessionStorage.getItem('jk-ledger-modal-open')==='1'){const editId=sessionStorage.getItem('jk-ledger-edit-id');openLedger(editId||null)}}
 
 function opt(type){return state.options.filter(x=>x.option_type===type&&x.active).sort((a,b)=>a.sort_order-b.sort_order)}
 function optHtml(type){return opt(type).map(x=>`<option value="${esc(x.label)}">${esc(x.label)}</option>`).join('')}
 function staffHtml(){return '<option value="">선택</option>'+state.staff.filter(x=>x.active).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}
 
 async function loadBase(){const [s,o]=await Promise.all([sb.from('jk_staff').select('*').order('name'),sb.from('jk_lookup_options').select('*').order('sort_order')]);if(!s.error)state.staff=s.data||[];if(!o.error)state.options=o.data||[]}
-async function loadAll(){const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadConsultReminders(),loadSurvival(),loadBreakEven(),loadLeadFunnel(),loadSources(),loadSettings(),loadNotificationStatus()]);await loadInternalFinance();await checkAffiliateAlerts()}
+async function loadAll(){if(jkStaffAccess.readOnly){if(jkStaffAccess.approved)await jkStaffAccess.loadLedger();return;}const {data:{session}}=await sb.auth.getSession();if(!session)return;await loadBase();await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadAlertCenter(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadAds(),loadExpenses(),loadCashflow(),loadConsultReminders(),loadSurvival(),loadBreakEven(),loadLeadFunnel(),loadSources(),loadSettings(),loadNotificationStatus()]);await loadInternalFinance();await checkAffiliateAlerts()}
 
 
 function alertTypeLabel(t){return ({PAYBACK_MONTHEND:'페이백',USED_DEVICE_RETURN:'중고반납',AFFILIATE_CARD:'제휴카드',PLAN_CHANGE:'요금제 변경',INSURANCE_CANCEL:'보험 해지',ADDON_CANCEL:'부가서비스 해지'})[t]||t}
@@ -974,6 +981,7 @@ function classify(v){if(v==='MNP'||v==='기변'||v==='010신규')return {deal_ty
 
 
 async function loadLedger(){
+ if(jkStaffAccess.readOnly){await jkStaffAccess.loadLedger();return;}
  if(!$('ledgerMonth'))return;
  const monthKey=$('ledgerMonth').value||mk(now),[a,b]=bounds(monthKey),year=Number(monthKey.slice(0,4)),yearA=year+'-01-01',yearB=(year+1)+'-01-01';
  const [monthRes,yearRes]=await Promise.all([
@@ -1036,7 +1044,7 @@ function receiptSummary(r){
 }
 function ledgerDetails(r){
  const fields=[['생년월일',r.customer_birth_date_snapshot?isoToBirth6(r.customer_birth_date_snapshot):'-'],['통신사',r.carrier],['유입경로',r.lead_source],['요금제',r.plan_name],['출고가',won(r.retail_price)],['K 기본리베이트',won(r.base_rebate)],['L 현금판매금액',won(r.cash_sale_amount)],['M 실리베이트',won(r.real_rebate)],['P 실리베이트 10%',won(r.vat_amount)],['Q 페이백',won(r.payback_amount)],['R 위약금대납',won(r.penalty_paid)],['S 완납 수납총액',won(r.cash_received)],['수납방식',r.cash_receipt_method||'미구분 (기존 기록 확인 필요)'],['현금·계좌 수납분',won(Number(r.cash_received||0)-Number(r.card_received_amount||0))],['카드 결제금액',won(r.card_received_amount)],['카드 정산 예정액 (수수료 차감 후)',won(r.card_settlement_amount)],['카드 입금예정일',r.card_settlement_due_date],['카드 실제 입금일',r.card_settled_date],['T 유심',won(r.sim_cost)],['U 중고 예상금액',won(r.used_device_amount)],['중고기종',r.used_device_model],['W 최종마진',won(r.final_margin)],['요금제 변경가능일',r.plan_change_date],['보험 해지가능일',r.insurance_cancel_date],['부가 해지가능일',r.addon_cancel_date],['페이백 지급예정일',r.payback_due_date],['제휴카드 상태',r.affiliate_card_status],['제휴카드사',r.affiliate_card_company],['제휴카드 금액',won(r.affiliate_card_amount)],['제휴카드 등록기한',r.affiliate_card_due_date],['메모',r.memo]];
- return '<dl class="ledger-detail-grid">'+fields.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v??'-')+'</dd></div>').join('')+`</dl><div class="ledger-detail-actions"><button class="btn" onclick="openLedger('${r.id}')">수정</button><button class="btn" onclick="openLedgerDocuments('${r.id}')">서류 보기 / 추가</button>${r.used_device_amount||r.used_device_model?`<button class="btn" onclick="openLinkedUsed('${r.id}','${String(r.activation_date).slice(0,7)}')">중고 판매 / 수령 내역</button>`:''}<button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div>`;
+ return '<dl class="ledger-detail-grid">'+fields.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v??'-')+'</dd></div>').join('')+`</dl><div class="ledger-detail-actions"><button class="btn" onclick="openLedger('${r.id}')">수정</button><button class="btn" data-staff-document onclick="openLedgerDocuments('${r.id}')">${jkStaffAccess.readOnly?'서류 보기':'서류 보기 / 추가'}</button>${r.used_device_amount||r.used_device_model?`<button class="btn" onclick="openLinkedUsed('${r.id}','${String(r.activation_date).slice(0,7)}')">중고 판매 / 수령 내역</button>`:''}<button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div>`;
 }
 function renderLedger(keepPage=false){
  if(!$('ledgerBody'))return;
@@ -1051,7 +1059,7 @@ function renderLedger(keepPage=false){
  const size=Number($('ledgerPageSize')?.value||10),pages=Math.max(1,Math.ceil(rows.length/size));ledgerPage=Math.max(1,Math.min(ledgerPage,pages));
  const visible=rows.slice((ledgerPage-1)*size,ledgerPage*size);
  $('ledgerBody').innerHTML=visible.map(r=>`<tr><td>${esc(r.activation_date)}</td><td><b>${esc(r.customer_name_snapshot)}</b><small>${esc(formatPhone(r.customer_phone_snapshot))}</small></td><td>${esc(r.model_name||'-')}<small>${esc(dealLabel(r))}</small></td><td>${esc(r.vendor||'-')}<small>${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}</small></td><td>${receiptSummary(r)}</td><td><b>${won(r.final_margin)}</b></td><td><button class="btn" aria-expanded="false" aria-controls="ledger-detail-${r.id}" onclick="toggleLedgerDetails('${r.id}',this)">상세</button></td></tr><tr class="ledger-detail-row" id="ledger-detail-${r.id}" hidden><td colspan="7">${ledgerDetails(r)}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">조건에 맞는 장부 데이터가 없습니다.</td></tr>';
- $('ledgerMobile').innerHTML=visible.map(r=>`<article class="ledger-record"><div class="ledger-record-head"><div><b>${esc(r.customer_name_snapshot)}</b><small>${esc(formatPhone(r.customer_phone_snapshot))}</small></div><div><b>${won(r.final_margin)}</b><small>${esc(r.activation_date)}</small></div></div><div class="ledger-record-meta">${esc(r.model_name||'-')} · ${esc(dealLabel(r))}<br>${esc(r.vendor||'-')} · ${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}<br>${receiptSummary(r)}</div><details><summary>세부항목 / 수정</summary>${ledgerDetails(r)}</details></article>`).join('')||'<div class="empty">조건에 맞는 장부 데이터가 없습니다.</div>';
+ $('ledgerMobile').innerHTML=visible.map(r=>`<article class="ledger-record"><div class="ledger-record-head"><div><b>${esc(r.customer_name_snapshot)}</b><small>${esc(formatPhone(r.customer_phone_snapshot))}</small></div><div><b>${won(r.final_margin)}</b><small>${esc(r.activation_date)}</small></div></div><div class="ledger-record-meta">${esc(r.model_name||'-')} · ${esc(dealLabel(r))}<br>${esc(r.vendor||'-')} · ${esc(state.staff.find(s=>s.id===r.salesperson_id)?.name||'-')}<br>${receiptSummary(r)}</div><details><summary>${jkStaffAccess.readOnly?'세부항목 / 서류 보기':'세부항목 / 수정'}</summary>${ledgerDetails(r)}</details></article>`).join('')||'<div class="empty">조건에 맞는 장부 데이터가 없습니다.</div>';
  $('ledgerPageText').textContent=ledgerPage+' / '+pages+'쪽 · '+rows.length+'건';$('ledgerPrev').disabled=ledgerPage<=1;$('ledgerNext').disabled=ledgerPage>=pages;
 
  const u=rows.filter(r=>r.deal_type==='휴대폰').length,us=rows.filter(r=>r.deal_type==='유심단독').length,d=rows.filter(r=>r.deal_type==='동판').length,re=rows.filter(r=>r.deal_type==='약갱').length,bu=rows.filter(r=>r.deal_type==='번들').length,m=rows.reduce((a,r)=>a+Number(r.final_margin||0),0);
@@ -1179,7 +1187,7 @@ function isoToBirth6(value){
   return m?m[1].slice(2)+m[2]+m[3]:'';
 }
 
-function openLedger(editId=null){editingUsedSale=null;editingLedgerId=editId||null;modalMode='ledger';$('modalTitle').textContent=editingLedgerId?'판매건 수정':'판매건 입력';$('modalSave').textContent=editingLedgerId?'수정 저장':'저장';if(editingLedgerId)sessionStorage.setItem('jk-ledger-edit-id',editingLedgerId);else sessionStorage.removeItem('jk-ledger-edit-id');$('modalBody').innerHTML=`<div class="form">
+function openLedger(editId=null){if(jkStaffAccess.readOnly){toast('직원은 장부 조회만 할 수 있습니다.');return;}editingUsedSale=null;editingLedgerId=editId||null;modalMode='ledger';$('modalTitle').textContent=editingLedgerId?'판매건 수정':'판매건 입력';$('modalSave').textContent=editingLedgerId?'수정 저장':'저장';if(editingLedgerId)sessionStorage.setItem('jk-ledger-edit-id',editingLedgerId);else sessionStorage.removeItem('jk-ledger-edit-id');$('modalBody').innerHTML=`<div class="form">
 <div class="field"><label>개통일</label><input id="fDate" type="date" value="${ymd(now)}"></div><div class="field"><label>거래처</label><select id="fVendor"><option value="">선택</option>${optHtml('vendor')}</select></div>
 <div class="field"><label>고객명</label><input id="fName"></div><div class="field"><label>생년월일</label><input id="fBirth" type="text" inputmode="numeric" maxlength="6" placeholder="960906" oninput="this.value=this.value.replace(/\\D/g,\'\').slice(0,6)"><small style="color:#6c7788">6자리 숫자 입력 · 예: 960906</small></div>
 <div class="field"><label>번호</label><input id="fPhone" type="tel" inputmode="tel" maxlength="13" placeholder="010-1234-5678" oninput="formatPhoneInput(this)"></div><div class="field"><label>통신사</label><select id="fCarrier" onchange="affiliateCardUI()"><option value="">선택</option>${optHtml('carrier')}</select></div>
@@ -1346,7 +1354,7 @@ async function saveLedger(){
   await Promise.all([loadLedger(),loadDashboard(),loadAlerts(),loadReport(),loadUsed(),loadPayback(),loadAffiliate(),loadSources(),loadCashflow(),loadSurvival(),loadNotificationStatus()]);
   await checkAffiliateAlerts();
 }
-async function deleteLedger(id){if(!confirm('판매건을 삭제할까요?'))return;const {error}=await sb.from('jk_sales_ledger').delete().eq('id',id);if(error){alert(error.code==='23503'?'연결된 서류 또는 기록이 있습니다. 서류 보기에서 온라인 복사본을 정리한 뒤 삭제하세요.':error.message);return}await loadAll()}
+async function deleteLedger(id){if(jkStaffAccess.readOnly)return;if(!confirm('판매건을 삭제할까요?'))return;const {error}=await sb.from('jk_sales_ledger').delete().eq('id',id);if(error){alert(error.code==='23503'?'연결된 서류 또는 기록이 있습니다. 서류 보기에서 온라인 복사본을 정리한 뒤 삭제하세요.':error.message);return}await loadAll()}
 
 async function loadReport(){const month=$('reportMonth')?.value||mk(now),date=$('reportDate')?.value||ymd(now);const [a,b]=bounds(month);const [mo,dy,st]=await Promise.all([sb.from('jk_v_monthly_sales_summary').select('*').eq('month',a).maybeSingle(),sb.from('jk_v_daily_sales_summary').select('*').eq('activation_date',date).maybeSingle(),sb.from('jk_v_staff_monthly_summary').select('*').eq('month',a).order('staff_name')]);if(mo.error||dy.error||st.error)return;const m=mo.data||{},d=dy.data||{},staff=st.data||[];const marks=r=>`${Number(r.sim_only_count||0)>0?`(+${r.sim_only_count})`:''}${Number(r.dongpan_count||0)>0?`(동판+${r.dongpan_count})`:''}${Number(r.contract_renewal_count||0)>0?`(약갱+${r.contract_renewal_count})`:''}${Number(r.bundle_count||0)>0?`(번들+${r.bundle_count})`:''}`;let txt=`${Number(date.slice(5,7))}월 ${Number(date.slice(8,10))}일 매출보고\n\n월 총 갯수 ${Number(m.units||0)}개${marks(m)}\n총 매출 : ${won(m.margin_total||0)}\n평균마진 : ${won(m.avg_margin||0)}\n\n일 총 갯수 ${Number(d.units||0)}개${marks(d)}\n총 매출 : ${won(d.margin_total||0)}\n평균마진 : ${won(d.avg_margin||0)}`;staff.forEach(s=>{txt+=`\n\n[${s.staff_name||'미지정'}]\n갯수 ${Number(s.units||0)}개${marks(s)}\n총 매출 : ${won(s.margin_total||0)}\n평균마진 : ${won(s.avg_margin||0)}`});$('reportText').textContent=txt}
 async function copyReport(){await navigator.clipboard.writeText($('reportText').textContent);toast('매출보고 복사 완료')}

@@ -1,0 +1,20 @@
+const fs=require('fs'),path=require('path'),assert=require('assert/strict'),{chromium}=require('playwright'),repo=path.join(__dirname,'..');
+const {financeCompute}=require('../business-finance.js');
+const sample={snapshot:{snapshot_date:'2026-10-12',total_balance:1000000,tax_reserve_configured:true},items:[{item_key:'used:old',category:'used',direction:'in',amount:530000,due_date:'2026-11-01',source_month:'2026-10-01',confirmed:true,excluded:false,basis:{}}],payments:[],invoices:[]};
+let model=financeCompute(sample,'2026-10-12','2026-11');assert.equal(model.nextTotals.incoming,0);assert.equal(model.current,1000000);
+sample.payments=[{item_key:'used:old',amount:100000,paid_on:'2026-10-13',created_at:'2026-10-13T00:00:00Z',balance_included:false}];model=financeCompute(sample,'2026-10-14','2026-10');assert.equal(model.current,1100000);assert.equal(model.nextTotals.incoming,0);assert.equal(model.actualIn,100000);
+let stub=fs.readFileSync(path.join(__dirname,'staff-ledger.cjs'),'utf8').match(/const stub=String.raw`([\s\S]*?)`;/)[1];
+stub=stub.replace('window.__session=null;',"window.__session={user:{id:'owner-test',email:'owner@example.invalid'},access_token:'synthetic'};").replace('window.__owner=false;','window.__owner=true;');
+(async()=>{const browser=await chromium.launch({headless:true,channel:'msedge'});try{
+ const page=await browser.newPage({viewport:{width:1365,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/*',r=>{const u=new URL(r.request().url());if(u.href.includes('supabase-js'))return r.fulfill({contentType:'application/javascript',body:stub});const f=path.join(repo,u.pathname.slice(1));return u.hostname==='used-ledger.test'&&fs.existsSync(f)&&fs.statSync(f).isFile()?r.fulfill({contentType:f.endsWith('.js')?'application/javascript':'text/html',body:fs.readFileSync(f)}):r.fulfill({status:404,body:''})});
+ await page.goto('https://used-ledger.test/business-center.html?page=used');await page.waitForFunction(()=>document.body.dataset.access==='owner');await page.evaluate(()=>go('used'));
+ assert.equal(await page.locator('#usedFinanceRows').count(),0);assert.equal(await page.getByRole('button',{name:'판매금액 / 수령 관리',exact:true}).count(),0);assert.match(await page.locator('#page-used').innerText(),/U 중고 판매금액/);
+ assert(!(await page.evaluate(()=>__calls)).some(c=>c[0]==='jk_internal_used_data'));
+ await page.evaluate(()=>{go('ledger');openLedger();$('fK').value='170000';$('fL').value='319000';$('fS').value='319000';$('fU').value='50000';previewCalc()});assert.equal(await page.locator('#pvW').textContent(),'220,000원');assert.equal(await page.locator('#pvP').textContent(),'0원');
+ await page.locator('#fU').fill('80000');await page.locator('#fU').dispatchEvent('input');assert.equal(await page.locator('#pvW').textContent(),'250,000원');
+ await page.locator('#fU').fill('20000');await page.locator('#fU').dispatchEvent('input');assert.equal(await page.locator('#pvW').textContent(),'190,000원');
+ await page.locator('#fK').fill('500000');await page.locator('#fK').dispatchEvent('input');assert.equal(await page.locator('#pvP').textContent(),'18,100원');assert.equal(await page.locator('#pvW').textContent(),'501,900원');
+ await page.evaluate(()=>{closeModal();go('used')});await page.setViewportSize({width:390,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth));await page.screenshot({path:path.join(__dirname,'used-ledger-only-mobile.png'),fullPage:true});assert.deepEqual(errors,[]);
+ console.log('PASS: separate sale/receipt UI and fetch removed; editing U immediately changes W, reserve stays 10%; legacy forecast excluded while actual receipt history remains; mobile');
+ }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});

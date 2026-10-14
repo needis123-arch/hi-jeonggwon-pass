@@ -47,11 +47,14 @@
    <div class="doc-buttons"><button class="btn primary" id="docUpload">암호화해서 저장</button></div></div><div class="doc-buttons"><button class="btn" id="docLock">다시 잠그기</button></div><div id="docStatus" class="doc-status" role="status" aria-live="polite"></div><div id="docList" class="doc-list"></div></div>
    <div><div id="docViewTitle" class="doc-preview-title"></div><div id="docPreview" class="doc-preview"></div></div></div></section>`;
   document.body.append(root);el('docClose').onclick=close;el('docLock').onclick=()=>{jkDocumentViewer.session.lock();status('서류를 잠갔습니다.');};el('docUpload').onclick=upload;
-  viewer=jkDocumentViewer.mount({preview:el('docPreview'),title:el('docViewTitle'),input:el('docPassword'),message:status,isActive:()=>Boolean(ctx?.ready),onBusy:value=>{if(ctx)busy(ctx,value);},getFile:async(row,password)=>{await authenticated();return decrypt(await download(row),password,row);}});
+  viewer=jkDocumentViewer.mount({preview:el('docPreview'),title:el('docViewTitle'),input:el('docPassword'),message:status,isActive:()=>Boolean(ctx?.ready),onBusy:value=>{if(ctx)busy(ctx,value);},authorize:async()=>{
+   await authenticated();const {data,error}=await sb.rpc('jk_document_access_state');
+   if(error||!(readOnly()?data?.status==='approved':data?.owner)){jkDocumentViewer.session.lock();status('서류 열람 권한을 확인하지 못했습니다. 다시 로그인하거나 승인 상태를 확인하세요.');throw new Error('서류 열람 권한을 확인하지 못했습니다.');}
+  },getFile:async(row,password,signal)=>decrypt(await download(row,signal),password,row)});
   window.addEventListener('jk-document-viewer-lock',()=>{el('docConfirm').value='';});
   const driveStatus=()=>{el('docDriveStatus').textContent=jkDocumentDrive.ready()?'연결됨 · '+jkDocumentDrive.owner:jkDocumentDrive.configured()?'연결 필요 · '+jkDocumentDrive.owner:'구글 연동 설정 완료 후 이용할 수 있습니다.';};
   el('docDriveConnect').onclick=async()=>{const c=ctx;if(!c||c.busy)return;busy(c,true);try{await jkDocumentDrive.connect();if(current(c))status('구글드라이브를 연결했습니다. 이제 사진을 선택하세요.');}catch(e){if(current(c))status(e.message);}finally{driveStatus();busy(c,false);}};
-  document.addEventListener('jk-document-drive-state',()=>{lock();driveStatus();});driveStatus();
+  document.addEventListener('jk-document-drive-state',driveStatus);driveStatus();
   root.addEventListener('click',e=>{if(e.target===root)close();const b=e.target.closest('[data-doc-action]');if(b&&ctx&&!ctx.busy){const row=ctx.rows.find(x=>x.id===b.dataset.id);if(row)b.dataset.docAction==='view'?view(row):remove(row);}});
   root.addEventListener('keydown',e=>{
    if(e.key==='Escape'){e.preventDefault();close();}
@@ -80,16 +83,19 @@
   lastFocus=document.activeElement;const c=ctx={ledger,rows:[],token:++serial,busy:false,ready:false};root.hidden=false;document.body.classList.add('doc-open');const app=document.querySelector('.app');if(app)app.inert=true;
   el('docCustomer').textContent=[ledger.customer_name_snapshot,formatPhone(ledger.customer_phone_snapshot),ledger.activation_date,ledger.vendor].filter(Boolean).join(' · ');
   el('docList').textContent='목록을 불러오는 중...';lock();status('');busy(c,true);el('docClose').focus();
-  try{await authenticated();await refresh(c);if(current(c))c.ready=true;}catch(e){if(current(c))status(e.message);}finally{busy(c,false);if(current(c)&&c.ready)el('docPassword').focus();}
+  try{await jkDocumentViewer.limit(async()=>{await authenticated();await refresh(c);});if(current(c))c.ready=true;}catch(e){if(current(c))status(e.message);}finally{busy(c,false);if(current(c)&&c.ready)el('docPassword').focus();}
  }
- async function download(row){
+ async function download(row,signal){
   if(readOnly()){
-   const {data,error}=await sb.auth.getSession();if(error||!data?.session?.access_token)throw new Error('다시 로그인하세요.');
-   const response=await fetch(SUPABASE_URL+'/functions/v1/jk-document-access',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({action:'download',document_id:row.id}),cache:'no-store'});
-   if(!response.ok){if(response.status===401||response.status===403){jkDocumentViewer.session.lock();close();sessionChanged();}throw new Error('서류를 불러오지 못했습니다. 로그인·승인 상태를 확인하세요.');}
-   return response.blob();
+   let {data,error}=await sb.auth.getSession();if(error||!data?.session?.access_token)throw new Error('다시 로그인하세요.');
+   for(let attempt=0;attempt<2;attempt++){
+    const response=await fetch(SUPABASE_URL+'/functions/v1/jk-document-access',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({action:'download',document_id:row.id}),cache:'no-store',signal});
+    if(response.status===401&&attempt===0){const refreshed=await sb.auth.refreshSession();if(!refreshed.error&&refreshed.data?.session?.access_token){data=refreshed.data;continue;}}
+    if(!response.ok){if(response.status===401||response.status===403){jkDocumentViewer.session.lock();close();sessionChanged();}throw new Error('서류를 불러오지 못했습니다. 로그인·승인 상태를 확인하세요.');}
+    return await response.blob();
+   }
   }
-  if(row.storage_provider==='google_drive')return jkDocumentDrive.download(row);
+  if(row.storage_provider==='google_drive')return jkDocumentDrive.download(row,signal);
   const {data,error}=await sb.storage.from(BUCKET).download(row.storage_path);
   if(error||!data)throw new Error('서류 파일을 불러오지 못했습니다. 로그인·권한과 인터넷 연결을 확인해 주세요.');return data;
  }

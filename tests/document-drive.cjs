@@ -26,7 +26,7 @@ const sdk=`window.google={accounts:{oauth2:{initCodeClient:c=>{window.__config=c
  const media=await page.evaluate(async()=>await (await jkDocumentDrive.download({drive_file_id:'synthetic_drive_file_12345'})).text());assert.match(media,/JKDOC001/);
  await page.evaluate(()=>jkDocumentDrive.trash('synthetic_drive_file_12345'));assert.deepEqual(JSON.parse(calls.at(-1).body.toString()),{trashed:true});assert(!calls.some(c=>c.method==='DELETE'));
  badLocation=true;assert.match(await page.evaluate(()=>jkDocumentDrive.upload('ledger','document',new Blob(['encrypted'])).catch(e=>e.message)),/주소/);assert.equal(uploaded,1);badLocation=false;
- expired=true;assert.match(await page.evaluate(()=>jkDocumentDrive.download({drive_file_id:'synthetic_drive_file_12345'}).catch(e=>e.message)),/다시 연결/);assert(!await page.evaluate(()=>jkDocumentDrive.ready()));expired=false;
+ expired=true;assert.match(await page.evaluate(()=>jkDocumentDrive.download({drive_file_id:'synthetic_drive_file_12345'}).catch(e=>e.message)),/최초 연결/);assert(!await page.evaluate(()=>jkDocumentDrive.ready()));expired=false;
  wrongOwner=true;assert.match(await page.evaluate(()=>jkDocumentDrive.connect().catch(e=>e.message)),/needis123@gmail.com/);assert(!await page.evaluate(()=>jkDocumentDrive.ready()));wrongOwner=false;
  await page.evaluate(()=>__popupFail=true);assert.match(await page.evaluate(()=>jkDocumentDrive.connect().catch(e=>e.message)),/창을 열지/);await page.evaluate(()=>__popupFail=false);await page.evaluate(()=>jkDocumentDrive.connect());
  await page.evaluate(()=>__auth.forEach(f=>f('SIGNED_OUT')));assert(!await page.evaluate(()=>jkDocumentDrive.ready()));assert.equal(await page.evaluate(()=>Object.keys(localStorage).length+Object.keys(sessionStorage).length),0);

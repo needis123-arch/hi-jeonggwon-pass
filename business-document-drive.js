@@ -4,11 +4,32 @@
  'use strict';
  const CLIENT_ID='296636406674-rd44edn55es8urma78ttta4476roph3i.apps.googleusercontent.com',OWNER='needis123@gmail.com',SCOPE='https://www.googleapis.com/auth/drive.file';
  const API='https://www.googleapis.com/drive/v3/',UPLOAD='https://www.googleapis.com/upload/drive/v3/files';
- let sdkReady=false,token='',until=0,folder='',pending=null,generation=0,connecting=false;
+ let sdkReady=false,token='',until=0,folder='',pending=null,generation=0,connecting=false,restoring=null;
  function clear(){token='';until=0;folder='';}
  function ready(){return Boolean(token&&Date.now()<until);}
  function notify(){document.dispatchEvent(new Event('jk-document-drive-state'));}
  function configured(){return Boolean(CLIENT_ID);}
+ async function limited(task,signal,ms=25000){
+  const controller=new AbortController();let timeout;
+  const stop=()=>controller.abort(signal?.reason);if(signal?.aborted)stop();else signal?.addEventListener('abort',stop,{once:true});
+  try{if(controller.signal.aborted)throw new Error('서류 요청을 중단했습니다.');return await Promise.race([task(controller.signal),new Promise((_,reject)=>{timeout=setTimeout(()=>{reject(new Error('서류 연결 응답이 늦습니다. 인터넷 연결을 확인하고 다시 눌러 주세요.'));controller.abort();},ms);controller.signal.addEventListener('abort',()=>reject(new Error('서류 요청을 중단했습니다.')),{once:true});if(controller.signal.aborted)reject(new Error('서류 요청을 중단했습니다.'));})]);}
+  finally{clearTimeout(timeout);signal?.removeEventListener('abort',stop);}
+ }
+ async function server(action,body={},signal){
+  return limited(async abort=>{
+   let {data,error}=await sb.auth.getSession();if(error||!data?.session?.access_token)throw new Error('로그인이 만료됐습니다. 장부에 다시 로그인하세요.');
+   for(let attempt=0;attempt<2;attempt++){
+    const response=await fetch(SUPABASE_URL+'/functions/v1/jk-document-access',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json','X-Requested-With':'XmlHttpRequest'},body:JSON.stringify({action,...body}),cache:'no-store',signal:abort});
+    if(response.status===401&&attempt===0){const refreshed=await sb.auth.refreshSession();if(refreshed.error||!refreshed.data?.session?.access_token)throw new Error('로그인이 만료됐습니다. 장부에 다시 로그인하세요.');data=refreshed.data;continue;}
+    const value=await response.json();if(!response.ok){const e=new Error(value.error||'서류 저장소 연결을 확인하지 못했습니다.');e.code=value.code;e.status=response.status;throw e;}return value;
+   }
+  },signal);
+ }
+ async function restore(signal){
+  if(ready())return;
+  if(!restoring){const epoch=generation;restoring=(async()=>{const connected=await server('owner-token',{},signal);if(epoch!==generation)throw new Error('로그인이 끝나 구글 연결을 중단했습니다.');if(connected.owner!==OWNER||!connected.access_token||!/^[A-Za-z0-9_-]{10,200}$/.test(connected.folder_id||''))throw new Error('구글 저장 계정을 확인하지 못했습니다.');token=connected.access_token;folder=connected.folder_id;until=Date.now()+Math.max(0,Number(connected.expires_in||3600)-30)*1000;notify();})().finally(()=>{restoring=null;});}
+  try{await restoring;}catch(e){if(e.code==='drive_not_connected')e.message='구글드라이브 최초 연결이 필요합니다. 위의 구글드라이브 연결을 눌러 주세요.';throw e;}
+ }
  function requireToken(){if(!ready()){clear();notify();throw new Error('먼저 구글드라이브 연결을 눌러 본인 계정을 연결하세요.');}}
  async function responseError(response){
   let reason='';try{const body=await response.json();reason=body.error?.errors?.[0]?.reason||'';}catch{}
@@ -31,18 +52,9 @@
  }
  async function connect(){
   if(connecting||pending)throw new Error('진행 중인 구글 연결을 먼저 완료하세요.');
-  connecting=true;const epoch=generation;
-  try{
-   const {data,error}=await sb.auth.getSession();if(error||!data?.session?.access_token)throw new Error('장부에 먼저 로그인하세요.');
-   const response=await fetch(SUPABASE_URL+'/functions/v1/jk-document-access',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token,apikey:SUPABASE_KEY,'Content-Type':'application/json','X-Requested-With':'XmlHttpRequest'},body:JSON.stringify({action:'owner-token'}),cache:'no-store'});
-   const connected=await response.json();if(epoch!==generation)throw new Error('로그인이 끝나 구글 연결을 중단했습니다.');
-   if(response.ok){
-    if(connected.owner!==OWNER||!connected.access_token||!/^[A-Za-z0-9_-]{10,200}$/.test(connected.folder_id||''))throw new Error('구글 저장 계정을 확인하지 못했습니다.');
-    clear();token=connected.access_token;folder=connected.folder_id;until=Date.now()+Math.max(0,Number(connected.expires_in||3600)-30)*1000;notify();return;
-   }
-   if(connected.code!=='drive_not_connected')throw new Error(connected.error||'구글 저장소 연결을 확인하지 못했습니다.');
-   return await connectPopup();
-  }finally{connecting=false;}
+  connecting=true;
+  try{try{await restore();}catch(e){if(e.code!=='drive_not_connected')throw e;await connectPopup();}}
+  finally{connecting=false;}
  }
  function connectPopup(){
   if(!configured())return Promise.reject(new Error('구글 연동 설정이 아직 완료되지 않았습니다. 설정 완료 후 연결할 수 있습니다.'));
@@ -88,9 +100,18 @@
   requireToken();const done=await fetch(target.href,{method:'PUT',headers:{Authorization:'Bearer '+token,'Content-Type':'application/octet-stream'},body:blob});
   if(!done.ok)await responseError(done);const file=await done.json();if(!file.id)throw new Error('드라이브 파일 연결 정보를 받지 못했습니다.');return file.id;
  }
- async function download(row){return (await request('files/'+encodeURIComponent(row.drive_file_id)+'?alt=media')).blob();}
+ async function download(row,signal){
+  await restore(signal);
+  return limited(async abort=>{
+   for(let attempt=0;attempt<2;attempt++){
+    const response=await fetch(API+'files/'+encodeURIComponent(row.drive_file_id)+'?alt=media',{headers:{Authorization:'Bearer '+token},cache:'no-store',signal:abort});
+    if(response.status===401&&attempt===0){clear();await restore(abort);continue;}
+    if(!response.ok)await responseError(response);return await response.blob();
+   }
+  },signal);
+ }
  async function trash(id){await json('files/'+encodeURIComponent(id)+'?fields=id,trashed',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({trashed:true})});}
- window.jkDocumentDrive={configured,ready,connect,upload,download,trash,clear,owner:OWNER};
+ window.jkDocumentDrive={configured,ready,connect,upload,download,trash,clear,limited,owner:OWNER};
  function cancel(){generation++;const p=pending;pending=null;clear();p?.reject(new Error('로그인이 끝나 구글 연결을 중단했습니다.'));notify();}
  document.addEventListener('DOMContentLoaded',()=>{init();sb.auth.onAuthStateChange(e=>{if(e==='SIGNED_OUT')cancel();});},{once:true});
  window.addEventListener('pagehide',cancel);

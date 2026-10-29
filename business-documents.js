@@ -3,7 +3,7 @@
 (() => {
  'use strict';
  const BUCKET='jk-ledger-documents', TABLE='jk_ledger_documents';
- const LIMIT=20*1024*1024;
+ const LIMIT=20*1024*1024,MAX_FILES=100,MAX_UPLOAD=1024*1024*1024;
  const MIME=new Set(['image/jpeg','image/png','image/webp']);
  let root,ctx=null,serial=0,viewer=null,lastFocus=null;
  const el=id=>document.getElementById(id);
@@ -13,7 +13,7 @@
  const {encrypt,decrypt}=window.jkDocumentCrypto;
  function lock(){viewer?.clear();for(const id of ['docPassword','docConfirm'])if(el(id))el(id).value='';}
  function close(){
-  serial++;ctx=null;lock();if(root){root.hidden=true;root.querySelectorAll('input').forEach(x=>x.value='');}
+  serial++;ctx=null;lock();if(root){root.hidden=true;root.querySelectorAll('input').forEach(x=>x.value='');if(el('docSelectionSummary'))el('docSelectionSummary').textContent='';}
   document.body.classList.remove('doc-open');const app=document.querySelector('.app');if(app)app.inert=false;lastFocus?.focus();
  }
  function status(text){if(el('docStatus'))el('docStatus').textContent=text;}
@@ -43,10 +43,11 @@
    <div id="docStaffNote" class="doc-note" hidden>고객 서류를 열람·인쇄·내려받기 할 수 있습니다. 서류 비밀번호 확인 후 5분 동안 다른 고객 서류도 열 수 있습니다. 다른 앱·탭으로 전환하면 잠깁니다.</div><div class="doc-layout"><div class="doc-controls"><label for="docPassword">서류 비밀번호 (숫자 4자리)</label><input id="docPassword" type="password" inputmode="numeric" autocomplete="off" placeholder="숫자 4자리"><small class="doc-sub">이전에 저장한 서류는 당시 비밀번호로 열어 주세요.</small>
    <div id="docOwnerControls"><div id="docNewPassword"><label for="docConfirm">새 서류 저장 시 비밀번호 확인</label><input id="docConfirm" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="같은 숫자 4자리를 다시 입력"></div>
    <label for="docKind">추가할 서류 구분</label><select id="docKind"><option>가입 서류</option><option>신분증 사본</option><option>기타 서류</option></select>
-   <label for="docFiles">사진 선택 (여러 장 가능)</label><input id="docFiles" type="file" multiple accept="image/jpeg,image/png,image/webp"><small class="doc-sub">JPG · PNG · WEBP / 파일당 20MB, 한 번에 20개</small>
+   <label for="docFiles">사진 선택 (여러 장 가능)</label><input id="docFiles" type="file" multiple accept="image/jpeg,image/png,image/webp"><small class="doc-sub">JPG · PNG · WEBP / 파일당 20MB · 한 번에 100장, 합계 1GB</small><small class="doc-sub" id="docSelectionSummary" role="status" style="display:block;margin-top:4px"></small>
    <div class="doc-buttons"><button class="btn primary" id="docUpload">암호화해서 저장</button></div></div><div class="doc-buttons"><button class="btn" id="docLock">다시 잠그기</button></div><div id="docStatus" class="doc-status" role="status" aria-live="polite"></div><div id="docList" class="doc-list"></div></div>
    <div><div id="docViewTitle" class="doc-preview-title"></div><div id="docPreview" class="doc-preview"></div></div></div></section>`;
   document.body.append(root);el('docClose').onclick=close;el('docLock').onclick=()=>{jkDocumentViewer.session.lock();status('서류를 잠갔습니다.');};el('docUpload').onclick=upload;
+  el('docFiles').onchange=selectionSummary;
   viewer=jkDocumentViewer.mount({preview:el('docPreview'),title:el('docViewTitle'),input:el('docPassword'),message:status,isActive:()=>Boolean(ctx?.ready),onBusy:value=>{if(ctx)busy(ctx,value);},authorize:async()=>{
    await authenticated();const {data,error}=await sb.rpc('jk_document_access_state');
    if(error||!(readOnly()?data?.status==='approved':data?.owner)){jkDocumentViewer.session.lock();status('서류 열람 권한을 확인하지 못했습니다. 다시 로그인하거나 승인 상태를 확인하세요.');throw new Error('서류 열람 권한을 확인하지 못했습니다.');}
@@ -100,25 +101,28 @@
   if(error||!data)throw new Error('서류 파일을 불러오지 못했습니다. 로그인·권한과 인터넷 연결을 확인해 주세요.');return data;
  }
  function view(row){if(ctx?.ready&&!ctx.busy)viewer.show(row);}
+ function selectionSummary(){const files=[...el('docFiles').files],total=files.reduce((s,f)=>s+f.size,0);el('docSelectionSummary').textContent=files.length?`선택 ${files.length}장 · 합계 ${(total/1024/1024).toFixed(1)}MB / 최대 1,024MB`:'';}
  async function upload(){
   if(readOnly())return;
   const c=ctx;if(!c?.ready||c.busy)return;
   if(!jkDocumentDrive.ready()){status('먼저 구글드라이브 연결을 눌러 주세요.');return;}
   const files=[...el('docFiles').files],password=el('docPassword').value||(c.rows.length?jkDocumentViewer.session.read():''),confirmPassword=el('docConfirm').value,kind=el('docKind').value;
   if(!files.length){status('이 고객의 사진을 선택하세요.');return;}
-  if(files.length>20||files.reduce((s,f)=>s+f.size,0)>100*1024*1024){status('한 번에 20개, 전체 100MB 이하로 선택하세요.');return;}
+  const totalBytes=files.reduce((s,f)=>s+f.size,0);selectionSummary();
+  if(files.length>MAX_FILES){status(`선택 ${files.length}장입니다. 한 번에 100장까지 선택하세요.`);return;}
+  if(totalBytes>MAX_UPLOAD){status(`선택 합계 ${(totalBytes/1024/1024).toFixed(1)}MB입니다. 한 번에 합계 1GB(1,024MB)까지 올릴 수 있습니다.`);return;}
   if(files.some(f=>!MIME.has(f.type)||!f.size||f.size>LIMIT)){status('JPG·PNG·WEBP 사진만 가능하며 파일당 20MB 이하여야 합니다. 다른 형식은 JPG로 변환해 주세요.');return;}
   if(!/^[0-9]{4}$/.test(password)&&!(c.rows.length&&password.length>=10)){status('서류 비밀번호를 숫자 4자리로 입력하세요.');return;}
   if(!c.rows.length&&password!==confirmPassword){status('비밀번호 확인이 일치하지 않습니다.');return;}
   if(!window.confirm(`${c.ledger.customer_name_snapshot} · ${formatPhone(c.ledger.customer_phone_snapshot)} 고객의 ${files.length}개 파일이 맞나요? 이 고객 장부에 암호화해서 저장합니다.`))return;
-  lock();busy(c,true);let completed=0;
+  lock();busy(c,true);let completed=0,completedBytes=0;
   try{
    await authenticated();
    // Verify the existing customer password before adding more files.
    if(c.rows.length)await decrypt(await download(c.rows[0]),password,c.rows[0]);
    for(const file of files){
     if(!current(c))break;
-    status(`${completed+1} / ${files.length} 암호화해서 저장 중...`);
+    status(`${completed+1} / ${files.length} 암호화해서 저장 중... · ${(completedBytes/1024/1024).toFixed(1)} / ${(totalBytes/1024/1024).toFixed(1)}MB 완료`);
     const id=crypto.randomUUID(),storagePath=c.ledger.id+'/'+id+'.jkdoc';
     const blob=await encrypt(file,password,c.ledger.id,id);if(!current(c))break;
     const driveFileId=await jkDocumentDrive.upload(c.ledger.id,id,blob);
@@ -126,10 +130,10 @@
     try{
      if(!current(c))throw new Error('저장을 중단했습니다.');
      const result=await sb.from(TABLE).insert({id,ledger_id:c.ledger.id,storage_path:storagePath,storage_provider:'google_drive',drive_file_id:driveFileId,doc_kind:kind,byte_size:file.size});
-     if(result.error)throw new Error('장부에 서류를 연결하지 못했습니다.');linked=true;completed++;
+     if(result.error)throw new Error('장부에 서류를 연결하지 못했습니다.');linked=true;completed++;completedBytes+=file.size;
     }finally{if(!linked)await jkDocumentDrive.trash(driveFileId);}
    }
-   if(current(c)){el('docFiles').value='';await refresh(c);status(`${completed}개 서류를 저장했습니다. SSD 원본은 유지됩니다.`);}
+   if(current(c)){el('docFiles').value='';selectionSummary();await refresh(c);status(`${completed}개 서류 · ${(completedBytes/1024/1024).toFixed(1)}MB를 저장했습니다. SSD 원본은 유지됩니다.`);}
   }catch(e){if(current(c)){await refresh(c).catch(()=>{});status(`${completed?completed+'개 저장 완료. ':''}${e.message}`);}}
   finally{busy(c,false);}
  }

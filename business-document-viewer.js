@@ -1,7 +1,7 @@
 /* Five-minute in-memory unlock; plaintext exports stay on the user's device. */
 (() => {
  'use strict';
- const DURATION=300000,MAX_BATCH=100*1024*1024;
+ const DURATION=300000,MAX_BATCH=1024*1024*1024,MAX_CACHE=100*1024*1024;
  async function limit(task,signal,ms=30000){
   const controller=new AbortController();let timer;
   const stop=()=>controller.abort(new Error('서류 요청을 중단했습니다.'));
@@ -26,11 +26,11 @@
  async function zip(files){
   const body=[],central=[];let offset=0,total=0;const encoder=new TextEncoder();
   for(let i=0;i<files.length;i++){
-   const bytes=new Uint8Array(await files[i].blob.arrayBuffer());total+=bytes.length;if(total>MAX_BATCH)throw new Error('전체 내려받기는 100MB까지 가능합니다. 사진별로 내려받아 주세요.');
+   const bytes=new Uint8Array(await files[i].blob.arrayBuffer());total+=bytes.length;if(total>MAX_BATCH)throw new Error('전체 내려받기는 1GB까지 가능합니다. 사진별로 내려받아 주세요.');
    const name=encoder.encode(String(i+1).padStart(2,'0')+'_'+filename(files[i].name)),crc=crc32(bytes);
    const h=new Uint8Array(30),v=new DataView(h.buffer);v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0x0800,true);v.setUint16(12,33,true);v.setUint32(14,crc,true);v.setUint32(18,bytes.length,true);v.setUint32(22,bytes.length,true);v.setUint16(26,name.length,true);
    const c=new Uint8Array(46),w=new DataView(c.buffer);w.setUint32(0,0x02014b50,true);w.setUint16(4,20,true);w.setUint16(6,20,true);w.setUint16(8,0x0800,true);w.setUint16(14,33,true);w.setUint32(16,crc,true);w.setUint32(20,bytes.length,true);w.setUint32(24,bytes.length,true);w.setUint16(28,name.length,true);w.setUint32(42,offset,true);
-   body.push(h,name,bytes);central.push(c,name);offset+=h.length+name.length+bytes.length;
+   body.push(h,name,files[i].blob);central.push(c,name);offset+=h.length+name.length+bytes.length;
   }
   const end=new Uint8Array(22),v=new DataView(end.buffer);v.setUint32(0,0x06054b50,true);v.setUint16(8,files.length,true);v.setUint16(10,files.length,true);v.setUint32(12,central.reduce((n,x)=>n+x.length,0),true);v.setUint32(16,offset,true);
   return new Blob([...body,...central,end],{type:'application/zip'});
@@ -55,7 +55,7 @@
   const cancel=document.createElement('button');cancel.className='btn';cancel.dataset.viewer='cancel';cancel.textContent='불러오기 취소';bar.append(cancel);
   function buttons(){bar.querySelectorAll('button').forEach(b=>{const a=b.dataset.viewer;if(a==='cancel'){b.hidden=!busy;b.disabled=!busy;return;}b.disabled=busy||!rows.length||(['print','download'].includes(a)&&selected<0)||(a==='previous'&&selected<=0)||(a==='next'&&selected>=rows.length-1);});bar.querySelector('[data-unlock-status]').textContent=read()?`열람 가능 ${Math.ceil(session.remaining()/60)}분 · ${rows.length}개 서류 · 비밀번호 재입력 없이 보기`:'비밀번호를 한 번 입력하면 5분 동안 다른 서류도 볼 수 있습니다.';}
   function clear(){const wasBusy=busy;op++;activeRequest?.abort();activeRequest=null;busy=false;cache.clear();cacheBytes=0;if(wasBusy)onBusy(false);urls.forEach(u=>URL.revokeObjectURL(u));urls=[];shown=[];selected=-1;preview.replaceChildren();input.value='';title.textContent='비밀번호를 입력하고 서류를 선택하세요.';buttons();}
-  function retain(row,file){const key=cacheKey(row);if(cache.has(key))return;while(cacheBytes+file.blob.size>MAX_BATCH&&cache.size){const [id,old]=cache.entries().next().value;cache.delete(id);cacheBytes-=old.blob.size;}if(file.blob.size<=MAX_BATCH){cache.set(key,file);cacheBytes+=file.blob.size;}}
+  function retain(row,file){const key=cacheKey(row);if(cache.has(key))return;while(cacheBytes+file.blob.size>MAX_CACHE&&cache.size){const [id,old]=cache.entries().next().value;cache.delete(id);cacheBytes-=old.blob.size;}if(file.blob.size<=MAX_CACHE){cache.set(key,file);cacheBytes+=file.blob.size;}}
   function credentials(){const value=input.value||read();if(!/^[0-9]{4}$/.test(value)&&value.length<10)throw new Error('서류 비밀번호는 숫자 4자리입니다.');return value;}
   async function run(action,targets){
    if(busy||!targets.length||!isActive())return;
@@ -66,11 +66,11 @@
     await limit(()=>authorize(),controller.signal);if(job!==op||!isActive())return;
     for(const row of targets){if(job!==op||!isActive())return;if(!input.value&&!read())throw new Error('열람 시간이 지났습니다. 비밀번호를 다시 입력하세요.');message(`서류 ${result.length+1} / ${targets.length} 불러오는 중...`);const file=cache.get(cacheKey(row))||await limit(signal=>getFile(row,pass,signal),controller.signal);if(job!==op||!isActive())return;
      // A timed-out operation must never recreate an unlocked session.
-     if(!input.value&&!read())throw new Error('열람 시간이 지났습니다. 비밀번호를 다시 입력하세요.');remember(pass);input.value='';size+=file.blob.size;if(size>MAX_BATCH)throw new Error('한 번에 100MB까지 가능합니다. 사진별로 보기·인쇄·내려받기를 이용하세요.');result.push(file);retain(row,file);
+     if(!input.value&&!read())throw new Error('열람 시간이 지났습니다. 비밀번호를 다시 입력하세요.');remember(pass);input.value='';size+=file.blob.size;if(size>MAX_BATCH)throw new Error('한 번에 1GB까지 가능합니다. 사진별로 보기·인쇄·내려받기를 이용하세요.');result.push(file);retain(row,file);
      if(action==='view'){
       if(result.length===1){urls.forEach(u=>URL.revokeObjectURL(u));urls=[];preview.replaceChildren();selected=rows.findIndex(r=>r.id===targets[0].id);}
       shown=[...result];title.textContent=targets.length===1?file.name:`전체 서류 ${result.length} / ${targets.length}개`;
-      const figure=document.createElement('figure');figure.style.cssText='margin:0 0 16px';const img=new Image(),u=URL.createObjectURL(file.blob);urls.push(u);img.src=u;img.alt=file.name;img.style.cssText='max-width:100%;height:auto;display:block;margin:auto';img.onerror=()=>{if(job===op)message('사진을 표시하지 못했습니다. 원본 파일을 확인하세요.');};figure.append(img);if(targets.length>1){const caption=document.createElement('figcaption');caption.textContent=file.name;figure.append(caption);}preview.append(figure);
+      const figure=document.createElement('figure');figure.style.cssText='margin:0 0 16px';const img=new Image(),u=URL.createObjectURL(file.blob);urls.push(u);if(result.length>1)img.loading='lazy';img.decoding='async';img.src=u;img.alt=file.name;img.style.cssText='max-width:100%;height:auto;display:block;margin:auto';img.onerror=()=>{if(job===op)message('사진을 표시하지 못했습니다. 원본 파일을 확인하세요.');};figure.append(img);if(targets.length>1){const caption=document.createElement('figcaption');caption.textContent=file.name;figure.append(caption);}preview.append(figure);
      }
     }
     if(action==='view'){

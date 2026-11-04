@@ -9,7 +9,7 @@
  const el=id=>document.getElementById(id);
  const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const current=c=>ctx===c&&c.token===serial;
- const readOnly=()=>window.jkStaffAccess?.readOnly===true;
+ const readOnly=()=>(window.jkStaffAccess?.documentReadOnly??window.jkStaffAccess?.readOnly)===true;
  const {encrypt,decrypt}=window.jkDocumentCrypto;
  function lock(){viewer?.clear();for(const id of ['docPassword','docConfirm'])if(el(id))el(id).value='';}
  function close(){

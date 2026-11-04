@@ -1,12 +1,12 @@
 /* Employees use the same BUSINESS CENTER. Server RPCs check approval on every read. */
 (() => {
  'use strict';
- let owner=false,approved=false,generation=0,requestBusy=false,loadGeneration=0,identity='',lastUser='';
+ let owner=false,approved=false,documentOwner=false,manager=false,generation=0,requestBusy=false,loadGeneration=0,identity='',lastUser='';
  const pages=['ledger','used','payback','affiliate','consultations'],operationRequests={};
  const el=id=>document.getElementById(id);
  const labels={none:'장부 열람 신청',pending:'사장님 승인 대기 중',approved:'장부·업무·상담·서류 열람 승인 완료',rejected:'이번 신청이 거절되었습니다.',revoked:'열람 권한이 회수되었습니다.'};
  function clear(){
-  approved=false;loadGeneration++;identity='';document.body.dataset.staffApproved='false';
+  approved=false;documentOwner=false;manager=false;loadGeneration++;identity='';document.body.dataset.staffApproved='false';
   if(typeof closeLedgerDocuments==='function')closeLedgerDocuments();
   window.jkDocumentViewer?.session.lock();
   for(const key of Object.keys(state))if(Array.isArray(state[key]))state[key]=[];
@@ -23,9 +23,9 @@
   section.innerHTML='<div class="card" style="max-width:650px;padding:24px"><h2>직원 로그인 · 장부 열람</h2><p id="staffIdentity"></p><h3 id="staffApprovalStatus"></h3><p>사장님 승인 후 장부·중고반납·페이백·제휴카드·영업/상담을 조회하고 고객별 서류를 열 수 있습니다.</p><div id="staffRequestForm"><label for="staffRequestName">직원 이름</label><input id="staffRequestName" maxlength="80" autocomplete="name" style="width:100%;padding:12px;margin:10px 0"><button class="btn primary" id="staffRequestButton">사장님에게 장부·서류 열람 요청</button></div><p id="staffRequestMessage" role="status"></p><button class="btn" id="staffApprovalRefresh">승인 상태 새로고침</button><button class="btn" onclick="logout()">로그아웃</button></div>';
   document.querySelector('.content').append(section);
   const toolbar=document.createElement('div');toolbar.className='staff-ledger-toolbar';
-  toolbar.innerHTML='<span>직원 조회 화면 · 장부·중고반납·페이백·제휴카드·상담을 확인하세요.</span><button class="btn" id="staffLedgerRefresh">새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';
+  toolbar.innerHTML='<span>직원 업무 화면 · 장부·중고반납·페이백·제휴카드·상담을 확인하세요.</span><button class="btn" id="staffLedgerRefresh">새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';
   el('page-ledger').prepend(toolbar);el('staffLedgerRefresh').onclick=loadLedger;
-  for(const page of pages.filter(p=>p!=='ledger')){const bar=document.createElement('div');bar.className='staff-ledger-toolbar';bar.innerHTML='<span>직원 조회 화면</span><button class="btn" data-staff-refresh>새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';bar.querySelector('[data-staff-refresh]').onclick=()=>go(page,{push:false});el('page-'+page).prepend(bar);}
+  for(const page of pages.filter(p=>p!=='ledger')){const bar=document.createElement('div');bar.className='staff-ledger-toolbar';bar.innerHTML='<span>직원 업무 화면</span><button class="btn" data-staff-refresh>새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';bar.querySelector('[data-staff-refresh]').onclick=()=>go(page,{push:false});el('page-'+page).prepend(bar);}
   el('staffRequestButton').onclick=async()=>{
    if(requestBusy)return;const name=el('staffRequestName').value.trim();if(!name){el('staffRequestMessage').textContent='직원 이름을 입력하세요.';return;}
    requestBusy=true;el('staffRequestButton').disabled=true;const n=generation;
@@ -44,6 +44,7 @@
    const {data,error}=await sb.rpc('jk_document_access_state');if(n!==generation)return 'stale';if(error||!data)throw Error();
    let admin=Boolean(data.owner);
    if(!admin){const r=await sb.rpc('is_admin');if(n!==generation)return 'stale';admin=!r.error&&r.data===true;}
+   documentOwner=Boolean(data.storage_owner??data.owner);manager=Boolean(data.owner)&&data.storage_owner===false;approved=data.status==='approved';
    owner=admin;if(owner){document.body.dataset.access='owner';return 'owner';}
    approved=data.status==='approved';identity=session.user.id||session.user.email;document.body.dataset.staffApproved=String(approved);
    document.body.dataset.access='staff';hideLogin();el('staffIdentity').textContent=data.email||session.user.email;
@@ -114,12 +115,12 @@
   if(matchMedia('(max-width:900px)').matches)el('consultDetail').scrollIntoView({block:'start',behavior:'smooth'});
  }
  async function loadReminders(){const {data,error}=await readRpc('jk_staff_consultations',{p_status:'due'});if(error||!approved)return;consultState.reminders=data.rows||[];consultState.dueCount=data.count||0;renderConsultReminders();}
- window.jkStaffAccess=Object.freeze({gate,loadLedger,google,operations,loadConsultations,selectConsultation,renderConsultDetail,loadReminders,get readOnly(){return !owner;},get approved(){return approved;}});
+ window.jkStaffAccess=Object.freeze({gate,loadLedger,google,operations,loadConsultations,selectConsultation,renderConsultDetail,loadReminders,get readOnly(){return !owner;},get documentReadOnly(){return !documentOwner;},get approved(){return approved;}});
  document.addEventListener('DOMContentLoaded',()=>{
   init();el('staffGoogleLogin').onclick=google;
   sb.auth.onAuthStateChange(event=>{if(event==='SIGNED_OUT'){generation++;owner=false;clear();document.body.dataset.access='locked';location.reload();return;}if(event==='SIGNED_IN')setTimeout(()=>sessionChanged(),0);});
   // Revocation also clears cached ledger rows and opened photos, without resetting filters on every poll.
-  setInterval(async()=>{if(document.hidden||owner||!approved)return;const n=generation;try{const r=await sb.rpc('jk_document_access_state');if(n!==generation)return;if(r.error||r.data?.status!=='approved')await sessionChanged();}catch{if(n===generation)await sessionChanged();}},30000);
+  setInterval(async()=>{if(document.hidden||(owner&&!manager)||!approved)return;const n=generation;try{const r=await sb.rpc('jk_document_access_state');if(n!==generation)return;if(r.error||r.data?.status!=='approved'||(manager&&!r.data?.owner))await sessionChanged();}catch{if(n===generation)await sessionChanged();}},30000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&approved)sessionChanged();});
   const error=new URLSearchParams(location.hash.slice(1)).get('error');if(error){history.replaceState(null,'',location.pathname+location.search);el('loginMsg').textContent='구글 로그인이 취소되었거나 완료되지 않았습니다. 다시 로그인하세요.';}
  },{once:true});

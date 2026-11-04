@@ -49,15 +49,15 @@ async function selectConsultation(id,push=true){
 }
 function returnConsultList(){consultState.selectionRequest++;consultState.creating=false;consultState.selected=null;history.replaceState({...history.state,consultId:null},'',consultRoute(consultState.staff,null));$('consultLayout').classList.remove('detail-open');$('consultDetail').innerHTML='<div class="empty">고객을 선택해 주세요.</div>'}
 function beginNewConsultation(push=true){
- if(window.jkStaffAccess?.readOnly){toast('직원 조회 화면에서는 변경할 수 없습니다.');return;}
- consultState.selectionRequest++;consultState.creating=true;consultState.selected=null;const today=consultToday(),staff=consultActiveStaff().includes(consultState.staff)?consultState.staff:null;
+ if(window.jkStaffAccess?.readOnly&&!jkStaffAccess.approved){toast('직원 승인이 필요합니다.');return;}
+ consultState.selectionRequest++;consultState.creating=true;consultState.createRequest=crypto.randomUUID();consultState.selected=null;const today=consultToday(),staff=consultActiveStaff().includes(consultState.staff)?consultState.staff:null;
  let r={customer_name:'',phone_digits:'',staff_name:staff,services:[],contact_method:'방문',consulted_on:today,visited_on:today,followup_days:3,next_contact_on:consultAddDays(today,3),status:'재연락',consultation_note:'',customer_note:'',intake_source:'직접기록'};
  try{const draft=JSON.parse(localStorage.getItem('jk-consult-draft')||'null');if(draft)r={...r,...draft}}catch(e){}
  if(r.staff_name&&!consultActiveStaff().includes(r.staff_name))r.staff_name=null;
  if(push)consultPushRoute('new');renderConsultDetail(r,true);$('consultName').focus();
 }
 function renderConsultDetail(r,creating=false){
- if(window.jkStaffAccess?.readOnly)return jkStaffAccess.renderConsultDetail(r);
+ if(window.jkStaffAccess?.readOnly&&!creating)return jkStaffAccess.renderConsultDetail(r);
  $('consultLayout').classList.add('detail-open');
  const info=[['필요 서비스',(r.services||[]).join(' · ')||'-'],['상담 희망 방식',r.contact_method],['이사 예정일',r.move_date||'-'],['추천인 코드',r.referral_code||'-'],['접수 경로',r.intake_source],['접수일',r.created_at?new Date(r.created_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'직접 기록'],['고객 신청 내용',r.customer_note||'-']];
  $('consultDetail').innerHTML=`<button class="btn consult-mobile-back" onclick="returnConsultList()">← 상담 목록</button><div class="consult-detail-header"><div><h3>${creating?'놓쳤던 고객 기록':esc(r.customer_name)}</h3>${creating?'':`<a class="consult-phone" href="tel:${esc(r.phone_digits)}">${esc(formatPhone(r.phone_digits))}</a><div class="consult-note">${esc(r.staff_name||'미지정')} · ${esc(r.status)} · ${esc(consultDueLabel(r))}</div>`}</div>${creating?'':`<div class="consult-actions"><a class="btn primary" href="tel:${esc(r.phone_digits)}">바로 전화</a><button class="btn" onclick="copyConsultPhone()">번호 복사</button></div>`}</div>
@@ -83,7 +83,7 @@ function syncConsultStatus(){const closed=consultClosed(consultFieldValue('consu
 function consultFormPayload(){const name=consultFieldValue('consultName'),phone=consultFieldValue('consultPhone').replace(/\D/g,''),date=consultFieldValue('consultDate'),visit=consultFieldValue('consultVisit'),status=consultFieldValue('consultStatus'),due=consultFieldValue('consultDue'),memo=consultFieldValue('consultMemo');if(!name||!/^01\d{8,9}$/.test(phone))throw Error('고객명과 휴대폰 번호를 확인해 주세요.');if(!date||date>consultToday()||(visit&&visit>consultToday()))throw Error('상담일과 실제 방문일은 오늘 이전 날짜로 입력해 주세요.');if(!consultClosed(status)&&!due)throw Error('다음 연락 예정일을 입력해 주세요.');if(consultState.creating&&!memo)throw Error('상담내역 또는 놓친 이유를 기록해 주세요.');return {customer_name:name,phone_digits:phone,staff_name:consultFieldValue('consultStaff')||null,services:[...document.querySelectorAll('input[name=consultService]:checked')].map(e=>e.value),contact_method:consultFieldValue('consultMethod'),consulted_on:date,visited_on:visit||null,followup_days:Number(consultFieldValue('consultDays')),next_contact_on:consultClosed(status)?null:due,status,consultation_note:memo}}
 function saveConsultDraft(){if(!consultState.creating)return;const v=id=>$(id)?.value||'';const draft={customer_name:v('consultName'),phone_digits:v('consultPhone'),staff_name:v('consultStaff')||null,services:[...document.querySelectorAll('input[name=consultService]:checked')].map(e=>e.value),contact_method:v('consultMethod'),consulted_on:v('consultDate'),visited_on:v('consultVisit')||null,followup_days:Number(v('consultDays')||3),next_contact_on:v('consultDue'),status:v('consultStatus'),consultation_note:v('consultMemo')};localStorage.setItem('jk-consult-draft',JSON.stringify(draft))}
 async function saveConsultation(){
- if(window.jkStaffAccess?.readOnly){toast('직원 조회 화면에서는 변경할 수 없습니다.');return;}
+ if(window.jkStaffAccess?.readOnly)return saveStaffConsultation();
  if(consultState.saving)return;let payload;try{payload=consultFormPayload()}catch(e){setConsultMessage(e.message);return}const creating=consultState.creating,id=consultState.selected?.id;consultState.saving=true;const button=$('consultSave');button.disabled=true;setConsultMessage('저장 중...');
  try{let query=sb.from('jk_consultations');if(creating)query=query.insert({...payload,intake_source:'직접기록'});else query=query.update(payload).eq('id',id).eq('updated_at',consultState.selected.updated_at);const {data,error}=await query.select('*').single();if(error){setConsultMessage(error.code==='PGRST116'?'다른 화면에서 수정된 기록입니다. 새로고침 후 다시 확인해 주세요.':'저장하지 못했습니다. '+error.message);return}if(creating)localStorage.removeItem('jk-consult-draft');consultState.creating=false;consultState.selected=data;history.replaceState({...history.state,consultId:data.id},'',consultRoute(consultState.staff,data.id));renderConsultDetail(data);await Promise.all([loadConsultations(),loadConsultReminders(false),loadConsultHistory(data.id,consultState.selectionRequest)]);setConsultMessage('상담 내용을 저장했습니다.',true)}catch(e){setConsultMessage('저장 중 연결이 끊겼습니다. 다시 시도해 주세요.')}finally{consultState.saving=false;if(button.isConnected)button.disabled=false}
 }
@@ -112,3 +112,21 @@ async function copyConsultationLink(){const staff=consultActiveStaff().includes(
 // In-app reminders refresh while the app is visible. No customer messages are sent automatically.
 setInterval(async()=>{if(document.visibilityState!=='visible')return;const {data:{session}}=await sb.auth.getSession();if(session)loadConsultReminders(false)},60000);
 document.addEventListener('visibilitychange',async()=>{if(document.visibilityState!=='visible')return;const {data:{session}}=await sb.auth.getSession();if(session)loadConsultReminders()});
+
+function startConsultationRecord(){
+ if(window.jkStaffAccess?.readOnly&&!jkStaffAccess.approved){toast('직원 승인이 필요합니다.');return;}
+ history.pushState({jk:true,page:'consultations',jkDepth:Number(history.state?.jkDepth||0)+1,consultId:'new'},'',consultRoute(consultState.staff,'new'));
+ go('consultations',{push:false});
+}
+async function saveStaffConsultation(){
+ if(!jkStaffAccess.approved||!consultState.creating){toast('직원은 새 상담기록을 등록할 수 있습니다. 기존 기록은 관리자에게 요청하세요.');return;}
+ if(consultState.saving)return;let payload;try{payload=consultFormPayload()}catch(e){setConsultMessage(e.message);return;}
+ consultState.saving=true;const button=$('consultSave');button.disabled=true;setConsultMessage('저장 중...');
+ try{
+  const {data,error}=await sb.rpc('jk_staff_create_consultation',{p_record:payload,p_request_key:consultState.createRequest});
+  if(error)throw new Error(error.code==='42501'?'직원 승인을 다시 확인하세요.':error.message||'상담을 저장하지 못했습니다.');
+  localStorage.removeItem('jk-consult-draft');consultState.creating=false;
+  history.replaceState({...history.state,consultId:data.id},'',consultRoute(consultState.staff,data.id));
+  await Promise.all([loadConsultations(),loadConsultReminders(false)]);await selectConsultation(data.id,false);toast('상담기록을 등록했습니다.');
+ }catch(e){setConsultMessage(e.message);}finally{consultState.saving=false;if(button.isConnected)button.disabled=false;}
+}

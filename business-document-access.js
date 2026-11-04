@@ -10,7 +10,7 @@
   const n=++epoch;if(!card())return;
   try{
    const state=await rpc('jk_document_access_state');if(n!==epoch)return;
-   card().hidden=!state?.owner;if(!state?.owner)return;
+   card().hidden=!state?.owner;if(!state?.owner)return;card().querySelectorAll('[onclick="connectDocumentOwnerDrive()"],a[href="business-documents-connect.html"]').forEach(e=>e.hidden=state.storage_owner===false);
    document.getElementById('documentConnectionStatus').textContent=state.drive_connected?'저장소 연결 완료 · 승인한 직원이 자기 계정으로 열람할 수 있습니다.':'저장소 연결 전 · 사장님이 서류 저장소 연결을 먼저 완료하세요.';
    const rows=await rpc('jk_document_access_requests');if(n!==epoch)return;
    document.getElementById('documentAccessRequests').innerHTML=rows?.length?rows.map(r=>`<div style="padding:14px 0;border-top:1px solid #e0e5ef"><b>${esc(r.display_name)}</b> · ${esc(r.email)}<p>${names[r.status]||'확인 필요'} · ${esc(new Date(r.requested_at).toLocaleString('ko-KR'))}</p>${(r.status==='pending'?['approved','rejected']:r.status==='approved'?['revoked']:[]).map(a=>`<button class="btn" data-document-user="${esc(r.user_id)}" data-document-action="${a}" data-version="${Number(r.version)}" data-label="${esc(r.display_name+' · '+r.email)}">${{approved:'열람 승인',rejected:'거절',revoked:'권한 회수'}[a]}</button>`).join(' ')}</div>`).join(''):'<p>직원이 제출한 열람 신청이 없습니다.</p>';
@@ -25,7 +25,7 @@
  document.addEventListener('click',async e=>{
   const b=e.target.closest('[data-document-action]');if(!b||!card()?.contains(b)||busy)return;
   const action=b.dataset.documentAction,label=b.dataset.label;
-  const message=action==='approved'?`${label}\n장부·중고반납·페이백·제휴카드·영업/상담 조회와 전체 고객 서류의 열람·인쇄·내려받기를 허용할까요? 서류 비밀번호가 추가로 필요하며 추가·삭제와 정산 수정은 허용하지 않습니다.`:action==='revoked'?`${label}\n다음 장부 조회·서류 열람부터 권한을 차단할까요? 이미 본 사진까지 회수할 수는 없습니다.`:`${label}\n이번 열람 신청을 거절할까요?`;
+  const message=action==='approved'?`${label}\n장부·중고반납·페이백·제휴카드·영업/상담 조회·새 상담 등록과 전체 고객 서류의 열람·인쇄·내려받기를 허용할까요? 서류 비밀번호가 추가로 필요하며 서류 추가·삭제와 정산 수정은 허용하지 않습니다.`:action==='revoked'?`${label}\n다음 장부 조회·서류 열람부터 권한을 차단할까요? 이미 본 사진까지 회수할 수는 없습니다.`:`${label}\n이번 열람 신청을 거절할까요?`;
   if(!confirm(message))return;
   busy=true;b.disabled=true;
   try{await rpc('jk_document_decide_access',{p_user_id:b.dataset.documentUser,p_action:action,p_version:Number(b.dataset.version)});await load();}

@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="./business-consultations.css?v=3.52">
 <link rel="stylesheet" href="./business-finance.css?v=3.52">
 <link rel="stylesheet" href="./business-navigation.css?v=3.52">
-<title>정권통신 Business Center V3.59</title>
+<title>정권통신 Business Center V3.60</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -168,17 +168,19 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 /* Employee view shares the ledger; owner pages and controls stay inaccessible. */
 body[data-access="locked"] .content{visibility:hidden}
 .staff-ledger-toolbar{display:none}body[data-access="staff"] .staff-ledger-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
-body[data-access="staff"] .page:not(#page-ledger):not(#page-staffaccess):not(#page-used):not(#page-payback):not(#page-affiliate):not(#page-consultations),body[data-access="staff"] [data-page]:not([data-page="ledger"]):not([data-page="used"]):not([data-page="payback"]):not([data-page="affiliate"]):not([data-page="consultations"]),body[data-access="staff"] .nav-group:not([data-group="ledger"]):not([data-group="sales"]),body[data-access="staff"] .topbar .actions,body[data-access="staff"] .mobile-home-btn,body[data-access="staff"] #page-ledger .section-head>button,body[data-access="staff"] .consult-head-actions .primary{display:none!important}
+body[data-access="staff"] .page:not(#page-ledger):not(#page-staffaccess):not(#page-used):not(#page-payback):not(#page-affiliate):not(#page-consultations),body[data-access="staff"] [data-page]:not([data-page="ledger"]):not([data-page="used"]):not([data-page="payback"]):not([data-page="affiliate"]):not([data-page="consultations"]),body[data-access="staff"] .nav-group:not([data-group="ledger"]):not([data-group="sales"]),body[data-access="staff"] .mobile-home-btn,body[data-access="staff"] #page-ledger .section-head>button{display:none!important}
 body[data-access="staff"][data-staff-approved="false"] .nav,body[data-access="staff"][data-staff-approved="false"] .section-menu{display:none!important}
 body[data-access="staff"] .ledger-detail-actions button:not([data-staff-document]){display:none!important}
 body[data-access="staff"] .consult-owner-only{display:none!important}
 body[data-access="staff"] .nav-group-children:not([hidden]){display:flex;flex-direction:column;gap:4px}
+body[data-access="staff"] .topbar .actions>:not([data-staff-consult]){display:none!important}
+body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:none!important}
 </style>
 </head>
 <body data-access="locked">
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.59</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.60</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -203,7 +205,7 @@ body[data-access="staff"] .nav-group-children:not([hidden]){display:flex;flex-di
   <button class="detail-back-btn" id="detailBackBtn" onclick="navigateBack()" aria-label="이전 화면으로 이동">← 뒤로</button>
   <button class="mobile-home-btn" id="mobileHomeBtn" onclick="go('dashboard')" aria-label="종합 대시보드로 이동">홈</button>
   <div><h1 id="pageTitle">종합 대시보드</h1><p id="todayText"></p></div>
-  <div class="actions"><button class="btn install-app-btn" id="installAppBtn" onclick="installPWA()">앱 설치</button><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
+  <div class="actions"><button class="btn primary" data-staff-consult onclick="startConsultationRecord()">+ 상담기록</button><button class="btn install-app-btn" id="installAppBtn" onclick="installPWA()">앱 설치</button><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
  </header>
  <div class="content">
 
@@ -578,7 +580,7 @@ body[data-access="staff"] .nav-group-children:not([hidden]){display:flex;flex-di
 <section class="page" id="page-settings">
  <div class="section-head"><div><h2>환경 설정</h2><p>실제로 장부 입력에서 사용하는 선택항목을 여기서 관리합니다.</p></div></div>
  <div class="settings-grid">
-<div id="documentAccessCard" class="card setting-card" hidden><h3>장부·업무·상담·고객 서류 · 직원 열람 승인</h3><p>승인한 직원은 장부·중고반납·페이백·제휴카드·영업/상담을 조회하고 고객별 서류를 비밀번호로 열람·인쇄·내려받기 할 수 있습니다. 업무·상담 수정과 서류 추가·삭제, 정산·환경설정 변경은 허용하지 않습니다.</p><div class="doc-buttons"><button class="btn" onclick="loadDocumentAccessRequests()">신청 새로고침</button><button class="btn" onclick="copyDocumentStaffLink()">직원 신청 링크 복사</button><button class="btn" onclick="connectDocumentOwnerDrive()">서류 저장소 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a></div><p id="documentConnectionStatus"></p><div id="documentAccessRequests"></div></div>
+<div id="documentAccessCard" class="card setting-card" hidden><h3>장부·업무·상담·고객 서류 · 직원 열람 승인</h3><p>승인한 직원은 장부·중고반납·페이백·제휴카드·영업/상담을 조회하고 고객별 서류를 비밀번호로 열람·인쇄·내려받기 할 수 있습니다. 직원은 새 상담을 등록할 수 있습니다. 기존 업무·상담 수정과 서류 추가·삭제, 정산·환경설정 변경은 관리자만 가능합니다.</p><div class="doc-buttons"><button class="btn" onclick="loadDocumentAccessRequests()">신청 새로고침</button><button class="btn" onclick="copyDocumentStaffLink()">직원 신청 링크 복사</button><button class="btn" onclick="connectDocumentOwnerDrive()">서류 저장소 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a></div><p id="documentConnectionStatus"></p><div id="documentAccessRequests"></div></div>
   <div class="setting-card card"><h3>유입경로</h3><p>장부의 유입경로 선택지입니다.</p><div class="setting-list" id="setLead"></div><div class="addrow"><input id="newLead" placeholder="예: 맘카페"><button class="btn primary" onclick="addOption('lead_source','newLead')">추가</button></div></div>
   <div class="setting-card card"><h3>거래처 관리</h3><p>판매건 등록의 거래처 선택지입니다. 새 거래처가 생기면 여기서 추가하세요.</p><div class="setting-list" id="setVendor"></div><div class="addrow"><input id="newVendor" placeholder="예: 삼보"><button class="btn primary" onclick="addOption('vendor','newVendor')">추가</button></div></div>
   <div class="setting-card card"><h3>통신사 / 알뜰통신사</h3><p>SKT·KT·LGU+뿐 아니라 알뜰통신사도 직접 추가할 수 있습니다.</p><div class="setting-list" id="setCarrier"></div><div class="addrow"><input id="newCarrier" placeholder="예: KT M모바일"><button class="btn primary" onclick="addOption('carrier','newCarrier')">추가</button></div></div>
@@ -653,21 +655,21 @@ body[data-access="staff"] .nav-group-children:not([hidden]){display:flex;flex-di
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./business-consultations.js?v=3.59"></script>
-<script src="./business-finance.js?v=3.59"></script>
+<script src="./business-consultations.js?v=3.60"></script>
+<script src="./business-finance.js?v=3.60"></script>
 <script src="./business-tax-close.js?v=3.52"></script>
 <script src="./business-settlement-excel.js?v=3.52"></script>
 <script src="./business-statement-profiles.js?v=3.52"></script>
-<script src="./business-receipts.js?v=3.59"></script>
+<script src="./business-receipts.js?v=3.60"></script>
 <script src="./business-navigation.js?v=3.52"></script>
 <script src="./business-company-card.js?v=3.52"></script>
 <script src="./business-vendor-deposits.js?v=3.52"></script>
 <script src="./business-document-crypto.js?v=3.52"></script>
-<script src="./business-document-access.js?v=3.59"></script>
-<script src="./business-document-drive.js?v=3.59"></script>
-<script src="./business-document-viewer.js?v=3.59"></script>
-<script src="./business-documents.js?v=3.59"></script>
-<script src="./business-staff-access.js?v=3.59"></script>
+<script src="./business-document-access.js?v=3.60"></script>
+<script src="./business-document-drive.js?v=3.60"></script>
+<script src="./business-document-viewer.js?v=3.60"></script>
+<script src="./business-documents.js?v=3.60"></script>
+<script src="./business-staff-access.js?v=3.60"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -1045,7 +1047,7 @@ function receiptSummary(r){
 }
 function ledgerDetails(r){
  const fields=[['생년월일',r.customer_birth_date_snapshot?isoToBirth6(r.customer_birth_date_snapshot):'-'],['통신사',r.carrier],['유입경로',r.lead_source],['요금제',r.plan_name],['출고가',won(r.retail_price)],['K 기본리베이트',won(r.base_rebate)],['L 현금판매금액',won(r.cash_sale_amount)],['M 실리베이트',won(r.real_rebate)],['P 실리베이트 10%',won(r.vat_amount)],['Q 페이백',won(r.payback_amount)],['R 위약금대납',won(r.penalty_paid)],['S 완납 수납총액',won(r.cash_received)],['수납방식',r.cash_receipt_method||'미구분 (기존 기록 확인 필요)'],['현금·계좌 수납분',won(Number(r.cash_received||0)-Number(r.card_received_amount||0))],['카드 결제금액',won(r.card_received_amount)],['카드 정산 예정액 (수수료 차감 후)',won(r.card_settlement_amount)],['카드 입금예정일',r.card_settlement_due_date],['카드 실제 입금일',r.card_settled_date],['T 유심',won(r.sim_cost)],['U 중고 판매금액',won(r.used_device_amount)],['중고기종',r.used_device_model],['W 최종마진',won(r.final_margin)],['요금제 변경가능일',r.plan_change_date],['보험 해지가능일',r.insurance_cancel_date],['부가 해지가능일',r.addon_cancel_date],['페이백 지급예정일',r.payback_due_date],['제휴카드 상태',r.affiliate_card_status],['제휴카드사',r.affiliate_card_company],['제휴카드 금액',won(r.affiliate_card_amount)],['제휴카드 등록기한',r.affiliate_card_due_date],['메모',r.memo]];
- return '<dl class="ledger-detail-grid">'+fields.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v??'-')+'</dd></div>').join('')+`</dl><div class="ledger-detail-actions"><button class="btn" onclick="openLedger('${r.id}')">수정</button><button class="btn" data-staff-document onclick="openLedgerDocuments('${r.id}')">${jkStaffAccess.readOnly?'서류 보기':'서류 보기 / 추가'}</button><button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div>`;
+ return '<dl class="ledger-detail-grid">'+fields.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v??'-')+'</dd></div>').join('')+`</dl><div class="ledger-detail-actions"><button class="btn" onclick="openLedger('${r.id}')">수정</button><button class="btn" data-staff-document onclick="openLedgerDocuments('${r.id}')">${jkStaffAccess.documentReadOnly?'서류 보기':'서류 보기 / 추가'}</button><button class="btn danger" onclick="deleteLedger('${r.id}')">삭제</button></div>`;
 }
 function renderLedger(keepPage=false){
  if(!$('ledgerBody'))return;
@@ -1300,7 +1302,7 @@ async function saveLedger(){
   try{
     const {data,error}=await sb.auth.getUser();
     if(error||!data?.user){alert('로그인 상태를 확인하지 못했습니다. 다시 로그인한 뒤 저장해 주세요.');showLogin();return;}
-    const permission=await sb.rpc('is_admin');
+    const permission=await sb.rpc('jk_business_can_manage');
     if(permission.error){alert('저장 권한을 확인하지 못했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.');return;}
     if(permission.data!==true){alert('이 계정은 장부 수정·저장 권한이 없습니다. 사장님 계정으로 로그인해 주세요.');return;}
   }catch{alert('로그인 확인 중 연결이 끊겼습니다. 인터넷 연결을 확인한 뒤 다시 저장해 주세요.');return;}

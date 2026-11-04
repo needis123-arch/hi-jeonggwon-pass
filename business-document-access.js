@@ -25,7 +25,7 @@
  document.addEventListener('click',async e=>{
   const b=e.target.closest('[data-document-action]');if(!b||!card()?.contains(b)||busy)return;
   const action=b.dataset.documentAction,label=b.dataset.label;
-  const message=action==='approved'?`${label}\n장부 조회와 전체 고객 서류의 열람·인쇄·내려받기를 허용할까요? 서류 비밀번호가 추가로 필요하며 추가·삭제와 정산 수정은 허용하지 않습니다.`:action==='revoked'?`${label}\n다음 장부 조회·서류 열람부터 권한을 차단할까요? 이미 본 사진까지 회수할 수는 없습니다.`:`${label}\n이번 열람 신청을 거절할까요?`;
+  const message=action==='approved'?`${label}\n장부·중고반납·페이백·제휴카드·영업/상담 조회와 전체 고객 서류의 열람·인쇄·내려받기를 허용할까요? 서류 비밀번호가 추가로 필요하며 추가·삭제와 정산 수정은 허용하지 않습니다.`:action==='revoked'?`${label}\n다음 장부 조회·서류 열람부터 권한을 차단할까요? 이미 본 사진까지 회수할 수는 없습니다.`:`${label}\n이번 열람 신청을 거절할까요?`;
   if(!confirm(message))return;
   busy=true;b.disabled=true;
   try{await rpc('jk_document_decide_access',{p_user_id:b.dataset.documentUser,p_action:action,p_version:Number(b.dataset.version)});await load();}

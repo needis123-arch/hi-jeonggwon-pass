@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="./business-consultations.css?v=3.52">
 <link rel="stylesheet" href="./business-finance.css?v=3.52">
 <link rel="stylesheet" href="./business-navigation.css?v=3.52">
-<title>정권통신 Business Center V3.60</title>
+<title>정권통신 Business Center V3.61</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -168,24 +168,26 @@ button,input,select,textarea{font:inherit}button{cursor:pointer}
 /* Employee view shares the ledger; owner pages and controls stay inaccessible. */
 body[data-access="locked"] .content{visibility:hidden}
 .staff-ledger-toolbar{display:none}body[data-access="staff"] .staff-ledger-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:16px}
-body[data-access="staff"] .page:not(#page-ledger):not(#page-staffaccess):not(#page-used):not(#page-payback):not(#page-affiliate):not(#page-consultations),body[data-access="staff"] [data-page]:not([data-page="ledger"]):not([data-page="used"]):not([data-page="payback"]):not([data-page="affiliate"]):not([data-page="consultations"]),body[data-access="staff"] .nav-group:not([data-group="ledger"]):not([data-group="sales"]),body[data-access="staff"] .mobile-home-btn,body[data-access="staff"] #page-ledger .section-head>button{display:none!important}
+body[data-access="staff"] .page:not(#page-ledger):not(#page-staffaccess):not(#page-used):not(#page-payback):not(#page-affiliate):not(#page-consultations):not(#page-closing),body[data-access="staff"] [data-page]:not([data-page="ledger"]):not([data-page="used"]):not([data-page="payback"]):not([data-page="affiliate"]):not([data-page="consultations"]):not([data-page="closing"]),body[data-access="staff"] .nav-group:not([data-group="ledger"]):not([data-group="sales"]),body[data-access="staff"] .mobile-home-btn,body[data-access="staff"] #page-ledger .section-head>button{display:none!important}
 body[data-access="staff"][data-staff-approved="false"] .nav,body[data-access="staff"][data-staff-approved="false"] .section-menu{display:none!important}
 body[data-access="staff"] .ledger-detail-actions button:not([data-staff-document]){display:none!important}
 body[data-access="staff"] .consult-owner-only{display:none!important}
 body[data-access="staff"] .nav-group-children:not([hidden]){display:flex;flex-direction:column;gap:4px}
-body[data-access="staff"] .topbar .actions>:not([data-staff-consult]){display:none!important}
+body[data-access="staff"] .topbar .actions>:not([data-staff-consult]):not([data-staff-daily]){display:none!important}
 body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:none!important}
 </style>
+<link rel="stylesheet" href="./business-daily-reports.css?v=3.61">
 </head>
 <body data-access="locked">
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.60</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.61</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
   <button data-page="ledger">장부 관리</button>
   <button data-page="consultations">상담 관리 <span data-consult-badge style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:10px">0</span></button>
+  <button data-page="closing">마감보고</button>
   <button data-page="report">자동 매출보고</button>
   <button data-page="used">중고 반납</button>
   <button data-page="payback">페이백</button>
@@ -205,11 +207,12 @@ body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:
   <button class="detail-back-btn" id="detailBackBtn" onclick="navigateBack()" aria-label="이전 화면으로 이동">← 뒤로</button>
   <button class="mobile-home-btn" id="mobileHomeBtn" onclick="go('dashboard')" aria-label="종합 대시보드로 이동">홈</button>
   <div><h1 id="pageTitle">종합 대시보드</h1><p id="todayText"></p></div>
-  <div class="actions"><button class="btn primary" data-staff-consult onclick="startConsultationRecord()">+ 상담기록</button><button class="btn install-app-btn" id="installAppBtn" onclick="installPWA()">앱 설치</button><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
+  <div class="actions"><button class="btn" data-staff-daily onclick="go('closing')">마감보고</button><button class="btn primary" data-staff-consult onclick="startConsultationRecord()">+ 상담기록</button><button class="btn install-app-btn" id="installAppBtn" onclick="installPWA()">앱 설치</button><button class="btn" onclick="openExpense()">+ 지출</button><button class="btn primary" onclick="openLedger()">+ 판매건</button></div>
  </header>
  <div class="content">
 
 <section class="page active" id="page-dashboard">
+<div class="card closing-banner"><div><b>오늘 마감보고</b><p>직원별 상담·업무·재연락 일정과 작성 현황을 확인하세요.</p></div><button class="btn primary" onclick="go('closing')">마감보고 작성 / 확인 ›</button></div>
  <div class="section-head"><div><h2>정권통신 경영 현황</h2><p>장부 입력만으로 매출·갯수·손익·목표·유입을 자동 계산합니다.</p></div><button class="btn" onclick="loadAll()">새로고침</button></div>
 <div class="card consult-reminder-card"><div class="table-top"><div><b>상담 재연락 알림</b><div class="consult-note">오늘 연락 예정 · 기한이 지난 상담을 따로 확인합니다.</div></div><button class="btn" onclick="go('consultations')">상담 관리</button></div><div id="consultDashboardReminders" class="consult-reminder-list">불러오는 중...</div></div>
  <div class="alert-center card">
@@ -415,7 +418,7 @@ body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:
 </section>
 
 <section class="page" id="page-report">
- <div class="section-head"><div><h2>자동 매출보고</h2><p>일일마감을 별도로 쓰지 않습니다. 장부 입력값에서 자동 생성합니다.</p></div><button class="btn primary" onclick="copyReport()">보고 복사</button></div>
+ <div class="section-head"><div><h2>자동 매출보고</h2><p>장부 입력값에서 매출을 자동 집계합니다. 상담·업무 기록은 영업 · 상담의 마감보고에서 작성하세요.</p></div><button class="btn primary" onclick="copyReport()">보고 복사</button></div>
  <div class="toolbar" style="margin-bottom:12px"><input id="reportMonth" type="month" onchange="loadReport()"><input id="reportDate" type="date" onchange="loadReport()"></div>
  <div class="report-box card"><div class="report-text" id="reportText">장부 데이터가 없습니다.</div></div>
 </section>
@@ -636,6 +639,7 @@ body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:
   <button data-page="alerts">알림센터</button>
   <button data-page="ledger">장부 관리</button>
   <button data-page="consultations">상담 관리 <span data-consult-badge style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:10px">0</span></button>
+  <button data-page="closing">마감보고</button>
   <button data-page="report">자동 매출보고</button>
   <button data-page="used">중고 반납</button>
   <button data-page="payback">페이백</button>
@@ -655,21 +659,22 @@ body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./business-consultations.js?v=3.60"></script>
-<script src="./business-finance.js?v=3.60"></script>
+<script src="./business-consultations.js?v=3.61"></script>
+<script src="./business-finance.js?v=3.61"></script>
 <script src="./business-tax-close.js?v=3.52"></script>
 <script src="./business-settlement-excel.js?v=3.52"></script>
 <script src="./business-statement-profiles.js?v=3.52"></script>
-<script src="./business-receipts.js?v=3.60"></script>
+<script src="./business-receipts.js?v=3.61"></script>
 <script src="./business-navigation.js?v=3.52"></script>
 <script src="./business-company-card.js?v=3.52"></script>
 <script src="./business-vendor-deposits.js?v=3.52"></script>
 <script src="./business-document-crypto.js?v=3.52"></script>
-<script src="./business-document-access.js?v=3.60"></script>
-<script src="./business-document-drive.js?v=3.60"></script>
-<script src="./business-document-viewer.js?v=3.60"></script>
-<script src="./business-documents.js?v=3.60"></script>
-<script src="./business-staff-access.js?v=3.60"></script>
+<script src="./business-document-access.js?v=3.61"></script>
+<script src="./business-document-drive.js?v=3.61"></script>
+<script src="./business-document-viewer.js?v=3.61"></script>
+<script src="./business-documents.js?v=3.61"></script>
+<script src="./business-staff-access.js?v=3.61"></script>
+<script src="./business-daily-reports.js?v=3.61"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";
@@ -723,7 +728,8 @@ function routeUrl(p){
  return u.pathname+u.search+u.hash;
 }
 function go(p,opts={}){
- if(document.body.dataset.access==='staff' && (!jkStaffAccess.approved || !['ledger','used','payback','affiliate','consultations','staffaccess'].includes(p)))p=jkStaffAccess.approved?'ledger':'staffaccess';
+ if(document.body.dataset.access==='staff' && (!jkStaffAccess.approved || !['ledger','used','payback','affiliate','consultations','closing','staffaccess'].includes(p)))p=jkStaffAccess.approved?'ledger':'staffaccess';
+ if(document.querySelector('#page-closing.active')&&p!=='closing'&&!jkDailyReports.beforeLeave())return;
  if(typeof closeLedgerDocuments==='function')closeLedgerDocuments();
  closeMobileMenu();
  if(!$('page-'+p))return;
@@ -745,6 +751,7 @@ function go(p,opts={}){
  window.scrollTo({top:0,behavior:opts.instant?'auto':'smooth'});
  if(p==='alerts'){loadAlertCenter();loadConsultReminders(false)}
  if(p==='consultations')openConsultationPage();
+ if(p==='closing')jkDailyReports.open();
  if(p==='report')loadReport();
  if(p==='used')loadUsed();
  if(p==='payback')loadPayback();
@@ -2192,6 +2199,7 @@ if('serviceWorker' in navigator){
 
 window.addEventListener('resize',()=>{drawGoal(state.ledger,0,new Date(now.getFullYear(),now.getMonth()+1,0).getDate());drawAnnual();drawTargetAnnual();drawGrowth()});
 syncInstallAppButton();
+jkDailyReports.init();
 initBusinessNavigation();
 sessionChanged();
 </script>

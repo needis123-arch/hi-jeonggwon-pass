@@ -2,10 +2,11 @@
 (() => {
  'use strict';
  let owner=false,approved=false,documentOwner=false,manager=false,generation=0,requestBusy=false,loadGeneration=0,identity='',lastUser='';
- const pages=['ledger','used','payback','affiliate','consultations'],operationRequests={};
+ const pages=['ledger','used','payback','affiliate','consultations','closing'],operationRequests={};
  const el=id=>document.getElementById(id);
- const labels={none:'장부 열람 신청',pending:'사장님 승인 대기 중',approved:'장부·업무·상담·서류 열람 승인 완료',rejected:'이번 신청이 거절되었습니다.',revoked:'열람 권한이 회수되었습니다.'};
- function clear(){
+ const labels={none:'장부 열람 신청',pending:'사장님 승인 대기 중',approved:'장부·업무·마감보고·서류 이용 승인 완료',rejected:'이번 신청이 거절되었습니다.',revoked:'열람 권한이 회수되었습니다.'};
+ function clear(preserveDaily=false){
+  if(!preserveDaily)window.jkDailyReports?.clear();
   approved=false;documentOwner=false;manager=false;loadGeneration++;identity='';document.body.dataset.staffApproved='false';
   if(typeof closeLedgerDocuments==='function')closeLedgerDocuments();
   window.jkDocumentViewer?.session.lock();
@@ -20,12 +21,12 @@
   if(el('page-staffaccess'))return;
   titles.staffaccess='직원 승인 요청';
   const section=document.createElement('section');section.id='page-staffaccess';section.className='page';
-  section.innerHTML='<div class="card" style="max-width:650px;padding:24px"><h2>직원 로그인 · 장부 열람</h2><p id="staffIdentity"></p><h3 id="staffApprovalStatus"></h3><p>사장님 승인 후 장부·중고반납·페이백·제휴카드·영업/상담을 조회하고 고객별 서류를 열 수 있습니다.</p><div id="staffRequestForm"><label for="staffRequestName">직원 이름</label><input id="staffRequestName" maxlength="80" autocomplete="name" style="width:100%;padding:12px;margin:10px 0"><button class="btn primary" id="staffRequestButton">사장님에게 장부·서류 열람 요청</button></div><p id="staffRequestMessage" role="status"></p><button class="btn" id="staffApprovalRefresh">승인 상태 새로고침</button><button class="btn" onclick="logout()">로그아웃</button></div>';
+  section.innerHTML='<div class="card" style="max-width:650px;padding:24px"><h2>직원 로그인 · 장부 열람</h2><p id="staffIdentity"></p><h3 id="staffApprovalStatus"></h3><p>사장님 승인 후 장부·중고반납·페이백·제휴카드·영업/상담을 조회하고, 새 상담과 본인 마감보고를 작성할 수 있습니다. 고객별 서류도 열람할 수 있습니다.</p><div id="staffRequestForm"><label for="staffRequestName">직원 이름</label><input id="staffRequestName" maxlength="80" autocomplete="name" style="width:100%;padding:12px;margin:10px 0"><button class="btn primary" id="staffRequestButton">사장님에게 장부·서류 열람 요청</button></div><p id="staffRequestMessage" role="status"></p><button class="btn" id="staffApprovalRefresh">승인 상태 새로고침</button><button class="btn" onclick="logout()">로그아웃</button></div>';
   document.querySelector('.content').append(section);
   const toolbar=document.createElement('div');toolbar.className='staff-ledger-toolbar';
   toolbar.innerHTML='<span>직원 업무 화면 · 장부·중고반납·페이백·제휴카드·상담을 확인하세요.</span><button class="btn" id="staffLedgerRefresh">새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';
   el('page-ledger').prepend(toolbar);el('staffLedgerRefresh').onclick=loadLedger;
-  for(const page of pages.filter(p=>p!=='ledger')){const bar=document.createElement('div');bar.className='staff-ledger-toolbar';bar.innerHTML='<span>직원 업무 화면</span><button class="btn" data-staff-refresh>새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';bar.querySelector('[data-staff-refresh]').onclick=()=>go(page,{push:false});el('page-'+page).prepend(bar);}
+  for(const page of pages.filter(p=>p!=='ledger'&&p!=='closing')){const bar=document.createElement('div');bar.className='staff-ledger-toolbar';bar.innerHTML='<span>직원 업무 화면</span><button class="btn" data-staff-refresh>새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';bar.querySelector('[data-staff-refresh]').onclick=()=>go(page,{push:false});el('page-'+page).prepend(bar);}
   el('staffRequestButton').onclick=async()=>{
    if(requestBusy)return;const name=el('staffRequestName').value.trim();if(!name){el('staffRequestMessage').textContent='직원 이름을 입력하세요.';return;}
    requestBusy=true;el('staffRequestButton').disabled=true;const n=generation;
@@ -38,7 +39,7 @@
  async function gate(session){
   const nextUser=session?.user?.id||session?.user?.email||'';
   if(lastUser&&nextUser!==lastUser){location.reload();return 'stale';}lastUser=nextUser;
-  init();const n=++generation;owner=false;document.body.dataset.access='locked';clear();
+  init();const n=++generation;owner=false;document.body.dataset.access='locked';clear(Boolean(session));
   if(!session)return 'none';
   try{
    const {data,error}=await sb.rpc('jk_document_access_state');if(n!==generation)return 'stale';if(error||!data)throw Error();
@@ -52,7 +53,7 @@
    el('staffRequestForm').hidden=['pending','approved'].includes(data.status);
    el('staffRequestName').value=data.display_name||el('staffRequestName').value;
    el('staffRequestMessage').textContent=data.status==='pending'?'사장님 환경설정에서 신청을 승인하면 장부가 열립니다.':'';
-   if(!approved){go('staffaccess',{push:false,replace:true,instant:true});return 'waiting';}
+   if(!approved){window.jkDailyReports?.clear();go('staffaccess',{push:false,replace:true,instant:true});return 'waiting';}
    await loadLedger();if(n!==generation)return 'stale';if(!approved)return 'waiting';const requested=new URLSearchParams(location.search).get('page')||localStorage.getItem('jk-active-page');go(pages.includes(requested)?requested:'ledger',{push:false,replace:true,instant:true});return 'staff';
   }catch{
    if(n===generation){clear();showLogin();el('loginMsg').textContent='권한을 확인하지 못했습니다. 다시 로그인하세요.';}

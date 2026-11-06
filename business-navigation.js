@@ -1,6 +1,6 @@
 'use strict';
 const businessMenuGroups=[
- {id:'sales',label:'영업 · 상담',home:'consultations',pages:['consultations','closing']},
+ {id:'sales',label:'영업 · 상담',home:'consultations',pages:['consultations','closing','calendar']},
  {id:'ledger',label:'장부 관리',home:'ledger',pages:['ledger','used','payback','affiliate']},
  {id:'costs',label:'비용 · 정산',home:'costs',pages:['costs','ads','expenses','finance','cash']}
 ];

@@ -2,7 +2,7 @@
 (() => {
  'use strict';
  let owner=false,approved=false,documentOwner=false,manager=false,generation=0,requestBusy=false,loadGeneration=0,identity='',lastUser='';
- const pages=['ledger','used','payback','affiliate','consultations','closing'],operationRequests={};
+ const pages=['ledger','used','payback','affiliate','consultations','closing','calendar'],operationRequests={};
  const el=id=>document.getElementById(id);
  const labels={none:'장부 열람 신청',pending:'사장님 승인 대기 중',approved:'장부·업무·마감보고·서류 이용 승인 완료',rejected:'이번 신청이 거절되었습니다.',revoked:'열람 권한이 회수되었습니다.'};
  function clear(preserveDaily=false){
@@ -26,7 +26,7 @@
   const toolbar=document.createElement('div');toolbar.className='staff-ledger-toolbar';
   toolbar.innerHTML='<span>직원 업무 화면 · 장부·중고반납·페이백·제휴카드·상담을 확인하세요.</span><button class="btn" id="staffLedgerRefresh">새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';
   el('page-ledger').prepend(toolbar);el('staffLedgerRefresh').onclick=loadLedger;
-  for(const page of pages.filter(p=>p!=='ledger'&&p!=='closing')){const bar=document.createElement('div');bar.className='staff-ledger-toolbar';bar.innerHTML='<span>직원 업무 화면</span><button class="btn" data-staff-refresh>새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';bar.querySelector('[data-staff-refresh]').onclick=()=>go(page,{push:false});el('page-'+page).prepend(bar);}
+  for(const page of pages.filter(p=>p!=='ledger'&&p!=='closing'&&p!=='calendar')){const bar=document.createElement('div');bar.className='staff-ledger-toolbar';bar.innerHTML='<span>직원 업무 화면</span><button class="btn" data-staff-refresh>새로고침</button><button class="btn" onclick="logout()">로그아웃</button>';bar.querySelector('[data-staff-refresh]').onclick=()=>go(page,{push:false});el('page-'+page).prepend(bar);}
   el('staffRequestButton').onclick=async()=>{
    if(requestBusy)return;const name=el('staffRequestName').value.trim();if(!name){el('staffRequestMessage').textContent='직원 이름을 입력하세요.';return;}
    requestBusy=true;el('staffRequestButton').disabled=true;const n=generation;

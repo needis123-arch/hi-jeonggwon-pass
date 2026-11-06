@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="./business-consultations.css?v=3.52">
 <link rel="stylesheet" href="./business-finance.css?v=3.52">
 <link rel="stylesheet" href="./business-navigation.css?v=3.52">
-<title>정권통신 Business Center V3.63</title>
+<title>정권통신 Business Center V3.64</title>
 <style>
 :root{
  --bg:#f4f6f8;--panel:#fff;--line:#e1e6ed;--text:#111318;--muted:#6c7788;
@@ -176,13 +176,13 @@ body[data-access="staff"] .nav-group-children:not([hidden]){display:flex;flex-di
 body[data-access="staff"] .topbar .actions>:not([data-staff-consult]):not([data-staff-daily]){display:none!important}
 body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:none!important}
 </style>
-<link rel="stylesheet" href="./business-daily-reports.css?v=3.63">
-<link rel="stylesheet" href="./business-team-calendar.css?v=3.63">
+<link rel="stylesheet" href="./business-daily-reports.css?v=3.64">
+<link rel="stylesheet" href="./business-team-calendar.css?v=3.64">
 </head>
 <body data-access="locked">
 <div class="app">
 <aside class="sidebar">
- <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.63</small></div></div>
+ <div class="brand"><div class="brandmark">J</div><div><b>정권통신</b><small>BUSINESS CENTER V3.64</small></div></div>
  <div class="nav">
   <button class="active" data-page="dashboard">종합 대시보드</button>
   <button data-page="alerts">알림센터 <span id="alertCenterBadge" style="display:none;margin-left:6px;background:#df3f50;color:#fff;border-radius:99px;padding:2px 6px;font-size:9px">0</span></button>
@@ -585,7 +585,7 @@ body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:
 <section class="page" id="page-settings">
  <div class="section-head"><div><h2>환경 설정</h2><p>실제로 장부 입력에서 사용하는 선택항목을 여기서 관리합니다.</p></div></div>
  <div class="settings-grid">
-<div id="documentAccessCard" class="card setting-card" hidden><h3>장부·업무·상담·고객 서류 · 직원 열람 승인</h3><p>승인한 직원은 장부·중고반납·페이백·제휴카드·영업/상담을 조회하고 고객별 서류를 비밀번호로 열람·인쇄·내려받기 할 수 있습니다. 직원은 새 상담을 등록할 수 있습니다. 기존 업무·상담 수정과 서류 추가·삭제, 정산·환경설정 변경은 관리자만 가능합니다.</p><div class="doc-buttons"><button class="btn" onclick="loadDocumentAccessRequests()">신청 새로고침</button><button class="btn" onclick="copyDocumentStaffLink()">직원 신청 링크 복사</button><button class="btn" onclick="connectDocumentOwnerDrive()">서류 저장소 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a></div><p id="documentConnectionStatus"></p><div id="documentAccessRequests"></div></div>
+<div id="documentAccessCard" class="card setting-card" hidden><h3>장부·업무·상담·고객 서류 · 직원 열람 승인</h3><p>승인한 직원은 장부·중고반납·페이백·제휴카드·영업/상담을 조회하고 고객별 서류를 비밀번호로 열람·인쇄·내려받기 할 수 있습니다. 직원은 새 상담과 본인 마감보고를 작성하고, 본인 휴무를 등록·수정할 수 있습니다. 기존 업무·상담 수정과 서류 추가·삭제, 정산·환경설정 변경은 관리자만 가능합니다.</p><div class="doc-buttons"><button class="btn" onclick="loadDocumentAccessRequests()">신청 새로고침</button><button class="btn" onclick="copyDocumentStaffLink()">직원 신청 링크 복사</button><button class="btn" onclick="connectDocumentOwnerDrive()">서류 저장소 연결</button><a class="btn" href="business-documents-connect.html">현재 화면에서 구글 연결</a></div><p id="documentConnectionStatus"></p><div id="documentAccessRequests"></div></div>
   <div class="setting-card card"><h3>유입경로</h3><p>장부의 유입경로 선택지입니다.</p><div class="setting-list" id="setLead"></div><div class="addrow"><input id="newLead" placeholder="예: 맘카페"><button class="btn primary" onclick="addOption('lead_source','newLead')">추가</button></div></div>
   <div class="setting-card card"><h3>거래처 관리</h3><p>판매건 등록의 거래처 선택지입니다. 새 거래처가 생기면 여기서 추가하세요.</p><div class="setting-list" id="setVendor"></div><div class="addrow"><input id="newVendor" placeholder="예: 삼보"><button class="btn primary" onclick="addOption('vendor','newVendor')">추가</button></div></div>
   <div class="setting-card card"><h3>통신사 / 알뜰통신사</h3><p>SKT·KT·LGU+뿐 아니라 알뜰통신사도 직접 추가할 수 있습니다.</p><div class="setting-list" id="setCarrier"></div><div class="addrow"><input id="newCarrier" placeholder="예: KT M모바일"><button class="btn primary" onclick="addOption('carrier','newCarrier')">추가</button></div></div>
@@ -662,25 +662,25 @@ body[data-access="staff"][data-staff-approved="false"] .topbar .actions{display:
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./business-consultations.js?v=3.63"></script>
-<script src="./business-finance.js?v=3.63"></script>
+<script src="./business-consultations.js?v=3.64"></script>
+<script src="./business-finance.js?v=3.64"></script>
 <script src="./business-tax-close.js?v=3.52"></script>
 <script src="./business-settlement-excel.js?v=3.52"></script>
 <script src="./business-statement-profiles.js?v=3.52"></script>
-<script src="./business-receipts.js?v=3.63"></script>
+<script src="./business-receipts.js?v=3.64"></script>
 <script src="./business-navigation.js?v=3.52"></script>
 <script src="./business-company-card.js?v=3.52"></script>
 <script src="./business-vendor-deposits.js?v=3.52"></script>
 <script src="./business-document-crypto.js?v=3.52"></script>
-<script src="./business-document-access.js?v=3.63"></script>
-<script src="./business-document-drive.js?v=3.63"></script>
-<script src="./business-document-viewer.js?v=3.63"></script>
-<script src="./business-documents.js?v=3.63"></script>
-<script src="./business-staff-access.js?v=3.63"></script>
-<script src="./business-daily-reports.js?v=3.63"></script>
-<script src="./business-closing-tools.js?v=3.63"></script>
-<script src="./business-closing-assignments.js?v=3.63"></script>
-<script src="./business-team-calendar.js?v=3.63"></script>
+<script src="./business-document-access.js?v=3.64"></script>
+<script src="./business-document-drive.js?v=3.64"></script>
+<script src="./business-document-viewer.js?v=3.64"></script>
+<script src="./business-documents.js?v=3.64"></script>
+<script src="./business-staff-access.js?v=3.64"></script>
+<script src="./business-daily-reports.js?v=3.64"></script>
+<script src="./business-closing-tools.js?v=3.64"></script>
+<script src="./business-closing-assignments.js?v=3.64"></script>
+<script src="./business-team-calendar.js?v=3.64"></script>
 <script>
 const SUPABASE_URL="https://ielwjiftulcolzfmhkwl.supabase.co";
 const SUPABASE_KEY="sb_publishable_wSENSDMotRXyYWzy8BT7LQ_ROiOjZoh";

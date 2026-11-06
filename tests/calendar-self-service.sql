@@ -1,0 +1,42 @@
+begin;
+do $$declare s uuid:=gen_random_uuid();o uuid:=gen_random_uuid();m uuid:=gen_random_uuid();d date:=(now() at time zone 'Asia/Seoul')::date;begin
+ insert into auth.users(id,email,email_confirmed_at) values(s,s||'@example.invalid',now()),(o,o||'@example.invalid',now()),(m,m||'@example.invalid',now());
+ insert into jk_document_private.access_requests(user_id,email,display_name,status) values(s,s||'@example.invalid','SYNTHETIC SELF HOLIDAY','approved'),(o,o||'@example.invalid','SYNTHETIC OTHER HOLIDAY','approved'),(m,m||'@example.invalid','SYNTHETIC HOLIDAY MANAGER','approved');
+ insert into jk_document_private.business_managers(user_id,email) values(m,m||'@example.invalid');
+ insert into jk_document_private.daily_report_days_off(author_id,report_date,day_off,updated_by) values(o,d,true,m);
+ perform set_config('test.holiday_staff',s::text,true);perform set_config('test.holiday_other',o::text,true);perform set_config('test.holiday_manager',m::text,true);
+ perform set_config('request.jwt.claim.sub',s::text,true);perform set_config('request.jwt.claims',json_build_object('sub',s,'is_anonymous',false)::text,true);
+end$$;
+set local role authenticated;
+do $$declare d date:=(now() at time zone 'Asia/Seoul')::date;r jsonb;day_row jsonb;begin
+ r:=public.jk_set_own_day_off(d,true,0);if r->>'author_id'<>current_setting('test.holiday_staff') or r->>'day_off'<>'true' then raise exception 'FAIL self registration';end if;
+ if public.jk_set_own_day_off(d,true,0)->>'revision'<>'1' then raise exception 'FAIL duplicate-safe retry';end if;
+ if (public.jk_daily_report_reminder()->>'own_required')::boolean then raise exception 'FAIL holiday reminder exclusion';end if;
+ r:=public.jk_team_calendar(date_trunc('month',d)::date,d);select value into day_row from jsonb_array_elements(r->'days') where value->>'date'=d::text;
+ if not (day_row->'holiday_names' ? 'SYNTHETIC SELF HOLIDAY') or not(day_row->'holiday_names' ? 'SYNTHETIC OTHER HOLIDAY') or (day_row->>'holiday_count')::int<2 then raise exception 'FAIL visible holiday names';end if;
+ begin perform public.jk_set_own_day_off(d,false,0);raise exception 'FAIL stale self update';exception when serialization_failure then null;end;
+ r:=public.jk_set_own_day_off(d,false,1);if r->>'day_off'<>'false' then raise exception 'FAIL self cancellation';end if;
+ if not (public.jk_daily_report_reminder()->>'own_required')::boolean then raise exception 'FAIL reminder resumes on cancellation';end if;
+ r:=public.jk_set_own_day_off(d+1,true,0);
+ if not (public.jk_daily_report_reminder()->>'own_required')::boolean then raise exception 'FAIL future holiday affects today';end if;
+ begin perform public.jk_set_daily_report_assignment(current_setting('test.holiday_other')::uuid,'day_off',false,d,1);raise exception 'FAIL other-person edit';exception when insufficient_privilege then null;end;
+ begin perform public.jk_set_daily_report_assignment(current_setting('test.holiday_staff')::uuid,'enabled',false,d,0);raise exception 'FAIL global setting edit';exception when insufficient_privilege then null;end;
+ begin update jk_document_private.daily_report_days_off set author_id=current_setting('test.holiday_other')::uuid;raise exception 'FAIL raw reassignment';exception when insufficient_privilege then null;end;
+ begin perform public.jk_set_own_day_off(d+367,true,0);raise exception 'FAIL far future';exception when raise_exception then if sqlerrm like 'FAIL%' then raise;end if;end;
+ begin perform public.jk_set_own_day_off(d,null,0);raise exception 'FAIL null value';exception when raise_exception then if sqlerrm like 'FAIL%' then raise;end if;end;
+end$$;
+reset role;
+do $$declare d date:=(now() at time zone 'Asia/Seoul')::date;begin
+ if not exists(select 1 from jk_document_private.daily_report_days_off where author_id=current_setting('test.holiday_other')::uuid and report_date=d and day_off and revision=1) then raise exception 'FAIL other-person row changed';end if;
+ if not exists(select 1 from jk_document_private.daily_report_days_off where author_id=current_setting('test.holiday_staff')::uuid and report_date=d and updated_by=current_setting('test.holiday_staff')::uuid) then raise exception 'FAIL self audit actor';end if;
+ if exists(select 1 from jk_document_private.daily_reports where author_id=current_setting('test.holiday_staff')::uuid) then raise exception 'FAIL auto-created report';end if;
+end$$;
+update jk_document_private.access_requests set status='revoked' where user_id=current_setting('test.holiday_staff')::uuid;
+set local role authenticated;
+do $$begin begin perform public.jk_set_own_day_off(current_date,true,0);raise exception 'FAIL revoked self write';exception when insufficient_privilege then null;end;end$$;
+reset role;
+set local role anon;
+do $$begin begin perform public.jk_set_own_day_off(current_date,true,0);raise exception 'FAIL anonymous self write';exception when insufficient_privilege then null;end;end$$;
+reset role;
+rollback;
+select 'PASS: own dated holiday registration/cancellation/future date, reminder integration, monthly holiday names, audit actor, duplicate retry/stale conflict, no other-person/global/raw edits, revoked/anonymous denied; fixtures rolled back' result;
